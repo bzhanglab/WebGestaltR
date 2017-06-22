@@ -1,0 +1,27 @@
+Package: WebGestaltR
+Type: Package
+Title: The R Version of WebGestalt
+Version: 0.1.2
+Date: 2017-06-19
+Author: Jing Wang <jingwang.uestc@gmail.com>
+Maintainer: Jing Wang <jingwang.uestc@gmail.com>
+Description: The web version WebGestalt <http://www.webgestalt.org> supports 12 organisms, 324 gene identifiers and 150,937 function categories. Users can upload the data and functional categories with their own gene identifiers. In addition to the Over-Representation Analysis, WebGestalt also supports Gene Set Enrichment Analysis. The user-friendly output interface allow interactive and efficient exploration of enrichment results. The WebGestaltR package not only supports all above functions but also can be integrated into other pipeline or simultaneous analyze multiple gene lists.
+License: LGPL
+LazyLoad: yes
+Depends: R (>= 3.3)
+Imports: methods, data.table (>= 1.10.0), parallel (>= 3.3.2),
+        doParallel (>= 1.0.10), foreach (>= 1.4.0), PythonInR (>=
+        0.1-3), pkgmaker (>= 0.22), rjson (>= 0.2.15)
+Collate: zzz.R WebGestaltR.R WebGestaltR_batch.R WebGestaltR_GSEA.R
+        WebGestaltR_ORA.R GSEAEnrichment.R ORAEnrichment.R IDMapping.R
+        IDMapping_gene.R IDMapping_phosphosite.R IDMapping_component.R
+        GOSlimSummary.R listGeneSet.R listIDType.R listOrganism.R
+        readGMT.R listReferenceSet.R listArchiveURL.R formatCheck.R
+        createHTMLTab.R createReport.R detailedGeneTable.R
+        enrichmentResultProcess_component.R
+        enrichResultTab_categoryViz.R errorMessage.R goDAGViz.R
+        goslimReportTab.R htmlTitle.R linkModification.R loadGeneList.R
+        loadGeneSet.R mappingTableTab.R summaryTab_description.R
+SystemRequirements: Java, Python
+NeedsCompilation: no
+Packaged: 2017-06-20 20:21:38 UTC; jingwang
