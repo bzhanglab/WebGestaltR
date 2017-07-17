@@ -6,7 +6,7 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
     ###########Check input data type###############
     
     inputGene <- IDMapping_input(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
-    if(is.character(inputGene) && length(inputGene)==1 && length(grep("ERROR:",inputGene))>0){
+    if(.hasError(inputGene)){
        return(inputGene)
     }
     
@@ -14,7 +14,7 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 	 ##########ID Mapping Specify to phosphosite level###############
 	 
 	  re <- .processSourceIDMapPhosphosite(hostName=hostName,organism=organism,largeIdList=largeIdList,inputGene=inputGene,standardID=standardID,dataType=dataType,idType=sourceIdType,collapseMethod=collapseMethod,methodType=methodType)
-		if(is.character(re) && length(re)==1 && length(grep("ERROR:",re))>0){
+    if(.hasError(re)){
 			return(re)
 		}
 		inputGene <- re$mapped
@@ -47,7 +47,7 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 	}
 	
 	mapR <- IDMapping_map(largeIdList=largeIdList,sourceIdType=idType,standardID=standardID,hostName=hostName,organism=organism,inputGene=inputGeneL,mapType="source",methodType=methodType)
-	if(is.character(mapR) && length(mapR)==1 && length(grep("ERROR:",mapR))>0){
+  if(.hasError(mapR)){
 		return(mapR)
 	}
 	
@@ -61,6 +61,7 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 	colnames(idTypeGMap)[1] <- idType
 	
 	#####Hard code#######
+  ### ZS: what about idType == "phosphositeSeq"
 	if(length(grep("Uniprot",idType))>0){
 		geneType <- "uniprot_swissprot"
 		outLink <- "http://www.uniprot.org/uniprot/"
@@ -83,7 +84,7 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 	
 	mapR <- IDMapping_gene(organism=organism,dataType="list",inputGene=unique(idTypeGMap[,"gene"]),sourceIdType=geneType,standardID="entrezgene",targetIdType="entrezgene",methodType=methodType,mappingOutput=FALSE,hostName=hostName)
 	
-	if(is.character(mapR) && length(mapR)==1 && length(grep("ERROR:",mapR))>0){
+  if(.hasError(mapR)){
 		return(mapR)
 	}
 	

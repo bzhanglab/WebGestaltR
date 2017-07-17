@@ -41,7 +41,7 @@ IDMapping <- function(organism="hsapiens",dataType="list",inputGeneFile=NULL,inp
      	idmap <- IDMapping_phosphosite(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=sourceIdType,standardID=standardSource,collapseMethod=collapseMethod,mappingOutput=mappingOutput,outputFileName=outputFileName,methodType=methodType,hostName=hostName)
      }
      
-     if(is.character(idmap) && length(idmap)==1 && length(grep("ERROR:",idmap))>0){
+     if(.hasError(idmap)){
     			return(idmap)
      }else{
      	 idmap$standardId <- standardSource

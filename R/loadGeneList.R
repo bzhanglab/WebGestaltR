@@ -8,13 +8,13 @@ loadInterestGene <- function(organism="hsapiens",dataType="list",inputGeneFile=N
     			return(interestGeneError(type="emptyType"))
     		}else{
     			mapRe <- .uploadGene_existingOrganism(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,geneType=geneType,collapseMethod=collapseMethod,geneSet=geneSet,methodType=methodType,hostName=hostName)
-    			if(is.character(mapRe) && length(mapRe)==1 && length(grep("ERROR:",mapRe))>0){
+          if(.hasError(mapRe)){
     				return(mapRe)
     			}
     		}
     	}else{
     		mapRe <- .uploadGene_Others(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,geneSet=geneSet)
-    		if(is.character(mapRe) && length(mapRe)==1 && length(grep("ERROR:",mapRe))>0){
+        if(.hasError(mapRe)){
     			return(mapRe)
     		}
     	}
@@ -39,7 +39,7 @@ loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
   					return(referenceGeneError(type="emptyType"))
   				}else{
     				mapRe <- .uploadGene_existingOrganism(organism=organism,dataType="list",inputGeneFile=referenceGeneFile,inputGene=referenceGene,geneType=referenceGeneType,collapseMethod=collapseMethod,geneSet=geneSet,methodType=methodType,hostName=hostName)
-    				if(is.character(mapRe) && length(mapRe)==1 && length(grep("ERROR:",mapRe))>0){
+            if(.hasError(mapRe)){
     					return(mapRe)
     				}
     				gene_standardId <- identifyStandardId(hostName=hostName,idtype=referenceGeneType,organism=organism,type="interest")
@@ -58,7 +58,7 @@ loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
     	}else{ ##For other organisms
     		if(!is.null(referenceGeneFile) || !is.null(referenceGene)){    	
     				referenceGene_List <- .uploadGene_Others(dataType="list",inputGeneFile=referenceGeneFile,inputGene=referenceGene,geneSet=geneSet)
-    				if(is.character(referenceGene_List) && length(referenceGene_List)==1 && length(grep("ERROR:",referenceGene_List))>0){
+            if(.hasError(referenceGene_List)){
     					return(referenceGene_List)
     				}
     		}else{
@@ -79,7 +79,7 @@ loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 					
 					geneMap <- IDMapping(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=geneType,targetIdType=NULL,collapseMethod=collapseMethod,mappingOutput=FALSE,methodType=methodType,hostName=hostName)
 					
-					if(is.character(geneMap) && length(geneMap)==1 && length(grep("ERROR:",geneMap))>0){
+          if(.hasError(geneMap)){
 						return(geneMap)
 					}
 					
@@ -112,7 +112,7 @@ loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 		
 		gene_List <- formatCheck(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
 		
-		if(is.character(gene_List) && length(gene_List)==1 && length(grep("ERROR:",gene_List))>0){
+    if(.hasError(gene_List)){
 			return(gene_List)
 		}
 		gene_List <- as.data.frame(gene_List,stringsAsFactors=F)

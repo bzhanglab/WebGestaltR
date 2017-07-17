@@ -8,7 +8,7 @@ IDMapping_gene <- function(organism="hsapiens",dataType="list",inputGeneFile=NUL
     ###########Check input data type###############
     
     inputGene <- IDMapping_input(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
-    if(is.character(inputGene) && length(inputGene)==1 && length(grep("ERROR:",inputGene))>0){
+    if(.hasError(inputGene)){
        return(inputGene)
     }
     
@@ -16,7 +16,7 @@ IDMapping_gene <- function(organism="hsapiens",dataType="list",inputGeneFile=NUL
 	 ##########ID Mapping Specify to gene level###############
 	  
 	  re <- .processSourceIDMapGene(hostName=hostName,organism=organism,largeIdList=largeIdList,inputGene=inputGene,standardID=standardID,dataType=dataType,idType=sourceIdType,collapseMethod=collapseMethod,methodType=methodType)
-		if(is.character(re) && length(re)==1 && length(grep("ERROR:",re))>0){
+    if(.hasError(re)){
 			return(re)
 		}
 		inputGene <- re$mapped
@@ -29,7 +29,7 @@ IDMapping_gene <- function(organism="hsapiens",dataType="list",inputGeneFile=NUL
 	  
 	  	x <- unique(inputGene[,standardID])
 	  	targetF <- IDMapping_map(largeIdList=largeIdList,sourceIdType=targetIdType,standardID=standardID,hostName=hostName,organism=organism,inputGene=x,mapType="target")
-	  	if(is.character(targetF) && length(targetF)==1 && length(grep("ERROR:",targetF))>0){
+      if(.hasError(targetF)){
 	  		return(targetF)
 	  	}
 	  	targetF <- targetF$mapF
@@ -92,7 +92,7 @@ IDMapping_gene <- function(organism="hsapiens",dataType="list",inputGeneFile=NUL
 	
 	
 	mapR <- IDMapping_map(largeIdList=largeIdList,sourceIdType=idType,standardID=standardID,hostName=hostName,organism=organism,inputGene=inputGeneL,mapType="source",methodType=methodType)
-	if(is.character(mapR) && length(mapR)==1 && length(grep("ERROR:",mapR))>0){
+  if(.hasError(mapR)){
 		return(mapR)
 	}
 	

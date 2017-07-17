@@ -1,7 +1,7 @@
 GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pdf",hostName="http://www.webgestalt.org"){
 	
 	organisms <- listOrganism(hostName=hostName)
-	if(length(which(organisms==organism))==0){
+  if(!(organism %in% organisms)){
     	error <- paste("ERROR: ",organism," can not be supported.",sep="")
     	cat(error)
 			return(error)
@@ -16,14 +16,14 @@ GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pd
 	 }
    
    outputTypeList <- c("pdf","png","bmp")
-   if(length(which(outputTypeList==outputType))==0){
+   if(!(outputType %in% outputTypeList)){
    		error <- paste("ERROR: The output Type ",outputType," is invalid. Please select one from pdf, png, and bmp.",sep="")
 			cat(error)
 			return(error)
    }
    	
 	bpfilere <- .processData(organism,hostName,genelist,"BiologicalProcess")
-	if(is.character(bpfilere) && length(bpfilere)==1 && length(grep("ERROR:",bpfilere))>0){
+  if(.hasError(bpfilere)){
 		return(bpfilere)
 	}else{
 		bpfile <- bpfilere$goFile
@@ -31,7 +31,7 @@ GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pd
 	}
 	
 	ccfilere <- .processData(organism,hostName,genelist,"CellularComponent")
-	if(is.character(ccfilere) && length(ccfilere)==1 && length(grep("ERROR:",ccfilere))>0){
+  if(.hasError(ccfilere)){
 		return(ccfilere)
 	}else{
 		ccfile <- ccfilere$goFile
@@ -39,7 +39,7 @@ GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pd
 	}
 	
 	mffilere <- .processData(organism,hostName,genelist,"MolecularFunction")
-	if(is.character(mffilere) && length(mffilere)==1 && length(grep("ERROR:",mffilere))>0){
+  if(.hasError(mffilere)){
 		return(mffilere)
 	}else{
 		mffile <- mffilere$goFile

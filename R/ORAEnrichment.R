@@ -56,7 +56,7 @@ ORAEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 	enrichedResult[,6] <- enrichedResult[,4]/enrichedResult[,5]
 	enrichedResult[is.na(enrichedResult[,6]),6] <- NA
 	enrichedResult[,7] <- 1-phyper(enrichedResult[,4]-1,length(interestGene),length(referenceGene)-length(interestGene),enrichedResult[,3],lower.tail = TRUE,log.p= FALSE)
-	enrichedResult[,8] <- p.adjust(enrichedResult[,7],method="BH")
+	enrichedResult[,8] <- p.adjust(enrichedResult[,7],method=fdrMethod)
 	colnames(enrichedResult)[5:8] <- c("E","R","PValue","FDR")
 	
 	

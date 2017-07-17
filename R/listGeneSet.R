@@ -7,7 +7,7 @@ listGeneSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/
 	di <- 1
 	for(i in c(1:length(name1))){
 		x <- .getName(ids[[i]])
-		if(!is.null(x)){
+		if(!(is.null(x) || (is.list(x) && length(x)==0))){
 			y <- .getDescription(ids[[i]])
 			z <- .getIdType(ids[[i]])
 			x <- paste(name1[i],"_",x,sep="")
@@ -21,13 +21,13 @@ listGeneSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/
 }
 
 .getName <- function(ids){
-	return(unlist(lapply(ids,function(e){return(e$name)})))
+	return(sapply(ids,function(e){return(e$name)}))
 }
 
 .getDescription <- function(ids){
-	return(unlist(lapply(ids,function(e){return(e$description)})))
+	return(sapply(ids,function(e){return(e$description)}))
 }
 
 .getIdType <- function(ids){
-	return(unlist(lapply(ids,function(e){return(e$idtype)})))
+	return(sapply(ids,function(e){return(e$idtype)}))
 }

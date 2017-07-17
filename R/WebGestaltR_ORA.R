@@ -34,7 +34,7 @@ WebGestaltR_ORA <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabas
 		#############Check enriched database#############
 		cat("Uploading the functional categories...\n")
 		enrichD <- loadGeneSet(organism=organism,enrichDatabase=enrichDatabase,enrichDatabaseFile=enrichDatabaseFile,enrichDatabaseType=enrichDatabaseType,enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName)
-		if(is.character(enrichD) && length(enrichD)==1 && length(grep("ERROR:",enrichD))>0){
+    if(.hasError(enrichD)){
    		return(enrichD)
    	}
    	
@@ -48,7 +48,7 @@ WebGestaltR_ORA <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabas
     cat("Uploading the ID list...\n")
     interestingGeneMap <- loadInterestGene(organism=organism,dataType="list",inputGeneFile=interestGeneFile,inputGene=interestGene,geneType=interestGeneType,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName,geneSet=geneSet)
     
-    if(is.character(interestingGeneMap) && length(interestingGeneMap)==1 && length(grep("ERROR:",interestingGeneMap))>0){
+    if(.hasError(interestingGeneMap)){
    		return(interestingGeneMap)
    	}
     
@@ -64,8 +64,8 @@ WebGestaltR_ORA <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabas
 		referenceGene_List <- NULL
     
     referenceGene_List <- loadReferneceGene(organism=organism,referenceGeneFile=referenceGeneFile,referenceGene=referenceGene,referenceGeneType=referenceGeneType,referenceSet=referenceSet,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName,geneSet=geneSet,interestGene_List=interestGene_List)
-    
-    if(is.character(referenceGene_List) && length(referenceGene_List)==1 && length(grep("ERROR:",referenceGene_List))>0){
+   
+    if(.hasError(referenceGene_List)){
    		return(referenceGene_List)
    	}
     	 
@@ -80,7 +80,7 @@ WebGestaltR_ORA <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabas
      				cat("Summary the uploaded ID list by GO Slim data...\n")
      				goslim_output <- file.path(projectDir,paste("goslim_summary_",timeStamp,sep=""))
      				re <- GOSlimSummary(organism=organism,genelist=interestGene_List,outputFile=goslim_output,outputType="png",hostName=hostName)
-     				if(is.character(re) && length(re)==1 && length(grep("ERROR:",re))>0){
+            if(.hasError(re)){
      					return(re)
      				}
      		}
@@ -99,7 +99,7 @@ WebGestaltR_ORA <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabas
     
     enrichedSig <- ORAEnrichment(interestGene_List,referenceGene_List,geneSet,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr)
     
-    if(is.character(enrichedSig) && length(enrichedSig)==1 && length(grep("ERROR:",enrichedSig))>0){
+    if(.hasError(enrichedSig)){
     	return(enrichedSig)
     }
     

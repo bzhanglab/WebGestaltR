@@ -8,7 +8,7 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
 		
 		if(organism!="others"){
 			geneSets <- listGeneSet(organism=organism,hostName=hostName)
-			if(length(which(geneSets[,1]==enrichDatabase))==0){  ###if the upload gene set name is not in the database
+			if(!(enrichDatabase %in% geneSets[,1])){  ###if the upload gene set name is not in the database
 				if(!is.null(enrichDatabase)){
 					if(enrichDatabase=="others"){    ##if the user upload their own data
 						#cat("Because 'enrichDatabase' is 'others', user can upload their own gene sets using GMT file and WebGestaltR will transform ids in the gene sets to entrez ids based on the parameter 'enrichDatabaseType'!\n")
@@ -16,7 +16,7 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
 						
 						if(!is.null(enrichDatabaseFile)){
 							geneSet <- IDMapping(organism=organism,dataType="gmt",inputGeneFile=enrichDatabaseFile,sourceIdType=enrichDatabaseType,targetIdType=NULL,collapseMethod=collapseMethod,mappingOutput=FALSE,methodType=methodType,hostName=hostName)
-							if(is.character(geneSet) && length(geneSet)==1 && length(grep("ERROR:",geneSet))>0){
+              if(.hasError(geneSet)){
     							return(geneSet)
     					}
 							standardId <- geneSet$standardid
@@ -25,7 +25,7 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
     					geneSet <- unique(geneSet[,c("geneset","link",standardId)])
     					if(!is.null(enrichDatabaseDescriptionFile)){     ##upload description file
     							geneSetDes <- .loadEnrichDatabaseDescriptionFile(geneSet,enrichDatabaseDescriptionFile)
-    							if(is.character(geneSetDes) && length(geneSetDes)==1 && length(grep("ERROR:",geneSetDes))>0){
+                  if(.hasError(geneSetDes)){
     									return(geneSetDes)
     							}
     					}
@@ -44,7 +44,8 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
    			
    			#########Read GMT file from the existing database###########
    			geneSet <- readGMT(file.path(hostName,"data","geneset",paste(organism,"_",enrichDatabase,"_",standardId,".gmt",sep="")))
-   			if(is.character(geneSet) && length(geneSet)==1 && length(grep("ERROR:",geneSet))>0){
+
+        if(.hasError(geneSet)){
    				return(geneSet)
    			}
    			#########Read the description file#############
@@ -65,12 +66,12 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
 
 			if(!is.null(enrichDatabaseFile)){
 					geneSet <- readGMT(enrichDatabaseFile)
-					if(is.character(geneSet) && length(geneSet)==1 && length(grep("ERROR:",geneSet))>0){
+          if(.hasError(geneSet)){
    						return(geneSet)
    				}
 					if(!is.null(enrichDatabaseDescriptionFile)){     ##upload description file
     					geneSetDes <- .loadEnrichDatabaseDescriptionFile(geneSet,enrichDatabaseDescriptionFile)
-    					if(is.character(geneSetDes) & length(geneSetDes)==1 && length(grep("ERROR:",geneSetDes))>0){
+              if(.hasError(geneSetDes)){
     						return(geneSetDes)
     					}
     			}

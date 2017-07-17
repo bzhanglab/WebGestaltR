@@ -35,7 +35,7 @@ WebGestaltR_GSEA <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatab
 		
 		cat("Uploading the functional categories...\n")
 		enrichD <- loadGeneSet(organism=organism,enrichDatabase=enrichDatabase,enrichDatabaseFile=enrichDatabaseFile,enrichDatabaseType=enrichDatabaseType,enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName)
-		if(is.character(enrichD) && length(enrichD)==1 && length(grep("ERROR:",enrichD))>0){
+    if(.hasError(enrichD)){
    		return(enrichD)
    	}
    	
@@ -49,7 +49,7 @@ WebGestaltR_GSEA <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatab
     cat("Uploading the ID list...\n")
     interestingGeneMap <- loadInterestGene(organism=organism,dataType="rnk",inputGeneFile=interestGeneFile,inputGene=interestGene,geneType=interestGeneType,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName,geneSet=geneSet)
     
-    if(is.character(interestingGeneMap) && length(interestingGeneMap)==1 && length(grep("ERROR:",interestingGeneMap))>0){
+    if(.hasError(interestingGeneMap)){
    		return(interestingGeneMap)
    	}
     
@@ -71,7 +71,7 @@ WebGestaltR_GSEA <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatab
      				cat("Summary the uploaded ID list by GO Slim data...\n")
      				goslim_output <- file.path(projectDir,paste("goslim_summary_",timeStamp,sep=""))
      				re <- GOSlimSummary(organism=organism,genelist=interestGene_List[,1],outputFile=goslim_output,outputType="png",hostName=hostName)
-     				if(is.character(re) && length(re)==1 && length(grep("ERROR:",re))>0){
+            if(.hasError(re)){
      					return(re)
      				}
      		}
@@ -89,7 +89,7 @@ WebGestaltR_GSEA <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatab
 		
 		enrichedSig <- GSEAEnrichment(hostName,outputDirectory,timeStamp,interestGene_List,geneSet,minNum=minNum,maxNum=maxNum,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,perNum=perNum,lNum=lNum,is.output=is.output,keepGSEAFolder=keepGSEAFolder)
     
-    if(is.character(enrichedSig) && length(enrichedSig)==1 && length(grep("ERROR:",enrichedSig))>0){
+    if(.hasError(enrichedSig)){
     	return(enrichedSig)
     }
     

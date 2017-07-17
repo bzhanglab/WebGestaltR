@@ -32,7 +32,7 @@ IDMapping_map <- function(largeIdList,sourceIdType,standardID,hostName,organism,
 	if(length(which(largeIdList==sourceIdType))>0){
 		if(methodType=="Python"){
 	  	re <- .Python_IDMap(hostName,organism,sourceIdType,standardID,inputGene,mapType)
-	  	if(is.character(re) && length(re)==1 && length(grep("ERROR:",re))>0){
+      if(.hasError(re)){
 	  		return(re)
 	  	}
 	  }else{

@@ -16,7 +16,7 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 				}else{
 					inputGene <- tryCatch(fread(input=inputGeneFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,data.table=FALSE,showProgress=FALSE),error=function(e){return("ERROR: The format of the uploaded gene list is incorrect, the file name contains the special characters or the character encoding in the file is not UTF-8. Please check the file format, file name or character encoding.")})
 					
-					if(is.character(inputGene) && length(inputGene)==1 && length(grep("ERROR:",inputGene))>0){
+          if(.hasError(inputGene)){
 						cat(inputGene)
 						return(inputGene)
 					}
@@ -58,7 +58,7 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 				}else{
 					inputGene <- tryCatch(fread(input=inputGeneFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,data.table=FALSE,showProgress=FALSE),error=function(e){return("ERROR: The format of the uploaded ranked list is incorrect, the file name contains the special characters or the character encoding in the file is not UTF-8. Please check the file format, file name or character encoding.")})
 					
-					if(is.character(inputGene) && length(inputGene)==1 && length(grep("ERROR:",inputGene))>0){
+          if(.hasError(inputGene)){
 						cat(inputGene)
 						return(inputGene)
 					}
