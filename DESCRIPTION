@@ -1,7 +1,7 @@
 Package: WebGestaltR
 Type: Package
 Title: The R Version of WebGestalt
-Version: 0.1.2
+Version: 0.1.3
 Date: 2017-06-19
 Author: Jing Wang <jingwang.uestc@gmail.com>
 Maintainer: Jing Wang <jingwang.uestc@gmail.com>
