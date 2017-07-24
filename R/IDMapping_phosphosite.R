@@ -54,11 +54,21 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 	mapF <- mapR$mapF
 	unMapF <- mapR$unMapF
 	
-	colnames(mapF) <- c("phosphositeSeq",idType)
-	
-	idType_genelevel <- unlist(lapply(strsplit(mapF[,2],"_"),.combineG))
-	idTypeGMap <- data.frame(phosi=mapF[,2],gene=idType_genelevel,glink="",stringsAsFactors=F)
-	colnames(idTypeGMap)[1] <- idType
+  colnames(mapF) <- c("phosphositeSeqS",idType)
+
+  #####Hard code#######
+  if(length(grep("Uniprot",idType))>0 || length(grep("Ensembl",idType))>0 || length(grep("Refseq",idType))>0){  ##if the idType is Uniprot, Ensembl or Refseq, directly extract the gene level id####
+    idType_genelevel <- unlist(lapply(strsplit(mapF[,2],"_"),.combineG))
+    idTypeGMap <- data.frame(phosi=mapF[,2],gene=idType_genelevel,glink="",stringsAsFactors=F)
+    colnames(idTypeGMap)[1] <- idType
+  }else{
+    ###If the input id type is sequence, we will first map the sequence to uniprot. And then map the uniprot to gene name####
+    uF <- fread(input=file.path(hostName,"data","xref",paste(organism,"_phosphositeUniprot_",standardID,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
+    uM <- uF[uF[,1] %in% mapF[,2],]
+    idType_genelevel <- unlist(lapply(strsplit(uM[,2],"_"),.combineG))
+    idTypeGMap <- data.frame(phosi=uM[,1],gene=idType_genelevel,glink="",stringsAsFactors=F)
+    colnames(idTypeGMap)[1] <- idType
+  }
 	
 	#####Hard code#######
   ### ZS: what about idType == "phosphositeSeq"
@@ -98,23 +108,23 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 	
 	
 	if(dataType=="list"){
-		inputGene <- mergeB[,c(idType,"genesymbol","genename",standardID,"glink")]
-		colnames(inputGene)[1] <- "userid"
+    inputGene <- mergeB[,c(idType,"genesymbol","genename","phosphositeSeqS","glink")]
+    colnames(inputGene) <- c("userid","genesymbol","genename",standardID,"glink")
 	}
 	
 	if(dataType=="rnk"){
 		colnames(inputGene) <- c(idType,"score")
 		inputGene <- merge(x=mergeB,y=inputGene,by=idType,all.x=TRUE)
-	  inputGene <- inputGene[,c(idType,"genesymbol","genename",standardID,"score","glink")]
-	  colnames(inputGene)[1] <- "userid"
+    inputGene <- inputGene[,c(idType,"genesymbol","genename","phosphositeSeqS","score","glink")]
+    colnames(inputGene) <- c("userid","genesymbol","genename",standardID,"score","glink")
 	}
 	
 	if(dataType=="gmt"){
 		colnames(inputGene) <- c("geneset","link",idType)
 	  inputGene <- merge(x=mergeB,y=inputGene,by=idType,all.x=TRUE)
 	  inputGene <- as.matrix(inputGene)
-	  inputGene <- inputGene[,c("geneset","link",idType,"genesymbol","genename",standardID,"glink")]
-	  colnames(inputGene)[3] <- "userid"
+    inputGene <- inputGene[,c("geneset","link",idType,"genesymbol","genename","phosphositeSeqS","glink")]
+    colnames(inputGene) <- c("geneset","link","userid","genesymbol","genename",standardID,"glink")
 	}
 	
 
