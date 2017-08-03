@@ -51,12 +51,9 @@ htmlTitle <- function(outputHtmlFile,hostName,organism,geneSetNet,geneSetDAG){
 			   cat('<script type="text/javascript" src="',file.path(hostName,"js","canvg","rgbcolor.js"),'"></script>\n',file=outputHtmlFile,append=TRUE,sep="")
 			   cat('<script type="text/javascript" src="',file.path(hostName,"js","canvg","StackBlur.js"),'"></script>\n',file=outputHtmlFile,append=TRUE,sep="")
 			   cat('<script type="text/javascript" src="',file.path(hostName,"js","canvg","canvg.js"),'"></script>\n',file=outputHtmlFile,append=TRUE,sep="")
-			 
-		   
-			   #the following three js should be in the result folder#
-			   cat('<script type="text/javascript" src="js/xtrace_utils.js"></script>\n',file=outputHtmlFile,append=TRUE,sep="")
-			   cat('<script type="text/javascript" src="js/xtrace_graph.js"></script>\n',file=outputHtmlFile,append=TRUE,sep="")
-			   cat('<script type="text/javascript" src="js/plotDAG.js"></script>\n',file=outputHtmlFile,append=TRUE,sep="")
+			   cat('<script type="text/javascript" src="',file.path(hostName,"js", "xtrace_utils.js"),'"></script>\n',file=outputHtmlFile,append=TRUE,sep="")
+			   cat('<script type="text/javascript" src="',file.path(hostName,"js", "xtrace_graph.js"),'"></script>\n',file=outputHtmlFile,append=TRUE,sep="")
+			   cat('<script type="text/javascript" src="',file.path(hostName,"js", "plotDAG.js"),'"></script>\n',file=outputHtmlFile,append=TRUE,sep="")
 			 }
 		}
 	 

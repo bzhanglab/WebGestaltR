@@ -3,15 +3,6 @@ goDAGViz <- function(enrichedSig_sub,enrichMethod,geneSetDes,geneSetDAG,outputHt
 	####Create Json file#############
 	jF <- createJSONFile(enrichedSig_sub,enrichMethod,geneSetDes,geneSetDAG,reportDir=outputHtmlFile,outputDirectory=outputDirectory,timeStamp=timeStamp,dagColor=dagColor)
 				 			
-	###Download the necessary Javascript file to the folder
-	jsD <- file.path(outputDirectory,paste("Project_",timeStamp,sep=""),"js")
-	if(!dir.exists(jsD)){
-		dir.create(jsD)
-	}	 			
-	download.file(file.path(hostName,"js","plotDAG.js"),file.path(jsD,"plotDAG.js"),mode="wb")
-	download.file(file.path(hostName,"js","xtrace_utils.js"),file.path(jsD,"xtrace_utils.js"),mode="wb")
-	download.file(file.path(hostName,"js","xtrace_graph.js"),file.path(jsD,"xtrace_graph.js"),mode="wb")
-
 	#####This is the style for saving the DAG to the file. Because google chrome does not allow to 
 	####read the cssRule from the local css by the javascript, we need to input this style to the javascript manually
 	style <- read.table(file.path(hostName,"css","xtrace_style.txt"),header=FALSE,sep="\t",stringsAsFactors=FALSE)

@@ -2,9 +2,16 @@ createReport <- function(hostName,outputDirectory,organism="hsapiens",timeStamp,
 	 
 	 outputHtmlFile <- file.path(outputDirectory,paste("Project_",timeStamp,sep=""),paste("Report_",timeStamp,".html",sep=""))
 	 
+   # if hostname starts with "file://", it is used as WebGestaltReporter
+   # all web assets are avaialble inside a parent directory called "assets" 
+   if(length(grep("file://", hostName, fixed=TRUE))==1){
+     # create a symlink of assets in project directory
+     # not sure if this will break on Windows
+     file.symlink("../assets", file.path(outputDirectory, paste("Project_",timeStamp,sep=""),"assets"))
+     hostName <- "assets"
+   }
+
 	 htmlTitle(outputHtmlFile,hostName,organism,geneSetNet,geneSetDAG)
-	 
-	 
 	 if(organism!="others"){
 			createHTMLTab(outputHtmlFile,enrichedSig,interestingGeneMap)
 			#####Summary Tab########
