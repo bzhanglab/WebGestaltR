@@ -78,6 +78,8 @@ createJSONFile <- function(enrichedGO,enrichMethod,desFile,dagFile,reportDir,out
 			jsonF <- paste(jsonF,'"',parents[i],'",',sep="")
 		}
 		jsonF <- substring(jsonF,1,nchar(jsonF)-1)
+    # description may contains "'" which should be escaped
+    gdes <- gsub("'", "\\\\'", gdes)
 		jsonF <- paste(jsonF,'],"Name":["',gdes,'"],"Sig":["',sep="")
 		
 		if(length(which(sigGO==g))>0){

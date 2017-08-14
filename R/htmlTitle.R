@@ -2,6 +2,7 @@ htmlTitle <- function(outputHtmlFile,hostName,organism,geneSetNet,geneSetDAG){
 	 cat("<html>\n",file=outputHtmlFile)
 	 cat("<head>\n",file=outputHtmlFile,append=TRUE)
 	 cat("<title>WebGestalt (WEB-based GEne SeT AnaLysis Toolkit)</title>\n",file=outputHtmlFile,append=TRUE)
+   cat('<link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/webgestalt/favicon.png">\n',file=outputHtmlFile,append=TRUE,sep="")
 	 cat('<script type="text/javascript" src="',file.path(hostName,"js","jquery.js"),'"></script>\n',file=outputHtmlFile,append=TRUE,sep="")
 	 cat('<script type="text/javascript" src="',file.path(hostName,"js","jquery-ui.js"),'"></script>\n',file=outputHtmlFile,append=TRUE,sep="")
 	 cat("<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
