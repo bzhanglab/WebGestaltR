@@ -67,8 +67,8 @@ htmlTitle <- function(outputHtmlFile,hostName,organism,geneSetNet,geneSetDAG){
 	    cat('<link href="',file.path(hostName,"css","xtrace.css"),'" rel="stylesheet" type="text/css">\n',file=outputHtmlFile,append=TRUE,sep="")
 	    cat('<link href="',file.path(hostName,"css","tipsy.css"),'" rel="stylesheet" type="text/css">\n',file=outputHtmlFile,append=TRUE,sep="")
 	    cat('<link href="',file.path(hostName,"css","jquery.contextMenu.css"),'" rel="stylesheet" type="text/css">\n',file=outputHtmlFile,append=TRUE,sep="")
-	    cat('<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">\n',file=outputHtmlFile,append=TRUE,sep="")
-	    cat('<link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css">\n',file=outputHtmlFile,append=TRUE,sep="")
+	    cat('<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">\n',file=outputHtmlFile,append=TRUE,sep="")
+	    cat('<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css">\n',file=outputHtmlFile,append=TRUE,sep="")
 	 	  cat('<link href="',file.path(hostName,"css","graph.css"),'" rel="stylesheet" type="text/css">\n',file=outputHtmlFile,append=TRUE,sep="")
     }
     cat('<link href="',file.path(hostName,"css","report.css"),'" rel="stylesheet" type="text/css">\n',file=outputHtmlFile,append=TRUE,sep="")
