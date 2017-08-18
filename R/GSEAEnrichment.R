@@ -4,7 +4,13 @@ GSEAEnrichment <- function(hostName,outputDirectory,projectName,geneRankList,gen
 	  if(length(GSEAJarFile)==0){
 				cat("No GSEA java jar file can be found in the current working directory. The function will download the GSEA java jar file to the ",outputDirectory,". The copyright of the GSEA java jar file belongs to the broad institute (http://software.broadinstitute.org/gsea/index.jsp).\n",sep="")
 				GSEAJarFile <- file.path(outputDirectory,"gsea.jar")
-				download.file(file.path(hostName,"gsea.jar"),GSEAJarFile,mode="wb")
+        if(length(grep("^file://", hostName, perl=TRUE))==1){
+          # copy from local file instead of downloading from remote URL
+          local.file <- gsub("^file://", "", hostName, perl=TRUE)
+          file.copy(file.path(local.file, "gsea.jar"), GSEAJarFile)
+        } else {
+				  download.file(file.path(hostName,"gsea.jar"),GSEAJarFile,mode="wb")
+        }
 		}else{
 				GSEAJarFile <- file.path(outputDirectory,GSEAJarFile)
 		}
