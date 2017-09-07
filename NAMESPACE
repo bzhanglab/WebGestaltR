@@ -2,5 +2,6 @@ import(methods, pkgmaker, rjson, data.table, PythonInR, parallel, doParallel, fo
 importFrom("grDevices", "bmp", "dev.off", "pdf", "png","colorRampPalette")
 importFrom("graphics", "axis", "barplot", "layout", "par", "text")
 importFrom("stats", "p.adjust", "phyper")
+importFrom(tools, file_ext)
 importFrom("utils", "download.file", "write.table","read.table")
-export(WebGestaltR, WebGestaltR_batch, IDMapping, GOSlimSummary, listGeneSet, listIDType, listOrganism, readGMT, listReferenceSet, listArchiveURL, formatCheck)
+export(WebGestaltR, WebGestaltR_batch, IDMapping, idToSymbol, GOSlimSummary, listGeneSet, listIDType, listOrganism, readGMT, listReferenceSet, listArchiveURL, formatCheck)

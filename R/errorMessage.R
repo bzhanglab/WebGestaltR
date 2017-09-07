@@ -215,8 +215,11 @@ parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 }  
  
 .hostNameError <- function(hostName){ ####Input hostName error
+    if(grepl("^file://", hostName, perl=TRUE)){
+      return(NULL)
+    }
 		archives <- listArchiveURL()
-		if(hostName %in% archives[,2]){
+		if(!(hostName %in% archives[,2])){
     	error <- paste("ERROR: The host name ",hostName," is incorrect. Please use listArchiveURL function to find the correct host name.",sep="")
     	cat(error)
 			return(error)
