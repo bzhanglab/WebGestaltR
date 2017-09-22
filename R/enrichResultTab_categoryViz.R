@@ -60,7 +60,7 @@ categoryTableViz <- function(enrichMethod,standardId,geneSetDes,enrichedSig_sub,
 			cat('This table lists the enriched categories, number of ',standardId,' in the user uploaded list and also in the categories and FDR.<br/><br/>\n',file=outputHtmlFile,append=TRUE,sep="")
 	}
 	if(enrichMethod=="GSEA"){
-			cat('This table lists the enriched categories, number of ',standardId,' in the user uploaded list and also in the categories and FDR. Categories with red color represent the positive related categories while categories with blue color represent the positive related categories. <br/><br/>\n',file=outputHtmlFile,append=TRUE,sep="")
+			cat('This table lists the enriched categories, number of ',standardId,' in the user uploaded list and also in the categories and FDR. Categories with red color represent the positively related categories while categories with blue color represent the negatively related categories. <br/><br/>\n',file=outputHtmlFile,append=TRUE,sep="")
 	}
 					
 	cat('<table class="zebra"><thead><tr>\n',file=outputHtmlFile,append=TRUE)
@@ -138,7 +138,7 @@ enrichResult_Others <- function(outputHtmlFile,enrichMethod,enrichedSig,geneSetD
 		}
 		
 		if(enrichMethod=="GSEA"){
-				cat("Categories with red color represent positive related categories while categories with blue color represent negative related categories.<br/>\n",file=outputHtmlFile,append=TRUE)
+				cat("Categories with red color represent positively related categories while categories with blue color represent negatively related categories.<br/>\n",file=outputHtmlFile,append=TRUE)
 				if(!is.null(geneSetDes)){
 				 	cat('<th width="10%">FuncSet</th><th width="20%">Name</th><th width="30%">Statistic</th><th width="40%">UploadedID</th></tr></thead>\n',file=outputHtmlFile,append=TRUE)
 				 	extractSig <- data.frame(id=enrichedSig_sub[,"geneset"],name=enrichedSig_sub[,"description"],link=enrichedSig_sub[,"link"],statistic=paste("Size=",enrichedSig_sub[,"Size"],"; L=",enrichedSig_sub[,"leadingEdgeNum"],"; ES=",round(enrichedSig_sub[,"ES"],digits=2),"; NES=",round(enrichedSig_sub[,"NES"],digits=2),"; PValue=",format(enrichedSig_sub[,"PValue"],scientific=TRUE,digits=3),"; FDR=",format(enrichedSig_sub[,"FDR"],scientific=TRUE,digits=3),sep=""),genes=gsub(","," ",enrichedSig_sub[,"leadingEdgeID"]),stringsAsFactors=FALSE)
