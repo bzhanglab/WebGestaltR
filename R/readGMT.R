@@ -7,7 +7,7 @@ readGMT <- function(gmtFile){
 		data <- strsplit(data,"\t")
 		data <- lapply(data,.toList)
 		data <- do.call("rbind",data)
-		
+
 		if(is.null(data)){
 			return(gmtFormatError("incorrect"))
 		}else{

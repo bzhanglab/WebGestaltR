@@ -10,7 +10,6 @@ linkModification <- function(enrichDatabase,enrichpathwaylink,genelist,interesti
 		return(link)
 	}
 	return(enrichpathwaylink)
-	
 }
 
 keggLinkModification <- function(enrichpathwaylink,genelist){

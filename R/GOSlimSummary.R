@@ -1,81 +1,78 @@
 GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pdf",hostName="http://www.webgestalt.org"){
-	
 	organisms <- listOrganism(hostName=hostName)
-  if(!(organism %in% organisms)){
-    	error <- paste("ERROR: ",organism," can not be supported.",sep="")
-    	cat(error)
-			return(error)
-   }
-   
-   if(!is.vector(genelist)){
-			error <- "ERROR: Please upload a list of entrez gene ids.\n"
-			cat(error)
-			return(error)
-	 }else{
-			genelist <- as.character(genelist)
-	 }
-   
-   outputTypeList <- c("pdf","png","bmp")
-   if(!(outputType %in% outputTypeList)){
-   		error <- paste("ERROR: The output Type ",outputType," is invalid. Please select one from pdf, png, and bmp.",sep="")
-			cat(error)
-			return(error)
-   }
-   	
+	if(!(organism %in% organisms)){
+		error <- paste("ERROR: ",organism," can not be supported.",sep="")
+		cat(error)
+		return(error)
+	}
+
+	if(!is.vector(genelist)){
+		error <- "ERROR: Please upload a list of entrez gene ids.\n"
+		cat(error)
+		return(error)
+	}else{
+		genelist <- as.character(genelist)
+	}
+
+	outputTypeList <- c("pdf","png","bmp")
+	if(!(outputType %in% outputTypeList)){
+		error <- paste("ERROR: The output Type ",outputType," is invalid. Please select one from pdf, png, and bmp.",sep="")
+		cat(error)
+		return(error)
+	}
+
 	bpfilere <- .processData(organism,hostName,genelist,"BiologicalProcess")
-  if(.hasError(bpfilere)){
+	if(.hasError(bpfilere)){
 		return(bpfilere)
 	}else{
 		bpfile <- bpfilere$goFile
 		bp_unclassified <- bpfilere$data_unclassified
 	}
-	
+
 	ccfilere <- .processData(organism,hostName,genelist,"CellularComponent")
-  if(.hasError(ccfilere)){
+	if(.hasError(ccfilere)){
 		return(ccfilere)
 	}else{
 		ccfile <- ccfilere$goFile
 		cc_unclassified <- ccfilere$data_unclassified
 	}
-	
+
 	mffilere <- .processData(organism,hostName,genelist,"MolecularFunction")
-  if(.hasError(mffilere)){
+	if(.hasError(mffilere)){
 		return(mffilere)
 	}else{
 		mffile <- mffilere$goFile
 		mf_unclassified <- mffilere$data_unclassified
 	}
-	
+
 	if(outputType=="pdf"){
 		pdf(paste(outputFile,".pdf",sep=""),height=8,width=16)
 	}
-	
+
 	if(outputType=="png"){
 		png(paste(outputFile,".png",sep=""),width=2800,height=1300,res=200)
 	}
-	
+
 	if(outputType=="bmp"){
 		bmp(paste(outputFile,".bmp",sep=""),width=2800,height=1300,res=200)
 	}
-	
-	
+
 	layout(matrix(1:3,1,3))
-	
+
 	.plotData(genelist,bpfile,bp_unclassified,"Biological Process","red")
 	.plotData(genelist,ccfile,cc_unclassified,"Cellular Component","blue")
 	.plotData(genelist,mffile,mf_unclassified,"Molecular Function","green")
-	
+
 	dev.off()
 	return(NULL)
 }
 
 .processData <- function(organism,hostName,genelist,ontology){
-	
 	###file.path#######
 	goFile <- file.path(hostName,"data","goslim",paste(organism,"_GOSlim_",ontology,".table",sep=""))
 
 	goFile <- fread(input=goFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE)
-	
+
 	goFile <- goFile[goFile[,1] %in% genelist,,drop=FALSE]
 
 	if(nrow(goFile)==0){
@@ -83,21 +80,21 @@ GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pd
 		cat(error)
 		return(error)
 	}
-	
+
 	data_unclassified <- setdiff(genelist,unique(goFile[,1]))
-	
+
 	goFile1 <- tapply(goFile[,1],goFile[,2],length)
-	
+
 	goFile1 <- goFile1[goFile1>0]
-	
+
 	goFile <- unique(goFile[,c(2,3)])
-	
+
 	goFile1 <- data.frame(goacc=names(goFile1),genenum=goFile1,stringsAsFactors=FALSE)
-	
+
 	colnames(goFile) <- c("goacc","goname")
 
 	goFile <- merge(x=goFile,y=goFile1,by="goacc")
-	
+
 	goFile <- goFile[order(-goFile[,3]),]
 	re <- list(goFile=goFile,data_unclassified=data_unclassified)
 	return(re)
