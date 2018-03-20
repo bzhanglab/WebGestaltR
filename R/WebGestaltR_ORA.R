@@ -58,12 +58,12 @@ WebGestaltR_ORA <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabas
 
 	###################load reference gene set for SEA method##############
 	cat("Uploading the reference list...\n")
-	referenceGene_List <- NULL
+	referenceGeneList <- NULL
 
-	referenceGene_List <- loadReferneceGene(organism=organism,referenceGeneFile=referenceGeneFile,referenceGene=referenceGene,referenceGeneType=referenceGeneType,referenceSet=referenceSet,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName,geneSet=geneSet,interestGene_List=interestGene_List)
+	referenceGeneList <- loadReferneceGene(organism=organism,referenceGeneFile=referenceGeneFile,referenceGene=referenceGene,referenceGeneType=referenceGeneType,referenceSet=referenceSet,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName,geneSet=geneSet,interestGene_List=interestGene_List)
 
-	if(.hasError(referenceGene_List)){
-		return(referenceGene_List)
+	if(.hasError(referenceGeneList)){
+		return(referenceGeneList)
 	}
 
 	##########Create project folder##############
@@ -90,7 +90,7 @@ WebGestaltR_ORA <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabas
 	#############Run enrichment analysis###################
 	cat("Perform the enrichment analysis...\n")
 
-	enrichedSig <- ORAEnrichment(interestGene_List,referenceGene_List,geneSet,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr)
+	enrichedSig <- ORAEnrichment(interestGene_List,referenceGeneList,geneSet,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr)
 
 	if(.hasError(enrichedSig)){
 		return(enrichedSig)
@@ -117,7 +117,7 @@ WebGestaltR_ORA <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabas
 
 	##############Create report##################
 		cat("Generate the final report...\n")
-		createReport(hostName=hostName,outputDirectory=outputDirectory,organism=organism,timeStamp=timeStamp,enrichMethod=enrichMethod,geneSet=geneSet,geneSetDes=geneSetDes,geneSetDAG=geneSetDAG,geneSetNet=geneSetNet,interestingGeneMap=interestingGeneMap,referenceGene_List=referenceGene_List,enrichedSig=enrichedSig,enrichDatabase=enrichDatabase,enrichDatabaseFile=enrichDatabaseFile,enrichDatabaseType=enrichDatabaseType,enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,interestGeneFile=interestGeneFile,interestGene=interestGene,interestGeneType=interestGeneType,collapseMethod=collapseMethod,referenceGeneFile=referenceGeneFile,referenceGene=referenceGene,referenceGeneType=referenceGeneType,referenceSet=referenceSet,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,dNum=dNum,dagColor=dagColor)
+		createReport(hostName=hostName,outputDirectory=outputDirectory,organism=organism,timeStamp=timeStamp,enrichMethod=enrichMethod,geneSet=geneSet,geneSetDes=geneSetDes,geneSetDAG=geneSetDAG,geneSetNet=geneSetNet,interestingGeneMap=interestingGeneMap,referenceGeneList=referenceGeneList,enrichedSig=enrichedSig,enrichDatabase=enrichDatabase,enrichDatabaseFile=enrichDatabaseFile,enrichDatabaseType=enrichDatabaseType,enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,interestGeneFile=interestGeneFile,interestGene=interestGene,interestGeneType=interestGeneType,collapseMethod=collapseMethod,referenceGeneFile=referenceGeneFile,referenceGene=referenceGene,referenceGeneType=referenceGeneType,referenceSet=referenceSet,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,dNum=dNum,dagColor=dagColor)
 
 		comm <- paste("tar -C ",projectDir," -zcvf ",projectDir,"/Project_",timeStamp,".tar.gz .",sep="")
 		system(comm,ignore.stderr=TRUE,ignore.stdout=TRUE)

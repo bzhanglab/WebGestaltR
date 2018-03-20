@@ -17,11 +17,11 @@ Collate: zzz.R WebGestaltR.R WebGestaltR_batch.R WebGestaltR_GSEA.R
         IDMapping_gene.R IDMapping_phosphosite.R IDMapping_component.R
         GOSlimSummary.R listGeneSet.R listIDType.R listOrganism.R
         readGMT.R listReferenceSet.R listArchiveURL.R formatCheck.R
-        createHTMLTab.R createReport.R detailedGeneTable.R
-        enrichmentResultProcess_component.R idToSymbol.R mergeDuplicate.R
-        enrichResultTab_categoryViz.R errorMessage.R goDAGViz.R
-        goslimReportTab.R htmlTitle.R linkModification.R loadGeneList.R
-        loadGeneSet.R mappingTableTab.R summaryTab_description.R
+        createReport.R detailedGeneTable.R enrichmentResultProcess_component.R
+        idToSymbol.R mergeDuplicate.R enrichResultTab_categoryViz.R
+        errorMessage.R goDAGViz.R goslimReportTab.R linkModification.R
+        loadGeneList.R loadGeneSet.R mappingTableTab.R
+        summaryTab_description.R
 SystemRequirements: Java, Python
 NeedsCompilation: no
 Packaged: 2017-08-18 20:49:20 UTC; zhiaoshi

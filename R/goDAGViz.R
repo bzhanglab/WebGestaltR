@@ -10,16 +10,6 @@ goDAGViz <- function(enrichedSig_sub,enrichMethod,geneSetDes,geneSetDAG,outputHt
 	style <- paste(style,collapse="WJ")
 	style <- paste("WJ",style,"WJ",sep="")
 
-	####HARD CODE######
-	if(enrichMethod=="GSEA"){
-		if(dagColor=="binary"){
-			cat("Categories with red color represent positive related categories while categories with blue color represent negative related categories.<br/>\n",file=outputHtmlFile,append=TRUE)
-		}else{
-			cat("Categories with red color represent positive related categories while categories with blue color represent negative related categories. The color gradient represents the FDR of the related categories.<br/>\n",file=outputHtmlFile,append=TRUE)
-		}
-	}
-
-	cat('<div id = "graphDAG" style="height:100%;width:100%"></div>\n',file=outputHtmlFile,append=TRUE)
 	re <- list(jF=jF,style=style)
 	return(re)
 }

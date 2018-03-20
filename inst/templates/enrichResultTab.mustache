@@ -1,0 +1,49 @@
+<div id="result">
+<div id="dag">
+{{#hasGeneSetDag}}
+	{{#methodIsGsea}}
+	<p>Categories with red color represent positive related categories while categories with blue color represent negative related categories.
+		{{^dagColocrIsBinary}}
+		The color gradient represents the FDR of the related categories.
+		{{/dagColocrIsBinary}}
+	</p>
+	{{/methodIsGsea}}
+<div id = "graphDAG" style="height:100%;width:100%"></div>
+<script>plotDAG('{{jId}}', '{{{jF}}}', '{{style}}');</script>
+{{/hasGeneSetDag}}
+{{^hasGeneSetDag}}
+<h4>Summary of the enriched categories</h4>
+<p>This table lists the enriched categories, number of {{standardId}} in the user uploaded list and also in the categories and FDR.
+	{{#methodIsGsea}}
+	Categories with red color represent the positively related categories while categories with blue color represent the negatively related categories.
+	{{/methodIsGsea}}
+</p>
+<table class="zebra"><thead><tr>
+	{{#hasGeneSetDes}}
+	<th>FuncSet</th><th>Name</th><th>#{{standardId}}</th><th>FDR</th>
+	{{/hasGeneSetDes}}
+	{{^hasGeneSetDes}}
+	<th>FuncSet</th><th>#{{standardId}}</th><th>FDR</th>
+	{{/hasGeneSetDes}}
+</tr></thead>
+<tbody>
+{{#enrichedCategories}}
+<tr style="color:{{color}}"><td><a href="#{{geneset}}">{{geneset}}</a></td>
+	{{#hasGeneSetDes}}
+	<td>{{description}}</td>
+	{{/hasGeneSetDes}}
+	{{#methodIsOra}}
+	<td>{{O}}</td>
+	{{/methodIsOra}}
+	{{#methodIsGsea}}
+	<td>{{Size}}</td>
+	{{/methodIsGsea}}
+	<td>{{FDR}}</td>
+</tr>
+{{/enrichedCategories}}
+</tbody></table>
+{{/hasGeneSetDag}}
+</div>
+<div id="empty1">&nbsp&nbsp&nbsp&nbsp</div>
+{{{detailedGeneTableContent}}}
+</div>

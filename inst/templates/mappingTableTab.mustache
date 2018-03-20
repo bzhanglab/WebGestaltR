@@ -1,0 +1,27 @@
+<div id="interestGene">
+<div id="mappedGene">
+<h4>Mapped User IDs</h4>
+<table class="zebra"><thead><tr>
+{{#tableNames}}
+<th>{{.}}</th>
+{{/tableNames}}
+</tr></thead>
+<tbody>
+{{#mappedGenes}}
+<tr><td>{{userid}}</td><td>{{genesymbol}}</td><td>{{genename}}</td><td><a target="{{standardId}}" href="{{glink}}">{{idCol}}</a></td></tr>
+{{/mappedGenes}}
+</tbody></table>
+</div>
+<div id="empty">&nbsp&nbsp&nbsp&nbsp</div>
+<div id="unmappedGene">
+<h4>User IDs not mapped</h4>
+<table class="zebra"><thead><tr>
+<th>userid</th>
+</tr></thead>
+<tbody>
+{{#unmappedGenes}}
+<tr><td>{{.}}</td></tr>
+{{/unmappedGenes}}
+</tbody></table>
+</div>
+</div>

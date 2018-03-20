@@ -1,0 +1,52 @@
+<div id="genelist_wrap">
+<div id="genelist_des">
+{{>statDes}}
+<div class="search">
+<input id="tags" type="text" name="q" placeholder="ID Search">
+<ul id="searchData">
+{{#enrichedCategories}}
+<li><a id="aid{{index}}" href="#{{geneset}}">{{geneset}} {{description}}</a></li>
+{{/enrichedCategories}}
+</ul></div>
+</div>
+<div id="genelist">
+{{#enrichedCategories}}
+<div><nav class="cl-effect-1">
+<a style="cursor:pointer;color:red;" onclick="$('#{{tableId}}').tableExport({type:'csv',escape:'false'});">Download Table</a>
+	{{#hasGeneSetNet}}
+		{{#methodIsOra}}
+		<a style="cursor:pointer;color:blue;" onclick="cytoScapeWeb('{{organism}}', '{{geneset}}', '{{geneSymbolList}}', '');">Network View</a>
+		{{/methodIsOra}}
+		{{#methodIsGsea}}
+		<a style="cursor:pointer;color:blue;" onclick="cytoScapeWeb('{{organism}}', '{{geneset}}', '{{geneSymbolList}}', '{{scoreList}}');">Network View</a>
+		{{/methodIsGsea}}
+	{{/hasGeneSetNet}}
+</nav></div>
+<table id="Table{{index}}" class="zebra"><thead><tr>
+<th colspan="{{numCol}}">
+	{{#hasGeneSetDes}}
+	<a id="{{geneset}}" style="color:black" href="{{eLink}}" target="_blank"><b>FuncSet: {{geneset}} &nbsp&nbsp&nbsp&nbsp&nbsp&nbspName: {{description}}</b></a>
+	{{/hasGeneSetDes}}
+</th></tr>
+<tr><th colspan="{{numCol}}">
+	{{#methodIsOra}}
+	C={{C}}; O={{O}}; E={{E}}; R={{R}}; P Value={{PValue}}; FDR={{fdr}}
+	{{/methodIsOra}}
+	{{#methodIsGsea}}
+	Size={{size}}; L={{leadingEdgeNum}}; ES={{ES}}; NES={{NES}}; P Value={{PValue}}; FDR={{FDR}}
+	{{/methodIsGsea}}
+</th></tr>
+<tr>
+	{{#colNames}}
+	<th>{{.}}</th>
+	{{/colNames}}
+</tr></thead>
+<tbody>
+	{{#hasEnrichedGenes}}
+		{{#tableContent}}
+		<tr><td>{{userid}}</td><td>{{genesymbol}}</td><td>{{genename}}</td><td><a target="{{standardId}}" href="{{glink}}">{{idCol}}</a></td></tr>
+		{{/tableContent}}
+	{{/hasEnrichedGenes}}
+</tbody></table><br/><br/>
+{{/enrichedCategories}}
+</div>

@@ -25,7 +25,7 @@ loadInterestGene <- function(organism="hsapiens",dataType="list",inputGeneFile=N
 }
 
 loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referenceGene=NULL,referenceGeneType="entrezgene",referenceSet=NULL,collapseMethod="mean",methodType="R",hostName="http://www.webgestalt.org/",geneSet,interestGene_List){
-	referenceGene_List <- NULL
+	referenceGeneList <- NULL
 	referenceGeneMap <- NULL
 
 	if(is.null(referenceGeneFile) && is.null(referenceGene) && is.null(referenceSet)){
@@ -41,7 +41,7 @@ loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 						return(mapRe)
 					}
 					gene_standardId <- identifyStandardId(hostName=hostName,idtype=referenceGeneType,organism=organism,type="interest")
-					referenceGene_List <- mapRe$mapped[,gene_standardId]
+					referenceGeneList <- mapRe$mapped[,gene_standardId]
 				}
 			}else{ ###referenceGeneFile and referenceGene are both NULL. But referenceSet is not NULL
 				refS <- listReferenceSet(organism=organism,hostName=hostName)
@@ -49,14 +49,14 @@ loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 					return(referenceGeneError(type="existingRef"))
 				}
 				ref_standardId <- identifyStandardId(hostName=hostName,idtype=referenceSet,organism=organism,type="reference")
-				referenceGene_List <- fread(input=file.path(hostName,"data","reference",paste(organism,"_",referenceSet,"_",ref_standardId,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE)
-				referenceGene_List <- as.character(unique(referenceGene_List[,1]))
+				referenceGeneList <- fread(input=file.path(hostName,"data","reference",paste(organism,"_",referenceSet,"_",ref_standardId,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE)
+				referenceGeneList <- as.character(unique(referenceGeneList[,1]))
 			}
 		}else{ ##For other organisms
 			if(!is.null(referenceGeneFile) || !is.null(referenceGene)){
-				referenceGene_List <- .uploadGene_Others(dataType="list",inputGeneFile=referenceGeneFile,inputGene=referenceGene,geneSet=geneSet)
-				if(.hasError(referenceGene_List)){
-					return(referenceGene_List)
+				referenceGeneList <- .uploadGene_Others(dataType="list",inputGeneFile=referenceGeneFile,inputGene=referenceGene,geneSet=geneSet)
+				if(.hasError(referenceGeneList)){
+					return(referenceGeneList)
 				}
 			}else{
 				return(referenceGeneError(type="empty"))
@@ -65,10 +65,10 @@ loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 	}
 
 	##compare interest gene list and reference gene list
-	if(length(intersect(interestGene_List,intersect(referenceGene_List,geneSet[,3])))==0){
+	if(length(intersect(interestGene_List,intersect(referenceGeneList,geneSet[,3])))==0){
 		return(referenceGeneError(type="interestEmpty"))
 	}
-	return(referenceGene_List)
+	return(referenceGeneList)
 }
 
 

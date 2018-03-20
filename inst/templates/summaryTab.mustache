@@ -1,0 +1,35 @@
+<div id="summary">
+<h3>Summary&nbsp&nbsp&nbsp(<a href="Project_',{{timeStamp}},'.tar.gz" target="_blank" style="color:red"><u>Result Download</u></a>)</h3>
+<b>Enrich method:</b> {{enrichMethod}}<br/>
+<b>Organism: </b>{{organism}}<br/>
+{{^organismIsOthers}}
+	{{#enrichDatabaseIsOthers}}
+	<b>Enrichment Categories: </b>{{enrichDatabaseFile}} <b>ID Type:</b>{{enrichDatabaseType}}{{#hasEnrichDatabaseDescriptioFile}} <b>Description File:</b>{{enrichDatabaseDescriptionFile}}{{/hasEnrichDatabaseDescriptioFile}}<br/>
+	{{/enrichDatabaseIsOthers}}
+	{{^enrichDatabaseIsOthers}}
+	<b>Enrichment Categories: </b>{{enrichDatabase}}<br/>
+	{{/enrichDatabaseIsOthers}}
+{{/organismIsOthers}}
+
+{{^organismIsOthers}}
+	{{#hasInterestGeneFile}}
+	<b>Interesting list: </b>{{interestGeneFileBase}}. <b>ID type: </b>{{interestGeneType}}<br/>
+	{{/hasInterestGeneFile}}
+	{{^hasInterestGeneFile}}
+	<b>Interesting list: </b> a R object. <b> ID type: </b>{{interestGeneType}}<br/>
+	{{/hasInterestGeneFile}}
+	The interesting list contains <b>{{numUserId}}</b> user IDs in which <b>{{numMappedUserId}}</b> user IDs are unambiguously mapped to <b>{{numUniqueMappedId}}</b> unique {{standardId}} IDs and <b>{{numUnmappedUserId}}</b> user IDs can not be mapped to any {{standardId}} ID.<br/>
+	{{#idIsEntrezGene}}
+	The GO Slim summary are based upon the <b>{{numUniqueMappedId}}</b> unique {{standardId}} IDs.<br/>
+	{{/idIsEntrezGene}}
+{{/organismIsOthers}}
+{{#organismIsOthers}}
+	{{#hasInterestGeneFile}}
+	<b>Interesting list: </b>{{interestGeneFileBase}}.<br/>
+	{{/hasInterestGeneFile}}
+	{{^hasInterestGeneFile}}
+	<b>Interesting list: </b> a R object.<br/>
+	{{/hasInterestGeneFile}}
+{{/organismIsOthers}}
+{{{methodSpecificContent}}}
+</div>

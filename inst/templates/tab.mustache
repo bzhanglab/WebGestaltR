@@ -1,0 +1,13 @@
+<div id ="tabs"><ul>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#interestGene">User ID Mapping Table</a></li>
+{{#idIsEntrezGene}}
+<li><a href="#referenceGene">GO Slim Summary</a></li>
+{{/idIsEntrezGene}}
+{{#hasEnrichedSig}}
+<li><a href="#result">Enrichment Results</a></li>
+{{/hasEnrichedSig}}
+</ul>
+{{{tabsContent}}}
+</div>
+<script>$( "#tabs" ).tabs();</script>
