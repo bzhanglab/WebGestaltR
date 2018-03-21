@@ -1,30 +1,30 @@
 parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 	errorTest <- NULL
-	arg.list <- list(...)
+	argList <- list(...)
 
-	arg.names <- names(arg.list)
+	argNames <- names(argList)
 	# special cases, assuming minNum, maxNum appear together
-	if("minNum" %in% arg.names && "maxNum" %in% arg.names){
-		errorTest <- .minMaxNumError(minNum=arg.list$minNum,maxNum=arg.list$maxNum)
+	if("minNum" %in% argNames && "maxNum" %in% argNames){
+		errorTest <- .minMaxNumError(minNum=argList$minNum,maxNum=argList$maxNum)
 		if(!is.null(errorTest)){
 			return(errorTest)
 		}
-		arg.list$minNum <- NULL
-		arg.list$maxNum <- NULL
+		argList$minNum <- NULL
+		argList$maxNum <- NULL
 	}
 
-	if("organism" %in% arg.names){
-		errorTest <- .organismError(organism=arg.list$organism, hostName=hostName)
+	if("organism" %in% argNames){
+		errorTest <- .organismError(organism=argList$organism, hostName=hostName)
 		if(!is.null(errorTest)){
 			return(errorTest)
 		}
-		arg.list$organism <- NULL
+		argList$organism <- NULL
 	}
 
 	# individual checking function has name with format:
 	# "." + parameterName + "Error"
-	for(i in seq_along(arg.list)){
-		errorTest <- do.call(paste0(".", names(arg.list[i]),"Error"), arg.list[i])
+	for(i in seq_along(argList)){
+		errorTest <- do.call(paste0(".", names(argList[i]),"Error"), argList[i])
 		if(!is.null(errorTest)){
 			return(errorTest)
 		}
@@ -162,9 +162,9 @@ parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 	}
 }
 
-.is.outputError <- function(is.output){  ##Input is.output error
-	if(!is.logical(is.output)){
-		error <- "ERROR: is.output should be an R logical object (TRUE or FALSE)."
+.isOutputError <- function(isOutput){  ##Input isOutput error
+	if(!is.logical(isOutput)){
+		error <- "ERROR: isOutput should be an R logical object (TRUE or FALSE)."
 		cat(error)
 		return(error)
 	}else{
@@ -182,9 +182,9 @@ parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 	}
 }
 
-.keepGSEAFolderError <- function(keepGSEAFolder){   ##Input whether keep the GSEA folder error
-	if(!is.logical(keepGSEAFolder)){
-		error <- "ERROR: keepGSEAFolder should be an R logical object (TRUE or FALSE)!"
+.keepGseaFolderError <- function(keepGseaFolder){   ##Input whether keep the GSEA folder error
+	if(!is.logical(keepGseaFolder)){
+		error <- "ERROR: keepGseaFolder should be an R logical object (TRUE or FALSE)!"
 		cat(error)
 		return(error)
 	}else{
@@ -218,7 +218,7 @@ parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 		if(grepl("^file://", hostName, perl=TRUE)){
 			return(NULL)
 		}
-		archives <- listArchiveURL()
+		archives <- listArchiveUrl()
 		if(!(hostName %in% archives[,2])){
 			error <- paste("ERROR: The host name ",hostName," is incorrect. Please use listArchiveURL function to find the correct host name.",sep="")
 			cat(error)
@@ -296,7 +296,7 @@ gmtFormatError <- function(type){
 }
 
 
-enrichDataBaseError <- function(type,enrichDatabase="",organism=""){
+enrichDatabaseError <- function(type,enrichDatabase="",organism=""){
 	if(type=="unsupported"){
 		error <- paste("ERROR: ",enrichDatabase," can not be supported for organism ",organism,".",sep="")
 	}
@@ -314,8 +314,8 @@ enrichDataBaseError <- function(type,enrichDatabase="",organism=""){
 }
 
 
-IDTypeERROR <- function(idType,organism,hostName){
-		idTypes <- listIDType(organism=organism,hostName=hostName)
+idTypeError <- function(idType,organism,hostName){
+		idTypes <- listIdType(organism=organism,hostName=hostName)
 		if(!(idType %in% idTypes)){
 				error <- paste("ERROR: The ID type ",idType," can not be supported for organism ",organism,".",sep="")
 				cat(error)
@@ -325,8 +325,8 @@ IDTypeERROR <- function(idType,organism,hostName){
 		}
 }
 
-targetIDTypeERROR <- function(idType,organism,hostName){
-		idTypes <- listIDType(organism=organism,hostName=hostName)
+targetIdTypeError <- function(idType,organism,hostName){
+		idTypes <- listIdType(organism=organism,hostName=hostName)
 		if(!(idType %in% idTypes)){
 				error <- paste("ERROR: The target ID type ",idType," can not be supported for organism ",organism,".",sep="")
 				cat(error)
@@ -347,7 +347,7 @@ stardardDiffError <- function(standardSource,standardTarget){
 
 }
 
-IDMappingError <- function(type,idType="",topF=""){
+idMappingError <- function(type,idType="",topF=""){
 	if(type=="unmapped"){
 		error <- paste("ERROR: The ID type of the uploaded list is not consistent with the input ID type ",idType,". Examples of the input ID type: ",topF,".",sep="")
 	}

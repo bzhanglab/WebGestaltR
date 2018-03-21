@@ -1,7 +1,7 @@
 loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biological_Process",enrichDatabaseFile=NULL,enrichDatabaseType=NULL,enrichDatabaseDescriptionFile=NULL,collapseMethod="mean",methodType="R",hostName="http://www.webgestalt.org/"){
 	geneSet <- NULL    ##gene sets
 	geneSetDes <- NULL ##gene set description file
-	geneSetDAG <- NULL ##gene set DAG file
+	geneSetDag <- NULL ##gene set DAG file
 	geneSetNet <- NULL ##gene set network file
 	standardId <- NULL
 
@@ -13,11 +13,11 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
 					#cat("Because 'enrichDatabase' is 'others', user can upload their own gene sets using GMT file and WebGestaltR will transform ids in the gene sets to entrez ids based on the parameter 'enrichDatabaseType'!\n")
 					#######Read GMT File and transform id##########
 					if(!is.null(enrichDatabaseFile)){
-						geneSet <- IDMapping(organism=organism,dataType="gmt",inputGeneFile=enrichDatabaseFile,sourceIdType=enrichDatabaseType,targetIdType=NULL,collapseMethod=collapseMethod,mappingOutput=FALSE,methodType=methodType,hostName=hostName)
+						geneSet <- idMapping(organism=organism,dataType="gmt",inputGeneFile=enrichDatabaseFile,sourceIdType=enrichDatabaseType,targetIdType=NULL,collapseMethod=collapseMethod,mappingOutput=FALSE,methodType=methodType,hostName=hostName)
 						if(.hasError(geneSet)){
 							return(geneSet)
 						}
-						standardId <- geneSet$standardid
+						standardId <- geneSet$standardId
 						geneSet <- geneSet$mapped
 						geneSet <- unique(geneSet[,c("geneset","link",standardId)])
 						if(!is.null(enrichDatabaseDescriptionFile)){     ##upload description file
@@ -39,7 +39,7 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
 			standardId <- geneSets[geneSets[,1]==enrichDatabase,3]   ###get the ID type of the enriched database, such as entrezgene or phosphositeSeq
 
 			#########Read GMT file from the existing database###########
-			geneSet <- readGMT(file.path(hostName,"data","geneset",paste(organism,"_",enrichDatabase,"_",standardId,".gmt",sep="")))
+			geneSet <- readGmt(file.path(hostName,"data","geneset",paste(organism,"_",enrichDatabase,"_",standardId,".gmt",sep="")))
 
 			if(.hasError(geneSet)){
 				return(geneSet)
@@ -49,8 +49,8 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
 			geneSetDes <- tryCatch(fread(input=geneSetDesFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE),warning=function(e){return(NULL)},error=function(e){return(NULL)})  #####read the des file. If no des file, return NULL. For the des file, First column is the category id and the second is the description
 
 			###########Try to load the DAG file#################
-			geneSetDAGFile <- file.path(hostName,"data","geneset",paste(organism,"_",enrichDatabase,"_",standardId,".dag",sep=""))
-			geneSetDAG <- tryCatch(fread(input=geneSetDAGFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE),warning=function(e){return(NULL)},error=function(e){return(NULL)})  #####read the dag file. If no dag file, return NULL. For the dag file, First column is the parent term and the second is the child term
+			geneSetDagFile <- file.path(hostName,"data","geneset",paste(organism,"_",enrichDatabase,"_",standardId,".dag",sep=""))
+			geneSetDag <- tryCatch(fread(input=geneSetDagFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE),warning=function(e){return(NULL)},error=function(e){return(NULL)})  #####read the dag file. If no dag file, return NULL. For the dag file, First column is the parent term and the second is the child term
 
 			###########Try to load the network file if the gene sets are generated from the network##########
 			geneSetNetFile <- file.path(hostName,"data","geneset",paste(organism,"_",enrichDatabase,"_",standardId,".net",sep=""))
@@ -59,7 +59,7 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
 	}else{
 		#########Read GMT file for other orgnisms from user files###########
 		if(!is.null(enrichDatabaseFile)){
-			geneSet <- readGMT(enrichDatabaseFile)
+			geneSet <- readGmt(enrichDatabaseFile)
 		if(.hasError(geneSet)){
 			return(geneSet)
 		}
@@ -74,7 +74,7 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
 		}
 	}
 
-	re <- list(geneSet=geneSet,geneSetDes=geneSetDes,geneSetDAG=geneSetDAG,geneSetNet=geneSetNet,standardId=standardId)
+	re <- list(geneSet=geneSet,geneSetDes=geneSetDes,geneSetDag=geneSetDag,geneSetNet=geneSetNet,standardId=standardId)
 	return(re)
 }
 

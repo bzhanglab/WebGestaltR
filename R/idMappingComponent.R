@@ -1,7 +1,7 @@
-IDMapping_input <- function(dataType="list",inputGeneFile,inputGene){
+idMappingInput <- function(dataType="list",inputGeneFile,inputGene){
 	if(dataType=="gmt"){
 		if(!is.null(inputGeneFile)){
-			inputGene <- readGMT(inputGeneFile)
+			inputGene <- readGmt(inputGeneFile)
 			return(inputGene)
 		}else{
 			return(gmtFormatError("empty"))
@@ -13,41 +13,41 @@ IDMapping_input <- function(dataType="list",inputGeneFile,inputGene){
 }
 
 
-identifyStandardId <- function(hostName,idtype,organism,type){
+identifyStandardId <- function(hostName,idType,organism,type){
 	if(type=="interest"){
-		json_data <- fromJSON(file=file.path(hostName,"data","idtypesummary.json"))
+		jsonData <- fromJSON(file=file.path(hostName,"data","idtypesummary.json"))
 	}
 	if(type=="reference"){
-		json_data <- fromJSON(file=file.path(hostName,"data","referenceSetsummary.json"))
+		jsonData <- fromJSON(file=file.path(hostName,"data","referenceSetsummary.json"))
 	}
-	idtypes <- json_data[[organism]]
-	names <- unlist(lapply(idtypes,function(e){return(e$name)}))
-	staIDs <- unlist(lapply(idtypes,function(e){return(e$type)}))
-	idtypes <- cbind(names,staIDs)
-	return(idtypes[idtypes[,1]==idtype,2])
+	idTypes <- jsonData[[organism]]
+	names <- unlist(lapply(idTypes,function(e){return(e$name)}))
+	standardIds <- unlist(lapply(idTypes,function(e){return(e$type)}))
+	idTypes <- cbind(names,standardIds)
+	return(idTypes[idTypes[,1]==idType,2])
 }
 
 
-IDMapping_map <- function(largeIdList,sourceIdType,standardID,hostName,organism,inputGene,mapType,methodType){
+idMappingMap <- function(largeIdList,sourceIdType,standardId,hostName,organism,inputGene,mapType,methodType){
 	if(length(which(largeIdList==sourceIdType))>0){
 		if(methodType=="Python"){
-			re <- .Python_IDMap(hostName,organism,sourceIdType,standardID,inputGene,mapType)
+			re <- .pythonIdMap(hostName,organism,sourceIdType,standardId,inputGene,mapType)
 			if(.hasError(re)){
 				return(re)
 			}
 		}else{
-			re <- .R_IDMap(hostName,organism,sourceIdType,standardID,inputGene,mapType)
+			re <- .rIdMap(hostName,organism,sourceIdType,standardId,inputGene,mapType)
 		}
 	}else{
-		re <- .R_IDMap(hostName,organism,sourceIdType,standardID,inputGene,mapType)
+		re <- .rIdMap(hostName,organism,sourceIdType,standardId,inputGene,mapType)
 	}
 	return(re)
 }
 
-.R_IDMap <- function(hostName,organism,sourceIdType,standardID,inputGene,mapType){
-	#if mapType is source, inputGene is other ids. If mapType is target, inputGene is standardID
-	sourceFile <- fread(input=file.path(hostName,"data","xref",paste(organism,"_",sourceIdType,"_",standardID,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE)
-	colnames(sourceFile) <- c(standardID,sourceIdType)
+.rIdMap <- function(hostName,organism,sourceIdType,standardId,inputGene,mapType){
+	#if mapType is source, inputGene is other ids. If mapType is target, inputGene is standardId
+	sourceFile <- fread(input=file.path(hostName,"data","xref",paste(organism,"_",sourceIdType,"_",standardId,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE)
+	colnames(sourceFile) <- c(standardId,sourceIdType)
 	topF <- paste(sourceFile[1:5,2],collapse=",")
 	if(mapType=="source"){
 		mapF <- sourceFile[sourceFile[,2] %in% inputGene,,drop=FALSE]
@@ -58,47 +58,47 @@ IDMapping_map <- function(largeIdList,sourceIdType,standardID,hostName,organism,
 	}
 
 	if(nrow(mapF)==0){
-		return(IDMappingError(type="unmapped",idType=sourceIdType,topF=topF))
+		return(idMappingError(type="unmapped",idType=sourceIdType,topF=topF))
 	}else{
 		re <- list(mapF=mapF,unMapF=unMapF)
 		return(re)
 	}
 }
 
-.Python_IDMap <- function(hostName,organism,sourceIdType,standardID,inputGene,mapType){
+.pythonIdMap <- function(hostName,organism,sourceIdType,standardId,inputGene,mapType){
 	#for mac, install pip first sudo easy_install pip
 	#install pandas module
 	if(pyIsConnected()){
 		re <- tryCatch(pyExec('import pandas as pd'),error=function(e){return(NULL)})
 		if(is.null(re)){
-			return(IDMappingError(type="pandas"))
+			return(idMappingError(type="pandas"))
 		}
 		pySet('hostName',hostName)
 		pySet('organism',organism)
 		pySet('sourceIdType',sourceIdType)
-		pySet('standardID',standardID)
+		pySet('standardId',standardId)
 		pySet('inputGene',as.list(inputGene))
 
-		pyExec('data = pd.read_csv(filepath_or_buffer=hostName+"/data/xref/"+organism+"_"+sourceIdType+"_"+standardID+".table",sep="\t",memory_map=True,header=None,names=[standardID,sourceIdType],dtype=str)')
+		pyExec('data = pd.read_csv(filepath_or_buffer=hostName+"/data/xref/"+organism+"_"+sourceIdType+"_"+standardId+".table",sep="\t",memory_map=True,header=None,names=[standardId,sourceIdType],dtype=str)')
 		pyExec('top = data.head(n=5)')
 		pyExec('top = top.to_dict()')
 		topF <- PythonInR::pyGet('top')
 		topF <-do.call(cbind,topF)
-		topF <- topF[,c(standardID,sourceIdType)]
+		topF <- topF[,c(standardId,sourceIdType)]
 		topF <- topF[,2]
 		topF <- paste(topF,collapse=",")
 		if(mapType=="source"){
 			pyExec('map = data.loc[data[sourceIdType].isin(inputGene)]')
 		}else{
-			pyExec('map = data.loc[data[standardID].isin(inputGene)]')
+			pyExec('map = data.loc[data[standardId].isin(inputGene)]')
 		}
 		pyExec('map = map.to_dict()')
 		mapF <- pyGet('map')
 		mapF <- do.call(cbind,mapF)
-		mapF <- mapF[,c(standardID,sourceIdType)]
+		mapF <- mapF[,c(standardId,sourceIdType)]
 
 		if(is.null(mapF)){
-			return(IDMappingError(type="unmapped",idType=sourceIdType,topF=topF))
+			return(idMappingError(type="unmapped",idType=sourceIdType,topF=topF))
 		}else{
 			if(mapType=="source"){
 				unMapF <- setdiff(inputGene,mapF[,2])
@@ -109,11 +109,11 @@ IDMapping_map <- function(largeIdList,sourceIdType,standardID,hostName,organism,
 			return(re)
 		}
 	}else{
-		return(IDMappingError(type="python"))
+		return(idMappingError(type="python"))
 	}
 }
 
-IDMapping_output <- function(mappingOutput,outputFileName,unMapF,dataType,mappingList,sourceIdType,targetIdType){
+idMappingOutput <- function(mappingOutput,outputFileName,unMapF,dataType,mappingList,sourceIdType,targetIdType){
 	if(mappingOutput==TRUE){
 		if(length(unMapF)>0){
 			write.table(unMapF,file=paste(outputFileName,"_unmappedList.txt",sep=""),row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE)

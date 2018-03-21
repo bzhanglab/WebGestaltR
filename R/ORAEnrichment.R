@@ -1,4 +1,4 @@
-ORAEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=500,fdrMethod="BH",sigMethod="fdr",fdrThr=0.05,topThr=10){
+oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=500,fdrMethod="BH",sigMethod="fdr",fdrThr=0.05,topThr=10){
 	#before running this code, the main code has checked the overlap among interestGene, referenceGene and geneSet.
 	#And this three sets should have overlapping genes.
 
@@ -60,24 +60,24 @@ ORAEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 
 	enrichedResult <- enrichedResult[order(enrichedResult[,8],enrichedResult[,7]),]
 	if(sigMethod=="fdr"){
-		enrichedResult_sig <- enrichedResult[enrichedResult[,8]<fdrThr,]
-		if(nrow(enrichedResult_sig)==0){
+		enrichedResultSig <- enrichedResult[enrichedResult[,8]<fdrThr,]
+		if(nrow(enrichedResultSig)==0){
 			cat("No significant gene set is identified based on FDR ",fdrThr,"!",sep="")
 			return(NULL)
 		}else{
-			enrichedResult_sig <- enrichedResult_sig[order(enrichedResult_sig[,"FDR"],enrichedResult_sig[,"PValue"]),]
-			return(enrichedResult_sig)
+			enrichedResultSig <- enrichedResultSig[order(enrichedResultSig[,"FDR"],enrichedResultSig[,"PValue"]),]
+			return(enrichedResultSig)
 		}
 	}else{
 		#for the top method, we only select the terms with at least one annotated interesting gene
 		x <- enrichedResult[!is.na(enrichedResult[,9]),]
 		x <- x[order(x[,8],x[,7]),]
 		if(nrow(x)>topThr){
-			enrichedResult_sig <- x[1:topThr,]
+			enrichedResultSig <- x[1:topThr,]
 		}else{
-			enrichedResult_sig <- x
+			enrichedResultSig <- x
 		}
-		enrichedResult_sig <- enrichedResult_sig[order(enrichedResult_sig[,"FDR"],enrichedResult_sig[,"PValue"]),]
-		return(enrichedResult_sig)
+		enrichedResultSig <- enrichedResultSig[order(enrichedResultSig[,"FDR"],enrichedResultSig[,"PValue"]),]
+		return(enrichedResultSig)
 	}
 }

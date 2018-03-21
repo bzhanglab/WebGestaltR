@@ -1,9 +1,8 @@
 listGeneSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/"){
-
-	json_data <- fromJSON(file=file.path(hostName,"data","genesetsummary.json"))
-	ids <- json_data[[organism]]
+	jsonData <- fromJSON(file=file.path(hostName,"data","genesetsummary.json"))
+	ids <- jsonData[[organism]]
 	name1 <- names(ids)
-	idList <- data.frame(name="",description="",idtype="",stringsAsFactors=F)
+	idList <- data.frame(name="",description="",idType="",stringsAsFactors=F)
 	di <- 1
 	for(i in c(1:length(name1))){
 		x <- .getName(ids[[i]])

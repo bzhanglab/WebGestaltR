@@ -1,6 +1,6 @@
 listReferenceSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/"){
-	json_data <- fromJSON(file=file.path(hostName,"data","referenceSetsummary.json"))
-	idtype <- json_data[[organism]]
-	idtype <- sapply(idtype,function(e){return(e$name)})
-	return(idtype)
+	jsonData <- fromJSON(file=file.path(hostName,"data","referenceSetsummary.json"))
+	idType <- jsonData[[organism]]
+	idType <- sapply(idType,function(e){return(e$name)})
+	return(idType)
 }

@@ -1,21 +1,21 @@
-GSEAEnrichment <- function(hostName,outputDirectory,projectName,geneRankList,geneSet,collapseMethod="mean",minNum=10,maxNum=500,sigMethod="fdr",fdrThr=0.05,topThr=10,perNum=1000,lNum=20,is.output=TRUE,keepGSEAFolder=FALSE){
-	GSEAJarFile <- list.files(path=outputDirectory,pattern="gsea.*\\.jar$")
-	if(length(GSEAJarFile)==0){
+gseaEnrichment <- function(hostName,outputDirectory,projectName,geneRankList,geneSet,collapseMethod="mean",minNum=10,maxNum=500,sigMethod="fdr",fdrThr=0.05,topThr=10,perNum=1000,lNum=20,isOutput=TRUE,keepGseaFolder=FALSE){
+	gseaJarFile <- list.files(path=outputDirectory,pattern="gsea.*\\.jar$")
+	if(length(gseaJarFile)==0){
 		cat("No GSEA java jar file can be found in the current working directory. The function will download the GSEA java jar file to the ",outputDirectory,". The copyright of the GSEA java jar file belongs to the broad institute (http://software.broadinstitute.org/gsea/index.jsp).\n",sep="")
-		GSEAJarFile <- file.path(outputDirectory,"gsea.jar")
+		gseaJarFile <- file.path(outputDirectory,"gsea.jar")
 		if(length(grep("^file://", hostName, perl=TRUE))==1){
 			# copy from local file instead of downloading from remote URL
-			local.file <- gsub("^file://", "", hostName, perl=TRUE)
-			file.copy(file.path(local.file, "gsea.jar"), GSEAJarFile)
+			localFile <- gsub("^file://", "", hostName, perl=TRUE)
+			file.copy(file.path(localFile, "gsea.jar"), gseaJarFile)
 		} else {
-			download.file(file.path(hostName,"gsea.jar"),GSEAJarFile,mode="wb")
+			download.file(file.path(hostName,"gsea.jar"),gseaJarFile,mode="wb")
 		}
 	}else{
-		GSEAJarFile <- file.path(outputDirectory,GSEAJarFile)
+		gseaJarFile <- file.path(outputDirectory,gseaJarFile)
 	}
 
-	if(length(grep(" ",GSEAJarFile))>0){
-		GSEAJarFile <- gsub(" ","\\ ",GSEAJarFile,fixed=TRUE)
+	if(length(grep(" ",gseaJarFile))>0){
+		gseaJarFile <- gsub(" ","\\ ",gseaJarFile,fixed=TRUE)
 	}
 
 	projectFolder <- file.path(outputDirectory,paste("Project_",projectName,sep=""))
@@ -39,22 +39,22 @@ GSEAEnrichment <- function(hostName,outputDirectory,projectName,geneRankList,gen
 	a <- tapply(geneRankList[,2],geneRankList[,1],collapseMethod,na.rm=TRUE)
 	geneRankList <- data.frame(geneid=names(a),score=a,stringsAsFactors=FALSE)
 
-	gsea_rnk <- file.path(projectFolder,paste("Project_",projectName,"_GSEA.rnk",sep=""))
-	write.table(geneRankList,file=gsea_rnk,row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE)
+	gseaRnk <- file.path(projectFolder,paste("Project_",projectName,"_GSEA.rnk",sep=""))
+	write.table(geneRankList,file=gseaRnk,row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE)
 
-	gsea_gmt <- file.path(projectFolder,paste("Project_",projectName,"_GSEA.gmt",sep=""))
+	gseaGmt <- file.path(projectFolder,paste("Project_",projectName,"_GSEA.gmt",sep=""))
 	x <- tapply(geneSet[,3],geneSet[,1],paste,collapse="\t")
 	y <- unique(geneSet[,c(1,2)])
 	x <- x[y[,1]]
 	g <- data.frame(geneset=y[,1],link=y[,2],gene=x,stringsAsFactors=FALSE)
-	write.table(g,file=gsea_gmt,row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE)
+	write.table(g,file=gseaGmt,row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE)
 
 	outputF <- file.path(projectFolder,paste("Project_",projectName,"_GSEA/",sep=""))
 	if(!dir.exists(outputF)){
 		dir.create(outputF)
 	}
 
-	comm <- paste("java -Xmx4096m -cp ",GSEAJarFile," xtools.gsea.GseaPreranked -gmx ",gsea_gmt," -collapse false -mode Max_probe -norm meandiv -nperm ",perNum," -rnk ",gsea_rnk," -scoring_scheme weighted -rpt_label Project_",projectName," -include_only_symbols true -make_sets true -plot_top_x ",lNum," -rnd_seed timestamp -set_max ",maxNum," -set_min ",minNum," -zip_report false -out ",outputF," -gui false",sep="")
+	comm <- paste("java -Xmx4096m -cp ",gseaJarFile," xtools.gsea.GseaPreranked -gmx ",gseaGmt," -collapse false -mode Max_probe -norm meandiv -nperm ",perNum," -rnk ",gseaRnk," -scoring_scheme weighted -rpt_label Project_",projectName," -include_only_symbols true -make_sets true -plot_top_x ",lNum," -rnd_seed timestamp -set_max ",maxNum," -set_min ",minNum," -zip_report false -out ",outputF," -gui false",sep="")
 
 	eI <- system(comm,ignore.stderr=TRUE)
 	if(eI>0){
@@ -63,72 +63,72 @@ GSEAEnrichment <- function(hostName,outputDirectory,projectName,geneRankList,gen
 		return(error)
 	}
 
-	gseaR <- readGSEA(outputF)
-	gseaR_pos <- gseaR$positiveP
-	gseaR_neg <- gseaR$negativeP
-	if(is.null(gseaR_pos) && is.null(gseaR_neg)){
+	gseaR <- readGsea(outputF)
+	gseaRPos <- gseaR$positiveP
+	gseaRNeg <- gseaR$negativeP
+	if(is.null(gseaRPos) && is.null(gseaRNeg)){
 		error <- "No enriched set is outputted from GSEA"
 		cat(error)
 		return(error)
 	}else{
 		if(sigMethod=="fdr"){
-			if(!is.null(gseaR_pos)){
-				gseaR_posSig <- gseaR_pos[gseaR_pos[,"FDR"]<fdrThr,]
+			if(!is.null(gseaRPos)){
+				gseaRPosSig <- gseaRPos[gseaRPos[,"FDR"]<fdrThr,]
 			}else{
-				gseaR_posSig <- NULL
+				gseaRPosSig <- NULL
 			}
 
-			if(!is.null(gseaR_neg)){
-				gseaR_negSig <- gseaR_neg[gseaR_neg[,"FDR"]<fdrThr,]
+			if(!is.null(gseaRNeg)){
+				gseaRNegSig <- gseaRNeg[gseaRNeg[,"FDR"]<fdrThr,]
 			}else{
-				gseaR_negSig <- NULL
+				gseaRNegSig <- NULL
 			}
 
-			sig <- rbind(gseaR_posSig,gseaR_negSig)
+			sig <- rbind(gseaRPosSig,gseaRNegSig)
 			if(nrow(sig)==0){
 				cat("No significant set is identified based on FDR ",fdrThr,"!",sep="")
-				removeFolder(projectFolder,is.output=is.output,keepGSEAFolder=keepGSEAFolder)
+				removeFolder(projectFolder,isOutput=isOutput,keepGseaFolder=keepGseaFolder)
 				return(NULL)
 			}else{
 				sig <- mappingName(sig,geneSet)
 				sig <- sig[order(sig[,"FDR"],sig[,"NES"]),]
-				removeFolder(projectFolder,is.output=is.output,keepGSEAFolder=keepGSEAFolder)
+				removeFolder(projectFolder,isOutput=isOutput,keepGseaFolder=keepGseaFolder)
 				return(sig)
 			}
 		}else{
-			if(!is.null(gseaR_pos)){
-				gseaR_pos <- gseaR_pos[order(gseaR_pos[,"FDR"],gseaR_pos[,"PValue"]),]
-				if(nrow(gseaR_pos)>topThr){
-					gseaR_posSig <- gseaR_pos[1:topThr,]
+			if(!is.null(gseaRPos)){
+				gseaRPos <- gseaRPos[order(gseaRPos[,"FDR"],gseaRPos[,"PValue"]),]
+				if(nrow(gseaRPos)>topThr){
+					gseaRPosSig <- gseaRPos[1:topThr,]
 				}else{
-					gseaR_posSig <- gseaR_pos
+					gseaRPosSig <- gseaRPos
 				}
 			}else{
-				gseaR_posSig <- NULL
+				gseaRPosSig <- NULL
 			}
 
-			if(!is.null(gseaR_neg)){
-				gseaR_neg <- gseaR_neg[order(gseaR_neg[,"FDR"],gseaR_neg[,"PValue"]),]
-				if(nrow(gseaR_neg)>topThr){
-					gseaR_negSig <- gseaR_neg[1:topThr,]
+			if(!is.null(gseaRNeg)){
+				gseaRNeg <- gseaRNeg[order(gseaRNeg[,"FDR"],gseaRNeg[,"PValue"]),]
+				if(nrow(gseaRNeg)>topThr){
+					gseaRNegSig <- gseaRNeg[1:topThr,]
 				}else{
-					gseaR_negSig <- gseaR_neg
+					gseaRNegSig <- gseaRNeg
 				}
 			}else{
-				gseaR_negSig <- NULL
+				gseaRNegSig <- NULL
 			}
 
-			sig <- rbind(gseaR_posSig,gseaR_negSig)
+			sig <- rbind(gseaRPosSig,gseaRNegSig)
 			sig <- mappingName(sig,geneSet)
 			sig <- sig[order(sig[,"FDR"],sig[,"PValue"]),]
 
-			removeFolder(projectFolder,is.output=is.output,keepGSEAFolder=keepGSEAFolder)
+			removeFolder(projectFolder,isOutput=isOutput,keepGseaFolder=keepGseaFolder)
 			return(sig)
 		}
 	}
 }
 
-readGSEA <- function(gseaFolder){
+readGsea <- function(gseaFolder){
 	positiveP <- data.frame(geneset="",link="",Size=0,ES=0,NES=0,PValue=0,FDR=0,leadingEdgeNum=0,leadingEdgeID="",stringsAsFactors=FALSE)
 	rei <- 1
 
@@ -162,7 +162,7 @@ readGSEA <- function(gseaFolder){
 			if(length(which(leadingF==lF))>0){
 				x <- readLeadingEdge(subF,positiveD[j,1])
 				positiveP[j,8] <- x$geneListNum
-				positiveP[j,9] <- x$genelist
+				positiveP[j,9] <- x$geneList
 			}else{
 				positiveP[j,8] <- NA
 				positiveP[j,9] <- NA
@@ -191,7 +191,7 @@ readGSEA <- function(gseaFolder){
 			if(length(which(leadingF==lF))>0){
 				x <- readLeadingEdge(subF,negativeD[j,1])
 				negativeP[j,8] <- x$geneListNum
-				negativeP[j,9] <- x$genelist
+				negativeP[j,9] <- x$geneList
 			}else{
 				negativeP[j,8] <- NA
 				negativeP[j,9] <- NA
@@ -215,16 +215,16 @@ readLeadingEdge <- function(dir,sigModule){
 	sigGene <- moduleF[moduleF[,8]=="Yes",2]
 	sigGeneNum <- length(sigGene)
 	sigGeneL <- paste(sigGene,collapse=";")
-	re <- list(geneListNum=sigGeneNum,genelist=sigGeneL)
+	re <- list(geneListNum=sigGeneNum,geneList=sigGeneL)
 	return(re)
 }
 
-removeFolder <- function(dir,is.output=TRUE,keepGSEAFolder=FALSE){  ###For the GSEA enrichment analysis
-	if(is.output==FALSE){
+removeFolder <- function(dir,isOutput=TRUE,keepGseaFolder=FALSE){  ###For the GSEA enrichment analysis
+	if(isOutput==FALSE){
 		comm <- paste("rm -rf ",dir,sep="")
 		system(comm)
 	}else{
-		if(keepGSEAFolder==FALSE){
+		if(keepGseaFolder==FALSE){
 			all <- list.files(path=dir,full.names=TRUE)
 			folder <- all[file.info(all)$isdir]
 			for(i in c(1:length(folder))){

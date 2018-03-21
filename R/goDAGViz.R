@@ -1,7 +1,7 @@
-goDAGViz <- function(enrichedSig_sub,enrichMethod,geneSetDes,geneSetDAG,outputHtmlFile,outputDirectory,timeStamp,dagColor,hostName){
+goDagViz <- function(enrichedSigSub,enrichMethod,geneSetDes,geneSetDag,outputHtmlFile,outputDirectory,timeStamp,dagColor,hostName){
 	####Create DAG structure using GOView########
 	####Create Json file#############
-	jF <- createJSONFile(enrichedSig_sub,enrichMethod,geneSetDes,geneSetDAG,reportDir=outputHtmlFile,outputDirectory=outputDirectory,timeStamp=timeStamp,dagColor=dagColor)
+	jF <- createJsonFile(enrichedSigSub,enrichMethod,geneSetDes,geneSetDag,reportDir=outputHtmlFile,outputDirectory=outputDirectory,timeStamp=timeStamp,dagColor=dagColor)
 
 	####This is the style for saving the DAG to the file. Because google chrome does not allow to
 	####read the cssRule from the local css by the javascript, we need to input this style to the javascript manually
@@ -14,48 +14,48 @@ goDAGViz <- function(enrichedSig_sub,enrichMethod,geneSetDes,geneSetDAG,outputHt
 	return(re)
 }
 
-createJSONFile <- function(enrichedGO,enrichMethod,desFile,dagFile,reportDir,outputDirectory,timeStamp,dagColor){
-	sigGO <- unique(enrichedGO[,1])
-	allGO <- unique(enrichedGO[,1])
+createJsonFile <- function(enrichedGo,enrichMethod,desFile,dagFile,reportDir,outputDirectory,timeStamp,dagColor){
+	sigGo <- unique(enrichedGo[,1])
+	allGo <- unique(enrichedGo[,1])
 	jsonF <- paste('[{"id":"Project_',timeStamp,'_.json","reports":[',sep="")
 
 	if(dagColor=="continuous"){
 		###HARD CODE#######
 		if(enrichMethod=="ORA"){
-			minF <- min(enrichedGO[,"FDR"])
+			minF <- min(enrichedGo[,"FDR"])
 			minFT <- ifelse(minF==0,-log10(2.2e-16),-log10(minF))
 			colF <- colorRampPalette(c("white","red"))(128)
-			mybreak <- seq(0,minFT+0.01,length.out=129)
+			myBreak <- seq(0,minFT+0.01,length.out=129)
 		}
 
 		if(enrichMethod=="GSEA"){
-			x <- enrichedGO[,c("NES","FDR")]
+			x <- enrichedGo[,c("NES","FDR")]
 			x[x[,2]==0,2] <- 2.2e-16
 			x[,2] <- (sign(x[,1])*(-log10(x[,2])))
 			minFT <- min(x[,2])
 			maxFT <- max(x[,2])
 			if(minFT>0){
 				colF <- colorRampPalette(c("white","red"))(128)
-				mybreak <- seq(0,maxFT+0.01,length.out=129)
+				myBreak <- seq(0,maxFT+0.01,length.out=129)
 			}else{
 				if(maxFT<0){
 					colF <- colorRampPalette(c("blue","white"))(128)
-					mybreak <- seq(minFT-0.01,0,length.out=129)
+					myBreak <- seq(minFT-0.01,0,length.out=129)
 				}else{
 					if(abs(minFT)>maxFT){
 						colF <- colorRampPalette(c("blue","white","red"))(256)
-						mybreak <- c(seq(minFT-0.01,-0.01,length.out=128),0,seq(0.01,max(minFT)+0.01,length.out=128))
+						myBreak <- c(seq(minFT-0.01,-0.01,length.out=128),0,seq(0.01,max(minFT)+0.01,length.out=128))
 					}else{
 						colF <- colorRampPalette(c("blue","white","red"))(256)
-						mybreak <- c(seq(-maxFT-0.01,-0.01,length.out=128),0,seq(0.01,maxFT+0.01,length.out=128))
+						myBreak <- c(seq(-maxFT-0.01,-0.01,length.out=128),0,seq(0.01,maxFT+0.01,length.out=128))
 					}
 				}
 			}
 		}
 	}
 
-	while(length(allGO)>0){
-		g <- allGO[1]
+	while(length(allGo)>0){
+		g <- allGo[1]
 		gdes <- desFile[desFile[,1]==g,2]
 		parents <- dagFile[dagFile[,2]==g,1]
 
@@ -68,31 +68,31 @@ createJSONFile <- function(enrichedGO,enrichMethod,desFile,dagFile,reportDir,out
 		gdes <- gsub("'", "\\\\'", gdes)
 		jsonF <- paste(jsonF,'],"Name":["',gdes,'"],"Sig":["',sep="")
 
-		if(length(which(sigGO==g))>0){
+		if(length(which(sigGo==g))>0){
 			l <- paste(reportDir,"#",g,sep="")
 
 			####HARD CODE#######
 			if(enrichMethod=="ORA"){
-				gnum <- enrichedGO[enrichedGO[,1]==g,"O"]
-				f <- enrichedGO[enrichedGO[,1]==g,"FDR"]
+				gnum <- enrichedGo[enrichedGo[,1]==g,"O"]
+				f <- enrichedGo[enrichedGo[,1]==g,"FDR"]
 				adjp <- format(f,scientific=TRUE,digits=3)
 				if(dagColor=="binary"){
 					sig <- "red"
 				}else{
 					x <- ifelse(f==0,-log10(2.2e-16),-log10(f))
-					sig <- colF[max(which(mybreak<x))]
+					sig <- colF[max(which(myBreak<x))]
 				}
 			}
 			if(enrichMethod=="GSEA"){
-				gnum <- enrichedGO[enrichedGO[,1]==g,"leadingEdgeNum"]
-				f <- enrichedGO[enrichedGO[,1]==g,"FDR"]
-				nes <- enrichedGO[enrichedGO[,1]==g,"NES"]
+				gnum <- enrichedGo[enrichedGo[,1]==g,"leadingEdgeNum"]
+				f <- enrichedGo[enrichedGo[,1]==g,"FDR"]
+				nes <- enrichedGo[enrichedGo[,1]==g,"NES"]
 				adjp <- format(f,scientific=TRUE,digits=3)
 				if(dagColor=="binary"){
 					sig <- ifelse(nes>0,"red","blue")
 				}else{
 					x <- ifelse(f==0,sign(nes)*(-log10(2.2e-16)),sign(nes)*(-log10(f)))
-					sig <- colF[max(which(mybreak<x))]
+					sig <- colF[max(which(myBreak<x))]
 				}
 			}
 		}else{
@@ -103,8 +103,8 @@ createJSONFile <- function(enrichedGO,enrichMethod,desFile,dagFile,reportDir,out
 		}
 
 		jsonF <- paste(jsonF,sig,'"],"Link":["',l,'"],"gNum":["',gnum,'"],"FDR":["',adjp,'"]},',sep="")
-		allGO <- allGO[-1]
-		allGO <- unique(c(allGO,parents))
+		allGo <- allGo[-1]
+		allGo <- unique(c(allGo,parents))
 	}
 	jsonF <- substring(jsonF,1,nchar(jsonF)-1)
 	jsonF <- paste(jsonF,"]}]",sep="")

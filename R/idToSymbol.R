@@ -30,7 +30,7 @@ idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
 	if(!is.null(errorTest)){
 		return(errorTest)
 	}
-	errorTest <- IDTypeERROR(idType=sourceIdType,organism=organism,hostName=hostName)
+	errorTest <- idTypeError(idType=sourceIdType,organism=organism,hostName=hostName)
 	if(!is.null(errorTest)){
 		return(errorTest)
 	}
@@ -39,7 +39,7 @@ idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
 		if(mappingOutput && is.null(outputFileName)){
 			outputFileName <- paste0("wgr_", dataType)
 		}
-		geneMap <- IDMapping_gene(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=sourceIdType,standardID="entrezgene",targetIdType="genesymbol", collapseMethod=collapseMethod,mappingOutput=mappingOutput,outputFileName=outputFileName,methodType=methodType,hostName=hostName)
+		geneMap <- idMappingGene(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=sourceIdType,standardId="entrezgene",targetIdType="genesymbol", collapseMethod=collapseMethod,mappingOutput=mappingOutput,outputFileName=outputFileName,methodType=methodType,hostName=hostName)
 		return(geneMap)
 	} else if(dataType == "matrix"){
 		if(mappingOutput && is.null(outputFileName)){
@@ -52,12 +52,12 @@ idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
 			inputMat <- .testMatrixFormat(inputGene, collapseMethod)
 		}
 		inputId <- rownames(inputMat)
-		geneMap <- IDMapping_gene(organism=organism,dataType="list",inputGeneFile=NULL,inputGene=inputId,sourceIdType=sourceIdType,standardID="entrezgene",targetIdType="genesymbol", mappingOutput=FALSE,methodType=methodType,hostName=hostName)
-		idmap <- geneMap$mapped[,c(1,2)]
-		id <- as.vector(idmap[,2])
-		inputMat <- inputMat[idmap[,1],]
+		geneMap <- idMappingGene(organism=organism,dataType="list",inputGeneFile=NULL,inputGene=inputId,sourceIdType=sourceIdType,standardId="entrezgene",targetIdType="genesymbol", mappingOutput=FALSE,methodType=methodType,hostName=hostName)
+		idMap <- geneMap$mapped[,c(1,2)]
+		id <- as.vector(idMap[,2])
+		inputMat <- inputMat[idMap[,1],]
 		inputMat <- mergeDuplicate(id,inputMat,collapseMethod)
-		re <- list(data=inputMat,idmap=idmap)
+		re <- list(data=inputMat,idMap=idMap)
 		# write to output file
 		if(mappingOutput){
 			mtrx <- re$data
@@ -75,13 +75,13 @@ idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
 			stop("The extension of the input file should be 'cct' or 'cbt'. \n")
 		}else{
 			inputMat <- read.table(inputMat,header=TRUE,sep="\t",stringsAsFactors=FALSE,check.names=FALSE)
-			geneid <- inputMat[,1]
-			if(length(geneid)!=length(unique(geneid))){
+			geneId <- inputMat[,1]
+			if(length(geneId)!=length(unique(geneId))){
 				cat("The input data contain duplicate Id. The function will use ",collapseMethod," to collapse duplicate Id in each sample!\n",sep="")
-				inputMat <- mergeDuplicate(geneid,inputMat[,2:ncol(inputMat)] ,collapseMethod)
+				inputMat <- mergeDuplicate(geneId,inputMat[,2:ncol(inputMat)] ,collapseMethod)
 			}else{
 				inputMat <- inputMat[,c(2:ncol(inputMat))]
-				rownames(inputMat) <- geneid
+				rownames(inputMat) <- geneId
 			}
 		}
 	}else{

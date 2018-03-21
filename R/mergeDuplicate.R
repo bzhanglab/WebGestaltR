@@ -1,4 +1,4 @@
-mergeDuplicate <- function(id,data,collapse_mode="maxSD"){
+mergeDuplicate <- function(id,data,collapseMode="maxSD"){
 	data <- as.data.frame(data)
 	if(!is.vector(id)){
 		stop("The input id should be a vector object!\n")
@@ -8,13 +8,13 @@ mergeDuplicate <- function(id,data,collapse_mode="maxSD"){
 		stop("The input data matrix should be a matrix or data.frame object!\n")
 	}
 
-	if(length(which(collapse_mode %in% c("mean","median","maxSD","maxIQR","max","min")))==0){
-		stop("The input 'collapse_mode' is not valide! Please select an option from 'mean', 'median', 'maxSD',  'maxIQR', 'max' and 'min' (use mean, median, max standard derivation, max interquartile range, maximum and minimum of duplicate genes for each sample)!\n")
+	if(length(which(collapseMode %in% c("mean","median","maxSD","maxIQR","max","min")))==0){
+		stop("The input 'collapseMode' is not valide! Please select an option from 'mean', 'median', 'maxSD',  'maxIQR', 'max' and 'min' (use mean, median, max standard derivation, max interquartile range, maximum and minimum of duplicate genes for each sample)!\n")
 	}
 
 	if(ncol(data)==1){
-		if(collapse_mode=="maxSD" || collapse_mode=="maxIQR"){
-			collapse_mode <- "mean"
+		if(collapseMode=="maxSD" || collapseMode=="maxIQR"){
+			collapseMode <- "mean"
 		}
 	}
 
@@ -22,22 +22,22 @@ mergeDuplicate <- function(id,data,collapse_mode="maxSD"){
 
 	if(ncol(data)==1){
 		data <- data.frame(id=id,data=data[,1],stringsAsFactors=F)
-		data <- tapply(data[,2],data[,1],collapse_mode,na.rm=TRUE)
+		data <- tapply(data[,2],data[,1],collapseMode,na.rm=TRUE)
 		return(data)
 
 	}else{
-		if(collapse_mode=="mean" || collapse_mode=="median" || collapse_mode=="max" || collapse_mode=="min"){
-			mergeR <- lapply(split(c(1:nrow(data)),id),function(u){return(apply(data[u,],2,collapse_mode,na.rm=TRUE))})
+		if(collapseMode=="mean" || collapseMode=="median" || collapseMode=="max" || collapseMode=="min"){
+			mergeR <- lapply(split(c(1:nrow(data)),id),function(u){return(apply(data[u,],2,collapseMode,na.rm=TRUE))})
 			data <- do.call(rbind,mergeR)
 			return(data)
 		}
 
-		if(collapse_mode=="maxSD" || collapse_mode=="maxIQR"){
-			if(collapse_mode=="maxSD"){
+		if(collapseMode=="maxSD" || collapseMode=="maxIQR"){
+			if(collapseMode=="maxSD"){
 				mergeR <- apply(data,1,sd,na.rm=TRUE)
 			}
 
-			if(collapse_mode=="maxIQR"){
+			if(collapseMode=="maxIQR"){
 				mergeR <- apply(data,1,IQR,na.rm=TRUE)
 			}
 

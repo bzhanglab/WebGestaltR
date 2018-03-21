@@ -1,15 +1,15 @@
-IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneFile=NULL,inputGene=NULL,sourceIdType,standardID,collapseMethod="mean",mappingOutput=FALSE, outputFileName="",methodType="R",hostName="http://www.webgestalt.org/"){
+idMappingPhosphosite <- function(organism="hsapiens",dataType="list",inputGeneFile=NULL,inputGene=NULL,sourceIdType,standardId,collapseMethod="mean",mappingOutput=FALSE, outputFileName="",methodType="R",hostName="http://www.webgestalt.org/"){
 	largeIdList <- fread(input=file.path(hostName,"data","largeIdList.txt"),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
 	largeIdList <- as.character(largeIdList[,1])
 
 	###########Check input data type###############
-	inputGene <- IDMapping_input(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
+	inputGene <- idMappingInput(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
 	if(.hasError(inputGene)){
 		return(inputGene)
 	}
 
 	##########ID Mapping Specify to phosphosite level###############
-	re <- .processSourceIDMapPhosphosite(hostName=hostName,organism=organism,largeIdList=largeIdList,inputGene=inputGene,standardID=standardID,dataType=dataType,idType=sourceIdType,collapseMethod=collapseMethod,methodType=methodType)
+	re <- .processSourceIdMapPhosphosite(hostName=hostName,organism=organism,largeIdList=largeIdList,inputGene=inputGene,standardId=standardId,dataType=dataType,idType=sourceIdType,collapseMethod=collapseMethod,methodType=methodType)
 	if(.hasError(re)){
 		return(re)
 	}
@@ -17,13 +17,13 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 	unMapF <- re$unmapped
 
 	#############Output#######################
-	IDMapping_output(mappingOutput,outputFileName,unMapF,dataType,inputGene,sourceIdType,targetIdType=standardID)
+	idMappingOutput(mappingOutput,outputFileName,unMapF,dataType,inputGene,sourceIdType,targetIdType=standardId)
 	r <- list(mapped=inputGene,unmapped=unMapF)
 	return(r)
 }
 
 
-.processSourceIDMapPhosphosite <- function(hostName,organism,largeIdList,inputGene,standardID,dataType,idType,collapseMethod,methodType){
+.processSourceIdMapPhosphosite <- function(hostName,organism,largeIdList,inputGene,standardId,dataType,idType,collapseMethod,methodType){
 	if(dataType=="list"){
 		inputGeneL <- unique(inputGene)
 	}
@@ -40,7 +40,7 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 		inputGeneL <- unique(inputGene[,3])
 	}
 
-	mapR <- IDMapping_map(largeIdList=largeIdList,sourceIdType=idType,standardID=standardID,hostName=hostName,organism=organism,inputGene=inputGeneL,mapType="source",methodType=methodType)
+	mapR <- idMappingMap(largeIdList=largeIdList,sourceIdType=idType,standardId=standardId,hostName=hostName,organism=organism,inputGene=inputGeneL,mapType="source",methodType=methodType)
 	if(.hasError(mapR)){
 		return(mapR)
 	}
@@ -52,15 +52,15 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 
 	#####Hard code#######
 	if(length(grep("Uniprot",idType))>0 || length(grep("Ensembl",idType))>0 || length(grep("Refseq",idType))>0){  ##if the idType is Uniprot, Ensembl or Refseq, directly extract the gene level id####
-		idType_genelevel <- unlist(lapply(strsplit(mapF[,2],"_"),.combineG))
-		idTypeGMap <- data.frame(phosi=mapF[,2],gene=idType_genelevel,glink="",stringsAsFactors=F)
+		idTypeGeneLevel <- unlist(lapply(strsplit(mapF[,2],"_"),.combineG))
+		idTypeGMap <- data.frame(phosi=mapF[,2],gene=idTypeGeneLevel,glink="",stringsAsFactors=F)
 		colnames(idTypeGMap)[1] <- idType
 	}else{
 		###If the input id type is sequence, we will first map the sequence to uniprot. And then map the uniprot to gene name####
-		uF <- fread(input=file.path(hostName,"data","xref",paste(organism,"_phosphositeUniprot_",standardID,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
+		uF <- fread(input=file.path(hostName,"data","xref",paste(organism,"_phosphositeUniprot_",standardId,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
 		uM <- uF[uF[,1] %in% mapF[,2],]
-		idType_genelevel <- unlist(lapply(strsplit(uM[,2],"_"),.combineG))
-		idTypeGMap <- data.frame(phosi=uM[,1],gene=idType_genelevel,glink="",stringsAsFactors=F)
+		idTypeGeneLevel <- unlist(lapply(strsplit(uM[,2],"_"),.combineG))
+		idTypeGMap <- data.frame(phosi=uM[,1],gene=idTypeGeneLevel,glink="",stringsAsFactors=F)
 		colnames(idTypeGMap)[1] <- idType
 	}
 
@@ -83,7 +83,7 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 	idTypeGMap[,"glink"] <- paste(outLink,idTypeGMap[,2],sep="")
 
 	########Get gene level information#########
-	mapR <- IDMapping_gene(organism=organism,dataType="list",inputGene=unique(idTypeGMap[,"gene"]),sourceIdType=geneType,standardID="entrezgene",targetIdType="entrezgene",methodType=methodType,mappingOutput=FALSE,hostName=hostName)
+	mapR <- idMappingGene(organism=organism,dataType="list",inputGene=unique(idTypeGMap[,"gene"]),sourceIdType=geneType,standardId="entrezgene",targetIdType="entrezgene",methodType=methodType,mappingOutput=FALSE,hostName=hostName)
 
 	if(.hasError(mapR)){
 		return(mapR)
@@ -99,14 +99,14 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 
 	if(dataType=="list"){
 		inputGene <- mergeB[,c(idType,"genesymbol","genename","phosphositeSeqS","glink")]
-		colnames(inputGene) <- c("userid","genesymbol","genename",standardID,"glink")
+		colnames(inputGene) <- c("userid","genesymbol","genename",standardId,"glink")
 	}
 
 	if(dataType=="rnk"){
 		colnames(inputGene) <- c(idType,"score")
 		inputGene <- merge(x=mergeB,y=inputGene,by=idType,all.x=TRUE)
 		inputGene <- inputGene[,c(idType,"genesymbol","genename","phosphositeSeqS","score","glink")]
-		colnames(inputGene) <- c("userid","genesymbol","genename",standardID,"score","glink")
+		colnames(inputGene) <- c("userid","genesymbol","genename",standardId,"score","glink")
 	}
 
 	if(dataType=="gmt"){
@@ -114,7 +114,7 @@ IDMapping_phosphosite <- function(organism="hsapiens",dataType="list",inputGeneF
 		inputGene <- merge(x=mergeB,y=inputGene,by=idType,all.x=TRUE)
 		inputGene <- as.matrix(inputGene)
 		inputGene <- inputGene[,c("geneset","link",idType,"genesymbol","genename","phosphositeSeqS","glink")]
-		colnames(inputGene) <- c("geneset","link","userid","genesymbol","genename",standardID,"glink")
+		colnames(inputGene) <- c("geneset","link","userid","genesymbol","genename",standardId,"glink")
 	}
 
 	re <- list(mapped=inputGene,unmapped=unMapF)

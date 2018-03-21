@@ -1,4 +1,4 @@
-GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pdf",hostName="http://www.webgestalt.org"){
+goSlimSummary <- function(organism="hsapiens",geneList,outputFile,outputType="pdf",hostName="http://www.webgestalt.org"){
 	organisms <- listOrganism(hostName=hostName)
 	if(!(organism %in% organisms)){
 		error <- paste("ERROR: ",organism," can not be supported.",sep="")
@@ -6,12 +6,12 @@ GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pd
 		return(error)
 	}
 
-	if(!is.vector(genelist)){
+	if(!is.vector(geneList)){
 		error <- "ERROR: Please upload a list of entrez gene ids.\n"
 		cat(error)
 		return(error)
 	}else{
-		genelist <- as.character(genelist)
+		geneList <- as.character(geneList)
 	}
 
 	outputTypeList <- c("pdf","png","bmp")
@@ -21,28 +21,28 @@ GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pd
 		return(error)
 	}
 
-	bpfilere <- .processData(organism,hostName,genelist,"BiologicalProcess")
-	if(.hasError(bpfilere)){
-		return(bpfilere)
+	bpFileRe <- .processData(organism,hostName,geneList,"BiologicalProcess")
+	if(.hasError(bpFileRe)){
+		return(bpFileRe)
 	}else{
-		bpfile <- bpfilere$goFile
-		bp_unclassified <- bpfilere$data_unclassified
+		bpFile <- bpFileRe$goFile
+		bpUnclassified <- bpFileRe$dataUnclassified
 	}
 
-	ccfilere <- .processData(organism,hostName,genelist,"CellularComponent")
-	if(.hasError(ccfilere)){
-		return(ccfilere)
+	ccFileRe <- .processData(organism,hostName,geneList,"CellularComponent")
+	if(.hasError(ccFileRe)){
+		return(ccFileRe)
 	}else{
-		ccfile <- ccfilere$goFile
-		cc_unclassified <- ccfilere$data_unclassified
+		ccFile <- ccFileRe$goFile
+		ccUnclassified <- ccFileRe$dataUnclassified
 	}
 
-	mffilere <- .processData(organism,hostName,genelist,"MolecularFunction")
-	if(.hasError(mffilere)){
-		return(mffilere)
+	mfFileRe <- .processData(organism,hostName,geneList,"MolecularFunction")
+	if(.hasError(mfFileRe)){
+		return(mfFileRe)
 	}else{
-		mffile <- mffilere$goFile
-		mf_unclassified <- mffilere$data_unclassified
+		mfFile <- mfFileRe$goFile
+		mfUnclassified <- mfFileRe$dataUnclassified
 	}
 
 	if(outputType=="pdf"){
@@ -59,21 +59,21 @@ GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pd
 
 	layout(matrix(1:3,1,3))
 
-	.plotData(genelist,bpfile,bp_unclassified,"Biological Process","red")
-	.plotData(genelist,ccfile,cc_unclassified,"Cellular Component","blue")
-	.plotData(genelist,mffile,mf_unclassified,"Molecular Function","green")
+	.plotData(geneList,bpFile,bpUnclassified,"Biological Process","red")
+	.plotData(geneList,ccFile,ccUnclassified,"Cellular Component","blue")
+	.plotData(geneList,mfFile,mfUnclassified,"Molecular Function","green")
 
 	dev.off()
 	return(NULL)
 }
 
-.processData <- function(organism,hostName,genelist,ontology){
+.processData <- function(organism,hostName,geneList,ontology){
 	###file.path#######
 	goFile <- file.path(hostName,"data","goslim",paste(organism,"_GOSlim_",ontology,".table",sep=""))
 
 	goFile <- fread(input=goFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE)
 
-	goFile <- goFile[goFile[,1] %in% genelist,,drop=FALSE]
+	goFile <- goFile[goFile[,1] %in% geneList,,drop=FALSE]
 
 	if(nrow(goFile)==0){
 		error <- "ERROR: The ID type of the uploaded list is not entrez gene id. Please use IDMapping function to map other id types to entrez gene id."
@@ -81,7 +81,7 @@ GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pd
 		return(error)
 	}
 
-	data_unclassified <- setdiff(genelist,unique(goFile[,1]))
+	dataUnclassified <- setdiff(geneList,unique(goFile[,1]))
 
 	goFile1 <- tapply(goFile[,1],goFile[,2],length)
 
@@ -89,23 +89,29 @@ GOSlimSummary <- function(organism="hsapiens",genelist,outputFile,outputType="pd
 
 	goFile <- unique(goFile[,c(2,3)])
 
-	goFile1 <- data.frame(goacc=names(goFile1),genenum=goFile1,stringsAsFactors=FALSE)
+	goFile1 <- data.frame(goAcc=names(goFile1),geneNum=goFile1,stringsAsFactors=FALSE)
 
-	colnames(goFile) <- c("goacc","goname")
+	colnames(goFile) <- c("goAcc","goName")
 
-	goFile <- merge(x=goFile,y=goFile1,by="goacc")
+	goFile <- merge(x=goFile,y=goFile1,by="goAcc")
 
 	goFile <- goFile[order(-goFile[,3]),]
-	re <- list(goFile=goFile,data_unclassified=data_unclassified)
+	re <- list(goFile=goFile,dataUnclassified=dataUnclassified)
 	return(re)
 }
 
-.plotData <- function(genelist,goFile,data_unclassified,ontology,color){
+.plotData <- function(geneList,goFile,dataUnclassified,ontology,color){
 	par(mar=c(20,5,2,2))
-	c <- c(length(genelist),goFile[,3],length(data_unclassified))
+	c <- c(length(geneList),goFile[,3],length(dataUnclassified))
 	names(c) <- c("all",goFile[,2],"unclassified")
 	maxC <- max(c)
 	xx <- barplot(c,main=paste("Bar chart of ",ontology," categories",sep=""),col=color,xaxt="n",xlab="",ylim=c(0,1.2*maxC),cex.axis=1.5,las=2,cex.main=1.7)
 	text(x=xx+0.3,y=c+maxC*0.05,labels=c,pos=3,cex=1.5,col="black",srt=90)
 	axis(side=1,at=xx,labels=names(c),las=2,cex.axis=1.5)
+}
+
+
+GOSlimSummary <- function(...) {
+	cat("WARNING: Function GOSlimSummary is deprecated and changed to goSlimSummary!\n")
+	return(goSlimSummary(...))
 }

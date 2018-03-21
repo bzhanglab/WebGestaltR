@@ -1,4 +1,4 @@
-WebGestaltR_GSEA <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatabase="geneontology_Biological_Process",enrichDatabaseFile=NULL,enrichDatabaseType=NULL,enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL,interestGene=NULL,interestGeneType=NULL,collapseMethod="mean",minNum=10,maxNum=500,fdrMethod="BH",sigMethod="fdr",fdrThr=0.05,topThr=10,dNum=20,perNum=1000,lNum=20,is.output=TRUE,outputDirectory=getwd(),projectName=NULL,keepGSEAFolder=FALSE,methodType="R",dagColor="binary",hostName="http://www.webgestalt.org/"){
+WebGestaltRGsea <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatabase="geneontology_Biological_Process",enrichDatabaseFile=NULL,enrichDatabaseType=NULL,enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL,interestGene=NULL,interestGeneType=NULL,collapseMethod="mean",minNum=10,maxNum=500,fdrMethod="BH",sigMethod="fdr",fdrThr=0.05,topThr=10,dNum=20,perNum=1000,lNum=20,isOutput=TRUE,outputDirectory=getwd(),projectName=NULL,keepGseaFolder=FALSE,methodType="R",dagColor="binary",hostName="http://www.webgestalt.org/"){
 
 	if(is.null(projectName)){
 		timeStamp <- gsub("\\.","_",as.character(as.numeric(Sys.time())))
@@ -18,7 +18,7 @@ WebGestaltR_GSEA <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatab
 	interestGeneType <- testNull(interestGeneType)
 
 	################Check parameter################
-	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod,organism=organism,collapseMethod=collapseMethod,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,dNum=dNum,perNum=perNum,lNum=lNum,is.output=is.output,outputDirectory=outputDirectory,keepGSEAFolder=keepGSEAFolder,methodType=methodType,dagColor=dagColor,hostName=hostName)
+	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod,organism=organism,collapseMethod=collapseMethod,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,dNum=dNum,perNum=perNum,lNum=lNum,isOutput=isOutput,outputDirectory=outputDirectory,keepGseaFolder=keepGseaFolder,methodType=methodType,dagColor=dagColor,hostName=hostName)
 
 	if(!is.null(errorTest)){
 		return(errorTest)
@@ -33,9 +33,9 @@ WebGestaltR_GSEA <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatab
 
 	geneSet <- enrichD$geneSet
 	geneSetDes <- enrichD$geneSetDes
-	geneSetDAG <- enrichD$geneSetDAG
+	geneSetDag <- enrichD$geneSetDag
 	geneSetNet <- enrichD$geneSetNet
-	database_standardId <- enrichD$standardId
+	databaseStandardId <- enrichD$standardId
 
 	###########Check input interesting gene list###############
 	cat("Uploading the ID list...\n")
@@ -46,22 +46,22 @@ WebGestaltR_GSEA <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatab
 	}
 
 	if(organism=="others"){
-		interestGene_List <- unique(interestingGeneMap)
+		interestGeneList <- unique(interestingGeneMap)
 	}else{
-		interestStandardID <- interestingGeneMap$standardId
-		interestGene_List <- unique(interestingGeneMap$mapped[,c(interestStandardID,"score")])
+		interestStandardId <- interestingGeneMap$standardId
+		interestGeneList <- unique(interestingGeneMap$mapped[,c(interestStandardId,"score")])
 	}
 
 	##########Create project folder##############
-	if(is.output==TRUE){
+	if(isOutput==TRUE){
 		dir.create(projectDir)
 
 	######Summary gene annotation based on the GOSlim###########
 		if(organism!="others"){
-			if(database_standardId=="entrezgene"){
+			if(databaseStandardId=="entrezgene"){
 				cat("Summary the uploaded ID list by GO Slim data...\n")
-				goslim_output <- file.path(projectDir,paste("goslim_summary_",timeStamp,sep=""))
-				re <- GOSlimSummary(organism=organism,genelist=interestGene_List[,1],outputFile=goslim_output,outputType="png",hostName=hostName)
+				goSlimOutput <- file.path(projectDir,paste("goslim_summary_",timeStamp,sep=""))
+				re <- goSlimSummary(organism=organism,geneList=interestGeneList[,1],outputFile=goSlimOutput,outputType="png",hostName=hostName)
 				if(.hasError(re)){
 					return(re)
 				}
@@ -69,14 +69,14 @@ WebGestaltR_GSEA <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatab
 			write.table(interestingGeneMap$mapped,file=file.path(projectDir,paste("interestingID_Mappingtable_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 			write.table(interestingGeneMap$unmapped,file=file.path(projectDir,paste("interestingID_unmappedList_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE)
 		}else{
-			write.table(interestGene_List,file=file.path(projectDir,paste("interestList_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE)
+			write.table(interestGeneList,file=file.path(projectDir,paste("interestList_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE)
 		}
 	}
 
 	#############Run enrichment analysis###################
 	cat("Perform the enrichment analysis...\n")
 
-	enrichedSig <- GSEAEnrichment(hostName,outputDirectory,timeStamp,interestGene_List,geneSet,minNum=minNum,maxNum=maxNum,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,perNum=perNum,lNum=lNum,is.output=is.output,keepGSEAFolder=keepGSEAFolder)
+	enrichedSig <- gseaEnrichment(hostName,outputDirectory,timeStamp,interestGeneList,geneSet,minNum=minNum,maxNum=maxNum,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,perNum=perNum,lNum=lNum,isOutput=isOutput,keepGseaFolder=keepGseaFolder)
 
 	if(.hasError(enrichedSig)){
 		return(enrichedSig)
@@ -90,19 +90,19 @@ WebGestaltR_GSEA <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatab
 			enrichedSig <- enrichedSig[order(enrichedSig[,"FDR"],enrichedSig[,"PValue"]),]
 		}
 
-		if(organism!="others" && interestGeneType!=interestStandardID){
-			enrichedSig <- mapUserID(enrichedSig,"leadingEdgeID",interestingGeneMap)  ###mapUserID function is in the enrichmentResultProcess_component file
+		if(organism!="others" && interestGeneType!=interestStandardId){
+			enrichedSig <- mapUserId(enrichedSig,"leadingEdgeID",interestingGeneMap)  ###mapUserId function is in the enrichmentResultProcess_component file
 		}
 
-		if(is.output==TRUE){
+		if(isOutput==TRUE){
 			write.table(enrichedSig,file=file.path(projectDir,paste("enrichment_results_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 		}
 	}
 
-	if(is.output==TRUE){
+	if(isOutput==TRUE){
 		##############Create report##################
 		cat("Generate the final report...\n")
-		createReport(hostName=hostName,outputDirectory=outputDirectory,organism=organism,timeStamp=timeStamp,enrichMethod=enrichMethod,geneSet=geneSet,geneSetDes=geneSetDes,geneSetDAG=geneSetDAG,geneSetNet=geneSetNet,interestingGeneMap=interestingGeneMap,enrichedSig=enrichedSig,enrichDatabase=enrichDatabase,enrichDatabaseFile=enrichDatabaseFile,enrichDatabaseType=enrichDatabaseType,enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,interestGeneFile=interestGeneFile,interestGene=interestGene,interestGeneType=interestGeneType,collapseMethod=collapseMethod,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,dNum=dNum,perNum=perNum,lNum=lNum,dagColor=dagColor)
+		createReport(hostName=hostName,outputDirectory=outputDirectory,organism=organism,timeStamp=timeStamp,enrichMethod=enrichMethod,geneSet=geneSet,geneSetDes=geneSetDes,geneSetDag=geneSetDag,geneSetNet=geneSetNet,interestingGeneMap=interestingGeneMap,enrichedSig=enrichedSig,enrichDatabase=enrichDatabase,enrichDatabaseFile=enrichDatabaseFile,enrichDatabaseType=enrichDatabaseType,enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,interestGeneFile=interestGeneFile,interestGene=interestGene,interestGeneType=interestGeneType,collapseMethod=collapseMethod,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,dNum=dNum,perNum=perNum,lNum=lNum,dagColor=dagColor)
 
 		comm <- paste("tar -C ",projectDir," -zcvf ",projectDir,"/Project_",timeStamp,".tar.gz .",sep="")
 		system(comm,ignore.stderr=TRUE,ignore.stdout=TRUE)

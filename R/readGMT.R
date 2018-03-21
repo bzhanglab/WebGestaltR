@@ -1,4 +1,4 @@
-readGMT <- function(gmtFile){
+readGmt <- function(gmtFile){
 #####Change a gmt file to a three column matrix (gene set name, gene set description and genes)#######
 	if(file_extension(gmtFile)!="gmt"){
 		return(gmtFormatError("empty"))
@@ -15,6 +15,7 @@ readGMT <- function(gmtFile){
 		}
 	}
 }
+readGMT <- readGmt
 
 
 .toList <- function(data){
@@ -25,4 +26,9 @@ readGMT <- function(gmtFile){
 	}else{
 		return(NULL)
 	}
+}
+
+readGMT <- function(...) {
+	cat("WARNING: Function readGMT is deprecated and changed to readGmt!\n")
+	return(readGmt(...))
 }

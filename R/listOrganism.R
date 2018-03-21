@@ -1,5 +1,5 @@
 listOrganism <- function(hostName="http://www.webgestalt.org/"){
-	json_data <- fromJSON(file=file.path(hostName,"data","idtypesummary.json"))
-	organisms <- names(json_data)
+	jsonData <- fromJSON(file=file.path(hostName,"data","idtypesummary.json"))
+	organisms <- names(jsonData)
 	return(organisms)
 }

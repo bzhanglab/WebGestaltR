@@ -6,13 +6,13 @@ loadInterestGene <- function(organism="hsapiens",dataType="list",inputGeneFile=N
 			if(is.null(geneType)){
 				return(interestGeneError(type="emptyType"))
 			}else{
-				mapRe <- .uploadGene_existingOrganism(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,geneType=geneType,collapseMethod=collapseMethod,geneSet=geneSet,methodType=methodType,hostName=hostName)
+				mapRe <- .uploadGeneExistingOrganism(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,geneType=geneType,collapseMethod=collapseMethod,geneSet=geneSet,methodType=methodType,hostName=hostName)
 				if(.hasError(mapRe)){
 					return(mapRe)
 				}
 			}
 		}else{
-			mapRe <- .uploadGene_Others(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,geneSet=geneSet)
+			mapRe <- .uploadGeneOthers(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,geneSet=geneSet)
 			if(.hasError(mapRe)){
 				return(mapRe)
 			}
@@ -24,7 +24,7 @@ loadInterestGene <- function(organism="hsapiens",dataType="list",inputGeneFile=N
 	return(mapRe)
 }
 
-loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referenceGene=NULL,referenceGeneType="entrezgene",referenceSet=NULL,collapseMethod="mean",methodType="R",hostName="http://www.webgestalt.org/",geneSet,interestGene_List){
+loadReferenceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referenceGene=NULL,referenceGeneType="entrezgene",referenceSet=NULL,collapseMethod="mean",methodType="R",hostName="http://www.webgestalt.org/",geneSet,interestGeneList){
 	referenceGeneList <- NULL
 	referenceGeneMap <- NULL
 
@@ -36,25 +36,25 @@ loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 				if(is.null(referenceGeneType)){
 					return(referenceGeneError(type="emptyType"))
 				}else{
-					mapRe <- .uploadGene_existingOrganism(organism=organism,dataType="list",inputGeneFile=referenceGeneFile,inputGene=referenceGene,geneType=referenceGeneType,collapseMethod=collapseMethod,geneSet=geneSet,methodType=methodType,hostName=hostName)
+					mapRe <- .uploadGeneExistingOrganism(organism=organism,dataType="list",inputGeneFile=referenceGeneFile,inputGene=referenceGene,geneType=referenceGeneType,collapseMethod=collapseMethod,geneSet=geneSet,methodType=methodType,hostName=hostName)
 					if(.hasError(mapRe)){
 						return(mapRe)
 					}
-					gene_standardId <- identifyStandardId(hostName=hostName,idtype=referenceGeneType,organism=organism,type="interest")
-					referenceGeneList <- mapRe$mapped[,gene_standardId]
+					geneStandardId <- identifyStandardId(hostName=hostName,idType=referenceGeneType,organism=organism,type="interest")
+					referenceGeneList <- mapRe$mapped[,geneStandardId]
 				}
 			}else{ ###referenceGeneFile and referenceGene are both NULL. But referenceSet is not NULL
 				refS <- listReferenceSet(organism=organism,hostName=hostName)
 				if(length(which(refS==referenceSet))==0){
 					return(referenceGeneError(type="existingRef"))
 				}
-				ref_standardId <- identifyStandardId(hostName=hostName,idtype=referenceSet,organism=organism,type="reference")
-				referenceGeneList <- fread(input=file.path(hostName,"data","reference",paste(organism,"_",referenceSet,"_",ref_standardId,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE)
+				refStandardId <- identifyStandardId(hostName=hostName,idType=referenceSet,organism=organism,type="reference")
+				referenceGeneList <- fread(input=file.path(hostName,"data","reference",paste(organism,"_",referenceSet,"_",refStandardId,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE)
 				referenceGeneList <- as.character(unique(referenceGeneList[,1]))
 			}
 		}else{ ##For other organisms
 			if(!is.null(referenceGeneFile) || !is.null(referenceGene)){
-				referenceGeneList <- .uploadGene_Others(dataType="list",inputGeneFile=referenceGeneFile,inputGene=referenceGene,geneSet=geneSet)
+				referenceGeneList <- .uploadGeneOthers(dataType="list",inputGeneFile=referenceGeneFile,inputGene=referenceGene,geneSet=geneSet)
 				if(.hasError(referenceGeneList)){
 					return(referenceGeneList)
 				}
@@ -65,37 +65,37 @@ loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 	}
 
 	##compare interest gene list and reference gene list
-	if(length(intersect(interestGene_List,intersect(referenceGeneList,geneSet[,3])))==0){
+	if(length(intersect(interestGeneList,intersect(referenceGeneList,geneSet[,3])))==0){
 		return(referenceGeneError(type="interestEmpty"))
 	}
 	return(referenceGeneList)
 }
 
 
-.uploadGene_existingOrganism <- function(organism,dataType,inputGeneFile,inputGene,geneType,collapseMethod,geneSet,methodType,hostName){
-	geneMap <- IDMapping(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=geneType,targetIdType=NULL,collapseMethod=collapseMethod,mappingOutput=FALSE,methodType=methodType,hostName=hostName)
+.uploadGeneExistingOrganism <- function(organism,dataType,inputGeneFile,inputGene,geneType,collapseMethod,geneSet,methodType,hostName){
+	geneMap <- idMapping(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=geneType,targetIdType=NULL,collapseMethod=collapseMethod,mappingOutput=FALSE,methodType=methodType,hostName=hostName)
 
 	if(.hasError(geneMap)){
 		return(geneMap)
 	}
 
-	#gene_standardId <- identifyStandardId(hostName=hostName,idtype=geneType,organism=organism,type="interest")  ##identifyStandardId in IDMapping_component.R
+	#gene_standardId <- identifyStandardId(hostName=hostName,idtype=geneType,organism=organism,type="interest")  ##identifyStandardId in idMappingComponent.R
 	#if(gene_standardId!=databaseStandardId){  ###the standardId of the input genes should be the same with the standardarId of the functional database
 #	return(interestGeneError(type="unmatch"))
 #}
 
-	geneMap_MappedList <- geneMap$mapped
+	geneMapMappedList <- geneMap$mapped
 	standardId <- geneMap$standardId
 
-	gene_List <- as.character(unique(geneMap_MappedList[,standardId]))
-	ov <- intersect(gene_List,geneSet[,3])
+	geneList <- as.character(unique(geneMapMappedList[,standardId]))
+	ov <- intersect(geneList,geneSet[,3])
 
 	if(length(ov)==0){
 		return(interestGeneError(type="unannotated"))
 	}
 
 	###Because if all genes are annotated to only one category, GSEA will return the error, we need to avoid this error by reporting the error in the R#
-	gL <- geneSet[geneSet[,3] %in% gene_List,,drop=FALSE]
+	gL <- geneSet[geneSet[,3] %in% geneList,,drop=FALSE]
 	gL <- tapply(gL[,3],gL[,1],length)
 	if(length(gL)==1){
 		return(interestGeneError(type="onlyOne"))
@@ -104,23 +104,23 @@ loadReferneceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 }
 
 
-.uploadGene_Others <- function(dataType,inputGeneFile,inputGene,geneSet){
-	gene_List <- formatCheck(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
-	if(.hasError(gene_List)){
-		return(gene_List)
+.uploadGeneOthers <- function(dataType,inputGeneFile,inputGene,geneSet){
+	geneList <- formatCheck(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
+	if(.hasError(geneList)){
+		return(geneList)
 	}
-	gene_List <- as.data.frame(gene_List,stringsAsFactors=F)
-	ov <- intersect(gene_List[,1],geneSet[,3])
+	geneList <- as.data.frame(geneList,stringsAsFactors=F)
+	ov <- intersect(geneList[,1],geneSet[,3])
 	if(length(ov)==0){
 		return(interestGeneError(type="unannotated"))
 	}
 
 	###Because if all genes are annotated to only one category, GSEA will return the error, we need to avoid this error by reporting the error in the R#
-	gL <- geneSet[geneSet[,3] %in% gene_List[,1],,drop=FALSE]
+	gL <- geneSet[geneSet[,3] %in% geneList[,1],,drop=FALSE]
 	gL <- tapply(gL[,3],gL[,1],length)
 	if(length(gL)==1){
 		return(interestGeneError(type="onlyOne"))
 	}
-	####gene_list is a matrix with one or two columns#####
-	return(gene_List)
+	####geneList is a matrix with one or two columns#####
+	return(geneList)
 }

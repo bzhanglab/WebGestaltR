@@ -27,7 +27,7 @@ ga('send', 'pageview');
 	<script type="text/javascript" src="{{hostName}}/js/cytoscapeweb/js/min/cytoscapeweb.min.js"></script>
 	<script type="text/javascript" src="{{hostName}}/js/cytoscapeWeb.js"></script>
 	{{/geneSetNet}}
-	{{#geneSetDAG}}
+	{{#geneSetDag}}
 	<script type="text/javascript" src="{{hostName}}/js/d3/d3.v3.min.js"></script>
 	<script type="text/javascript" src="{{hostName}}/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="{{hostName}}/js/jquery.tipsy.js"></script>
@@ -52,7 +52,7 @@ ga('send', 'pageview');
 	<script type="text/javascript" src="{{hostName}}/js/xtrace_utils.js"></script>
 	<script type="text/javascript" src="{{hostName}}/js/xtrace_graph.js"></script>
 	<script type="text/javascript" src="{{hostName}}/js/plotDAG.js"></script>
-	{{/geneSetDAG}}
+	{{/geneSetDag}}
 {{/organismIsOthers}}
 <script type="text/javascript" src="{{hostName}}/js/tooltipster.bundle.min.js"></script>
 <script>
@@ -66,14 +66,14 @@ $(document).ready(function(){
 });
 </script>
 <link href="{{hostName}}/css/jquery-ui.css" rel="stylesheet" type="text/css">
-{{#geneSetDAG}}
+{{#geneSetDag}}
 <link href="{{hostName}}/css/xtrace.css" rel="stylesheet" type="text/css">
 <link href="{{hostName}}/css/tipsy.css" rel="stylesheet" type="text/css">
 <link href="{{hostName}}/css/jquery.contextMenu.css" rel="stylesheet" type="text/css">
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="{{hostName}}/css/graph.css" rel="stylesheet" type="text/css">
-{{/geneSetDAG}}
+{{/geneSetDag}}
 <link href="{{hostName}}/css/report.css" rel="stylesheet" type="text/css">
 <link href="{{hostName}}/css/zebra.css" rel="stylesheet" type="text/css">
 <link href="{{hostName}}/css/search.css" rel="stylesheet" type="text/css">

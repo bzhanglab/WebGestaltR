@@ -1,4 +1,4 @@
-IDMapping_gene <- function(organism="hsapiens",dataType="list",inputGeneFile=NULL,inputGene=NULL,sourceIdType,standardID,targetIdType,collapseMethod="mean",mappingOutput=FALSE, outputFileName="",methodType="R",hostName="http://www.webgestalt.org/"){
+idMappingGene <- function(organism="hsapiens",dataType="list",inputGeneFile=NULL,inputGene=NULL,sourceIdType,standardId,targetIdType,collapseMethod="mean",mappingOutput=FALSE, outputFileName="",methodType="R",hostName="http://www.webgestalt.org/"){
 	goldIdType <- c("entrezgene","genesymbol","genename")
 
 	largeIdList <- fread(input=file.path(hostName,"data","largeIdList.txt"),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
@@ -6,14 +6,14 @@ IDMapping_gene <- function(organism="hsapiens",dataType="list",inputGeneFile=NUL
 
 	###########Check input data type###############
 
-	inputGene <- IDMapping_input(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
+	inputGene <- idMappingInput(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
 	if(.hasError(inputGene)){
 		return(inputGene)
 	}
 
 	##########ID Mapping Specify to gene level###############
 
-	re <- .processSourceIDMapGene(hostName=hostName,organism=organism,largeIdList=largeIdList,inputGene=inputGene,standardID=standardID,dataType=dataType,idType=sourceIdType,collapseMethod=collapseMethod,methodType=methodType)
+	re <- .processSourceIdMapGene(hostName=hostName,organism=organism,largeIdList=largeIdList,inputGene=inputGene,standardId=standardId,dataType=dataType,idType=sourceIdType,collapseMethod=collapseMethod,methodType=methodType)
 	if(.hasError(re)){
 		return(re)
 	}
@@ -24,14 +24,14 @@ IDMapping_gene <- function(organism="hsapiens",dataType="list",inputGeneFile=NUL
 	inputGene <- unique(inputGene)
 
 	if(length(which(goldIdType==targetIdType))==0 && sourceIdType!=targetIdType){
-		x <- unique(inputGene[,standardID])
-		targetF <- IDMapping_map(largeIdList=largeIdList,sourceIdType=targetIdType,standardID=standardID,hostName=hostName,organism=organism,inputGene=x,mapType="target")
+		x <- unique(inputGene[,standardId])
+		targetF <- idMappingMap(largeIdList=largeIdList,sourceIdType=targetIdType,standardId=standardId,hostName=hostName,organism=organism,inputGene=x,mapType="target")
 		if(.hasError(targetF)){
 			return(targetF)
 		}
 		targetF <- targetF$mapF
 
-		inputGene1 <- merge(x=inputGene,y=targetF,by=standardID)
+		inputGene1 <- merge(x=inputGene,y=targetF,by=standardId)
 		inputGene1 <- unique(inputGene1)
 		unMapF2 <- setdiff(inputGene[,"userid"],inputGene1[,"userid"])
 		unMapF <- unique(c(unMapF,unMapF2))
@@ -52,16 +52,16 @@ IDMapping_gene <- function(organism="hsapiens",dataType="list",inputGeneFile=NUL
 
 	#############Output#######################
 
-	IDMapping_output(mappingOutput,outputFileName,unMapF,dataType,inputGene,sourceIdType,targetIdType)
+	idMappingOutput(mappingOutput,outputFileName,unMapF,dataType,inputGene,sourceIdType,targetIdType)
 	r <- list(mapped=inputGene,unmapped=unMapF)
 	return(r)
 }
 
 
-.processSourceIDMapGene <- function(hostName,organism,largeIdList,inputGene,standardID,dataType,idType,collapseMethod,methodType){
-	geneSymbol <- fread(input=file.path(hostName,"data","xref",paste(organism,"_genesymbol_",standardID,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
+.processSourceIdMapGene <- function(hostName,organism,largeIdList,inputGene,standardId,dataType,idType,collapseMethod,methodType){
+	geneSymbol <- fread(input=file.path(hostName,"data","xref",paste(organism,"_genesymbol_",standardId,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
 
-	geneName <- fread(input=file.path(hostName,"data","xref",paste(organism,"_genename_",standardID,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
+	geneName <- fread(input=file.path(hostName,"data","xref",paste(organism,"_genename_",standardId,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
 
 	colnames(geneSymbol) <- c("entrezgeneS","genesymbol")
 
@@ -85,7 +85,7 @@ IDMapping_gene <- function(organism="hsapiens",dataType="list",inputGeneFile=NUL
 		inputGeneL <- unique(inputGene[,3])
 	}
 
-	mapR <- IDMapping_map(largeIdList=largeIdList,sourceIdType=idType,standardID=standardID,hostName=hostName,organism=organism,inputGene=inputGeneL,mapType="source",methodType=methodType)
+	mapR <- idMappingMap(largeIdList=largeIdList,sourceIdType=idType,standardId=standardId,hostName=hostName,organism=organism,inputGene=inputGeneL,mapType="source",methodType=methodType)
 	if(.hasError(mapR)){
 		return(mapR)
 	}

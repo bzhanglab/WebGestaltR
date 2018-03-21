@@ -1,13 +1,13 @@
-summaryTab_description <- function(timeStamp,organism,interestGeneFile,interestGene,interestGeneType,enrichMethod,enrichDatabase,enrichDatabaseFile,enrichDatabaseType,enrichDatabaseDescriptionFile,interestingGeneMap,referenceGene_List,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,perNum,lNum,geneSet){
+summaryTabDescription <- function(timeStamp,organism,interestGeneFile,interestGene,interestGeneType,enrichMethod,enrichDatabase,enrichDatabaseFile,enrichDatabaseType,enrichDatabaseDescriptionFile,interestingGeneMap,referenceGeneList,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,perNum,lNum,geneSet){
 	if(enrichMethod=="ORA"){
-		methodSpecificContent <- specificParameterSummaryOra(organism,referenceGene_List,geneSet,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,interestingGeneMap)
+		methodSpecificContent <- specificParameterSummaryOra(organism,referenceGeneList,geneSet,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,interestingGeneMap)
 	}
 
 	if(enrichMethod=="GSEA"){
 		methodSpecificContent <- specificParameterSummaryGsea(organism,interestingGeneMap,geneSet,minNum,maxNum,sigMethod,fdrThr,topThr,perNum,lNum,enrichedSig,dNum)
 	}
 
-	standardId <- interestingGeneMap$standardId
+	standardId <- unname(interestingGeneMap$standardId)
 	template <- readLines(system.file("inst/templates/summaryTab.mustache", package="WebGestaltR"))
 	data <- list(timeStamp=timeStamp, enrichMethod=enrichMethod, organism=organism, organismIsOthers=organism=="others",
 		enrichDatabase=enrichDatabase, enrichDatabaseIsOthers=enrichDatabase=="others", enrichDatabaseFile=enrichDatabaseFile,
@@ -16,7 +16,7 @@ summaryTab_description <- function(timeStamp,organism,interestGeneFile,interestG
 		interestGeneFileBase=basename(interestGeneFile), interestGeneType=interestGeneType,
 		numUserId=nrow(interestingGeneMap$mapped)+length(interestingGeneMap$unmapped),
 		numMappedUserId=nrow(interestingGeneMap$mapped), numUniqueMappedId=length(unique(interestingGeneMap$mapped[,standardId])),
-		numUnmappedUserId=length(interestingGeneMap$unmapped), idIsEntrezGene=standardId[["staIDs"]]=="entrezgene", standardId=standardId,
+		numUnmappedUserId=length(interestingGeneMap$unmapped), idIsEntrezGene=standardId=="entrezgene", standardId=standardId,
 		methodSpecificContent=methodSpecificContent
 		)
 
@@ -24,19 +24,19 @@ summaryTab_description <- function(timeStamp,organism,interestGeneFile,interestG
 }
 
 
-specificParameterSummaryOra <- function(organism,referenceGene_List,geneSet,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,interestingGeneMap){
+specificParameterSummaryOra <- function(organism,referenceGeneList,geneSet,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,interestingGeneMap){
 	organismIsOthers <- organism == "others"
 	if(!organismIsOthers){
 		standardId <- interestingGeneMap$standardId
-		interestGene_List <- unique(interestingGeneMap$mapped[,standardId])
-		numAnnoRefUserId <- length(intersect(interestGene_List,intersect(referenceGene_List,geneSet[,3])))
+		interestGeneList <- unique(interestingGeneMap$mapped[,standardId])
+		numAnnoRefUserId <- length(intersect(interestGeneList,intersect(referenceGeneList,geneSet[,3])))
 	}else{  ###for others
 		standardId <- NULL
-		interestGene_List <- unique(interestingGeneMap[,1])
+		interestGeneList <- unique(interestingGeneMap[,1])
 		numAnnoRefUserId <- NULL
 
 	}
-	numAnnoRefId <- length(intersect(referenceGene_List,geneSet[,3]))
+	numAnnoRefId <- length(intersect(referenceGeneList,geneSet[,3]))
 	hasEnrichedSig <- !is.null(enrichedSig)
 	if (hasEnrichedSig) {
 		numEnrichedSig <- nrow(enrichedSig)
@@ -45,10 +45,10 @@ specificParameterSummaryOra <- function(organism,referenceGene_List,geneSet,refe
 		numEnrichedSig <- NULL
 		showAll <- NULL
 	}
-	data <- list(organismIsOthers=organismIsOthers, numUniqueUserId=length(interestGene_List), standardId=standardId,
+	data <- list(organismIsOthers=organismIsOthers, numUniqueUserId=length(interestGeneList), standardId=standardId,
 		numAnnoRefUserId=numAnnoRefUserId, hasRefGeneFile=!is.null(referenceGeneFile), referenceGeneFile=referenceGeneFile,
 		referenceGeneType=referenceGeneType, hasRefGene=!is.null(referenceGene), referenceSet=referenceSet,
-		numRefGene=length(referenceGene_List), numAnnoRefId=length(intersect(referenceGene_List,geneSet[,3])), minNum=minNum,
+		numRefGene=length(referenceGeneList), numAnnoRefId=length(intersect(referenceGeneList,geneSet[,3])), minNum=minNum,
 		maxNum=maxNum, fdrMethod=fdrMethod, methodIsFdr=sigMethod=="fdr", methodIsTop=sigMethod=="top", fdrThr=fdrThr,
 		topThr=topThr, hasEnrichedSig=hasEnrichedSig, showAll=showAll, numEnrichedSig=numEnrichedSig
 		)
@@ -61,13 +61,13 @@ specificParameterSummaryGsea <- function(organism,interestingGeneMap,geneSet,min
 	organismIsOthers <- organism == "others"
 	if(!organismIsOthers){
 		standardId <- interestingGeneMap$standardId
-		interestGene_List <- unique(interestingGeneMap$mapped[,standardId])
-		numUniqueUserId <- nrow(interestGene_List)
-		numAnnoUserId <- length(intersect(interestGene_List,geneSet[,3]))
+		interestGeneList <- unique(interestingGeneMap$mapped[,standardId])
+		numUniqueUserId <- nrow(interestGeneList)
+		numAnnoUserId <- length(intersect(interestGeneList,geneSet[,3]))
 	} else {
 		standardId <- NULL
-		interestGene_List <- unique(interestingGeneMap[,1])
-		numUniqueUserId <- length(interestGene_List)
+		interestGeneList <- unique(interestingGeneMap[,1])
+		numUniqueUserId <- length(interestGeneList)
 		numAnnoUserId <- NULL
 	}
 
