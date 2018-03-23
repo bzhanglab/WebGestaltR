@@ -58,6 +58,7 @@ loadReferenceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 				if(.hasError(referenceGeneList)){
 					return(referenceGeneList)
 				}
+				referenceGeneList <- as.character(unique(referenceGeneList[,1]))
 			}else{
 				return(referenceGeneError(type="empty"))
 			}
