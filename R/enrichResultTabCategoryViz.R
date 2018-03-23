@@ -75,7 +75,7 @@ enrichResultOthers <- function(enrichMethod,enrichedSig,geneSetDes,fdrMethod,dNu
 	extractSig <- data.frame(id=enrichedSigSub[,"geneset"],link=enrichedSigSub[,"link"],stringsAsFactors=FALSE)
 
 	if(enrichMethod=="ORA"){
-		extractSig$statistic <- paste("C=",enrichedSigSub[,"C"],"; O=",enrichedSigSub[,"O"],"; E=",round(enrichedSigSub[,"E"],digits=2),"; R=",round(enrichedSigSub[,"R"],digits=2),"; PValue=",format(enrichedSigSub[,"P Value"],scientific=TRUE,digits=3),"; FDR=",format(enrichedSigSub[,"FDR"],scientific=TRUE,digits=3),sep="")
+		extractSig$statistic <- paste("C=",enrichedSigSub[,"C"],"; O=",enrichedSigSub[,"O"],"; E=",round(enrichedSigSub[,"E"],digits=2),"; R=",round(enrichedSigSub[,"R"],digits=2),"; PValue=",format(enrichedSigSub[,"PValue"],scientific=TRUE,digits=3),"; FDR=",format(enrichedSigSub[,"FDR"],scientific=TRUE,digits=3),sep="")
 		extractSig$genes <- gsub(",|;"," ",enrichedSigSub[,"overlapID"])
 		extractSig$color <- rep("black", nrow(extractSig))
 	} else if (enrichMethod=="GSEA"){
