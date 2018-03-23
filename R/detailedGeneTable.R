@@ -46,9 +46,9 @@ detailedGeneTable <- function(outputHtmlFile,organism,enrichMethod,fdrMethod,enr
 
 	data$hasGeneSetNet <- !is.null(geneSetNet)
 	if(data$hasGeneSetNet) {
-		enrichedCategories$geneSymbolList <- sapply(tableContent,function(x) {return(paste(x[,"genesymbol"],collapse=";"))})
+		enrichedCategories$geneSymbolList <- sapply(tableContent,function(x) {y <- unlist(x); return(paste(y[names(y)=='genesymbol'],collapse=";"))})
 		if(enrichMethod=="GSEA"){
-			enrichedCategories$scoreList <- sapply(tableContent,function(x) {return(paste(x[,"score"],collapse=";"))})
+			enrichedCategories$scoreList <- sapply(tableContent,function(x) {y <- unlist(x); return(paste(y[names(y)=="score"],collapse=";"))})
 		}
 	}
 

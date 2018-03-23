@@ -24,13 +24,11 @@
 </nav></div>
 <table id="Table{{index}}" class="zebra"><thead><tr>
 <th colspan="{{numCol}}">
-	{{#hasGeneSetDes}}
-	<a id="{{geneset}}" style="color:black" href="{{eLink}}" target="_blank"><b>FuncSet: {{geneset}} &nbsp&nbsp&nbsp&nbsp&nbsp&nbspName: {{description}}</b></a>
-	{{/hasGeneSetDes}}
+	<a id="{{geneset}}" style="color:black" href="{{eLink}}" target="_blank"><b>FuncSet: {{geneset}}{{#hasGeneSetDes}}&nbsp&nbsp&nbsp&nbsp&nbsp&nbspName: {{description}}{{/hasGeneSetDes}}</b></a>
 </th></tr>
 <tr><th colspan="{{numCol}}">
 	{{#methodIsOra}}
-	C={{C}}; O={{O}}; E={{E}}; R={{R}}; P Value={{PValue}}; FDR={{fdr}}
+	C={{C}}; O={{O}}; E={{E}}; R={{R}}; P Value={{PValue}}; FDR={{FDR}}
 	{{/methodIsOra}}
 	{{#methodIsGsea}}
 	Size={{size}}; L={{leadingEdgeNum}}; ES={{ES}}; NES={{NES}}; P Value={{PValue}}; FDR={{FDR}}
