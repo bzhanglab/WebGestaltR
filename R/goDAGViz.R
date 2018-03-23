@@ -80,7 +80,7 @@ createJsonFile <- function(enrichedGo,enrichMethod,desFile,dagFile,reportDir,out
 					sig <- "red"
 				}else{
 					x <- ifelse(f==0,-log10(2.2e-16),-log10(f))
-					sig <- colF[max(which(myBreak<x))]
+					sig <- colF[max(which(myBreak<=x))]
 				}
 			}
 			if(enrichMethod=="GSEA"){
@@ -92,7 +92,7 @@ createJsonFile <- function(enrichedGo,enrichMethod,desFile,dagFile,reportDir,out
 					sig <- ifelse(nes>0,"red","blue")
 				}else{
 					x <- ifelse(f==0,sign(nes)*(-log10(2.2e-16)),sign(nes)*(-log10(f)))
-					sig <- colF[max(which(myBreak<x))]
+					sig <- colF[max(which(myBreak<=x))]
 				}
 			}
 		}else{
