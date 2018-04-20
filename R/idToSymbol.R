@@ -9,7 +9,7 @@
 #
 idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
                        inputGene=NULL, sourceIdType="ensembl_gene_id", collapseMethod="mean",
-                       mappingOutput=FALSE, methodType="R", outputFileName=NULL, verbose=TRUE,
+                       mappingOutput=FALSE, outputFileName=NULL, verbose=TRUE,
                        hostName="http://www.webgestalt.org/") {
 	# various error checking
 	errorTest <- .hostNameError(hostName)
@@ -39,7 +39,7 @@ idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
 		if(mappingOutput && is.null(outputFileName)){
 			outputFileName <- paste0("wgr_", dataType)
 		}
-		geneMap <- idMappingGene(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=sourceIdType,standardId="entrezgene",targetIdType="genesymbol", collapseMethod=collapseMethod,mappingOutput=mappingOutput,outputFileName=outputFileName,methodType=methodType,hostName=hostName)
+		geneMap <- idMappingGene(organism=organism, dataType=dataType, inputGeneFile=inputGeneFile, inputGene=inputGene, sourceIdType=sourceIdType, standardId="entrezgene", targetIdType="genesymbol",  collapseMethod=collapseMethod, mappingOutput=mappingOutput, outputFileName=outputFileName, hostName=hostName)
 		return(geneMap)
 	} else if(dataType == "matrix"){
 		if(mappingOutput && is.null(outputFileName)){
@@ -52,7 +52,7 @@ idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
 			inputMat <- .testMatrixFormat(inputGene, collapseMethod)
 		}
 		inputId <- rownames(inputMat)
-		geneMap <- idMappingGene(organism=organism,dataType="list",inputGeneFile=NULL,inputGene=inputId,sourceIdType=sourceIdType,standardId="entrezgene",targetIdType="genesymbol", mappingOutput=FALSE,methodType=methodType,hostName=hostName)
+		geneMap <- idMappingGene(organism=organism, dataType="list", inputGeneFile=NULL, inputGene=inputId, sourceIdType=sourceIdType, standardId="entrezgene", targetIdType="genesymbol",  mappingOutput=FALSE, hostName=hostName)
 		idMap <- geneMap$mapped[,c(1,2)]
 		id <- as.vector(idMap[,2])
 		inputMat <- inputMat[idMap[,1],]

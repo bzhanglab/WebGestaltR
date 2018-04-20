@@ -1,6 +1,6 @@
-idMapping <- function(organism="hsapiens",dataType="list",inputGeneFile=NULL,inputGene=NULL,sourceIdType,targetIdType=NULL,collapseMethod="mean",mappingOutput=FALSE, outputFileName="",methodType="R",hostName="http://www.webgestalt.org/"){
+idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, sourceIdType, targetIdType=NULL, collapseMethod="mean", mappingOutput=FALSE, outputFileName="", hostName="http://www.webgestalt.org/"){
 	#############Check general parameters########
-	errorTest <- parameterErrorMessage(organism=organism,dataType=dataType,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName,mappingOutput=mappingOutput)
+	errorTest <- parameterErrorMessage(organism=organism, dataType=dataType, collapseMethod=collapseMethod, hostName=hostName, mappingOutput=mappingOutput)
 
 	if(!is.null(errorTest)){
 		return(errorTest)
@@ -33,11 +33,11 @@ idMapping <- function(organism="hsapiens",dataType="list",inputGeneFile=NULL,inp
 
 	##########gene level ID Mapping##########
 	if(standardSource=="entrezgene"){
-		idMap <- idMappingGene(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=sourceIdType,targetIdType=targetIdType,collapseMethod=collapseMethod,mappingOutput=mappingOutput,outputFileName=outputFileName,methodType=methodType,hostName=hostName)
+		idMap <- idMappingGene(organism=organism, dataType=dataType, inputGeneFile=inputGeneFile, inputGene=inputGene, sourceIdType=sourceIdType, targetIdType=targetIdType, collapseMethod=collapseMethod, mappingOutput=mappingOutput, outputFileName=outputFileName, hostName=hostName)
 	}
 
 	if(standardSource=="phosphositeSeq"){
-		idMap <- idMappingPhosphosite(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=sourceIdType,targetIdType=targetIdType,collapseMethod=collapseMethod,mappingOutput=mappingOutput,outputFileName=outputFileName,methodType=methodType,hostName=hostName)
+		idMap <- idMappingPhosphosite(organism=organism, dataType=dataType, inputGeneFile=inputGeneFile, inputGene=inputGene, sourceIdType=sourceIdType, targetIdType=targetIdType, collapseMethod=collapseMethod, mappingOutput=mappingOutput, outputFileName=outputFileName, hostName=hostName)
 	}
 
 	if(.hasError(idMap)){

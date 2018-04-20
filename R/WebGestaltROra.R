@@ -1,4 +1,4 @@
-WebGestaltROra <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabase="geneontology_Biological_Process",enrichDatabaseFile=NULL,enrichDatabaseType=NULL,enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL,interestGene=NULL,interestGeneType=NULL,collapseMethod="mean",referenceGeneFile=NULL,referenceGene=NULL,referenceGeneType=NULL,referenceSet=NULL,minNum=10,maxNum=500,fdrMethod="BH",sigMethod="fdr",fdrThr=0.05,topThr=10,dNum=20,isOutput=TRUE,outputDirectory=getwd(),projectName=NULL,methodType="R",dagColor="binary",hostName="http://www.webgestalt.org/"){
+WebGestaltROra <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", hostName="http://www.webgestalt.org/"){
 
 	if(is.null(projectName)){
 		timeStamp <- gsub("\\.","_",as.character(as.numeric(Sys.time())))
@@ -22,7 +22,7 @@ WebGestaltROra <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabase
 	referenceSet <- testNull(referenceSet)
 
 	################Check parameter################
-	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod,organism=organism,collapseMethod=collapseMethod,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,dNum=dNum,isOutput=isOutput,outputDirectory=outputDirectory,methodType=methodType,dagColor=dagColor,hostName=hostName)
+	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod, organism=organism, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, isOutput=isOutput, outputDirectory=outputDirectory, dagColor=dagColor, hostName=hostName)
 
 	if(!is.null(errorTest)){
 		return(errorTest)
@@ -30,7 +30,7 @@ WebGestaltROra <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabase
 
 	#############Check enriched database#############
 	cat("Uploading the functional categories...\n")
-	enrichD <- loadGeneSet(organism=organism,enrichDatabase=enrichDatabase,enrichDatabaseFile=enrichDatabaseFile,enrichDatabaseType=enrichDatabaseType,enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName)
+	enrichD <- loadGeneSet(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, collapseMethod=collapseMethod, hostName=hostName)
 	if(.hasError(enrichD)){
 		return(enrichD)
 	}
@@ -43,7 +43,7 @@ WebGestaltROra <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabase
 
 	###########Check input interesting gene list###############
 	cat("Uploading the ID list...\n")
-	interestingGeneMap <- loadInterestGene(organism=organism,dataType="list",inputGeneFile=interestGeneFile,inputGene=interestGene,geneType=interestGeneType,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName,geneSet=geneSet)
+	interestingGeneMap <- loadInterestGene(organism=organism, dataType="list", inputGeneFile=interestGeneFile, inputGene=interestGene, geneType=interestGeneType, collapseMethod=collapseMethod, hostName=hostName, geneSet=geneSet)
 
 	if(.hasError(interestingGeneMap)){
 		return(interestingGeneMap)
@@ -60,7 +60,7 @@ WebGestaltROra <- function(enrichMethod="ORA",organism="hsapiens",enrichDatabase
 	cat("Uploading the reference list...\n")
 	referenceGeneList <- NULL
 
-	referenceGeneList <- loadReferenceGene(organism=organism,referenceGeneFile=referenceGeneFile,referenceGene=referenceGene,referenceGeneType=referenceGeneType,referenceSet=referenceSet,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName,geneSet=geneSet,interestGeneList=interestGeneList)
+	referenceGeneList <- loadReferenceGene(organism=organism, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, collapseMethod=collapseMethod, hostName=hostName, geneSet=geneSet, interestGeneList=interestGeneList)
 
 	if(.hasError(referenceGeneList)){
 		return(referenceGeneList)

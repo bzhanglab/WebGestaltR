@@ -1,4 +1,4 @@
-WebGestaltRGsea <- function(enrichMethod="GSEA",organism="hsapiens",enrichDatabase="geneontology_Biological_Process",enrichDatabaseFile=NULL,enrichDatabaseType=NULL,enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL,interestGene=NULL,interestGeneType=NULL,collapseMethod="mean",minNum=10,maxNum=500,fdrMethod="BH",sigMethod="fdr",fdrThr=0.05,topThr=10,dNum=20,perNum=1000,lNum=20,isOutput=TRUE,outputDirectory=getwd(),projectName=NULL,keepGseaFolder=FALSE,methodType="R",dagColor="binary",hostName="http://www.webgestalt.org/"){
+WebGestaltRGsea <- function(enrichMethod="GSEA", organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, lNum=20, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, keepGseaFolder=FALSE, dagColor="binary", hostName="http://www.webgestalt.org/") {
 
 	if(is.null(projectName)){
 		timeStamp <- gsub("\\.","_",as.character(as.numeric(Sys.time())))
@@ -18,7 +18,7 @@ WebGestaltRGsea <- function(enrichMethod="GSEA",organism="hsapiens",enrichDataba
 	interestGeneType <- testNull(interestGeneType)
 
 	################Check parameter################
-	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod,organism=organism,collapseMethod=collapseMethod,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,dNum=dNum,perNum=perNum,lNum=lNum,isOutput=isOutput,outputDirectory=outputDirectory,keepGseaFolder=keepGseaFolder,methodType=methodType,dagColor=dagColor,hostName=hostName)
+	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod, organism=organism, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, perNum=perNum, lNum=lNum, isOutput=isOutput, outputDirectory=outputDirectory, keepGseaFolder=keepGseaFolder, dagColor=dagColor, hostName=hostName)
 
 	if(!is.null(errorTest)){
 		return(errorTest)
@@ -26,7 +26,7 @@ WebGestaltRGsea <- function(enrichMethod="GSEA",organism="hsapiens",enrichDataba
 
 	#############Check enriched database#############
 	cat("Uploading the functional categories...\n")
-	enrichD <- loadGeneSet(organism=organism,enrichDatabase=enrichDatabase,enrichDatabaseFile=enrichDatabaseFile,enrichDatabaseType=enrichDatabaseType,enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName)
+	enrichD <- loadGeneSet(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, collapseMethod=collapseMethod, hostName=hostName)
 	if(.hasError(enrichD)){
 		return(enrichD)
 	}
@@ -39,7 +39,7 @@ WebGestaltRGsea <- function(enrichMethod="GSEA",organism="hsapiens",enrichDataba
 
 	###########Check input interesting gene list###############
 	cat("Uploading the ID list...\n")
-	interestingGeneMap <- loadInterestGene(organism=organism,dataType="rnk",inputGeneFile=interestGeneFile,inputGene=interestGene,geneType=interestGeneType,collapseMethod=collapseMethod,methodType=methodType,hostName=hostName,geneSet=geneSet)
+	interestingGeneMap <- loadInterestGene(organism=organism, dataType="rnk", inputGeneFile=interestGeneFile, inputGene=interestGene, geneType=interestGeneType, collapseMethod=collapseMethod, hostName=hostName, geneSet=geneSet)
 
 	if(.hasError(interestingGeneMap)){
 		return(interestingGeneMap)

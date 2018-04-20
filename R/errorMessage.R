@@ -192,17 +192,6 @@ parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 	}
 }
 
-.methodTypeError <- function(methodType){   ##Input method type error
-	methodTypeA <- c("R","Python")
-	if(!(methodType %in% methodTypeA)){
-		error <- "ERROR: Please select 'R' or 'Python' to read the large ID mapping table (e.g. dbSNP)."
-		cat(error)
-		return(error)
-	}else{
-		return(NULL)
-	}
-}
-
 .dagColorError <- function(dagColor){   ##Input dag color type error
 	dagColorList <- c("binary","continuous")
 	if(!(dagColor %in% dagColorList)){
@@ -351,15 +340,6 @@ idMappingError <- function(type,idType="",topF=""){
 	if(type=="unmapped"){
 		error <- paste("ERROR: The ID type of the uploaded list is not consistent with the input ID type ",idType,". Examples of the input ID type: ",topF,".",sep="")
 	}
-
-	if(type=="python"){
-		error <- "ERROR: R can not find Python in the system."
-	}
-
-	if(type=="pandas"){
-		error <- "ERROR: Please install the python module 'pandas'."
-	}
-
 	if(type=="empty"){
 		error <- "ERROR: No IDs are mapped. Please check your input."
 	}

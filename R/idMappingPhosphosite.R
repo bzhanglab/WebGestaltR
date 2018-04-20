@@ -1,4 +1,4 @@
-idMappingPhosphosite <- function(organism="hsapiens",dataType="list",inputGeneFile=NULL,inputGene=NULL,sourceIdType,targetIdType,standardId="phosphositeSeq",collapseMethod="mean",mappingOutput=FALSE, outputFileName="",methodType="R",hostName="http://www.webgestalt.org/"){
+idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, sourceIdType, targetIdType, standardId="phosphositeSeq", collapseMethod="mean", mappingOutput=FALSE,  outputFileName="", hostName="http://www.webgestalt.org/") {
 
 	###########Check input data type###############
 	inputGene <- idMappingInput(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
@@ -7,7 +7,6 @@ idMappingPhosphosite <- function(organism="hsapiens",dataType="list",inputGeneFi
 	}
 
 	##########ID Mapping Specify to phosphosite level###############
-	#re <- .processSourceIdMapPhosphosite(hostName=hostName,organism=organism,largeIdList=largeIdList,inputGene=inputGene,standardId=standardId,dataType=dataType,idType=sourceIdType,collapseMethod=collapseMethod,methodType=methodType)
 	if(dataType=="list"){
 		inputGeneL <- unique(inputGene)
 	}
@@ -37,7 +36,6 @@ idMappingPhosphosite <- function(organism="hsapiens",dataType="list",inputGeneFi
 		return(webApiError(mapRes))
 	}
 
-	# mapR <- idMappingMap(largeIdList=largeIdList,sourceIdType=idType,standardId=standardId,hostName=hostName,organism=organism,inputGene=inputGeneL,mapType="source",methodType=methodType)
 	mappedIds <- mapRes$mapped
 	unmappedIds <- mapRes$unmapped
 
@@ -95,7 +93,7 @@ idMappingPhosphosite <- function(organism="hsapiens",dataType="list",inputGeneFi
 	mappedInputGene$glink <- paste(outLink,mappedInputGene[, "gene"],sep="")
 
 	########Get gene level information#########
-	entrezgeneMapRes <- idMappingGene(organism=organism, dataType="list", inputGene=mappedInputGene[, "gene"], sourceIdType=geneType, targetIdType="entrezgene", methodType=methodType, mappingOutput=FALSE, hostName=hostName)
+	entrezgeneMapRes <- idMappingGene(organism=organism, dataType="list", inputGene=mappedInputGene[, "gene"], sourceIdType=geneType, targetIdType="entrezgene", mappingOutput=FALSE, hostName=hostName)
 
 	mappedGeneInfo <- entrezgeneMapRes$mapped[, c("userid", "genesymbol", "genename")]
 	colnames(mappedGeneInfo) <- c("gene", "genesymbol", "genename")

@@ -1,4 +1,4 @@
-loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biological_Process",enrichDatabaseFile=NULL,enrichDatabaseType=NULL,enrichDatabaseDescriptionFile=NULL,collapseMethod="mean",methodType="R",hostName="http://www.webgestalt.org/"){
+loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, collapseMethod="mean", hostName="http://www.webgestalt.org/") {
 	geneSet <- NULL    ##gene sets
 	geneSetDes <- NULL ##gene set description file
 	geneSetDag <- NULL ##gene set DAG file
@@ -13,7 +13,7 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
 					#cat("Because 'enrichDatabase' is 'others', user can upload their own gene sets using GMT file and WebGestaltR will transform ids in the gene sets to entrez ids based on the parameter 'enrichDatabaseType'!\n")
 					#######Read GMT File and transform id##########
 					if(!is.null(enrichDatabaseFile)){
-						geneSet <- idMapping(organism=organism,dataType="gmt",inputGeneFile=enrichDatabaseFile,sourceIdType=enrichDatabaseType,targetIdType=NULL,collapseMethod=collapseMethod,mappingOutput=FALSE,methodType=methodType,hostName=hostName)
+						geneSet <- idMapping(organism=organism, dataType="gmt", inputGeneFile=enrichDatabaseFile, sourceIdType=enrichDatabaseType, targetIdType=NULL, collapseMethod=collapseMethod, mappingOutput=FALSE, hostName=hostName)
 						if(.hasError(geneSet)){
 							return(geneSet)
 						}

@@ -1,4 +1,4 @@
-loadInterestGene <- function(organism="hsapiens",dataType="list",inputGeneFile=NULL,inputGene=NULL,geneType="entrezgene",collapseMethod="mean",methodType="R",hostName="http://www.webgestalt.org/",geneSet){
+loadInterestGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, geneType="entrezgene", collapseMethod="mean", hostName="http://www.webgestalt.org/", geneSet){
 	if(is.null(inputGeneFile) && is.null(inputGene)){
 		return(interestGeneError(type="empty"))
 	}else{
@@ -6,7 +6,7 @@ loadInterestGene <- function(organism="hsapiens",dataType="list",inputGeneFile=N
 			if(is.null(geneType)){
 				return(interestGeneError(type="emptyType"))
 			}else{
-				mapRe <- .uploadGeneExistingOrganism(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,geneType=geneType,collapseMethod=collapseMethod,geneSet=geneSet,methodType=methodType,hostName=hostName)
+				mapRe <- .uploadGeneExistingOrganism(organism=organism, dataType=dataType, inputGeneFile=inputGeneFile, inputGene=inputGene, geneType=geneType, collapseMethod=collapseMethod, geneSet=geneSet, hostName=hostName)
 				if(.hasError(mapRe)){
 					return(mapRe)
 				}
@@ -24,7 +24,7 @@ loadInterestGene <- function(organism="hsapiens",dataType="list",inputGeneFile=N
 	return(mapRe)
 }
 
-loadReferenceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referenceGene=NULL,referenceGeneType="entrezgene",referenceSet=NULL,collapseMethod="mean",methodType="R",hostName="http://www.webgestalt.org/",geneSet,interestGeneList){
+loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType="entrezgene", referenceSet=NULL, collapseMethod="mean", hostName="http://www.webgestalt.org/", geneSet, interestGeneList) {
 	referenceGeneList <- NULL
 	referenceGeneMap <- NULL
 
@@ -36,7 +36,7 @@ loadReferenceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 				if(is.null(referenceGeneType)){
 					return(referenceGeneError(type="emptyType"))
 				}else{
-					mapRe <- .uploadGeneExistingOrganism(organism=organism,dataType="list",inputGeneFile=referenceGeneFile,inputGene=referenceGene,geneType=referenceGeneType,collapseMethod=collapseMethod,geneSet=geneSet,methodType=methodType,hostName=hostName)
+					mapRe <- .uploadGeneExistingOrganism(organism=organism, dataType="list", inputGeneFile=referenceGeneFile, inputGene=referenceGene, geneType=referenceGeneType, collapseMethod=collapseMethod, geneSet=geneSet, hostName=hostName)
 					if(.hasError(mapRe)){
 						return(mapRe)
 					}
@@ -77,8 +77,8 @@ loadReferenceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 }
 
 
-.uploadGeneExistingOrganism <- function(organism,dataType,inputGeneFile,inputGene,geneType,collapseMethod,geneSet,methodType,hostName){
-	geneMap <- idMapping(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=geneType,targetIdType=NULL,collapseMethod=collapseMethod,mappingOutput=FALSE,methodType=methodType,hostName=hostName)
+.uploadGeneExistingOrganism <- function(organism, dataType, inputGeneFile, inputGene, geneType, collapseMethod, geneSet, hostName) {
+	geneMap <- idMapping(organism=organism, dataType=dataType, inputGeneFile=inputGeneFile, inputGene=inputGene, sourceIdType=geneType, targetIdType=NULL, collapseMethod=collapseMethod, mappingOutput=FALSE, hostName=hostName)
 
 	if(.hasError(geneMap)){
 		return(geneMap)
