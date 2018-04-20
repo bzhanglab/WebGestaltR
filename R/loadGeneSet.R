@@ -39,22 +39,20 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
 			standardId <- geneSets[geneSets[,1]==enrichDatabase,3]   ###get the ID type of the enriched database, such as entrezgene or phosphositeSeq
 
 			#########Read GMT file from the existing database###########
-			geneSet <- readGmt(file.path(hostName,"data","geneset",paste(organism,"_",enrichDatabase,"_",standardId,".gmt",sep="")))
+			gmtUrl <- modify_url(file.path(hostName,"api","geneset"), query=list(organism=organism, database=enrichDatabase, standardid=standardId, filetype="gmt"))
+			geneSet <- readGmt(gmtUrl)
 
 			if(.hasError(geneSet)){
 				return(geneSet)
 			}
 			#########Read the description file#############
-			geneSetDesFile <- file.path(hostName,"data","geneset",paste(organism,"_",enrichDatabase,"_",standardId,".des",sep=""))
-			geneSetDes <- tryCatch(fread(input=geneSetDesFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE),warning=function(e){return(NULL)},error=function(e){return(NULL)})  #####read the des file. If no des file, return NULL. For the des file, First column is the category id and the second is the description
+			geneSetDes <- .loadGeneSetData(hostName, organism, enrichDatabase, standardId, "des")
 
 			###########Try to load the DAG file#################
-			geneSetDagFile <- file.path(hostName,"data","geneset",paste(organism,"_",enrichDatabase,"_",standardId,".dag",sep=""))
-			geneSetDag <- tryCatch(fread(input=geneSetDagFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE),warning=function(e){return(NULL)},error=function(e){return(NULL)})  #####read the dag file. If no dag file, return NULL. For the dag file, First column is the parent term and the second is the child term
+			geneSetDag <- .loadGeneSetData(hostName, organism, enrichDatabase, standardId, "dag")
 
 			###########Try to load the network file if the gene sets are generated from the network##########
-			geneSetNetFile <- file.path(hostName,"data","geneset",paste(organism,"_",enrichDatabase,"_",standardId,".net",sep=""))
-			geneSetNet <- tryCatch(fread(input=geneSetNetFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE),warning=function(e){return(NULL)},error=function(e){return(NULL)})    ####Read the net file. If no net file, return NULL. For the net file, First column is the gene set name, the second is the network related to the gene set and the third column is the related functions.
+			geneSetNet <- .loadGeneSetData(hostName, organism, enrichDatabase, standardId, "net")
 		}
 	}else{
 		#########Read GMT file for other orgnisms from user files###########
@@ -76,6 +74,19 @@ loadGeneSet <- function(organism="hsapiens",enrichDatabase="geneontology_Biologi
 
 	re <- list(geneSet=geneSet,geneSetDes=geneSetDes,geneSetDag=geneSetDag,geneSetNet=geneSetNet,standardId=standardId)
 	return(re)
+}
+
+.loadGeneSetData <- function(hostName, organism, database, standardId, fileType) {
+	# read geneset files from API or returns NULL
+	geneSetUrl <- file.path(hostName,"api","geneset")
+	response <- GET(geneSetUrl, query=list(organism=organism, database=database, standardid=standardId, filetype=fileType))
+	if (response$status_code == 200) {
+
+		geneSetData <- fread(input=content(response),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
+	} else {
+		geneSetData <- NULL
+	}
+	return(geneSetData)
 }
 
 .loadEnrichDatabaseDescriptionFile <- function(geneSet,enrichDatabaseDescriptionFile){

@@ -1,18 +1,26 @@
 readGmt <- function(gmtFile){
 #####Change a gmt file to a three column matrix (gene set name, gene set description and genes)#######
-	if(file_extension(gmtFile)!="gmt"){
-		return(gmtFormatError("empty"))
-	}else{
-		data <- readLines(gmtFile)
-		data <- strsplit(data,"\t")
-		data <- lapply(data,.toList)
-		data <- do.call("rbind",data)
-
-		if(is.null(data)){
-			return(gmtFormatError("incorrect"))
-		}else{
-			return(data)
+	if (startsWith(gmtFile, "http")) {
+		response <- GET(gmtFile)
+		if (response$status_code == 200) {
+			data <- unlist(strsplit(content(response), "\n", fixed=TRUE))
+		} else {
+			return(webRequestError(response))
 		}
+	} else {
+		if(file_extension(gmtFile) != "gmt"){
+			return(gmtFormatError("empty"))
+		}
+		data <- readLines(gmtFile)
+	}
+	data <- strsplit(data,"\t")
+	data <- lapply(data,.toList)
+	data <- do.call("rbind",data)
+
+	if(is.null(data)){
+		return(gmtFormatError("incorrect"))
+	}else{
+		return(data)
 	}
 }
 readGMT <- readGmt

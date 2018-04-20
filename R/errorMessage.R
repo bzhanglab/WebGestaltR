@@ -360,6 +360,10 @@ idMappingError <- function(type,idType="",topF=""){
 		error <- "ERROR: Please install the python module 'pandas'."
 	}
 
+	if(type=="empty"){
+		error <- "ERROR: No IDs are mapped. Please check your input."
+	}
+
 	cat(error)
 	return(error)
 }
@@ -409,6 +413,19 @@ referenceGeneError <- function(type){
 
 	cat(error)
 	return(error)
+}
+
+webRequestError <- function(response) {
+	error <- paste(response["status_code"], content(response)["message"], "at", response["url"], "\n")
+	cat(error)
+	return(error)
+}
+
+webApiError <- function(response) {
+	error <- response[["message"]]
+	cat(paste0(error, "\n"))
+	return(error)
+
 }
 
 .hasError <- function(obj){

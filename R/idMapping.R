@@ -33,11 +33,11 @@ idMapping <- function(organism="hsapiens",dataType="list",inputGeneFile=NULL,inp
 
 	##########gene level ID Mapping##########
 	if(standardSource=="entrezgene"){
-		idMap <- idMappingGene(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=sourceIdType,standardId=standardSource,targetIdType=targetIdType,collapseMethod=collapseMethod,mappingOutput=mappingOutput,outputFileName=outputFileName,methodType=methodType,hostName=hostName)
+		idMap <- idMappingGene(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=sourceIdType,targetIdType=targetIdType,collapseMethod=collapseMethod,mappingOutput=mappingOutput,outputFileName=outputFileName,methodType=methodType,hostName=hostName)
 	}
 
 	if(standardSource=="phosphositeSeq"){
-		idMap <- idMappingPhosphosite(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=sourceIdType,standardId=standardSource,collapseMethod=collapseMethod,mappingOutput=mappingOutput,outputFileName=outputFileName,methodType=methodType,hostName=hostName)
+		idMap <- idMappingPhosphosite(organism=organism,dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene,sourceIdType=sourceIdType,targetIdType=targetIdType,collapseMethod=collapseMethod,mappingOutput=mappingOutput,outputFileName=outputFileName,methodType=methodType,hostName=hostName)
 	}
 
 	if(.hasError(idMap)){

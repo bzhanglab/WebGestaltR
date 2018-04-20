@@ -49,7 +49,11 @@ loadReferenceGene <- function(organism="hsapiens",referenceGeneFile=NULL,referen
 					return(referenceGeneError(type="existingRef"))
 				}
 				refStandardId <- identifyStandardId(hostName=hostName,idType=referenceSet,organism=organism,type="reference")
-				referenceGeneList <- fread(input=file.path(hostName,"data","reference",paste(organism,"_",referenceSet,"_",refStandardId,".table",sep="")),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE)
+				response <- GET(file.path(hostName, "api", "reference"), query=list(organism=organism, referenceset=referenceSet, standardid=refStandardId))
+				if (response$status_code != 200) {
+					return(webRequestError(response))
+				}
+				referenceGeneList <- fread(input=content(response), header=FALSE, sep="\t", stringsAsFactors=FALSE, colClasses="character", data.table=FALSE)
 				referenceGeneList <- as.character(unique(referenceGeneList[,1]))
 			}
 		}else{ ##For other organisms

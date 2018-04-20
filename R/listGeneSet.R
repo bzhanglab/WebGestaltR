@@ -1,5 +1,9 @@
 listGeneSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/"){
-	jsonData <- fromJSON(file=file.path(hostName,"data","genesetsummary.json"))
+	response <- GET(file.path(hostName, "api", "summary", "geneset"))
+	if (response$status_code != 200) {
+		return(webRequestError(reponse))
+	}
+	jsonData <- content(response)
 	ids <- jsonData[[organism]]
 	name1 <- names(ids)
 	idList <- data.frame(name="",description="",idType="",stringsAsFactors=F)
