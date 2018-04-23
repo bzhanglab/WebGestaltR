@@ -34,9 +34,7 @@ idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, 
 	##########gene level ID Mapping##########
 	if(standardSource=="entrezgene"){
 		idMap <- idMappingGene(organism=organism, dataType=dataType, inputGeneFile=inputGeneFile, inputGene=inputGene, sourceIdType=sourceIdType, targetIdType=targetIdType, collapseMethod=collapseMethod, mappingOutput=mappingOutput, outputFileName=outputFileName, hostName=hostName)
-	}
-
-	if(standardSource=="phosphositeSeq"){
+	} else {
 		idMap <- idMappingPhosphosite(organism=organism, dataType=dataType, inputGeneFile=inputGeneFile, inputGene=inputGene, sourceIdType=sourceIdType, targetIdType=targetIdType, collapseMethod=collapseMethod, mappingOutput=mappingOutput, outputFileName=outputFileName, hostName=hostName)
 	}
 

@@ -1,4 +1,4 @@
-idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, sourceIdType, targetIdType, standardId="phosphositeSeq", collapseMethod="mean", mappingOutput=FALSE,  outputFileName="", hostName="http://www.webgestalt.org/") {
+idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, sourceIdType, targetIdType, collapseMethod="mean", mappingOutput=FALSE,  outputFileName="", hostName="http://www.webgestalt.org/") {
 
 	###########Check input data type###############
 	inputGene <- idMappingInput(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
@@ -26,7 +26,8 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 
 	response <- POST(file.path(hostName, "api", "idmapping"), encode="json",
 				body=list(organism=organism, sourcetype=sourceIdType,
-				targettype=targetIdType, ids=inputGeneL))
+				targettype=targetIdType, ids=inputGeneL, standardid="phosphosite"
+				))
 
 	if (response$status_code != 200) {
 		return(webRequestError(response))
