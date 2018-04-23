@@ -30,10 +30,10 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 						return(gmtFormatError("empty"))
 					}
 				}else{ ##input a wrong enrichDatabase name
-					return(enrichDataBaseError(type="unsupported",enrichDatabase=enrichDatabase,organism=organism))
+					return(enrichDatabaseError(type="unsupported",enrichDatabase=enrichDatabase,organism=organism))
 				}
 			}else{  #enrichDatabase is NULL
-				return(enrichDataBaseError(type="empty"))
+				return(enrichDatabaseError(type="empty"))
 			}
 		}else{  #input a correct enrichDatabase
 			standardId <- geneSets[geneSets[,1]==enrichDatabase,3]   ###get the ID type of the enriched database, such as entrezgene or phosphositeSeq
@@ -68,7 +68,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 				}
 			}
 		}else{  ##enrichDatabaseFile is NULL
-			return(enrichDataBaseError(type="others"))
+			return(enrichDatabaseError(type="others"))
 		}
 	}
 

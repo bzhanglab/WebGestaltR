@@ -1,7 +1,7 @@
 listReferenceSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/"){
 	response <- GET(file.path(hostName, "api", "summary", "referenceset"))
 	if (response$status_code != 200) {
-		return(webRequestError(reponse))
+		return(webRequestError(response))
 	}
 	jsonData <- content(response)
 	idType <- jsonData[[organism]]
