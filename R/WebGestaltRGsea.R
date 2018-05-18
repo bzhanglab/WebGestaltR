@@ -1,7 +1,8 @@
-WebGestaltRGsea <- function(enrichMethod="GSEA", organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, lNum=20, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, keepGseaFolder=FALSE, dagColor="binary", hostName="http://www.webgestalt.org/") {
+WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, lNum=20, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, keepGseaFolder=FALSE, dagColor="binary", hostName="http://www.webgestalt.org/") {
+	enrichMethod <- "GSEA"
 
 	if(is.null(projectName)){
-		timeStamp <- gsub("\\.","_",as.character(as.numeric(Sys.time())))
+		timeStamp <- as.character(as.integer(Sys.time()))
 	}else{
 		timeStamp <- projectName
 	}
@@ -104,8 +105,7 @@ WebGestaltRGsea <- function(enrichMethod="GSEA", organism="hsapiens", enrichData
 		cat("Generate the final report...\n")
 		createReport(hostName=hostName,outputDirectory=outputDirectory,organism=organism,timeStamp=timeStamp,enrichMethod=enrichMethod,geneSet=geneSet,geneSetDes=geneSetDes,geneSetDag=geneSetDag,geneSetNet=geneSetNet,interestingGeneMap=interestingGeneMap,enrichedSig=enrichedSig,enrichDatabase=enrichDatabase,enrichDatabaseFile=enrichDatabaseFile,enrichDatabaseType=enrichDatabaseType,enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,interestGeneFile=interestGeneFile,interestGene=interestGene,interestGeneType=interestGeneType,collapseMethod=collapseMethod,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,dNum=dNum,perNum=perNum,lNum=lNum,dagColor=dagColor)
 
-		comm <- paste("tar -C ",projectDir," -zcvf ",projectDir,"/Project_",timeStamp,".tar.gz .",sep="")
-		system(comm,ignore.stderr=TRUE,ignore.stdout=TRUE)
+		zip(file.path(projectDir, paste0(projectDir, ".zip")), projectDir, flags="-jrq")
 
 		cat("Results can be found in the ",projectDir,"!",sep="")
 	}

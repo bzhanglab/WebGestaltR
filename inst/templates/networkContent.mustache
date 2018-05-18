@@ -1,0 +1,134 @@
+<div id={{networkName}}>
+<section class="section">
+	<h4 class="title is-4">Summary of the analysis results <span class="title is-5"><a href="{{zipPath}}" target="_blank">(Result Download)</a></span></h4>
+<ul>
+{{#summary}}
+<li>{{.}}</li>
+{{/summary}}
+</ul>
+</section>
+<section class="section">
+<div class="columns is-multiline">
+<div class="column is-5-widescreen is-6-desktop is-12-tablet is-12-mobile">
+<h4 class="title is-4">Sub-network graph </h4>
+<div  class="box cy_container">
+	<div id="{{netName}}_container"></div>
+</div>
+<div class="is-flex-tablet">
+<img src='{{hostName}}/assets/{{version}}/image/{{legendOneCancer}}' alt='legend' class='legend'>
+{{#toolboxNet}}
+{{>toolbox}}
+{{/toolboxNet}}
+</div>
+<script type="text/javascript">
+	document.addEventListener('DOMContentLoaded', plotNetwork("{{netName}}_container", {{{networkJson}}}));
+</script>
+</div> <!-- column -->
+
+<div class="column is-5-widescreen is-offset-2-widescreen is-6-desktop is-12-tablet is-12-mobile">
+<h4 class="title is-4">Enriched GO terms graph</h4>
+<div  class="box cy_container">
+	<div id="{{dagName}}_container"></div>
+</div>
+<div class="is-flex-tablet">
+<img src='{{hostName}}/assets/{{version}}/image/goLegendNoVenn.jpg' alt='legend' class="legend">
+{{#toolboxDag}}
+{{>toolbox}}
+{{/toolboxDag}}
+</div>
+<script type="text/javascript">
+	document.addEventListener('DOMContentLoaded', plotDag("{{dagName}}_container", {{{dagJson}}}));
+</script>
+</div> <!-- column -->
+</div> <!-- columns -->
+</section>
+
+<section class="section">
+<h4 class="title is-4">Detailed Information</h4>
+<div class="columns is-multiline">
+<div class="column is-6-widescreen is-12-desktop is-12-tablet is-12-mobile" id="col-go">
+<table id="table-go" class="table is-striped">
+{{#sigMethodIsFdr}}
+<thead>
+	<tr><th colspan="7">Enriched GO Terms (FDR < {{fdrThr}})</th></tr>
+{{/sigMethodIsFdr}}
+{{^sigMethodIsFdr}}
+<thead><tr><th colspan="7">Enriched GO categories (Top {{topThr}} categories)</th></tr>
+{{/sigMethodIsFdr}}
+{{#methodIsNetworkExpansion}}
+<tr><th colspan="7">C: The number of genes in the selected network and also in the category; O: The number of genes in the expanded sub-network and also in the category.</th></tr>
+{{/methodIsNetworkExpansion}}
+{{^methodIsNetworkExpansion}}
+<tr><th colspan="7">C: The number of genes in the selected network and also in the category; O: The number of genes in the retrieved sub-network and also in the category.</th></tr>
+{{/methodIsNetworkExpansion}}
+<tr><th>GO ID</th><th>GO Name</th><th>C</th><th>O</th><th>Raw P-value</th><th>Adjusted P-value</th><th>Seeds & Neighbors</th></tr></thead>
+<tbody>
+	{{#enrichment}}
+	<tr id="{{goId}}_{{networkName}}">
+		<td><a href="http://amigo.geneontology.org/amigo/term/{{goId}}" target="_blank">{{goId}}</a></td>
+		<td>{{goName}}</td>
+		<td>{{c}}</td>
+		<td>{{o}}</td>
+		<td>{{rawP}}</td>
+		<td>{{adjP}}</td>
+		<td data-content="{{geneListStr}}" data-highlight="{{highlightedGenes}}" data-go="{{goId}}">
+			<a class="button is-small" onclick=geneModal(this.parentNode)>
+				<span class="icon is-small">
+					<svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 8 8">
+						<title>Show gene list of the enriched GO catergory</title>
+						<path d="M.5 0c-.28 0-.5.22-.5.5s.22.5.5.5.5-.22.5-.5-.22-.5-.5-.5zm1.5 0v1h6v-1h-6zm-1.5 2c-.28 0-.5.22-.5.5s.22.5.5.5.5-.22.5-.5-.22-.5-.5-.5zm1.5 0v1h6v-1h-6zm-1.5 2c-.28 0-.5.22-.5.5s.22.5.5.5.5-.22.5-.5-.22-.5-.5-.5zm1.5 0v1h6v-1h-6zm-1.5 2c-.28 0-.5.22-.5.5s.22.5.5.5.5-.22.5-.5-.22-.5-.5-.5zm1.5 0v1h6v-1h-6z" />
+					</svg>
+				</span>
+			</a>
+			<a class="button is-small" onclick=highlightEnrich(this.parentNode)>
+				<span class="icon is-small">
+					<svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 8 8">
+						<title>Highlight enriched GO term in DAG and genes in network</title>
+						<path d="M0 0v8h1v-8h-1zm2 0v4h2v1h4l-2-1.97 2-2.03h-3v-1h-3z" />
+					</svg>
+				</span>
+			</a>
+		</td>
+	</tr>
+	{{/enrichment}}
+</tbody>
+</table>
+</div> <!-- column -->
+
+<div class="column is-3-widescreen is-6-desktop is-6-tablet is-12-mobile" id="col-seed">
+<table id="table-seed" class="table is-striped">
+<thead>
+	<tr><th colspan ="1">Seeds in the sub-network</th></tr>
+	<tr><th>Gene Symbol</th></tr>
+</thead>
+<tbody>
+{{#seeds}}
+	<tr><td><a href="http://www.ncbi.nlm.nih.gov/gene/?term={{.}}" target="_blank">{{.}}</a></td></tr>
+{{/seeds}}
+</tbody>
+</table>
+</div> <!-- column -->
+<div class="column is-3-widescreen is-6-desktop is-6-tablet is-12-mobile" id="col-rank">
+<table class="table is-striped" id="table-rank">
+<thead>
+{{#methodIsNetworkExpansion}}
+	<tr><th colspan="2">Top Ranking Neighbors<br></th></tr>
+	<tr><th>Gene Symbol</th><th>Random Walk Probability</th></tr>
+{{/methodIsNetworkExpansion}}
+{{^methodIsNetworkExpansion}}
+	<tr><th colspan="2">Ranked Seeds</th></tr>
+	<tr><th>Gene Symbol</th><th>Random Walk Probability</th></tr>
+{{/methodIsNetworkExpansion}}
+</thead>
+<tbody>
+{{#candidates}}
+<tr><td><a href="http://www.ncbi.nlm.nih.gov/gene/?term={{candidate}}" target="_blank">{{candidate}}</a></td>
+<td>{{score}}</td></tr>
+{{/candidates}}
+</tbody>
+</table>
+</div> <!-- column -->
+
+</div> <!-- columns -->
+</section>
+</div>

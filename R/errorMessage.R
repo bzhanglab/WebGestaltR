@@ -33,7 +33,7 @@ parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 }
 
 .enrichMethodError <- function(enrichMethod){ #####Input method error
-	existingMethods <- c("ORA","GSEA")
+	existingMethods <- c("ORA", "GSEA", "NTA")
 
 	if(!(enrichMethod %in% existingMethods)){
 		error <- paste0("ERROR: The enrichment method '",enrichMethod, "' is not supported.")
