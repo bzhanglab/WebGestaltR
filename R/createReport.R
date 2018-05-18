@@ -4,6 +4,7 @@ createReport <- function(hostName,outputDirectory,organism="hsapiens",timeStamp,
 
 	# if hostname starts with "file://", it is used as WebGestaltReporter
 	# all web assets are avaialble inside a parent directory called "assets"
+	## TODO: FIXME
 	if(length(grep("file://", hostName, fixed=TRUE))==1){
 		#file.symlink("../assets", file.path(outputDirectory, paste("Project_",timeStamp,sep=""),"assets"))
 		#hostName <- "assets"
@@ -44,7 +45,9 @@ createReport <- function(hostName,outputDirectory,organism="hsapiens",timeStamp,
 		}
 	}
 
+	header <- readLines(system.file("inst/templates/header.mustache", package="WebGestaltR"))
+	footer <- readLines(system.file("inst/templates/footer.mustache", package="WebGestaltR"))
 	template <- readLines(system.file("inst/templates/template.mustache", package="WebGestaltR"))
 	data <- list(hostName=hostName, organismIsOthers=organism=="others", geneSetNet=geneSetNet, geneSetDag=geneSetDag, bodyContent=bodyContent)
-	cat(whisker.render(template, data), file=outputHtmlFile)
+	cat(whisker.render(template, data, partials=list(header=header, footer=footer)), file=outputHtmlFile)
 }

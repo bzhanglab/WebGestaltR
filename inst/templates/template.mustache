@@ -80,20 +80,8 @@ $(document).ready(function(){
 <link href="{{hostName}}/css/tooltipster.bundle.min.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<header>
-	<div id="header-img"><img border="0" src="{{hostName}}/images/gsa.jpg"></div>
-	<div id="header-title">
-		<p id="header-title-text">WEB-based GEne SeT AnaLysis Toolkit</p>
-		<p id="header-subtitle-text">Translating gene lists into biological insights...</p>
-	</div>
-</header>
-<hr color="#FF9900">
+{{>header}}
 {{{bodyContent}}}
-<hr color="#FF9900">
-<footer>
-<p>WebGestalt is currently developed and maintained by Jing Wang, Suhas Vasaikar, Zhiao Shi and Bing Zhang at the <a target="_new" href=http://www.zhang-lab.org> Zhang Lab</a>. Other people who have made significant contribution to the project include Dexter Duncan, Stefan Kirov and Jay Snoddy.</p>
-<p><b>Funding credits:</b> NIH/NCI (U24 CA210954); Leidos (15X038); CPRIT (RR160027); NIH/NIAAA (U01 AA016662, U01 AA013512); NIH/NIDA (P01 DA015027); NIH/NIMH (P50 MH078028, P50 MH096972); NIH/NCI (U24 CA159988); NIH/NIGMS (R01 GM088822).
-</p>
-</footer>
+{{>footer}}
 </body>
 </html>
