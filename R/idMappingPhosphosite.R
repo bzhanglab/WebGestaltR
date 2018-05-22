@@ -26,7 +26,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 
 	response <- POST(file.path(hostName, "api", "idmapping"), encode="json",
 				body=list(organism=organism, sourcetype=sourceIdType,
-				targettype=targetIdType, ids=inputGeneL, standardid="phosphosite"
+				targettype=targetIdType, ids=inputGeneL, standardid="phosphositeSeq"
 				))
 
 	if (response$status_code != 200) {
