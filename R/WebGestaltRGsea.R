@@ -105,7 +105,10 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 		cat("Generate the final report...\n")
 		createReport(hostName=hostName,outputDirectory=outputDirectory,organism=organism,timeStamp=timeStamp,enrichMethod=enrichMethod,geneSet=geneSet,geneSetDes=geneSetDes,geneSetDag=geneSetDag,geneSetNet=geneSetNet,interestingGeneMap=interestingGeneMap,enrichedSig=enrichedSig,enrichDatabase=enrichDatabase,enrichDatabaseFile=enrichDatabaseFile,enrichDatabaseType=enrichDatabaseType,enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,interestGeneFile=interestGeneFile,interestGene=interestGene,interestGeneType=interestGeneType,collapseMethod=collapseMethod,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,dNum=dNum,perNum=perNum,lNum=lNum,dagColor=dagColor)
 
-		zip(file.path(projectDir, paste0(projectDir, ".zip")), projectDir, flags="-jrq")
+		cwd <- getwd()
+		setwd(projectDir)
+		zip(paste0("Project_", timeStamp, ".zip"), ".", flags="-rq")
+		setwd(cwd)
 
 		cat("Results can be found in the ",projectDir,"!",sep="")
 	}

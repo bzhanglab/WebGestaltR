@@ -68,7 +68,11 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 					highlightOption=highlightOption, outputDirectory=outputDirectory, projectDir=projectDir,
 					projectName=projectName, hostName=hostName)
 
-	zip(file.path(projectDir, paste0(projectName, ".zip")), projectDir, flags="-jrq")
+	cwd <- getwd()
+	setwd(projectDir)
+	zip(paste0(projectName, ".zip"), ".", flags="-rq")
+	setwd(cwd)
+
 	cat("Results can be found in the ", projectDir, "!\n", sep="")
 
 }

@@ -98,7 +98,7 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 				candidates=candidates, sigMethodIsFdr=sigMethod=="fdr", fdrThr=fdrThr, topThr=topThr,
 				enrichment=enrichment, version=version, hostName=hostName,
 				dagName=dagName, netName=netName,
-				zipPath=file.path(basename(outputDirectory), basename(projectDir), paste0(projectName, ".zip")),
+				zipPath=paste0(projectName, ".zip"),
 				toolboxNet=list(name=netName, nodes=allNodes),
 				toolboxDag=list(name=dagName, nodes=goDataList)
 				)

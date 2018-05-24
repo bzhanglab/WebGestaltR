@@ -120,7 +120,10 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 		cat("Generate the final report...\n")
 		createReport(hostName=hostName,outputDirectory=outputDirectory,organism=organism,timeStamp=timeStamp,enrichMethod=enrichMethod,geneSet=geneSet,geneSetDes=geneSetDes,geneSetDag=geneSetDag,geneSetNet=geneSetNet,interestingGeneMap=interestingGeneMap,referenceGeneList=referenceGeneList,enrichedSig=enrichedSig,enrichDatabase=enrichDatabase,enrichDatabaseFile=enrichDatabaseFile,enrichDatabaseType=enrichDatabaseType,enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,interestGeneFile=interestGeneFile,interestGene=interestGene,interestGeneType=interestGeneType,collapseMethod=collapseMethod,referenceGeneFile=referenceGeneFile,referenceGene=referenceGene,referenceGeneType=referenceGeneType,referenceSet=referenceSet,minNum=minNum,maxNum=maxNum,fdrMethod=fdrMethod,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,dNum=dNum,dagColor=dagColor)
 
-		zip(file.path(projectDir, paste0(projectDir, ".zip")), projectDir, flags="-jrq")
+		cwd <- getwd()
+		setwd(projectDir)
+		zip(paste0("Project_", timeStamp, ".zip"), ".", flags="-rq")
+		setwd(cwd)
 
 		cat("Results can be found in the ",projectDir,"!",sep="")
 	}
