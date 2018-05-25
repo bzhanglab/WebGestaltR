@@ -7,19 +7,6 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	summaryFn <- file.path(projectDir, paste0(namePrefix, "_resultSummary.txt"))
 	jsonFn <- file.path(projectDir, paste0(namePrefix, ".json"))
 
-	if (method == 'Network_Expansion') {
-		if (highlightOption == 'Seeds') {
-			legend <- 'genesLegendHighlightSeed.jpg'
-			legendOneCancer <- 'genesLegendOneCancerHighlightSeed.jpg'
-		} else {
-			legend <- 'genesLegend.jpg'
-			legendOneCancer <- 'genesLegendOneCancer.jpg'
-		}
-	} else {
-			legend <- 'genesLegend_prioritization.jpg'
-			legendOneCancer <- 'genesLegendOneCancerPrioritization.jpg'
-	}
-
 	if (method == "Network_Retrieval_Prioritization") {
 		highSeedsFn <- file.path(projectDir, paste0(namePrefix, "_highlightedSeeds.txt"))
 	}
@@ -93,10 +80,10 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	dagName <- paste(networkName, "dag", sep="_")
 
 	data <- list(networkName=networkName, summary=summary, networkJson=cyJson, dagJson=dagJson,
-				method=method, legendOneCancer=legendOneCancer, seeds=seeds,
+				method=method, seeds=seeds, highlightIsSeeds=highlightOption=="Seeds",
 				methodIsNetworkExpansion=method=="Network_Expansion",
 				candidates=candidates, sigMethodIsFdr=sigMethod=="fdr", fdrThr=fdrThr, topThr=topThr,
-				enrichment=enrichment, version=version, hostName=hostName,
+				enrichment=enrichment, hostName=hostName,
 				dagName=dagName, netName=netName,
 				zipPath=paste0(projectName, ".zip"),
 				toolboxNet=list(name=netName, nodes=allNodes),
