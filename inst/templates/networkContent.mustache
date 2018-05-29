@@ -1,6 +1,6 @@
 <div id={{networkName}}>
 <section class="section">
-	<h4 class="title is-4">Summary of the analysis results <span class="title is-5"><a href="{{zipPath}}" target="_blank">(Result Download)</a></span></h4>
+	<h4 class="title is-4 has-text-primary">Summary of the analysis results <span><a href="{{zipPath}}" target="_blank">(Result Download)</a></span></h4>
 <ul>
 {{#summary}}
 <li>{{.}}</li>
@@ -10,7 +10,7 @@
 <section class="section">
 <div class="columns is-multiline">
 <div class="column is-5-widescreen is-6-desktop is-12-tablet is-12-mobile">
-<h4 class="title is-4">Sub-network graph </h4>
+<h4 class="title is-4 has-text-primary">Sub-network graph </h4>
 <div  class="box cy_container">
 	<div id="{{netName}}_container"></div>
 </div>
@@ -81,7 +81,7 @@
 </div> <!-- column -->
 
 <div class="column is-5-widescreen is-offset-2-widescreen is-6-desktop is-12-tablet is-12-mobile">
-<h4 class="title is-4">Enriched GO terms graph</h4>
+<h4 class="title is-4 has-text-primary">Enriched GO terms graph</h4>
 <div  class="box cy_container">
 	<div id="{{dagName}}_container"></div>
 </div>
@@ -111,24 +111,36 @@
 </section>
 
 <section class="section">
-<h4 class="title is-4">Detailed Information</h4>
+<h4 class="title is-4 has-text-primary">Detailed Information</h4>
 <div class="columns is-multiline">
 <div class="column is-6-widescreen is-12-desktop is-12-tablet is-12-mobile" id="col-go">
 <table id="table-go" class="table is-striped">
 {{#sigMethodIsFdr}}
-<thead>
-	<tr><th colspan="7">Enriched GO Terms (FDR < {{fdrThr}})</th></tr>
+	<caption>Enriched GO Terms (FDR < {{fdrThr}})</caption>
+	<thead>
 {{/sigMethodIsFdr}}
 {{^sigMethodIsFdr}}
-<thead><tr><th colspan="7">Enriched GO categories (Top {{topThr}} categories)</th></tr>
+	<caption>Enriched GO categories (Top {{topThr}} categories)</caption>
+	<thead>
 {{/sigMethodIsFdr}}
-{{#methodIsNetworkExpansion}}
-<tr><th colspan="7">C: The number of genes in the selected network and also in the category; O: The number of genes in the expanded sub-network and also in the category.</th></tr>
-{{/methodIsNetworkExpansion}}
-{{^methodIsNetworkExpansion}}
-<tr><th colspan="7">C: The number of genes in the selected network and also in the category; O: The number of genes in the retrieved sub-network and also in the category.</th></tr>
-{{/methodIsNetworkExpansion}}
-<tr><th>GO ID</th><th>GO Name</th><th>C</th><th>O</th><th>Raw P-value</th><th>Adjusted P-value</th><th>Seeds & Neighbors</th></tr></thead>
+<tr><th>GO ID</th><th>GO Name</th>
+<th style="min-width: 4rem">C
+<span class="icon is-small info has-background-info">
+<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+	<title>The number of genes in the selected network and also in the category.</title>
+<path d="M3 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm-1.5 2.5c-.83 0-1.5.67-1.5 1.5h1c0-.28.22-.5.5-.5s.5.22.5.5-1 1.64-1 2.5c0 .86.67 1.5 1.5 1.5s1.5-.67 1.5-1.5h-1c0 .28-.22.5-.5.5s-.5-.22-.5-.5c0-.36 1-1.84 1-2.5 0-.81-.67-1.5-1.5-1.5z" transform="translate(2)" fill="#f5f5fa" />
+</svg>
+</span>
+</th>
+<th style="min-width: 4rem">O
+<span class="icon is-small info has-background-info">
+<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+	<title>The number of genes in the {{#methodIsNetworkExpansion}}expanded{{/methodIsNetworkExpansion}}{{^methodIsNetworkExpansion}}retrieved{{/methodIsNetworkExpansion}} sub-network and also in the category.</title>
+<path d="M3 0c-.55 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1zm-1.5 2.5c-.83 0-1.5.67-1.5 1.5h1c0-.28.22-.5.5-.5s.5.22.5.5-1 1.64-1 2.5c0 .86.67 1.5 1.5 1.5s1.5-.67 1.5-1.5h-1c0 .28-.22.5-.5.5s-.5-.22-.5-.5c0-.36 1-1.84 1-2.5 0-.81-.67-1.5-1.5-1.5z" transform="translate(2)" fill="#f5f5fa" />
+</svg>
+</span>
+</th>
+<th>Raw P-value</th><th>Adjusted P-value</th><th>Seeds & Neighbors</th></tr></thead>
 <tbody>
 	{{#enrichment}}
 	<tr id="{{goId}}_{{networkName}}">
@@ -164,10 +176,10 @@
 
 <div class="column is-3-widescreen is-6-desktop is-6-tablet is-12-mobile" id="col-seed">
 <table id="table-seed" class="table is-striped">
-<thead>
-	<tr><th colspan ="1">Seeds in the sub-network</th></tr>
-	<tr><th>Gene Symbol</th></tr>
-</thead>
+	<caption>Seeds in the sub-network</caption>
+	<thead>
+		<tr><th>Gene Symbol</th></tr>
+	</thead>
 <tbody>
 {{#seeds}}
 	<tr><td><a href="http://www.ncbi.nlm.nih.gov/gene/?term={{.}}" target="_blank">{{.}}</a></td></tr>
@@ -177,13 +189,14 @@
 </div> <!-- column -->
 <div class="column is-3-widescreen is-6-desktop is-6-tablet is-12-mobile" id="col-rank">
 <table class="table is-striped" id="table-rank">
-<thead>
 {{#methodIsNetworkExpansion}}
-	<tr><th colspan="2">Top Ranking Neighbors<br></th></tr>
+	<caption>Top Ranking Neighbors</caption>
+	<thead>
 	<tr><th>Gene Symbol</th><th>Random Walk Probability</th></tr>
 {{/methodIsNetworkExpansion}}
 {{^methodIsNetworkExpansion}}
-	<tr><th colspan="2">Ranked Seeds</th></tr>
+	<caption>Ranked Seeds</caption>
+	<thead>
 	<tr><th>Gene Symbol</th><th>Random Walk Probability</th></tr>
 {{/methodIsNetworkExpansion}}
 </thead>
