@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>WebGestalt (WEB-based GEne SeT AnaLysis Toolkit)</title>
 <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/webgestalt/favicon.png">
-<script type="text/javascript" src="{{hostName}}/js/jquery.js"></script>
-<script type="text/javascript" src="{{hostName}}/js/jquery-ui.js"></script>
 <script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -12,76 +11,61 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-42098540-1', 'auto');
 ga('send', 'pageview');
 </script>
-{{^organismIsOthers}}
-<script type="text/javascript" src="{{hostName}}/js/changeColor.js"></script>
-<script type="text/javascript" src="{{hostName}}/js/tableExport.js"></script>
-<script type="text/javascript" src="{{hostName}}/js/jquery.base64.js"></script>
-<script type="text/javascript" src="{{hostName}}/js/html2canvas.js"></script>
-<script type="text/javascript" src="{{hostName}}/js/jspdf/libs/sprintf.js"></script>
-<script type="text/javascript" src="{{hostName}}/js/jspdf.js"></script>
-<script type="text/javascript" src="{{hostName}}/js/jspdf/libs/base64.js"></script>
-<script type="text/javascript" src="{{hostName}}/js/search.js"></script>
 	{{#geneSetNet}}
-	<script type="text/javascript" src="{{hostName}}/js/cytoscapeweb/js/min/json2.min.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/cytoscapeweb/js/min/AC_OETags.min.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/cytoscapeweb/js/min/cytoscapeweb.min.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/cytoscapeWeb.js"></script>
+	<!-- TODO -->
 	{{/geneSetNet}}
 	{{#geneSetDag}}
-	<script type="text/javascript" src="{{hostName}}/js/d3/d3.v3.min.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/jquery.tipsy.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/jquery.contextMenu.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/jquery.floatThead.min.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/dagre/dagre.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/Minimap.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/MinimapZoom.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/DirectedAcyclicGraph.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/List.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/Selectable_svv.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/Graph.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/History.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/Tooltip.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/FileSaver.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/download.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/ContextMenu.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/searchView.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/canvg/rgbcolor.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/canvg/StackBlur.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/canvg/canvg.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/xtrace_utils.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/xtrace_graph.js"></script>
-	<script type="text/javascript" src="{{hostName}}/js/plotDAG.js"></script>
+	<!-- TODO -->
 	{{/geneSetDag}}
-{{/organismIsOthers}}
-<script type="text/javascript" src="{{hostName}}/js/tooltipster.bundle.min.js"></script>
-<script>
-$(document).ready(function(){
-	$('.tooltip-container').tooltipster({
-		functionInit: function(instance, helper) {
-			var content = $(helper.origin).find('.tooltip_content').detach();
-			instance.content(content);
-		}
-	});
-});
-</script>
-<link href="{{hostName}}/css/jquery-ui.css" rel="stylesheet" type="text/css">
-{{#geneSetDag}}
-<link href="{{hostName}}/css/xtrace.css" rel="stylesheet" type="text/css">
-<link href="{{hostName}}/css/tipsy.css" rel="stylesheet" type="text/css">
-<link href="{{hostName}}/css/jquery.contextMenu.css" rel="stylesheet" type="text/css">
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-<link href="{{hostName}}/css/graph.css" rel="stylesheet" type="text/css">
-{{/geneSetDag}}
-<link href="{{hostName}}/css/report.css" rel="stylesheet" type="text/css">
-<link href="{{hostName}}/css/zebra.css" rel="stylesheet" type="text/css">
-<link href="{{hostName}}/css/search.css" rel="stylesheet" type="text/css">
-<link href="{{hostName}}/css/tooltipster.bundle.min.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 {{>header}}
+<main>
+<div id="app">
 {{{bodyContent}}}
+</div>
+</main>
+<script type="text/javascript" src="{{hostName}}/assets/dev/build/main.js"></script>
+<script type="text/javascript">
+var enrichment = {{{sigJson}}};
+var background = {{{insigJson}}};
+enrichment.forEach(function(d, i) { enrichment[i].options = {showLabel: true, showTooltip: true} });
+wgLib.initialize({
+	enrichment: enrichment,
+	background: background,
+	volcano: {
+		labelTypes: ["geneset", "description"],
+		autoPlaceLabels: true,
+		y: "FDR",
+		{{#methodIsGsea}}
+		x: "NES",
+		xLabel: "NES",
+		xTransform: null,
+		radius: "leadingEdgeNum",
+		color: "leadingEdgeNum",
+		tooltipContent: ["geneset", "description", "NES", "FDR", "PValue", "leadingEdgeNum"]
+		{{/methodIsGsea}}
+		{{^methodIsGsea}}
+		x: "R",
+		xLabel: "log2 of enrichment ratio",
+		radius: "O",
+		color: "O",
+		tooltipContent: ["geneset", "description", "R", "FDR", "PValue", "O"]
+		{{/methodIsGsea}}
+	},
+	bar: {
+		{{#methodIsGsea}}
+		valueKey: "NES"
+		{{/methodIsGsea}}
+		{{^methodIsGsea}}
+		valueKey: "R",
+		xLabel: "Enrichment ratio"
+		{{/methodIsGsea}}
+	}
+})
+
+
+</script>
 {{>footer}}
 </body>
 </html>

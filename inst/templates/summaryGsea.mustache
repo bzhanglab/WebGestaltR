@@ -1,11 +1,11 @@
 {{^organismIsOthers}}
-Among the <b>{{numUniqueUserId}}</b> unique{{standardId}} IDs, <b>{{numAnnoUserId}}</b> IDs are annotated to the selected functional categories, which are used for the enrichment analysis.<br/>
+Among the <b>{{numUniqueUserId}}</b> unique {{standardId}} IDs, <b>{{numAnnoUserId}}</b> IDs are annotated to the selected functional categories, which are used for the enrichment analysis.<br/>
 {{/organismIsOthers}}
 {{#organismIsOthers}}
 The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these IDs are used to perform the enrichment analysis.<br/>
 {{/organismIsOthers}}
 <b>Parameters for the enrichment analysis:</b>
-<ul><li><b>Minimum number of IDs in the category:</b>{{minNum}}</li>
+<ul><li><b>Minimum number of IDs in the category: </b>{{minNum}}</li>
 <li><b>Maximum number of IDs in the category:</b>{{maxNum}}</li>
 {{#methodIsFdr}}
 <li><b>Significance Level:</b> FDR<{{fdrThr}}</li>
@@ -13,8 +13,8 @@ The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these
 {{#methodIsTop}}
 <li><b>Significance Level:</b> Top{{topThr}}</li>
 {{/methodIsTop}}
-<li><b>Number of permutation:</b>{{perNum}}</li>
-<li><b>Number of categories with the outputted leading edge IDs:</b>{{lNum}}</li></ul>
+<li><b>Number of permutation: </b>{{perNum}}</li>
+<li><b>Number of categories with the outputted leading edge IDs: </b>{{lNum}}</li></ul>
 {{#hasEnrichedSig}}
 	{{#isPosRel}}
 		{{#showAllPos}}

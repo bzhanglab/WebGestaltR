@@ -37,7 +37,7 @@ gseaEnrichment <- function(hostName,outputDirectory,projectName,geneRankList,gen
 	}
 
 	a <- tapply(geneRankList[,2],geneRankList[,1],collapseMethod,na.rm=TRUE)
-	geneRankList <- data.frame(geneid=names(a),score=a,stringsAsFactors=FALSE)
+	geneRankList <- data.frame(geneid=names(a),score=unname(a),stringsAsFactors=FALSE)
 
 	gseaRnk <- file.path(projectFolder,paste("Project_",projectName,"_GSEA.rnk",sep=""))
 	write.table(geneRankList,file=gseaRnk,row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE)
@@ -54,7 +54,8 @@ gseaEnrichment <- function(hostName,outputDirectory,projectName,geneRankList,gen
 		dir.create(outputF)
 	}
 
-	comm <- paste("java -Xmx4096m -cp ",gseaJarFile," xtools.gsea.GseaPreranked -gmx ",gseaGmt," -collapse false -mode Max_probe -norm meandiv -nperm ",perNum," -rnk ",gseaRnk," -scoring_scheme weighted -rpt_label Project_",projectName," -include_only_symbols true -make_sets true -plot_top_x ",lNum," -rnd_seed timestamp -set_max ",maxNum," -set_min ",minNum," -zip_report false -out ",outputF," -gui false",sep="")
+	comm <- paste("java -cp ",gseaJarFile," xtools.gsea.GseaPreranked -gmx ",gseaGmt," -collapse false -mode Max_probe -norm meandiv -nperm ",perNum," -rnk ",gseaRnk," -scoring_scheme weighted -rpt_label Project_",projectName," -include_only_symbols true -make_sets true -plot_top_x ",lNum," -rnd_seed timestamp -set_max ",maxNum," -set_min ",minNum," -zip_report false -out ",outputF," -gui false",sep="")
+	#comm <- paste("java -Xmx4096m -cp ",gseaJarFile," xtools.gsea.GseaPreranked -gmx ",gseaGmt," -collapse false -mode Max_probe -norm meandiv -nperm ",perNum," -rnk ",gseaRnk," -scoring_scheme weighted -rpt_label Project_",projectName," -include_only_symbols true -make_sets true -plot_top_x ",lNum," -rnd_seed timestamp -set_max ",maxNum," -set_min ",minNum," -zip_report false -out ",outputF," -gui false",sep="")
 
 	eI <- system(comm,ignore.stderr=TRUE)
 	if(eI>0){
@@ -74,56 +75,69 @@ gseaEnrichment <- function(hostName,outputDirectory,projectName,geneRankList,gen
 		if(sigMethod=="fdr"){
 			if(!is.null(gseaRPos)){
 				gseaRPosSig <- gseaRPos[gseaRPos[,"FDR"]<fdrThr,]
+				gseaRPosInsig <- gseaRPos[gseaRPos[, "FDR"]>=fdrThr, c("geneset", "NES", "FDR")]
 			}else{
 				gseaRPosSig <- NULL
+				gseaRPosInsig <- NULL
 			}
 
 			if(!is.null(gseaRNeg)){
 				gseaRNegSig <- gseaRNeg[gseaRNeg[,"FDR"]<fdrThr,]
+				gseaRNegInsig <- gseaRNeg[gseaRNeg[, "FDR"]>=fdrThr, c("geneset", "NES", "FDR", "leadingEdgeNum")]
 			}else{
 				gseaRNegSig <- NULL
+				gseaRNegInsig <- NULL
 			}
 
 			sig <- rbind(gseaRPosSig,gseaRNegSig)
+			insig <- rbind(gseaRPosInsig,gseaRNegInsig)
 			if(nrow(sig)==0){
 				cat("No significant set is identified based on FDR ",fdrThr,"!",sep="")
 				removeFolder(projectFolder,isOutput=isOutput,keepGseaFolder=keepGseaFolder)
 				return(NULL)
 			}else{
 				sig <- mappingName(sig,geneSet)
+				insig <- mappingName(insig, geneSet)
 				sig <- sig[order(sig[,"FDR"],sig[,"NES"]),]
 				removeFolder(projectFolder,isOutput=isOutput,keepGseaFolder=keepGseaFolder)
-				return(sig)
+				return(list(enriched=sig, background=insig))
 			}
 		}else{
 			if(!is.null(gseaRPos)){
 				gseaRPos <- gseaRPos[order(gseaRPos[,"FDR"],gseaRPos[,"PValue"]),]
 				if(nrow(gseaRPos)>topThr){
 					gseaRPosSig <- gseaRPos[1:topThr,]
+					gseaRPosInsig <- gseaRPos[(topThr+1):nrow(gseaRPos), c("geneset", "NES", "FDR", "leadingEdgeNum")]
 				}else{
 					gseaRPosSig <- gseaRPos
+					gseaRPosInsig <- NULL
 				}
 			}else{
 				gseaRPosSig <- NULL
+				gseaRPosInsig <- NULL
 			}
 
 			if(!is.null(gseaRNeg)){
 				gseaRNeg <- gseaRNeg[order(gseaRNeg[,"FDR"],gseaRNeg[,"PValue"]),]
 				if(nrow(gseaRNeg)>topThr){
 					gseaRNegSig <- gseaRNeg[1:topThr,]
+					gseaRNegInsig <- gseaRNeg[(topThr+1):nrow(gseaRNeg), c("geneset", "NES", "FDR", "leadingEdgeNum")]
 				}else{
 					gseaRNegSig <- gseaRNeg
+					gseaRNegInsig <- NULL
 				}
 			}else{
 				gseaRNegSig <- NULL
+				gseaRNegInsig <- NULL
 			}
 
 			sig <- rbind(gseaRPosSig,gseaRNegSig)
 			sig <- mappingName(sig,geneSet)
+			insig <- rbind(gseaRPosInsig, gseaRNegInsig)
 			sig <- sig[order(sig[,"FDR"],sig[,"PValue"]),]
 
 			removeFolder(projectFolder,isOutput=isOutput,keepGseaFolder=keepGseaFolder)
-			return(sig)
+			return(list(enriched=sig, background=insig))
 		}
 	}
 }

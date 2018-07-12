@@ -34,15 +34,15 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 	###############Enrichment analysis###################
 	ra <- length(interestGene)/length(referenceGene)
 
-	g <- unique(geneSet[,c(1,2)])
+	g <- unique(geneSet[!is.na(geneSet[,1]), c(1,2)])
 	enrichedResult <- data.frame(geneset=g[,1],link=g[,2],stringsAsFactors=FALSE)
 
-	refG <- data.frame(geneset=names(geneSetNum),C=geneSetNum,stringsAsFactors=FALSE)
+	refG <- data.frame(geneset=names(geneSetNum),C=unname(geneSetNum),stringsAsFactors=FALSE)
 	enrichedResult <- merge(enrichedResult,refG,by="geneset",all.x=TRUE)
 
 	intG <- geneSet[geneSet[,3] %in% interestGene,,drop=FALSE]
 	intGNum <- tapply(intG[,3],intG[,1],length)
-	intGNum <- data.frame(geneset=names(intGNum),O=intGNum,stringsAsFactors=FALSE)
+	intGNum <- data.frame(geneset=names(intGNum),O=unname(intGNum),stringsAsFactors=FALSE)
 	enrichedResult <- merge(enrichedResult,intGNum,by="geneset",all.x=TRUE)
 	enrichedResult[is.na(enrichedResult[,4]),4] <- 0
 
@@ -54,7 +54,7 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 	colnames(enrichedResult)[5:8] <- c("E","R","PValue","FDR")
 
 	intG <- tapply(intG[,3],intG[,1],paste,collapse=";")
-	intG <- data.frame(geneset=names(intG),overlapID=intG,stringsAsFactors=FALSE)
+	intG <- data.frame(geneset=names(intG),overlapID=unname(intG),stringsAsFactors=FALSE)
 	enrichedResult <- merge(enrichedResult,intG,by="geneset",all.x=TRUE)
 	enrichedResult[is.na(enrichedResult[,9]),9] <- NA
 
@@ -65,8 +65,12 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 			cat("No significant gene set is identified based on FDR ",fdrThr,"!",sep="")
 			return(NULL)
 		}else{
-			enrichedResultSig <- enrichedResultSig[order(enrichedResultSig[,"FDR"],enrichedResultSig[,"PValue"]),]
-			return(enrichedResultSig)
+<<<<<<< HEAD
+			enrichedResultInsig <- enrichedResult[enrichedResult[,8]>=fdrThr&enrichedResult$R!=0, c("geneset", "R", "FDR", "O")]
+=======
+			enrichedResultInsig <- enrichedResult[enrichedResult[,8]>=fdrThr&d$R!=0, c("geneset", "R", "FDR", "O")]
+>>>>>>> a8ddbc3030372e4116183949e61e9004c4f5ebda
+			return(list(enriched=enrichedResultSig, background=enrichedResultInsig))
 		}
 	}else{
 		#for the top method, we only select the terms with at least one annotated interesting gene
@@ -74,10 +78,11 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 		x <- x[order(x[,8],x[,7]),]
 		if(nrow(x)>topThr){
 			enrichedResultSig <- x[1:topThr,]
+			enrichedResultInsig <- x[(topThr+1):nrow(x), c("geneset", "R", "FDR", "O")]
 		}else{
 			enrichedResultSig <- x
+			enrichedResultInsig <- data.frame()
 		}
-		enrichedResultSig <- enrichedResultSig[order(enrichedResultSig[,"FDR"],enrichedResultSig[,"PValue"]),]
-		return(enrichedResultSig)
+		return(list(enriched=enrichedResultSig, background=enrichedResultInsig))
 	}
 }
