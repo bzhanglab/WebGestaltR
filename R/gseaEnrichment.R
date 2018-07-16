@@ -75,7 +75,7 @@ gseaEnrichment <- function(hostName,outputDirectory,projectName,geneRankList,gen
 		if(sigMethod=="fdr"){
 			if(!is.null(gseaRPos)){
 				gseaRPosSig <- gseaRPos[gseaRPos[,"FDR"]<fdrThr,]
-				gseaRPosInsig <- gseaRPos[gseaRPos[, "FDR"]>=fdrThr, c("geneset", "NES", "FDR")]
+				gseaRPosInsig <- gseaRPos[gseaRPos[, "FDR"]>=fdrThr, c("geneset", "NES", "FDR", "leadingEdgeNum")]
 			}else{
 				gseaRPosSig <- NULL
 				gseaRPosInsig <- NULL
@@ -97,8 +97,7 @@ gseaEnrichment <- function(hostName,outputDirectory,projectName,geneRankList,gen
 				return(NULL)
 			}else{
 				sig <- mappingName(sig,geneSet)
-				insig <- mappingName(insig, geneSet)
-				sig <- sig[order(sig[,"FDR"],sig[,"NES"]),]
+				sig <- sig[order(sig[,"FDR"],sig[,"PValue"]),]
 				removeFolder(projectFolder,isOutput=isOutput,keepGseaFolder=keepGseaFolder)
 				return(list(enriched=sig, background=insig))
 			}
