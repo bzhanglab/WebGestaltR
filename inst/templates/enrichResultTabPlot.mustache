@@ -2,10 +2,16 @@
 	<h4 class="title is-4 has-text-primary">Enrichment Results</h4>
 	<wg-tab>
 		<wg-tab-panel name="Bar chart" v-bind:selected="true">
-			<enrich-bar-plot :input-data="enrichment" :value-key="bar.valueKey" name-key="geneset" :x-label="bar.xLabel"> </enrich-bar-plot>
+			<wg-bar-plot
+				:dimensions="bar.dimensions"
+				:input-data="enrichment"
+				:value-key="bar.valueKey"
+				name-key="geneset"
+				:x-label="bar.xLabel">
+			</wg-bar-plot>
 		</wg-tab-panel>
 		<wg-tab-panel name="Volcano plot">
-			<enrich-volcano-plot
+			<wg-volcano-plot
 				:data-points="combinedData"
 				:x="volcano.x"
 				:y="volcano.y"
@@ -17,7 +23,7 @@
 				:tooltip-content="volcano.tooltipContent"
 				:show-all-labels="false"
 				:auto-place-labels="true"
-		></enrich-volcano-plot>
+		></wg-volcano-plot>
 		</wg-tab-panel>
 	</wg-tab>
 </div>
