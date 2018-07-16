@@ -50,7 +50,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 	template <- readLines(system.file("inst/templates/template.mustache", package="WebGestaltR"))
 	data <- list(hostName=hostName, geneSetNet=geneSetNet, geneSetDag=geneSetDag, bodyContent=bodyContent,
 				 sigJson=toJSON(unname(rowSplit(enrichedSig))), insigJson=toJSON(unname(rowSplit(background))),
-				 methodIsGsea=enrichMethod=="GSEA"
+				 methodIsGsea=enrichMethod=="GSEA", hasDes=!is.null(geneSetDes)
 				)
 	cat(whisker.render(template, data, partials=list(header=header, footer=footer)), file=outputHtmlFile)
 }

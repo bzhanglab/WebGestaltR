@@ -34,23 +34,40 @@ wgLib.initialize({
 	enrichment: enrichment,
 	background: background,
 	volcano: {
+		{{#hasDes}}
 		labelTypes: ["geneset", "description"],
+		{{/hasDes}}
+		{{^hasDes}}
+		labelTypes: "geneset",
+		{{/hasDes}}
+
 		autoPlaceLabels: true,
 		y: "FDR",
+
 		{{#methodIsGsea}}
 		x: "NES",
 		xLabel: "NES",
 		xTransform: null,
 		radius: "leadingEdgeNum",
 		color: "leadingEdgeNum",
-		tooltipContent: ["geneset", "description", "NES", "FDR", "PValue", "leadingEdgeNum"]
+			{{#hasDes}}
+			tooltipContent: ["geneset", "description", "NES", "FDR", "PValue", "leadingEdgeNum"]
+			{{/hasDes}}
+			{{^hasDes}}
+			tooltipContent: ["geneset", "NES", "FDR", "PValue", "leadingEdgeNum"]
+			{{/hasDes}}
 		{{/methodIsGsea}}
 		{{^methodIsGsea}}
 		x: "R",
 		xLabel: "log2 of enrichment ratio",
 		radius: "O",
 		color: "O",
-		tooltipContent: ["geneset", "description", "R", "FDR", "PValue", "O"]
+			{{#hasDes}}
+			tooltipContent: ["geneset", "description", "R", "FDR", "PValue", "O"]
+			{{/hasDes}}
+			{{^hasDes}}
+			tooltipContent: ["geneset", "R", "FDR", "PValue", "O"]
+			{{/hasDes}}
 		{{/methodIsGsea}}
 	},
 	bar: {
