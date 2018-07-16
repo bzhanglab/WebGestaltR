@@ -73,6 +73,7 @@ wgLib.initialize({
 	},
 	bar: {
 		dimensions: { width: 960, height: barHeight },
+		tooltipContent: ["geneset", "description", "R", "FDR", "PValue", "O"],
 		{{#methodIsGsea}}
 		valueKey: "NES"
 		{{/methodIsGsea}}
