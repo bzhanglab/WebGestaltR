@@ -44,6 +44,12 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 			bodyContent <- paste(bodyContent, enrichResultOthers(enrichMethod,enrichedSig,geneSetDes,fdrMethod,dNum), sep='\n')
 		}
 	}
+	if (is.null(enrichedSig)) {
+		enrichedSig <- data.frame()
+	}
+	if (is.null(background)) {
+		background <- data.frame()
+	}
 
 	header <- readLines(system.file("inst/templates/header.mustache", package="WebGestaltR"))
 	footer <- readLines(system.file("inst/templates/footer.mustache", package="WebGestaltR"))
