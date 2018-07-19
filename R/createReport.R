@@ -1,4 +1,4 @@
-createReport <- function(hostName, outputDirectory, organism="hsapiens", timeStamp, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet, interestingGeneMap, referenceGeneList, enrichedSig, background, enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, lNum=20, dagColor="binary"){
+createReport <- function(hostName, outputDirectory, organism="hsapiens", timeStamp, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet, interestingGeneMap, referenceGeneList, enrichedSig, geneTables, background, enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, lNum=20, dagColor="binary"){
 
 	outputHtmlFile <- file.path(outputDirectory,paste("Project_",timeStamp,sep=""),paste("Report_",timeStamp,".html",sep=""))
 
@@ -55,8 +55,9 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 	footer <- readLines(system.file("inst/templates/footer.mustache", package="WebGestaltR"))
 	template <- readLines(system.file("inst/templates/template.mustache", package="WebGestaltR"))
 	data <- list(hostName=hostName, geneSetNet=geneSetNet, geneSetDag=geneSetDag, bodyContent=bodyContent,
-				 sigJson=toJSON(unname(rowSplit(enrichedSig))), insigJson=toJSON(unname(rowSplit(background))),
-				 methodIsGsea=enrichMethod=="GSEA", hasDes=!is.null(geneSetDes)
+				sigJson=toJSON(unname(rowSplit(enrichedSig))), insigJson=toJSON(unname(rowSplit(background))),
+				geneTableJson=toJSON(geneTables),
+				methodIsGsea=enrichMethod=="GSEA", hasDes=!is.null(geneSetDes)
 				)
 	cat(whisker.render(template, data, partials=list(header=header, footer=footer)), file=outputHtmlFile)
 }

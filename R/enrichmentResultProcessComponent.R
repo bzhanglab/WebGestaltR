@@ -20,4 +20,20 @@ geneM <- function(geneList,mappingTable){
 	}
 }
 
+getGeneTables <- function(enrichedSig, geneColumn, interestingGeneMap) {
+	standardId <- interestingGeneMap$standardId
+	table <- list()
+	mapping <- interestingGeneMap$mapped[, c("userid", "genesymbol", "genename" ,standardId)]
+	for (i in 1:nrow(enrichedSig)) {
+		genes <- enrichedSig[i, geneColumn]
+		if (length(genes) == 1 && is.na(genes)) {
+			table[[genesetId]] <- list()
+		} else {
+			genes <- unlist(strsplit(genes, ";"))
+			genesetId <- enrichedSig[i, "geneset"]
+			table[[genesetId]] <- unname(rowSplit(mapping[mapping[, standardId] %in% genes, ]))
+		}
+	}
+	return(table)
+}
 

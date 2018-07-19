@@ -110,12 +110,18 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 			enrichedSig <- enrichedSig[order(enrichedSig[,"FDR"],enrichedSig[,"PValue"]),]
 		}
 
-		if(organism!="others" && interestGeneType!=interestStandardId){
-			enrichedSig <- mapUserId(enrichedSig,"overlapID",interestingGeneMap)  ###mapUserId function is in the enrichmentResultProcess_component file
+
+		if (organism != "others") {
+			geneTables <- getGeneTables(enrichedSig, "overlapID", interestingGeneMap)
+		} else {
+			geneTables <- list()
 		}
 
 		if(isOutput==TRUE){
-			write.table(enrichedSig,file=file.path(projectDir,paste("enrichment_results_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+			if(organism!="others" && interestGeneType!=interestStandardId){
+				outputEnrichedSig <- mapUserId(enrichedSig,"overlapID",interestingGeneMap)  ###mapUserId function is in the enrichmentResultProcess_component file
+			}
+			write.table(outputEnrichedSig,file=file.path(projectDir,paste("enrichment_results_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 		}
 	}
 
@@ -123,7 +129,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 
 	##############Create report##################
 		cat("Generate the final report...\n")
-		createReport(hostName=hostName, outputDirectory=outputDirectory, organism=organism, timeStamp=timeStamp, enrichMethod=enrichMethod, geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet, interestingGeneMap=interestingGeneMap, referenceGeneList=referenceGeneList, enrichedSig=enrichedSig, background=insig, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, dagColor=dagColor)
+		createReport(hostName=hostName, outputDirectory=outputDirectory, organism=organism, timeStamp=timeStamp, enrichMethod=enrichMethod, geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet, interestingGeneMap=interestingGeneMap, referenceGeneList=referenceGeneList, enrichedSig=enrichedSig, background=insig, geneTables=geneTables, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, dagColor=dagColor)
 
 		cwd <- getwd()
 		setwd(projectDir)
