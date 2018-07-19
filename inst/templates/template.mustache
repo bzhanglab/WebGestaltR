@@ -17,6 +17,7 @@ ga('send', 'pageview');
 	{{#geneSetDag}}
 	<!-- TODO -->
 	{{/geneSetDag}}
+<link rel="stylesheet" href="{{hostName}}/assets/dev/build/wg.css">
 </head>
 <body>
 {{>header}}
@@ -25,13 +26,13 @@ ga('send', 'pageview');
 {{{bodyContent}}}
 </div>
 </main>
-<script type="text/javascript" src="{{hostName}}/assets/dev/build/main.js"></script>
+<script type="text/javascript" src="{{hostName}}/assets/dev/build/wg.min.js"></script>
 <script type="text/javascript">
 var enrichment = {{{sigJson}}};
 var background = {{{insigJson}}};
 enrichment.forEach(function(d, i) { enrichment[i].options = {showLabel: true, showTooltip: true} });
 var barHeight = 500 + 10 * Math.max(0, (enrichment.length - 10));
-wgLib.initialize({
+wgLib({
 	enrichment: enrichment,
 	background: background,
 	volcano: {
