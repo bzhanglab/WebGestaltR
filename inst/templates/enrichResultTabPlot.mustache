@@ -4,7 +4,7 @@
 		<b-tab-item label="Bar chart">
 			<wg-bar-plot
 				:dimensions="bar.dimensions"
-				:input-data="enrichment"
+				:data="enrichment"
 				:value-key="bar.valueKey"
 				name-key="geneset"
 				:x-label="bar.xLabel">
@@ -12,7 +12,7 @@
 		</b-tab-item>
 		<b-tab-item label="Volcano plot">
 			<wg-volcano-plot
-				:data-points="combinedData"
+				:data="combinedData"
 				:x="volcano.x"
 				:y="volcano.y"
 				:x-label="volcano.xLabel"
