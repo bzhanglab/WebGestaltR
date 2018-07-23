@@ -18,6 +18,7 @@ ga('send', 'pageview');
 	<!-- TODO -->
 	{{/geneSetDag}}
 <link rel="stylesheet" href="{{hostName}}/assets/dev/build/wg.css">
+<link rel="stylesheet" href="//cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
 </head>
 <body>
 {{>header}}
@@ -36,6 +37,15 @@ var barHeight = 500 + 10 * Math.max(0, (enrichment.length - 10));
 wgLib({
 	enrichment: enrichment,
 	background: background,
+	geneTables: geneTables,
+	{{#methodIsGsea}}
+	enrichMethod: "gsea",
+	{{/methodIsGsea}}
+	{{^methodIsGsea}}
+	enrichMethod: "ora",
+	{{/methodIsGsea}}
+	standardId: "{{standardId}}",
+	mappedInputSize: {{numAnnoRefUserId}},
 	volcano: {
 		{{#hasDes}}
 		labelTypes: ["geneset", "description"],

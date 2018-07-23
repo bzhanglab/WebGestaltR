@@ -19,6 +19,8 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 		# tabsContent <- paste(tabsContent, mappingTableTab(interestingGeneMap), sep='\n')
 
 		standardId <- interestingGeneMap$standardId
+		interestGeneList <- unique(interestingGeneMap$mapped[,standardId])
+		numAnnoRefUserId <- length(intersect(interestGeneList,intersect(referenceGeneList,geneSet[,3])))
 		###########GOSlim summary#########################
 		if(standardId=="entrezgene"){
 			tabsContent <- paste(tabsContent, goSlimReport(timeStamp), sep='\n')
@@ -43,6 +45,8 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 		if(!is.null(enrichedSig)){
 			bodyContent <- paste(bodyContent, enrichResultOthers(enrichMethod,enrichedSig,geneSetDes,fdrMethod,dNum), sep='\n')
 		}
+		standardId <- NULL
+		numAnnoRefUserId <- NULL
 	}
 	if (is.null(enrichedSig)) {
 		enrichedSig <- data.frame()
@@ -56,7 +60,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 	template <- readLines(system.file("inst/templates/template.mustache", package="WebGestaltR"))
 	data <- list(hostName=hostName, geneSetNet=geneSetNet, geneSetDag=geneSetDag, bodyContent=bodyContent,
 				sigJson=toJSON(unname(rowSplit(enrichedSig))), insigJson=toJSON(unname(rowSplit(background))),
-				geneTableJson=toJSON(geneTables),
+				geneTableJson=toJSON(geneTables), standardId=standardId, numAnnoRefUserId=numAnnoRefUserId,
 				methodIsGsea=enrichMethod=="GSEA", hasDes=!is.null(geneSetDes)
 				)
 	cat(whisker.render(template, data, partials=list(header=header, footer=footer)), file=outputHtmlFile)

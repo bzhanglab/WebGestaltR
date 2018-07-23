@@ -25,5 +25,12 @@
 				:auto-place-labels="true"
 			></wg-volcano-plot>
 		</b-tab-item>
+		<wg-gene-table
+			:data="geneTables"
+			:info="enrichment"
+			:standard-id="standardId"
+			:method="enrichMethod"
+			:mapped-input-size="mappedInputSize"
+		></wg-gene-table>
 	</b-tabs>
 </div>
