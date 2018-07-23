@@ -23,7 +23,7 @@ geneM <- function(geneList,mappingTable){
 getGeneTables <- function(enrichedSig, geneColumn, interestingGeneMap) {
 	standardId <- interestingGeneMap$standardId
 	table <- list()
-	mapping <- interestingGeneMap$mapped[, c("userid", "genesymbol", "genename" ,standardId)]
+	mapping <- interestingGeneMap$mapped[, c("userid", "genesymbol", "genename", "glink", standardId)]
 	for (i in 1:nrow(enrichedSig)) {
 		genes <- enrichedSig[i, geneColumn]
 		if (length(genes) == 1 && is.na(genes)) {
