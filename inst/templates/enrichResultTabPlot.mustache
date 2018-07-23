@@ -1,6 +1,7 @@
-<div id="enrich-result">
+<section id="enrich-result">
 	<h4 class="title is-4 has-text-primary">Enrichment Results</h4>
 	<b-tabs v-model="activeTab" type="is-toggle">
+		<div class="vertical-center-container">
 		<b-tab-item label="Bar chart">
 			<wg-bar-plot
 				:dimensions="bar.dimensions"
@@ -9,8 +10,10 @@
 				name-key="geneset"
 				:x-label="bar.xLabel">
 			</wg-bar-plot>
+		</div>
 		</b-tab-item>
 		<b-tab-item label="Volcano plot">
+		<div class="vertical-center-container">
 			<wg-volcano-plot
 				:data="combinedData"
 				:x="volcano.x"
@@ -24,13 +27,14 @@
 				:show-all-labels="false"
 				:auto-place-labels="true"
 			></wg-volcano-plot>
+		</div>
 		</b-tab-item>
-		<wg-gene-table
-			:data="geneTables"
-			:info="enrichment"
-			:standard-id="standardId"
-			:method="enrichMethod"
-			:mapped-input-size="mappedInputSize"
-		></wg-gene-table>
 	</b-tabs>
-</div>
+	<wg-gene-table
+		:data="geneTables"
+		:info="enrichment"
+		:standard-id="standardId"
+		:method="enrichMethod"
+		:mapped-input-size="mappedInputSize"
+	></wg-gene-table>
+</section>
