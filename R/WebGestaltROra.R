@@ -113,6 +113,10 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 
 		if (organism != "others") {
 			geneTables <- getGeneTables(enrichedSig, "overlapID", interestingGeneMap)
+			enrichedSig$link <- mapply(function(link, geneList) linkModification(enrichDatabase, link, geneList, interestingGeneMap),
+				enrichedSig[,"link"],
+				enrichedSig[, "overlapID"]
+			)
 		} else {
 			geneTables <- list()
 		}

@@ -96,6 +96,10 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 
 		if (organism != "others") {
 			geneTables <- getGeneTables(enrichedSig, "leadingEdgeID", interestingGeneMap)
+			enrichedSig$link <- mapply(function(link, geneList) linkModification(enrichDatabase, link, geneList, interestingGeneMap),
+				enrichedSig[,"link"],
+				enrichedSig[, "leadingEdgeID"]
+			)
 		} else {
 			geneTables <- list()
 		}

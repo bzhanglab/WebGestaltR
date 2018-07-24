@@ -5,7 +5,7 @@ linkModification <- function(enrichDatabase,enrichPathwayLink,geneList,interesti
 		link <- keggLinkModification(enrichPathwayLink,geneList)
 		return(link)
 	}
-	if(enrichDatabase=="pathway_Wikipathway"){
+	if(startsWith(enrichDatabase, "pathway_Wikipathway")){
 		link <- wikiLinkModification(enrichPathwayLink,geneList,interestingGeneMap)
 		return(link)
 	}
