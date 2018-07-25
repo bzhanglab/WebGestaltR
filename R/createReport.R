@@ -11,6 +11,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 		hostName <- "https://s3-us-west-2.amazonaws.com/webgestalt/assets"
 	}
 
+	numAnnoRefUserId <- NULL
 	if(organism!="others"){
 		#####Summary Tab########
 		tabsContent <- summaryDescription(timeStamp,organism,interestGeneFile,interestGene,interestGeneType,enrichMethod,enrichDatabase,enrichDatabaseFile,enrichDatabaseType,enrichDatabaseDescriptionFile,interestingGeneMap,referenceGeneList,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,perNum,lNum,geneSet)
@@ -19,8 +20,10 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 		# tabsContent <- paste(tabsContent, mappingTableTab(interestingGeneMap), sep='\n')
 
 		standardId <- interestingGeneMap$standardId
-		interestGeneList <- unique(interestingGeneMap$mapped[,standardId])
-		numAnnoRefUserId <- length(intersect(interestGeneList,intersect(referenceGeneList,geneSet[,3])))
+		if (enrichMethod == 'ORA') {
+			interestGeneList <- unique(interestingGeneMap$mapped[,standardId])
+			numAnnoRefUserId <- length(intersect(interestGeneList,intersect(referenceGeneList,geneSet[,3])))
+		}
 		###########GOSlim summary#########################
 		if(standardId=="entrezgene"){
 			tabsContent <- paste(tabsContent, goSlimReport(timeStamp), sep='\n')
@@ -28,7 +31,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 
 		############Enrichment result##################
 		if(!is.null(enrichedSig)){
-			tabsContent <- paste(tabsContent, enrichResultTab(), seq='\n')
+			tabsContent <- paste(tabsContent, enrichResultTab(enrichMethod), seq='\n')
 			# tabsContent <- paste(tabsContent, enrichResultTabCategoryViz(outputHtmlFile,organism,enrichMethod,fdrMethod,enrichedSig,dNum,geneSetDag,geneSetDes,geneSetNet,outputDirectory,timeStamp,dagColor,hostName,interestingGeneMap,enrichDatabase), sep='\n')
 		}
 
@@ -46,7 +49,6 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 			bodyContent <- paste(bodyContent, enrichResultOthers(enrichMethod,enrichedSig,geneSetDes,fdrMethod,dNum), sep='\n')
 		}
 		standardId <- NULL
-		numAnnoRefUserId <- NULL
 	}
 	if (is.null(enrichedSig)) {
 		enrichedSig <- data.frame()

@@ -35,6 +35,8 @@
 		:info="enrichment"
 		:standard-id="standardId"
 		:method="enrichMethod"
+       {{#methodIsOra}}
 		:mapped-input-size="mappedInputSize"
+       {{/methodIsOra}}
 	></wg-gene-table>
 </section>
