@@ -86,6 +86,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	enrichedSig <- gseaRes$enriched
 	insig <- gseaRes$background
 
+	geneTables <- list()
 	if(!is.null(enrichedSig)){
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
 			colnames(geneSetDes) <- c("geneset","description")
@@ -100,8 +101,6 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 				enrichedSig[,"link"],
 				enrichedSig[, "leadingEdgeID"]
 			)
-		} else {
-			geneTables <- list()
 		}
 
 		if(isOutput==TRUE){

@@ -102,6 +102,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 
 
 
+	geneTables <- list()
 	if(!is.null(enrichedSig)){
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
 			colnames(geneSetDes) <- c("geneset","description")
@@ -117,8 +118,6 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 				enrichedSig[,"link"],
 				enrichedSig[, "overlapID"]
 			)
-		} else {
-			geneTables <- list()
 		}
 
 		if(isOutput==TRUE){
