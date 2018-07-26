@@ -142,10 +142,10 @@ gseaEnrichment <- function(hostName,outputDirectory,projectName,geneRankList,gen
 }
 
 readGsea <- function(gseaFolder){
-	positiveP <- data.frame(geneset="",link="",Size=0,ES=0,NES=0,PValue=0,FDR=0,leadingEdgeNum=0,leadingEdgeID="",stringsAsFactors=FALSE)
+	positiveP <- data.frame(geneset="", link="", Size=0, ES=0, NES=0, PValue=0, FDR=0, leadingEdgeNum=0, leadingEdgeID="", plotPath="", stringsAsFactors=FALSE)
 	rei <- 1
 
-	negativeP <- data.frame(geneset="",link="",Size=0,ES=0,NES=0,PValue=0,FDR=0,leadingEdgeNum=0,leadingEdgeID="",stringsAsFactors=FALSE)
+	negativeP <- data.frame(geneset="", link="", Size=0, ES=0, NES=0, PValue=0, FDR=0, leadingEdgeNum=0, leadingEdgeID="", plotPath="", stringsAsFactors=FALSE)
 	nei <- 1
 
 	subFile <- list.files(gseaFolder,pattern="GseaPreranked")
@@ -180,8 +180,14 @@ readGsea <- function(gseaFolder){
 				positiveP[j,8] <- NA
 				positiveP[j,9] <- NA
 			}
+			plotFile <- list.files(subF, paste0(positiveP[j, 1], ".*png$"))
+			if (length(plotFile) > 0) {
+				positiveP[j, 10] <- file.path(".", basename(gseaFolder), subFile, plotFile[1])
+			} else {
+				positiveP[j, 10] <- ""
+			}
 		}
-		positiveP <- positiveP[,c(1,2,3,8,4:7,9)]
+		positiveP <- positiveP[, c(1, 2, 3, 8, 4:7, 9, 10)]
 		positiveP <- positiveP[!is.na(positiveP[,"NES"]),]     ###GSEA may generate some terms with NA NES and Pvalue
 		if(nrow(positiveP)==0){
 			positiveP <- NULL
@@ -209,8 +215,14 @@ readGsea <- function(gseaFolder){
 				negativeP[j,8] <- NA
 				negativeP[j,9] <- NA
 			}
+			plotFile <- list.files(subF, paste0(negativeP[j, 1], ".*png$"))
+			if (length(plotFile) > 0) {
+				negativeP[j, 10] <- file.path(".", basename(gseaFolder), subFile, plotFile[1])
+			} else {
+				negativeP[j, 10] <- ""
+			}
 		}
-		negativeP <- negativeP[,c(1,2,3,8,4:7,9)]
+		negativeP <- negativeP[, c(1, 2, 3, 8, 4:7, 9, 10)]
 		negativeP <- negativeP[!is.na(negativeP[,"NES"]),]
 		if(nrow(negativeP)==0){
 			negativeP <- NULL
