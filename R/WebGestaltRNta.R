@@ -25,7 +25,6 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	goTermList <- goEnrichData
 
 	queue <- as.list(goTermList)
-	graphEdges <- list()
 	## expand to include all linked nodes
 	edges <- list()
 	while (length(queue) > 0 ) {
