@@ -16,7 +16,9 @@ ga('send', 'pageview');
 	<!-- TODO -->
 	{{/geneSetNet}}
 	{{#geneSetDag}}
-	<!-- TODO -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.15/cytoscape.min.js"></script>
+	<script src="https://aws2.zhang-lab.org/yuxingl/webgestalt/node_modules/dagre/dist/dagre.min.js"></script>
+	<script src="https://aws2.zhang-lab.org/yuxingl/webgestalt/node_modules/cytoscape-dagre/cytoscape-dagre.js"></script>
 	{{/geneSetDag}}
 <link rel="stylesheet" href="{{hostName}}/assets/dev/build/wg.css">
 <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
@@ -34,6 +36,9 @@ var enrichment = {{{sigJson}}};
 var background = {{{insigJson}}};
 var geneTables = {{{geneTableJson}}};
 enrichment.forEach(function(d, i) { enrichment[i].options = {showLabel: true, showTooltip: true} });
+{{#hasGeneSetDag}}
+var goDag = {{{dagJson}}};
+{{/hasGeneSetDag}}
 var barHeight = 500 + 10 * Math.max(0, (enrichment.length - 10));
 wgLib({
 	enrichment: enrichment,
@@ -47,13 +52,16 @@ wgLib({
 	mappedInputSize: {{numAnnoRefUserId}},
 	{{/methodIsGsea}}
 	standardId: "{{standardId}}",
+	{{#hasGeneSetDag}}
+	goDag: goDag,
+	{{/hasGeneSetDag}}
 	volcano: {
-		{{#hasDes}}
+		{{#hasGeneSetDes}}
 		labelTypes: ["geneset", "description"],
-		{{/hasDes}}
-		{{^hasDes}}
+		{{/hasGeneSetDes}}
+		{{^hasGeneSetDes}}
 		labelTypes: "geneset",
-		{{/hasDes}}
+		{{/hasGeneSetDes}}
 
 		autoPlaceLabels: true,
 		y: "FDR",
@@ -64,24 +72,24 @@ wgLib({
 		xTransform: null,
 		radius: "leadingEdgeNum",
 		color: "leadingEdgeNum",
-			{{#hasDes}}
+			{{#hasGeneSetDes}}
 			tooltipContent: ["geneset", "description", "NES", "FDR", "PValue", "leadingEdgeNum"]
-			{{/hasDes}}
-			{{^hasDes}}
+			{{/hasGeneSetDes}}
+			{{^hasGeneSetDes}}
 			tooltipContent: ["geneset", "NES", "FDR", "PValue", "leadingEdgeNum"]
-			{{/hasDes}}
+			{{/hasGeneSetDes}}
 		{{/methodIsGsea}}
 		{{^methodIsGsea}}
 		x: "R",
 		xLabel: "log2 of enrichment ratio",
 		radius: "O",
 		color: "O",
-			{{#hasDes}}
+			{{#hasGeneSetDes}}
 			tooltipContent: ["geneset", "description", "R", "FDR", "PValue", "O"]
-			{{/hasDes}}
-			{{^hasDes}}
+			{{/hasGeneSetDes}}
+			{{^hasGeneSetDes}}
 			tooltipContent: ["geneset", "R", "FDR", "PValue", "O"]
-			{{/hasDes}}
+			{{/hasGeneSetDes}}
 		{{/methodIsGsea}}
 	},
 	bar: {

@@ -1,8 +1,8 @@
 <section id="enrich-result">
 	<h4 class="title is-4 has-text-primary">Enrichment Results</h4>
 	<b-tabs v-model="activeTab" type="is-toggle">
-		<div class="vertical-center-container">
 		<b-tab-item label="Bar chart">
+		<div class="vertical-center-container">
 			<wg-bar-plot
 				:dimensions="bar.dimensions"
 				:data="enrichment"
@@ -29,14 +29,21 @@
 			></wg-volcano-plot>
 		</div>
 		</b-tab-item>
+		{{#hasGeneSetDag}}
+		<b-tab-item label="DAG">
+			<wg-go-dag
+				:data="goDag"
+			></wg-go-dag>
+		</b-tab-item>
+		{{/hasGeneSetDag}}
 	</b-tabs>
 	<wg-gene-table
 		:data="geneTables"
 		:info="enrichment"
 		:standard-id="standardId"
 		:method="enrichMethod"
-       {{#methodIsOra}}
+		{{#methodIsOra}}
 		:mapped-input-size="mappedInputSize"
-       {{/methodIsOra}}
+		{{/methodIsOra}}
 	></wg-gene-table>
 </section>

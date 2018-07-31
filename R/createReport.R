@@ -12,6 +12,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 	}
 
 	numAnnoRefUserId <- NULL
+	dagJson <- NULL
 	if(organism!="others"){
 		#####Summary Tab########
 		tabsContent <- summaryDescription(timeStamp,organism,interestGeneFile,interestGene,interestGeneType,enrichMethod,enrichDatabase,enrichDatabaseFile,enrichDatabaseType,enrichDatabaseDescriptionFile,interestingGeneMap,referenceGeneList,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,perNum,lNum,geneSet)
@@ -31,11 +32,12 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 
 		############Enrichment result##################
 		if(!is.null(enrichedSig)){
-			tabsContent <- paste(tabsContent, enrichResultTab(enrichMethod), seq='\n')
+			tabsContent <- paste(tabsContent, enrichResultTab(enrichMethod, geneSetDag), seq='\n')
 			if (!is.null(geneSetDag)) {
 				dagRes <- expandDag(enrichedSig[, "geneset"], geneSetDag)
 				dagEdges <- dagRes$edges
 				dagNodes <- getDagNodes(enrichedSig, dagRes$allNodes, geneSetDes, enrichMethod, dagColor)
+				dagJson <- toJSON(unname(c(dagEdges, dagNodes)))
 
 			}
 			# tabsContent <- paste(tabsContent, enrichResultTabCategoryViz(outputHtmlFile,organism,enrichMethod,fdrMethod,enrichedSig,dNum,geneSetDag,geneSetDes,geneSetNet,outputDirectory,timeStamp,dagColor,hostName,interestingGeneMap,enrichDatabase), sep='\n')
@@ -68,8 +70,9 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 	template <- readLines(system.file("inst/templates/template.mustache", package="WebGestaltR"))
 	data <- list(hostName=hostName, geneSetNet=geneSetNet, geneSetDag=geneSetDag, bodyContent=bodyContent,
 				sigJson=toJSON(unname(rowSplit(enrichedSig))), insigJson=toJSON(unname(rowSplit(background))),
+				dagJson=dagJson, hasGeneSetDag=!is.null(geneSetDag),
 				geneTableJson=toJSON(geneTables), standardId=standardId, numAnnoRefUserId=numAnnoRefUserId,
-				methodIsGsea=enrichMethod=="GSEA", hasDes=!is.null(geneSetDes)
+				methodIsGsea=enrichMethod=="GSEA", hasGeneSetDes=!is.null(geneSetDes)
 				)
 	cat(whisker.render(template, data, partials=list(header=header, footer=footer)), file=outputHtmlFile)
 }
