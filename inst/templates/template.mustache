@@ -37,7 +37,7 @@ var background = {{{insigJson}}};
 var geneTables = {{{geneTableJson}}};
 enrichment.forEach(function(d, i) { enrichment[i].options = {showLabel: true, showTooltip: true} });
 {{#hasGeneSetDag}}
-var goDag = {{{dagJson}}};
+var dag = {{{dagJson}}};
 {{/hasGeneSetDag}}
 var barHeight = 500 + 10 * Math.max(0, (enrichment.length - 10));
 wgLib({
@@ -53,7 +53,7 @@ wgLib({
 	{{/methodIsGsea}}
 	standardId: "{{standardId}}",
 	{{#hasGeneSetDag}}
-	goDag: goDag,
+	dag: dag,
 	{{/hasGeneSetDag}}
 	volcano: {
 		{{#hasGeneSetDes}}
