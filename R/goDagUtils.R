@@ -28,9 +28,11 @@ expandDag <- function(goTermList, dagEdgeList) {
 }
 
 getDagNodes <- function(enrichedRes, allGoList, goIdName, enrichMethod, dagColorSchema) {
-	colnames(goIdName) <- c("id", "name")
+	if (!is.null(goIdName)) {
+		colnames(goIdName) <- c("id", "name")
+	}
 	return(lapply(allGoList, function(x) {
-		goName <- goIdName[goIdName$id == x, ][[1, "name"]]
+		goName <- ifelse(is.null(goIdName), "", goIdName[goIdName$id == x, ][[1, "name"]])
 		color <- getDagNodeColor(enrichedRes, x, enrichMethod, dagColorSchema)
 		return(list(
 			data=list(
