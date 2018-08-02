@@ -20,7 +20,7 @@ ga('send', 'pageview');
 	<script src="https://aws2.zhang-lab.org/yuxingl/webgestalt/node_modules/dagre/dist/dagre.min.js"></script>
 	<script src="https://aws2.zhang-lab.org/yuxingl/webgestalt/node_modules/cytoscape-dagre/cytoscape-dagre.js"></script>
 	{{/geneSetDag}}
-<link rel="stylesheet" href="{{hostName}}/assets/dev/build/wg.css">
+	<link rel="stylesheet" href="{{hostName}}/assets/{{version}}/build/wg.css">
 <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
 </head>
 <body>
@@ -30,7 +30,7 @@ ga('send', 'pageview');
 {{{bodyContent}}}
 </div>
 </main>
-<script type="text/javascript" src="{{hostName}}/assets/dev/build/wg.min.js"></script>
+	<script type="text/javascript" src="{{hostName}}/assets/{{version}}/build/wg.min.js"></script>
 <script type="text/javascript">
 var enrichment = {{{sigJson}}};
 var background = {{{insigJson}}};

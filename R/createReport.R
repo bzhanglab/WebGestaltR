@@ -64,13 +64,14 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 	if (is.null(background)) {
 		background <- data.frame()
 	}
+	version <- packageVersion("WebGestaltR")
 
 	header <- readLines(system.file("templates/header.mustache", package="WebGestaltR"))
 	footer <- readLines(system.file("templates/footer.mustache", package="WebGestaltR"))
 	template <- readLines(system.file("templates/template.mustache", package="WebGestaltR"))
 	data <- list(hostName=hostName, geneSetNet=geneSetNet, geneSetDag=geneSetDag, bodyContent=bodyContent,
 				sigJson=toJSON(unname(rowSplit(enrichedSig))), insigJson=toJSON(unname(rowSplit(background))),
-				dagJson=dagJson, hasGeneSetDag=!is.null(geneSetDag),
+				dagJson=dagJson, hasGeneSetDag=!is.null(geneSetDag), version=version,
 				geneTableJson=toJSON(geneTables), standardId=standardId, numAnnoRefUserId=numAnnoRefUserId,
 				methodIsGsea=enrichMethod=="GSEA", hasGeneSetDes=!is.null(geneSetDes)
 				)
