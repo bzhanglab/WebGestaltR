@@ -55,7 +55,7 @@ detailedGeneTable <- function(outputHtmlFile,organism,enrichMethod,fdrMethod,enr
 	enrichedCategories <- unname(rowSplit(enrichedCategories))
 	data$enrichedCategories <- mapply(function(x, y) append(x, list(tableContent=y)), enrichedCategories, tableContent, SIMPLIFY=FALSE)
 
-	statDes <- readLines(system.file("inst/templates/enrichResultStat.mustache", package="WebGestaltR"))
-	template <- readLines(system.file("inst/templates/detailedGeneTable.mustache", package="WebGestaltR"))
+	statDes <- readLines(system.file("templates/enrichResultStat.mustache", package="WebGestaltR"))
+	template <- readLines(system.file("templates/detailedGeneTable.mustache", package="WebGestaltR"))
 	return(whisker.render(template, data, partials=list(statDes=statDes)))
 }

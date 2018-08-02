@@ -43,7 +43,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 			# tabsContent <- paste(tabsContent, enrichResultTabCategoryViz(outputHtmlFile,organism,enrichMethod,fdrMethod,enrichedSig,dNum,geneSetDag,geneSetDes,geneSetNet,outputDirectory,timeStamp,dagColor,hostName,interestingGeneMap,enrichDatabase), sep='\n')
 		}
 
-		#template <- readLines(system.file("inst/templates/tab.mustache", package="WebGestaltR"))
+		#template <- readLines(system.file("templates/tab.mustache", package="WebGestaltR"))
 		#data <- list(hasEnrichedSig=!is.null(enrichedSig), idIsEntrezGene=interestingGeneMap$standardId=="entrezgene", tabsContent=tabsContent)
 		#bodyContent <- whisker.render(template, data)
 		bodyContent <- tabsContent
@@ -65,9 +65,9 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 		background <- data.frame()
 	}
 
-	header <- readLines(system.file("inst/templates/header.mustache", package="WebGestaltR"))
-	footer <- readLines(system.file("inst/templates/footer.mustache", package="WebGestaltR"))
-	template <- readLines(system.file("inst/templates/template.mustache", package="WebGestaltR"))
+	header <- readLines(system.file("templates/header.mustache", package="WebGestaltR"))
+	footer <- readLines(system.file("templates/footer.mustache", package="WebGestaltR"))
+	template <- readLines(system.file("templates/template.mustache", package="WebGestaltR"))
 	data <- list(hostName=hostName, geneSetNet=geneSetNet, geneSetDag=geneSetDag, bodyContent=bodyContent,
 				sigJson=toJSON(unname(rowSplit(enrichedSig))), insigJson=toJSON(unname(rowSplit(background))),
 				dagJson=dagJson, hasGeneSetDag=!is.null(geneSetDag),

@@ -32,7 +32,7 @@ enrichResultTabCategoryViz <- function(outputHtmlFile,organism,enrichMethod,fdrM
 
 	data$detailedGeneTableContent <- detailedGeneTable(outputHtmlFile,organism,enrichMethod,fdrMethod,enrichedSigSub,geneSetDes,geneSetNet,interestingGeneMap,enrichDatabase)
 
-	template <- readLines(system.file("inst/templates/enrichResultTab.mustache", package="WebGestaltR"))
+	template <- readLines(system.file("templates/enrichResultTab.mustache", package="WebGestaltR"))
 	return(whisker.render(template, data))
 }
 
@@ -88,8 +88,8 @@ enrichResultOthers <- function(enrichMethod,enrichedSig,geneSetDes,fdrMethod,dNu
 		extractSig$name <- enrichedSigSub[,"description"]
 	}
 
-	template <- readLines(system.file("inst/templates/enrichResultOthers.mustache", package="WebGestaltR"))
-	statDes <- readLines(system.file("inst/templates/enrichResultStat.mustache", package="WebGestaltR"))
+	template <- readLines(system.file("templates/enrichResultOthers.mustache", package="WebGestaltR"))
+	statDes <- readLines(system.file("templates/enrichResultStat.mustache", package="WebGestaltR"))
 	data <- list(enrichedCategories=unname(rowSplit(extractSig)),
 				 hasGeneSetDes=!is.null(geneSetDes), methodIsGsea=enrichMethod=="GSEA",
 				 methodIsOra=enrichMethod=="ORA", fdrMethod=fdrMethod

@@ -89,8 +89,8 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 				toolboxNet=list(name=netName, nodes=allNodes),
 				toolboxDag=list(name=dagName, nodes=goDataList)
 				)
-	partials <- list(toolbox=readLines(system.file("inst/templates/toolbox.mustache", package="WebGestaltR")))
-	template <- readLines(system.file("inst/templates/networkContent.mustache", package="WebGestaltR"))
+	partials <- list(toolbox=readLines(system.file("templates/toolbox.mustache", package="WebGestaltR")))
+	template <- readLines(system.file("templates/networkContent.mustache", package="WebGestaltR"))
 	content <- whisker.render(template, data, partials=partials)
 
 	data <- list(hostName=hostName,
@@ -98,10 +98,10 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 				version=version,
 				networkContent=content
 				)
-	header <- readLines(system.file("inst/templates/header.mustache", package="WebGestaltR"))
-	footer <- readLines(system.file("inst/templates/footer.mustache", package="WebGestaltR"))
+	header <- readLines(system.file("templates/header.mustache", package="WebGestaltR"))
+	footer <- readLines(system.file("templates/footer.mustache", package="WebGestaltR"))
 	partials <- list(header=header, footer=footer)
-	template <- readLines(system.file("inst/templates/ntaTemplate.mustache", package="WebGestaltR"))
+	template <- readLines(system.file("templates/ntaTemplate.mustache", package="WebGestaltR"))
 	outFn <- file.path(projectDir, paste0("Report_", projectName, ".html"))
 	cat(whisker.render(template, data, partials=partials), file=outFn)
 }

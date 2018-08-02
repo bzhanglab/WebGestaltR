@@ -5,7 +5,7 @@ mappingTableTab <- function(interestingGeneMap){
 	mappedGenes <- unname(rowSplit(interestingGeneMap$mapped))
 	unmappedGenes <- interestingGeneMap$unmapped
 
-	template <- readLines(system.file("inst/templates/mappingTableTab.mustache", package="WebGestaltR"))
+	template <- readLines(system.file("templates/mappingTableTab.mustache", package="WebGestaltR"))
 	data <- list(tableNames=tableNames, mappedGenes=mappedGenes, unmappedGenes=unmappedGenes, standardId=standardId)
 	table <- whisker.render(template, data=data)
 	colnames(interestingGeneMap$mapped)[4] <- standardId

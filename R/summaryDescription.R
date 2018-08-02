@@ -8,7 +8,7 @@ summaryDescription <- function(timeStamp,organism,interestGeneFile,interestGene,
 	}
 
 	standardId <- unname(interestingGeneMap$standardId)
-	template <- readLines(system.file("inst/templates/summary.mustache", package="WebGestaltR"))
+	template <- readLines(system.file("templates/summary.mustache", package="WebGestaltR"))
 	data <- list(timeStamp=timeStamp, enrichMethod=enrichMethod, organism=organism, organismIsOthers=organism=="others",
 		enrichDatabase=enrichDatabase, enrichDatabaseIsOthers=enrichDatabase=="others", enrichDatabaseFile=enrichDatabaseFile,
 		enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,
@@ -52,7 +52,7 @@ specificParameterSummaryOra <- function(organism,referenceGeneList,geneSet,refer
 		maxNum=maxNum, fdrMethod=fdrMethod, methodIsFdr=sigMethod=="fdr", methodIsTop=sigMethod=="top", fdrThr=fdrThr,
 		topThr=topThr, hasEnrichedSig=hasEnrichedSig, showAll=showAll, numEnrichedSig=numEnrichedSig
 		)
-	template <- readLines(system.file("inst/templates/summaryOra.mustache", package="WebGestaltR"))
+	template <- readLines(system.file("templates/summaryOra.mustache", package="WebGestaltR"))
 	return(whisker.render(template, data))
 }
 
@@ -88,6 +88,6 @@ specificParameterSummaryGsea <- function(organism,interestingGeneMap,geneSet,min
 		data$showAllNeg <- dNum>=data$numNegRel
 	}
 
-	template <- readLines(system.file("inst/templates/summaryGsea.mustache", package="WebGestaltR"))
+	template <- readLines(system.file("templates/summaryGsea.mustache", package="WebGestaltR"))
 	return(whisker.render(template, data))
 }
