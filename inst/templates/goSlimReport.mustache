@@ -2,6 +2,9 @@
 <div class="card" v-bind:class="{active: goShown}" >
 	<div class="card-header" v-on:click="goShown=!goShown">
 		<p class="card-header-title">GO Slim summary for the user uploaded IDs</p>
+		<a href="#" class="card-header-icon">
+			<span class="icon"><i class="mdi mdi-24px" :class="{'mdi-chevron-up':  goShown, 'mdi-chevron-down': !goShown}"></i></span>
+		</a>
 	</div>
 	<div v-show="goShown">
 		<div class="card-content">

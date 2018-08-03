@@ -1,5 +1,25 @@
-<section id="summary" class="content">
-<h3>Summary (<a href="Project_{{timeStamp}}.zip" target="_blank" class="result-download"><u>Result Download</u></a>)</h3>
+<div class="level">
+	<div class="level-left">
+		<div class="level-item">
+			<h4 class="title is-4 has-text-primary">Summary</h4>
+		</div>
+	</div>
+	<div class="level-right">
+		<div class="level-item">
+			<a class="button is-text" href="Project_{{timeStamp}}.zip" target="_blank">Result Download</a>
+		</div>
+	</div>
+</div>
+
+<section id="summary">
+<div class="card" v-bind:class="{active: summaryShown}" >
+	<div class="card-header" v-on:click="summaryShown=!summaryShown">
+		<p class="card-header-title">Job Summary</p>
+		<a href="#" class="card-header-icon">
+			<span class="icon"><i class="mdi mdi-24px" :class="{'mdi-chevron-up': summaryShown, 'mdi-chevron-down': !summaryShown}"></i></span>
+		</a>
+	</div>
+	<div class="card-content" v-show="summaryShown">
 <b>Enrich method:</b> {{enrichMethod}}<br/>
 <b>Organism: </b>{{organism}}<br/>
 {{^organismIsOthers}}
@@ -32,4 +52,6 @@
 	{{/hasInterestGeneFile}}
 {{/organismIsOthers}}
 {{{methodSpecificContent}}}
+	</div>
+</div>
 </section>
