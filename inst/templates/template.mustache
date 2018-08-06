@@ -15,11 +15,12 @@ ga('send', 'pageview');
 	{{#geneSetNet}}
 	<!-- TODO -->
 	{{/geneSetNet}}
-	{{#geneSetDag}}
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.15/cytoscape.min.js"></script>
-	<script src="https://aws2.zhang-lab.org/yuxingl/webgestalt/node_modules/dagre/dist/dagre.min.js"></script>
-	<script src="https://aws2.zhang-lab.org/yuxingl/webgestalt/node_modules/cytoscape-dagre/cytoscape-dagre.js"></script>
-	{{/geneSetDag}}
+	{{#hasGeneSetDag}}
+	<script src="https://aws2.zhang-lab.org/yuxingl/webgestalt-test/assets/{{version}}/build/cytoscape.min.js"></script>
+	{{/hasGeneSetDag}}
+	{{^hasGeneSetDag}}
+	<script>window.cytoscape = null;</script>
+	{{/hasGeneSetDag}}
 	<link rel="stylesheet" href="{{hostName}}/assets/{{version}}/build/wg.css">
 <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
 </head>
