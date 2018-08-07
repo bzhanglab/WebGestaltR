@@ -72,20 +72,20 @@ getDagNodeColor <- function(enrichedRes, goTerm, enrichMethod, schema) {
 			fdr <- sign(enrichedRes[, "NES"]) * (-log10(fdr))
 			minFdrLog <- min(fdr)
 			maxFdrLog <- max(fdr)
-			if (minFT > 0) {
+			if (minFdrLog > 0) {
 				colorPalette <- colorRampPalette(c("white", "red"))(128)
-				myBreak <- seq(0, maxFT + 0.01, length.out=129)
+				myBreak <- seq(0, maxFdrLog + 0.01, length.out=129)
 			}else{
-				if (maxFT<0) {
+				if (maxFdrLog < 0) {
 					colorPalette <- colorRampPalette(c("blue", "white"))(128)
-					myBreak <- seq(minFT - 0.01, 0, length.out=129)
+					myBreak <- seq(minFdrLog- 0.01, 0, length.out=129)
 				}else{
-					if (abs(minFT) > maxFT) {
+					if (abs(minFdrLog) > maxFdrLog) {
 						colorPalette <- colorRampPalette(c("blue", "white", "red"))(256)
-						myBreak <- c(seq(minFT-0.01, -0.01, length.out=128), 0, seq(0.01, max(minFT)+0.01, length.out=128))
+						myBreak <- c(seq(minFdrLog-0.01, -0.01, length.out=128), 0, seq(0.01, max(minFdrLog)+0.01, length.out=128))
 					}else{
 						colorPalette <- colorRampPalette(c("blue", "white", "red"))(256)
-						myBreak <- c(seq(-maxFT-0.01, -0.01, length.out=128), 0, seq(0.01, maxFT+0.01, length.out=128))
+						myBreak <- c(seq(-maxFdrLog-0.01, -0.01, length.out=128), 0, seq(0.01, maxFdrLog+0.01, length.out=128))
 					}
 				}
 			}
