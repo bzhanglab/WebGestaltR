@@ -32,7 +32,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 
 		############Enrichment result##################
 		if(!is.null(enrichedSig)){
-			tabsContent <- paste(tabsContent, enrichResultTab(enrichMethod, geneSetDag), seq='\n')
+			tabsContent <- paste(tabsContent, enrichResultTab(enrichMethod, geneSetDes, geneSetDag), seq='\n')
 			if (!is.null(geneSetDag)) {
 				dagRes <- expandDag(enrichedSig[, "geneset"], geneSetDag)
 				dagEdges <- dagRes$edges
