@@ -11,7 +11,7 @@
 	</div>
 </div>
 
-<section id="summary">
+<section id="summary" class="summary">
 <div class="card" v-bind:class="{active: summaryShown}" >
 	<div class="card-header" v-on:click="summaryShown=!summaryShown">
 		<p class="card-header-title">Job Summary</p>
@@ -19,7 +19,7 @@
 			<span class="icon"><i class="mdi mdi-24px" :class="{'mdi-chevron-up': summaryShown, 'mdi-chevron-down': !summaryShown}"></i></span>
 		</a>
 	</div>
-	<div class="card-content" v-show="summaryShown">
+	<div class="card-content content" v-show="summaryShown">
 <b>Enrich method:</b> {{enrichMethod}}<br/>
 <b>Organism: </b>{{organism}}<br/>
 {{^organismIsOthers}}

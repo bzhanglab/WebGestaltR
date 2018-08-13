@@ -1,12 +1,36 @@
 <div id={{networkName}}>
-<section class="section content">
-	<h4 class="title is-4 has-text-primary">Summary of the analysis results <span><a href="{{zipPath}}" target="_blank">(Result Download)</a></span></h4>
-<ul>
-{{#summary}}
-<li>{{.}}</li>
-{{/summary}}
-</ul>
+<section class="section">
+<div class="level">
+	<div class="level-left">
+		<div class="level-item">
+			<h4 class="title is-4 has-text-primary">Summary of the analysis results</h4>
+		</div>
+	</div>
+	<div class="level-right">
+		<div class="level-item">
+			<a class="button is-text" href="{{zipPath}}" target="_blank">Result Download</a>
+		</div>
+	</div>
+</div>
+
+<section id="summary" class="summary">
+<div class="card" v-bind:class="{active: summaryShown}" >
+	<div class="card-header" v-on:click="summaryShown=!summaryShown">
+		<p class="card-header-title">Job Summary</p>
+		<a href="#" class="card-header-icon">
+			<span class="icon"><i class="mdi mdi-24px" :class="{'mdi-chevron-up': summaryShown, 'mdi-chevron-down': !summaryShown}"></i></span>
+		</a>
+	</div>
+	<div class="card-content content" v-show="summaryShown">
+		<ul>
+		{{#summary}}
+		<li>{{.}}</li>
+		{{/summary}}
+		</ul>
+	</div>
+</div>
 </section>
+
 <section class="section">
 <div class="columns is-multiline">
 <div class="column is-5-widescreen is-6-desktop is-12-tablet is-12-mobile">
