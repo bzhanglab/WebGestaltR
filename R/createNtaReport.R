@@ -20,7 +20,8 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	seeds <- scan(seedsFn, "character")
 	candidates <- fread(candidateFn, header=FALSE, col.names=c("candidate", "score", "label"))
 	candidates$score <- sprintf("%2.2E", candidates$score)
-	candidates <- unname(rowSplit(candidates))
+	candidates <- candidates[-3]
+	#candidates <- unname(rowSplit(candidates))
 
 	enrichment <- fread(enrichFn, header=FALSE, col.names=c("goId", "goName", "c", "o", "geneInfo", "expect", "ratio", "rawP", "adjP"))
 
@@ -49,9 +50,11 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	cyJson <- toJSON(unname(cyJson))
 
 	## Prepare GO enrichment table data
-	geneStr <- vector("list", nrow(enrichment))
-	highlightedGenes <- vector("list", nrow(enrichment))
+	#rowSplit still keeps each list element as data.frame
+	enrichmentList <- lapply(unname(rowSplit(enrichment)), as.list)
+	geneList <- vector("list", nrow(enrichment))
 	for (i in 1:nrow(enrichment)) {
+		#decode geneInfo
 		geneInfoList <- unlist(strsplit(enrichment[[i, "geneInfo"]], ";", fixed=TRUE))
 		geneData <- vector("list", length(geneInfoList))
 		for (j in 1:length(geneInfoList)) {
@@ -66,27 +69,18 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 			}
 			geneData[[j]] <- list(geneName=geneName, highlight=highlight)
 		}
-			highlightedGenes[[i]] <- sapply(geneData, function(x) { if (x$highlight) { return(x$geneName) }})
-			highlightedGenes[[i]] <- paste(highlightedGenes[[i]][!sapply(highlightedGenes[[i]], is.null)], collapse=",")
-		geneStr[[i]] <- paste(sapply(geneData, function(x) x[["geneName"]]), collapse=",")
+		enrichmentList[[i]]$geneInfo <- geneData
 	}
-	## rowSplit convert data frame to list of lists. But nested loops are not handled by the function
-	enrichment$geneListStr <- geneStr
-	enrichment$highlightedGenes <- highlightedGenes
-	enrichment <- unname(rowSplit(enrichment))
+	enrichmentJson = toJSON(enrichmentList)
 
 	version <- packageVersion("WebGestaltR")
 	netName <- paste(networkName, "net", sep="_")
 	dagName <- paste(networkName, "dag", sep="_")
 
-	data <- list(networkName=networkName, summary=summary, networkJson=cyJson, dagJson=dagJson,
-				method=method, seeds=seeds, highlightIsSeeds=highlightOption=="Seeds",
-				methodIsNetworkExpansion=method=="Network_Expansion",
-				candidates=candidates, sigMethodIsFdr=sigMethod=="fdr", fdrThr=fdrThr, topThr=topThr,
-				enrichment=enrichment, hostName=hostName,
+	data <- list(networkName=networkName, summary=summary, highlightOption=highlightOption,
+				hostName=hostName,
 				dagName=dagName, netName=netName,
 				zipPath=paste0(projectName, ".zip"),
-				toolboxNet=list(name=netName, nodes=allNodes),
 				toolboxDag=list(name=dagName, nodes=goDataList)
 				)
 	partials <- list(toolbox=readLines(system.file("templates/toolbox.mustache", package="WebGestaltR")))
@@ -95,7 +89,14 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 
 	data <- list(hostName=hostName,
 				networkName=networkName,
+				dagJson=dagJson,
 				version=version,
+				networkJson=cyJson,
+				enrichmentJson=enrichmentJson,
+				candidateJson=toJSON(unname(rowSplit(candidates))),
+				seedJson=toJSON(seeds),
+				method=method, sigMethod=sigMethod,
+				threshold=ifelse(sigMethod=='fdr', fdrThr, topThr),
 				networkContent=content
 				)
 	header <- readLines(system.file("templates/header.mustache", package="WebGestaltR"))
