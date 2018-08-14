@@ -28,7 +28,10 @@ ga('send', 'pageview');
 {{>header}}
 <main>
 <div id="app">
+<div class="loading-preinit" v-cloak><div class="loading-icon"></div></div>
+<div class="wrapper" v-cloak>
 {{{bodyContent}}}
+</div>
 </div>
 </main>
 	<script type="text/javascript" src="{{hostName}}/assets/{{version}}/build/wg.min.js"></script>

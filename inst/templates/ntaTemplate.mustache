@@ -17,12 +17,14 @@ ga('send', 'pageview');
 <link rel="stylesheet" href="{{hostName}}/assets/{{version}}/build/nta.css">
 </head>
 <body>
-<div id="app" class="wrapper">
 {{>header}}
+<main>
+<div id="app" class="wrapper">
+<div class="loading-preinit" v-cloak><div class="loading-icon"></div></div>
 
 {{{networkContent}}}
 </div>
-
+</main>
 <script type="text/javascript" src="{{hostName}}/assets/{{version}}/build/cytoscape.min.js"></script>
 <script type="text/javascript" src="{{hostName}}/assets/{{version}}/build/nta.min.js"></script>
 <script type="text/javascript">
