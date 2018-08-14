@@ -60,7 +60,14 @@
 <h4 class="title is-4 has-text-primary">Detailed Information</h4>
 <div class="columns is-multiline">
 <div class="column is-6-widescreen is-12-desktop is-12-tablet is-12-mobile" id="col-go">
-<nta-enrichment-table :data="enrichment" :method="method" :sig-method="sigMethod" :threshold="threshold"> </nta-enrichment-table>
+<nta-enrichment-table
+	:data="enrichment"
+	:method="method"
+	:sig-method="sigMethod"
+	:threshold="threshold"
+	highlight-option="{{highlightOption}}"
+>
+</nta-enrichment-table>
 </div> <!-- column -->
 
 <div class="column is-3-widescreen is-6-desktop is-6-tablet is-12-mobile" id="col-seed">
