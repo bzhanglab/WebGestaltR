@@ -36,9 +36,12 @@
 		</b-tab-item>
 		{{#hasGeneSetDag}}
 		<b-tab-item label="DAG">
+			<div style="width: 100%; height: 600px">
 			<wg-dag
+				:containerId="wg_dag"
 				:data="dag"
 			></wg-dag>
+			</div>
 		</b-tab-item>
 		{{/hasGeneSetDag}}
 	</b-tabs>
