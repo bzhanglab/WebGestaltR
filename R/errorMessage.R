@@ -182,16 +182,6 @@ parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 	}
 }
 
-.keepGseaFolderError <- function(keepGseaFolder){   ##Input whether keep the GSEA folder error
-	if(!is.logical(keepGseaFolder)){
-		error <- "ERROR: keepGseaFolder should be an R logical object (TRUE or FALSE)!"
-		cat(error)
-		return(error)
-	}else{
-		return(NULL)
-	}
-}
-
 .dagColorError <- function(dagColor){   ##Input dag color type error
 	dagColorList <- c("binary","continuous")
 	if(!(dagColor %in% dagColorList)){

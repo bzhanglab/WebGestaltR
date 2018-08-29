@@ -1,4 +1,4 @@
-WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, lNum=20, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, keepGseaFolder=FALSE, dagColor="binary", hostName="http://www.webgestalt.org/") {
+WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, lNum=20, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", hostName="http://www.webgestalt.org/") {
 	enrichMethod <- "GSEA"
 
 	if(is.null(projectName)){
@@ -19,7 +19,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	interestGeneType <- testNull(interestGeneType)
 
 	################Check parameter################
-	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod, organism=organism, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, perNum=perNum, lNum=lNum, isOutput=isOutput, outputDirectory=outputDirectory, keepGseaFolder=keepGseaFolder, dagColor=dagColor, hostName=hostName)
+	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod, organism=organism, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, perNum=perNum, lNum=lNum, isOutput=isOutput, outputDirectory=outputDirectory, dagColor=dagColor, hostName=hostName)
 
 	if(!is.null(errorTest)){
 		return(errorTest)
@@ -77,7 +77,10 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	#############Run enrichment analysis###################
 	cat("Perform the enrichment analysis...\n")
 
-	gseaRes <- gseaEnrichment(hostName,outputDirectory,timeStamp,interestGeneList,geneSet,minNum=minNum,maxNum=maxNum,sigMethod=sigMethod,fdrThr=fdrThr,topThr=topThr,perNum=perNum,lNum=lNum,isOutput=isOutput,keepGseaFolder=keepGseaFolder)
+	gseaRes <- gseaEnrichment(hostName, outputDirectory, timeStamp, interestGeneList,
+		geneSet, minNum=minNum, maxNum=maxNum, sigMethod=sigMethod, fdrThr=fdrThr,
+		topThr=topThr, perNum=perNum, lNum=lNum, isOutput=isOutput
+	)
 
 	if(.hasError(gseaRes)){
 		return(gseaRes)

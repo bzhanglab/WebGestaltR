@@ -1,4 +1,5 @@
 import(methods, pkgmaker, rjson, data.table, parallel, doParallel, foreach, httr, igraph)
+import(dplyr, doRNG)
 importFrom("grDevices", "bmp", "dev.off", "pdf", "png","colorRampPalette")
 importFrom("graphics", "axis", "barplot", "layout", "par", "text")
 importFrom("stats", "p.adjust", "phyper")
