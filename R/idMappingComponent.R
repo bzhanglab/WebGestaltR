@@ -27,8 +27,8 @@ identifyStandardId <- function(hostName,idType,organism,type){
 	idTypes <- jsonData[[organism]]
 	names <- unlist(lapply(idTypes,function(e){return(e$name)}))
 	standardIds <- unlist(lapply(idTypes,function(e){return(e$type)}))
-	idTypes <- cbind(names,standardIds)
-	return(idTypes[idTypes[,1]==idType,2])
+	idTypes <- data.frame(name=names, standardId=standardIds, stringsAsFactors=FALSE)
+	return(filter(idTypes, name == idType)[[1, 2]])
 }
 
 
