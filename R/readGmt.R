@@ -20,6 +20,8 @@ readGmt <- function(gmtFile){
 	if(is.null(data)){
 		return(gmtFormatError("incorrect"))
 	}else{
+		data <- as.data.frame(data, stringsAsFactors=FALSE)
+		colnames(data) <- c("geneSetId", "description", "geneId")
 		return(data)
 	}
 }
