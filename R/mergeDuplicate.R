@@ -1,5 +1,5 @@
 mergeDuplicate <- function(id,data,collapseMode="maxSD"){
-	data <- as.data.frame(data)
+	data <- as.data.frame(data, stringsAsFactors=FALSE)
 	if(!is.vector(id)){
 		stop("The input id should be a vector object!\n")
 	}

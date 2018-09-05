@@ -22,8 +22,8 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 
 		standardId <- interestingGeneMap$standardId
 		if (enrichMethod == 'ORA') {
-			interestGeneList <- unique(interestingGeneMap$mapped[,standardId])
-			numAnnoRefUserId <- length(intersect(interestGeneList,intersect(referenceGeneList,geneSet[,3])))
+			interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
+			numAnnoRefUserId <- length(intersect(interestGeneList, intersect(referenceGeneList, geneSet$gene)))
 		}
 		###########GOSlim summary#########################
 		if(standardId=="entrezgene"){
@@ -34,7 +34,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 		if(!is.null(enrichedSig)){
 			tabsContent <- paste(tabsContent, enrichResultTab(enrichMethod, geneSetDes, geneSetDag), seq='\n')
 			if (!is.null(geneSetDag)) {
-				dagRes <- expandDag(enrichedSig[, "geneset"], geneSetDag)
+				dagRes <- expandDag(enrichedSig$geneset, geneSetDag)
 				dagEdges <- dagRes$edges
 				dagNodes <- getDagNodes(enrichedSig, dagRes$allNodes, geneSetDes, enrichMethod, dagColor)
 				dagJson <- toJSON(unname(c(dagEdges, dagNodes)))

@@ -28,15 +28,15 @@ specificParameterSummaryOra <- function(organism,referenceGeneList,geneSet,refer
 	organismIsOthers <- organism == "others"
 	if(!organismIsOthers){
 		standardId <- interestingGeneMap$standardId
-		interestGeneList <- unique(interestingGeneMap$mapped[,standardId])
-		numAnnoRefUserId <- length(intersect(interestGeneList,intersect(referenceGeneList,geneSet[,3])))
+		interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
+		numAnnoRefUserId <- length(intersect(interestGeneList, intersect(referenceGeneList, geneSet$gene)))
 	}else{  ###for others
 		standardId <- NULL
-		interestGeneList <- unique(interestingGeneMap[,1])
+		interestGeneList <- unique(interestingGeneMap)
 		numAnnoRefUserId <- NULL
 
 	}
-	numAnnoRefId <- length(intersect(referenceGeneList,geneSet[,3]))
+	numAnnoRefId <- length(intersect(referenceGeneList, geneSet$gene))
 	hasEnrichedSig <- !is.null(enrichedSig)
 	if (hasEnrichedSig) {
 		numEnrichedSig <- nrow(enrichedSig)
@@ -61,12 +61,12 @@ specificParameterSummaryGsea <- function(organism,interestingGeneMap,geneSet,min
 	organismIsOthers <- organism == "others"
 	if(!organismIsOthers){
 		standardId <- interestingGeneMap$standardId
-		interestGeneList <- unique(interestingGeneMap$mapped[,standardId])
+		interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
 		numUniqueUserId <- length(interestGeneList)
-		numAnnoUserId <- length(intersect(interestGeneList,geneSet[,3]))
+		numAnnoUserId <- length(intersect(interestGeneList, geneSet$gene))
 	} else {
 		standardId <- NULL
-		interestGeneList <- unique(interestingGeneMap[,1])
+		interestGeneList <- unique(interestingGeneMap)
 		numUniqueUserId <- length(interestGeneList)
 		numAnnoUserId <- NULL
 	}
@@ -78,10 +78,8 @@ specificParameterSummaryGsea <- function(organism,interestingGeneMap,geneSet,min
 		)
 
 	if(hasEnrichedSig){
-		x <- enrichedSig[enrichedSig[,"NES"]>0,]
-		y <- enrichedSig[enrichedSig[,"NES"]<0,]
-		data$numPosRel <- nrow(x)
-		data$numNegRel <- nrow(y)
+		data$numPosRel <- nrow(filter(enrichedSig, NES>0))
+		data$numNegRel <- nrow(filter(enrichedSig, NES<0))
 		data$isPosRel <- data$numPosRel>0
 		data$isNegRel <- data$numNegRel>0
 		data$showAllPos <- dNum>=data$numPosRel

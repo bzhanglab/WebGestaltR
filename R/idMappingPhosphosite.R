@@ -13,15 +13,15 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 
 	if(dataType=="rnk"){
 		######Collapse the gene ids with multiple scores##########
-		x <- tapply(inputGene[,2],inputGene[,1],collapseMethod)
+		x <- tapply(inputGene$score, inputGene$gene, collapseMethod)
 		inputGene <- data.frame(id=names(x),score=as.numeric(x),stringsAsFactors=FALSE)
-		inputGeneL <- inputGene[,1]
+		inputGeneL <- inputGene$gene
 		colnames(inputGene) <- c(sourceIdType,"score")
 	}
 
 	if(dataType=="gmt"){
 		colnames(inputGene) <- c("geneset", "link", sourceIdType)
-		inputGeneL <- unique(inputGene[,3])
+		inputGeneL <- unique(inputGene$gene)
 	}
 
 	response <- POST(file.path(hostName, "api", "idmapping"), encode="json",
@@ -48,7 +48,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 
 	### Get gene name and symbol in 2nd step, either direct by geneid or mapping to uniprot ambiguously
 	if (grepl("Uniprot", sourceIdType, fixed=TRUE) || grepl("Ensembl", sourceIdType, fixed=TRUE) || grepl("Refseq", sourceIdType, fixed=TRUE)) { ##if the sourceIdType is Uniprot, Ensembl or Refseq, directly extract the gene level id####
-		mappedInputGene$gene <- unlist(lapply(strsplit(mappedInputGene[, "userid"], "_"), .combineG))
+		mappedInputGene$gene <- unlist(lapply(strsplit(mappedInputGene$userid, "_"), .combineG))
 	}else{
 		###If the input id type is sequence, we will first map the sequence to uniprot. And then map the uniprot to gene name####
 		if (targetIdType == "phosphositeUniprot") {
@@ -72,7 +72,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 			colnames(uniMapRes) <- c("userid", targetIdType)
 			uniMapRes$gene <- unlist(lapply(strsplit(uniMapRes[, targetIdType], "_"), .combineG))
 			# Map ID may change nrow due to unmapped ones
-			mappedInputGene <- merge(x=mappedInputGene, y=uniMapRes[, c("userid", "gene")], by="userid", all.x=TRUE)
+			mappedInputGene <- uniMapRes %>% select(userid, gene) %>% right_join(mappedInputGene, by=userid)
 		}
 	}
 
@@ -94,30 +94,23 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 	mappedInputGene$glink <- paste(outLink,mappedInputGene[, "gene"],sep="")
 
 	########Get gene level information#########
-	entrezgeneMapRes <- idMappingGene(organism=organism, dataType="list", inputGene=mappedInputGene[, "gene"], sourceIdType=geneType, targetIdType="entrezgene", mappingOutput=FALSE, hostName=hostName)
+	entrezgeneMapRes <- idMappingGene(organism=organism, dataType="list", inputGene=mappedInputGene$gene, sourceIdType=geneType, targetIdType="entrezgene", mappingOutput=FALSE, hostName=hostName)
 
-	mappedGeneInfo <- entrezgeneMapRes$mapped[, c("userid", "genesymbol", "genename")]
-	colnames(mappedGeneInfo) <- c("gene", "genesymbol", "genename")
-	#mapFG <- mapFG[,-ncol(mapFG)]
-
-	#mergeA <- merge(x=idTypeGMap, y=mapFG, by.x="gene", by.y="userid", all.x=TRUE)
-	#mergeA <- mergeA[,c(idType,"genesymbol","genename","glink")]
-	#mergeB <- merge(x=mapF, y=mergeA, by.x="sourceid", by.y=idType, all.x=TRUE)
-
-	mergedRes <- merge(x=mappedInputGene, y=mappedGeneInfo, by="gene", all.x=TRUE)
+	mergedRes <- entrezgeneMapRes$mapped %>% select(gene=userid, genesymbol, genename) %>%
+		right_join(mappedInputGene, by=gene)
 
 	if(dataType=="list"){
-		inputGene <- mergedRes[, c("userid", "genesymbol", "genename", targetIdType, "glink")]
+		inputGene <- select(mergedRes, userid, genesymbol, genename, targetIdType, glink)
 	}
 
 	if(dataType=="rnk"){
-		inputGene <- merge(x=mergedRes, y=inputGene, by.x="userid", by.y=sourceIdType, all.x=TRUE)
-		inputGene <- inputGene[,c("userid", "genesymbol", "genename", targetIdType, "score", "glink")]
+		inputGene <- mergedRes %>% left_join(inputGene, by=c(userid=sourceIdType)) %>%
+			select(userid, genesymbol, genename, targetIdType, score, glink)
 	}
 
 	if(dataType=="gmt"){
-		inputGene <- merge(x=mergedRes, y=inputGene, by.x="userid", by.y=sourceIdType, all.x=TRUE)
-		inputGene <- inputGene[, c("geneset", "link", "userid", "genesymbol", "genename", targetIdType, "glink")]
+		inputGene <- mergedRes %>% left_join(inputGene, by=c(userid=sourceIdType)) %>%
+			select(geneset, link, userid, genesymbol, genename, targetIdType, glink)
 	}
 
 	#############Output#######################

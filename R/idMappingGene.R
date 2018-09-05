@@ -13,15 +13,15 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 
 	if(dataType=="rnk"){
 		######Collapse the gene ids with multiple scores##########
-		x <- tapply(inputGene[,2],inputGene[,1],collapseMethod)
-		inputGene <- data.frame(id=names(x),score=as.numeric(x),stringsAsFactors=FALSE)
-		inputGeneL <- inputGene[,1]
+		x <- tapply(inputGene$score, inputGene$gene, collapseMethod)
+		inputGene <- data.frame(gene=names(x),score=as.numeric(x),stringsAsFactors=FALSE)
+		inputGeneL <- inputGene$gene
 		colnames(inputGene) <- c(sourceIdType,"score")
 	}
 
 	if(dataType=="gmt"){
 		colnames(inputGene) <- c("geneset", "link", sourceIdType)
-		inputGeneL <- unique(inputGene[,3])
+		inputGeneL <- unique(inputGene$gene)
 	}
 
 	mapR <- POST(file.path(hostName, "api", "idmapping"), encode="json",
@@ -42,6 +42,9 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 
 	mappedIds <- mapR$mapped
 	unmappedIds <- mapR$unmapped
+	if (is.null(targetIdType)) {
+		targetIdType <- mapR$standardId
+	}
 
 	if (length(mappedIds) == 0) { return(idMappingError("empty")) }
 
@@ -51,25 +54,24 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 	if (dataType=="list") {
 		inputGene <- mappedInputGene
 	} else if (dataType=="rnk") {
-		inputGene <- merge(x=mappedInputGene, y=inputGene, by.x="userid", by.y=sourceIdType)
+		inputGene <- inner_join(mappedInputGene, inputGene, by=c("userid"=sourceIdType))
 	} else if (dataType=="gmt") {
-		inputGene <- merge(x=mappedInputGene, y=inputGene, by.x="userid", by.y=sourceIdType)
-		inputGene <- inputGene[, c("geneset", "link", "userid", "genesymbol", "genename", targetIdType)]
+		inputGene <- inner_join(mappedInputGene, inputGene, by=c("userid"=sourceIdType)) %>%
+			select(geneset, link, userid, genesymbol, genename, targetIdType)
 	}
 
 	if (targetIdType != "entrezgene" && sourceIdType!=targetIdType) {
 		entrezgeneMapRes <- idMappingGene(organism, dataType="list", inputGene=inputGeneL, sourceIdType=sourceIdType, targetIdType="entrezgene")
-		entrezgeneMapInfp <- entrezgeneMapRes$mapped[, c("userid", "entrezgene")]
 		inputGene <- merge(x=inputGene, y=entrezgeneMapRes, by="userid", all.x=TRUE)
 		if (dataType=="list") {
-			inputGene <- inputGene[, c("userid", "genesymbol", "genename", "entrezgene", targetIdType)]
+			inputGene <- select(inputGene, userid, genesymbol, genename, entrezgene, targetIdType)
 		} else if (dataType=="rnk") {
-			inputGene <- inputGene[, c("userid", "genesymbol", "genename", "entrezgene", targetIdType, "score")]
+			inputGene <- select(inputGene, userid, genesymbol, genename, entrezgene, targetIdType, score)
 		} else if (dataType=="gmt") {
-			inputGene <- inputGene[, c("geneset", "link", "userid", "genesymbol", "genename", "entrezgene", targetIdType)]
+			inputGene <- select(inputGene, geneset, link, userid, genesymbol, genename, entrezgene, targetIdType)
 		}
 	}
-	inputGene$glink <- paste0("https://www.ncbi.nlm.nih.gov/gene/?term=", inputGene[, "entrezgene"])
+	inputGene$glink <- paste0("https://www.ncbi.nlm.nih.gov/gene/?term=", inputGene$entrezgene)
 
 	#############Output#######################
 	idMappingOutput(mappingOutput,outputFileName,unMapF,dataType,inputGene,sourceIdType,targetIdType)

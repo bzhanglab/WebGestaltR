@@ -41,7 +41,7 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 						return(mapRe)
 					}
 					geneStandardId <- identifyStandardId(hostName=hostName,idType=referenceGeneType,organism=organism,type="interest")
-					referenceGeneList <- mapRe$mapped[,geneStandardId]
+					referenceGeneList <- mapRe$mapped[[geneStandardId]]
 				}
 			}else{ ###referenceGeneFile and referenceGene are both NULL. But referenceSet is not NULL
 				refS <- listReferenceSet(organism=organism,hostName=hostName)
@@ -53,8 +53,8 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 				if (response$status_code != 200) {
 					return(webRequestError(response))
 				}
-				referenceGeneList <- fread(input=content(response), header=FALSE, sep="\t", stringsAsFactors=FALSE, colClasses="character", data.table=FALSE)
-				referenceGeneList <- as.character(unique(referenceGeneList[,1]))
+				# reference is still a 2 column of entrezID and some other ID
+				referenceGeneList <- read_tsv(content(response), col_names=FALSE, col_types="c-")[[1]]
 			}
 		}else{ ##For other organisms
 			if(!is.null(referenceGeneFile) || !is.null(referenceGene)){
@@ -70,7 +70,7 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 	}
 
 	##compare interest gene list and reference gene list
-	if(length(intersect(interestGeneList,intersect(referenceGeneList,geneSet[,3])))==0){
+	if(length(intersect(interestGeneList, intersect(referenceGeneList, geneSet$gene)))==0){
 		return(referenceGeneError(type="interestEmpty"))
 	}
 	return(referenceGeneList)
@@ -92,17 +92,16 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 	geneMapMappedList <- geneMap$mapped
 	standardId <- geneMap$standardId
 
-	geneList <- as.character(unique(geneMapMappedList[,standardId]))
-	ov <- intersect(geneList,geneSet[,3])
+	geneList <- as.character(unique(geneMapMappedList[[standardId]]))
+	ov <- intersect(geneList, geneSet$gene)
 
 	if(length(ov)==0){
 		return(interestGeneError(type="unannotated"))
 	}
 
 	###Because if all genes are annotated to only one category, GSEA will return the error, we need to avoid this error by reporting the error in the R#
-	gL <- geneSet[geneSet[,3] %in% geneList,,drop=FALSE]
-	gL <- tapply(gL[,3],gL[,1],length)
-	if(length(gL)==1){
+	geneSets <- geneSet %>% filter(gene %in% geneList) %>% select(geneSet) %>% distinct()
+	if (nrow(geneSets) == 1) {
 		return(interestGeneError(type="onlyOne"))
 	}
 	return(geneMap)
@@ -110,22 +109,26 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 
 
 .uploadGeneOthers <- function(dataType,inputGeneFile,inputGene,geneSet){
-	geneList <- formatCheck(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
-	if(.hasError(geneList)){
-		return(geneList)
+	inputGene <- formatCheck(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
+	if(.hasError(inputGene)){
+		return(inputGene)
 	}
-	geneList <- as.data.frame(geneList,stringsAsFactors=F)
-	ov <- intersect(geneList[,1],geneSet[,3])
+
+	if (dataType == "list") {
+		geneList = inputGene
+	} else if (dataType == "rnk") {
+		geneList = inputGene$gene
+	}
+
+	ov <- intersect(geneList, geneSet$gene)
 	if(length(ov)==0){
 		return(interestGeneError(type="unannotated"))
 	}
 
 	###Because if all genes are annotated to only one category, GSEA will return the error, we need to avoid this error by reporting the error in the R#
-	gL <- geneSet[geneSet[,3] %in% geneList[,1],,drop=FALSE]
-	gL <- tapply(gL[,3],gL[,1],length)
-	if(length(gL)==1){
+	geneSets <- geneSet %>% filter(gene %in% geneList) %>% select(geneSet) %>% distinct()
+	if (nrow(geneSets) == 1) {
 		return(interestGeneError(type="onlyOne"))
 	}
-	####geneList is a matrix with one or two columns#####
 	return(geneList)
 }

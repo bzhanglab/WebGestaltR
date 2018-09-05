@@ -50,7 +50,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 		interestGeneList <- unique(interestingGeneMap)
 	}else{
 		interestStandardId <- interestingGeneMap$standardId
-		interestGeneList <- unique(interestingGeneMap$mapped[,c(interestStandardId,"score")])
+		interestGeneList <- interestingGeneMap$mapped %>% select(interestStandardId, score) %>% distinct()
 	}
 
 	##########Create project folder##############
@@ -62,7 +62,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 			if(databaseStandardId=="entrezgene"){
 				cat("Summary the uploaded ID list by GO Slim data...\n")
 				goSlimOutput <- file.path(projectDir,paste("goslim_summary_",timeStamp,sep=""))
-				re <- goSlimSummary(organism=organism,geneList=interestGeneList[,1],outputFile=goSlimOutput,outputType="png",hostName=hostName)
+				re <- goSlimSummary(organism=organism,geneList=interestGeneList[[interestStandardId]],outputFile=goSlimOutput,outputType="png",hostName=hostName)
 				if(.hasError(re)){
 					return(re)
 				}
@@ -93,16 +93,17 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	if(!is.null(enrichedSig)){
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
 			colnames(geneSetDes) <- c("geneset","description")
-			enrichedSig <- merge(x=enrichedSig,y=geneSetDes,by="geneset",all.x=TRUE)
-			enrichedSig <- enrichedSig[,c(1,ncol(enrichedSig),2:(ncol(enrichedSig)-1))]
-			enrichedSig <- enrichedSig[order(enrichedSig[,"FDR"],enrichedSig[,"PValue"]),]
+			enrichedSig <- enrichedSig %>%
+				left_join(geneSetDes, by="geneset") %>%
+				select(geneset, description, ES, NES, PValue, FDR, link, Size, plotPath, leadingEdgeNum, leadingEdgeID) %>%
+				arrange(FDR, PValue)
 		}
 
 		if (organism != "others") {
 			geneTables <- getGeneTables(enrichedSig, "leadingEdgeID", interestingGeneMap)
 			enrichedSig$link <- mapply(function(link, geneList) linkModification(enrichDatabase, link, geneList, interestingGeneMap),
-				enrichedSig[,"link"],
-				enrichedSig[, "leadingEdgeID"]
+				enrichedSig$link,
+				enrichedSig$leadingEdgeID
 			)
 		}
 

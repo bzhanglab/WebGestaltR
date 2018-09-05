@@ -4,15 +4,13 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 		dir.create(projectFolder)
 	}
 
-	geneRankList[, 1] <- as.character(geneRankList[, 1])
-	sortedScores <- geneRankList[order(geneRankList[, 2], decreasing=TRUE), 2]
-	geneSet[, 3] <- as.character(geneSet[, 3])
+	colnames(geneRankList) <- c("gene", "score")
+	sortedScores <- sort(geneRankList$score, decreasing=TRUE)
 
-	geneSetName <- as.data.frame(unique(geneSet[, c(1,2)]))
-	colnames(geneSetName) <- c("geneset", "link")
-	effectiveGeneSet <- geneSet[geneSet[, 3] %in% geneRankList[, 1], , drop=FALSE]
+	geneSetName <- geneSet %>% select(geneset=geneSet, link=description) %>% distinct()
+	effectiveGeneSet <- geneSet %>% filter(gene %in% geneRankList$gene)
 
-	geneSetNum <- tapply(effectiveGeneSet[, 3], effectiveGeneSet[, 1],length)
+	geneSetNum <- tapply(effectiveGeneSet$gene, effectiveGeneSet$geneSet, length)
 	geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
 	if (length(geneSetNum)==0) {
 		error <- paste("ERROR: The number of annotated IDs for all functional categories are not from ", minNum," to ", maxNum," for the GSEA enrichment method.",sep="")
@@ -21,8 +19,8 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	}
 
 	# collapse rank list
-	a <- tapply(geneRankList[, 2], geneRankList[, 1], collapseMethod, na.rm=TRUE)
-	geneRankList <- data.frame(geneid=names(a), score=unname(a), stringsAsFactors=FALSE)
+	a <- tapply(geneRankList$score, geneRankList$gene, collapseMethod, na.rm=TRUE)
+	geneRankList <- data.frame(gene=names(a), score=unname(a), stringsAsFactors=FALSE)
 
 	gseaRnk <- file.path(projectFolder, paste("Project_", projectName, "_GSEA.rnk", sep=""))
 	write.table(geneRankList, file=gseaRnk, row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
@@ -36,19 +34,19 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	inputDf <- prepareInputMatrixGsea(geneRankList, effectiveGeneSet)
 
 	gseaRes <- swGsea(inputDf, thresh_type="val", perms=perNum,
-										min_set_size=minNum, max_set_size=maxNum,
-										nThreads=8, rng_seed=as.integer(format(Sys.time(), "%H%M%S"))
-										)
-	enrichRes <- gseaRes$Enrichment_Results[c("ES", "NES", "p_val", "fdr")]
-	names(enrichRes)[names(enrichRes) == 'p_val'] <- 'PValue'
-	names(enrichRes)[names(enrichRes) == 'fdr'] <- 'FDR'
+		min_set_size=minNum, max_set_size=maxNum,
+		nThreads=8, rng_seed=as.integer(format(Sys.time(), "%H%M%S"))
+	)
+	enrichRes <- gseaRes$Enrichment_Results %>%
+		mutate(geneset = rownames(gseaRes$Enrichment_Results)) %>%
+		select(geneset, ES, NES, PValue=p_val, FDR=fdr)
 	# TODO: handle errors
 
 	if (sigMethod == "fdr") {
-		sig <- enrichRes[enrichRes$FDR < fdrThr, ]
-		insig <- enrichRes[enrichRes$FDR >= fdrThr, ]
+		sig <- filter(enrichRes, FDR < fdrThr)
+		insig <- filter(enrichRes, FDR >= fdrThr)
 	} else if (sigMethod == "top") {
-		enrichRes <- enrichRes[order(enrichRes$FDR, enrichRes$PValue), ]
+		enrichRes <- arrange(enrichRes, FDR, PValue)
 		if (nrow(enrichRes) > topThr) {
 			sig <- enrichRes[1: topThr, ]
 			insig <- enrichRes[(topThr+1):nrow(enrichRes), ]
@@ -63,42 +61,40 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 		return()
 	}
 
-	sig$geneset <- rownames(sig)
 	if (!is.null(insig)) {
-		insig$geneset <- rownames(insig)
-		insig$leadingEdgeNum <- unname(sapply(insig$geneset, function(geneSetId) {
-			rsum <- gseaRes$Running_Sums[, geneSetId]
+		insig$leadingEdgeNum <- unname(sapply(insig$geneset, function(geneSet) {
+			rsum <- gseaRes$Running_Sums[, geneSet] # Running sum is a matrix of gene by gene set
 			maxIndex <- match(max(rsum), rsum)
-			return(sum(gseaRes$Items_in_Set[[geneSetId]]$rank <= maxIndex))
+			return(sum(gseaRes$Items_in_Set[[geneSet]]$rank <= maxIndex))
 		}))
 	}
-	sig <- merge(sig, geneSetName, by="geneset")
-	sig$Size <- unname(sapply(sig$geneset, function(x) nrow(gseaRes$Items_in_Set[[x]])))
-	sig$plotPath <- unname(sapply(sig$geneset, function(x) file.path(relativeF, paste0(x, ".png"))))
+	sig <- sig %>% left_join(geneSetName, by="geneset") %>%
+		mutate(Size = unname(sapply(geneset, function(x) nrow(gseaRes$Items_in_Set[[x]])))) %>%
+		mutate(plotPath = unname(sapply(geneset, function(x) file.path(relativeF, paste0(x, ".png")))))
 
 	leadingGeneNum <- vector("integer", numSig)
 	leadingGenes <- vector("character", numSig)
 	for (i in 1:numSig) {
-		geneSetId <- sig[i, "geneset"]
-		rsum <- gseaRes$Running_Sums[, geneSetId]
+		geneSet <- sig[[i, "geneset"]]
+		rsum <- gseaRes$Running_Sums[, geneSet]
 		maxIndex <- match(max(rsum), rsum)
-		indexes <- gseaRes$Items_in_Set[[geneSetId]]$rank <= maxIndex
+		indexes <- gseaRes$Items_in_Set[[geneSet]]$rank <= maxIndex
 		leadingGeneNum[[i]] <- sum(indexes)
-		leadingGenes[[i]] <- paste(rownames(gseaRes$Items_in_Set[[geneSetId]])[indexes], collapse=";")
-		genes <- gseaRes$Items_in_Set[[geneSetId]]
+		leadingGenes[[i]] <- paste(rownames(gseaRes$Items_in_Set[[geneSet]])[indexes], collapse=";")
+		genes <- gseaRes$Items_in_Set[[geneSet]]
 
 		# Plot GSEA-like enrichment plot
-		png(file.path(outputF, paste0(geneSetId, ".png")), bg="transparent")
+		png(file.path(outputF, paste0(geneSet, ".png")), bg="transparent")
 		plot.new()
-		par(fig=c(0, 1, 0.5, 1), mar=c(0, 5, 2, 3), new=T)
-		plot(1:length(gseaRes$Running_Sums[, geneSetId]), gseaRes$Running_Sums[, geneSetId],
-			type="l", main=paste0("Enrichment plot: ", geneSetId),
+		par(fig=c(0, 1, 0.5, 1), mar=c(0, 5, 2, 3), new=TRUE)
+		plot(1:length(gseaRes$Running_Sums[, geneSet]), gseaRes$Running_Sums[, geneSet],
+			type="l", main=paste0("Enrichment plot: ", geneSet),
 			xlab="", ylab="Enrichment Score", xaxt='n')
 		abline(v=maxIndex, lty=3)
-		par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 5, 0, 3), new=T)
+		par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 5, 0, 3), new=TRUE)
 		plot(genes$rank, rep(1, nrow(genes)), type="h",
-			xlim=c(1, length(sortedScores)), ylim=c(0, 1), axes=F, ann=F)
-		par(fig=c(0, 1, 0, 0.35), mar=c(4, 5, 0, 3), new=T)
+			xlim=c(1, length(sortedScores)), ylim=c(0, 1), axes=FALSE, ann=FALSE)
+		par(fig=c(0, 1, 0, 0.35), mar=c(4, 5, 0, 3), new=TRUE)
 		plot(1:length(sortedScores), sortedScores, type="h",
 			ylab="Ranked list metric", xlab="Rank in Ordered Dataset")
 		abline(v=maxIndex, lty=3)

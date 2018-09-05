@@ -1,5 +1,5 @@
 listArchiveUrl <- function(){
-	archiveUrl <- fread(input="http://www.webgestalt.org/archiveURL.txt",header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
+	archiveUrl <- read_tsv("http://www.webgestalt.org/archiveURL.txt", col_names=False)
 	return(archiveUrl)
 }
 

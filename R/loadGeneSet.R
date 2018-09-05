@@ -6,8 +6,8 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 	standardId <- NULL
 
 	if(organism!="others"){
-		geneSets <- listGeneSet(organism=organism,hostName=hostName)
-		if(!(enrichDatabase %in% geneSets[,1])){  ###if the upload gene set name is not in the database
+		geneSetInfo <- listGeneSet(organism=organism,hostName=hostName)
+		if (!(enrichDatabase %in% geneSetInfo$name)) {  ###if the upload gene set name is not in the database
 			if(!is.null(enrichDatabase)){
 				if(enrichDatabase=="others"){    ##if the user upload their own data
 					#cat("Because 'enrichDatabase' is 'others', user can upload their own gene sets using GMT file and WebGestaltR will transform ids in the gene sets to entrez ids based on the parameter 'enrichDatabaseType'!\n")
@@ -18,8 +18,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 							return(geneSet)
 						}
 						standardId <- geneSet$standardId
-						geneSet <- geneSet$mapped
-						geneSet <- unique(geneSet[,c("geneset","link",standardId)])
+						geneSet <- geneSet$mapped %>% select(geneset, link, standardId) %>% distinct()
 						if(!is.null(enrichDatabaseDescriptionFile)){     ##upload description file
 							geneSetDes <- .loadEnrichDatabaseDescriptionFile(geneSet,enrichDatabaseDescriptionFile)
 							if(.hasError(geneSetDes)){
@@ -36,7 +35,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 				return(enrichDatabaseError(type="empty"))
 			}
 		}else{  #input a correct enrichDatabase
-			standardId <- geneSets[geneSets[,1]==enrichDatabase,3]   ###get the ID type of the enriched database, such as entrezgene or phosphositeSeq
+			standardId <- filter(geneSetInfo, name==enrichDatabase)[[1, "idType"]]  # get the ID type of the enriched database, such as entrezgene or phosphsiteSeq
 
 			#########Read GMT file from the existing database###########
 			gmtUrl <- modify_url(file.path(hostName,"api","geneset"), query=list(organism=organism, database=enrichDatabase, standardid=standardId, filetype="gmt"))
@@ -58,9 +57,9 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 		#########Read GMT file for other orgnisms from user files###########
 		if(!is.null(enrichDatabaseFile)){
 			geneSet <- readGmt(enrichDatabaseFile)
-		if(.hasError(geneSet)){
-			return(geneSet)
-		}
+			if(.hasError(geneSet)){
+				return(geneSet)
+			}
 			if(!is.null(enrichDatabaseDescriptionFile)){     ##upload description file
 				geneSetDes <- .loadEnrichDatabaseDescriptionFile(geneSet,enrichDatabaseDescriptionFile)
 				if(.hasError(geneSetDes)){
@@ -81,8 +80,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 	geneSetUrl <- file.path(hostName,"api","geneset")
 	response <- GET(geneSetUrl, query=list(organism=organism, database=database, standardid=standardId, filetype=fileType))
 	if (response$status_code == 200) {
-
-		geneSetData <- fread(input=content(response),header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
+		geneSetData <- read_tsv(content(response), col_names=FALSE, col_types="cc")
 	} else {
 		geneSetData <- NULL
 	}
@@ -93,14 +91,13 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 	if(file_extension(enrichDatabaseDescriptionFile)!="des"){
 		return(descriptionFileError("format"))
 	}else{
-		geneSetDes <- fread(input=enrichDatabaseDescriptionFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,colClasses="character",data.table=FALSE,showProgress=FALSE)
+		geneSetDes <- read_tsv(enrichDatabaseDescriptionFile, col_names=c("geneset","description"), col_types="cc")
 		if(ncol(geneSetDes)!=2){
 			return(descriptionFileError("columnNum"))
 		}else{
-			if(length(intersect(unique(geneSet[,1]),geneSetDes[,1]))<0.6*length(unique(geneSet[,1]))){
+			if(length(intersect(unique(geneSet$geneSet), geneSetDes$geneset)) < 0.6 * length(unique(geneSet[,1]))){
 				return(descriptionFileError("overlap"))
 			}else{
-				colnames(geneSetDes) <- c("geneset","description")
 				return(geneSetDes)
 			}
 		}

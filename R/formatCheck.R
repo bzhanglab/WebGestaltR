@@ -13,7 +13,9 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 				cat(error)
 				return(error)
 			}else{
-				inputGene <- tryCatch(fread(input=inputGeneFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,data.table=FALSE,showProgress=FALSE),error=function(e){return("ERROR: The format of the uploaded gene list is incorrect, the file name contains the special characters or the character encoding in the file is not UTF-8. Please check the file format, file name or character encoding.")})
+				inputGene <- tryCatch(read_tsv(inputGeneFile, col_names=FALSE, col_types="c"),
+					error=function(e) return("ERROR: The format of the uploaded gene list is incorrect, the file name contains the special characters or the character encoding in the file is not UTF-8. Please check the file format, file name or character encoding.")
+				)
 
 				if(.hasError(inputGene)){
 					cat(inputGene)
@@ -25,8 +27,7 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 					cat(error)
 					return(error)
 				}else{
-					inputGene <- as.character(inputGene[,1])
-					return(inputGene)
+					return(inputGene[[1]])
 				}
 			}
 		}else{
@@ -54,7 +55,9 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 				cat(error)
 				return(error)
 			}else{
-				inputGene <- tryCatch(fread(input=inputGeneFile,header=FALSE,sep="\t",stringsAsFactors=FALSE,data.table=FALSE,showProgress=FALSE),error=function(e){return("ERROR: The format of the uploaded ranked list is incorrect, the file name contains the special characters or the character encoding in the file is not UTF-8. Please check the file format, file name or character encoding.")})
+				inputGene <- tryCatch(read_tsv(inputGeneFile, col_names=c("gene", "score"), col_types="cd"),
+					error=function(e) return("ERROR: The format of the uploaded ranked list is incorrect, the file name contains the special characters or the character encoding in the file is not UTF-8. Please check the file format, file name or character encoding.")
+				)
 
 				if(.hasError(inputGene)){
 					cat(inputGene)
@@ -66,16 +69,9 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 					cat(error)
 					return(error)
 				}else{
-					if(!is.numeric(inputGene[,2]) && !is.integer(inputGene[,2])){
-						error <- "ERROR: The second column of the ranked list should be the numeric scores."
-						cat(error)
-						return(error)
-					}else{
-						#########GSEA do not allow the second column contains NA. Thus, we should remove NA first############
-						inputGene <- inputGene[!is.na(inputGene[,2]),]
-						inputGene[,1] <- as.character(inputGene[,1])
-						return(inputGene)
-					}
+					#########GSEA do not allow the second column contains NA. Thus, we should remove NA first############
+					#inputGene <- inputGene[!is.na(inputGene$score), ]
+					return(filter(inputGene, !is.na(score)))
 				}
 			}
 		}else{
@@ -85,14 +81,15 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 					cat(error)
 					return(error)
 				}else{
-					if(!is.numeric(inputGene[,2]) && !is.integer(inputGene[,2])){
+					if(!is.numeric(inputGene[[2]]) && !is.integer(inputGene[[2]])){
 						error <- "ERROR: The second column of the ranked list should be the numeric scores."
 						cat(error)
 						return(error)
 					}else{
 						#########GSEA do not allow the second column contains NA. Thus, we should remove NA first############
-						inputGene <- inputGene[!is.na(inputGene[,2]),]
-						inputGene[,1] <- as.character(inputGene[,1])
+						inputGene <- inputGene[!is.na(inputGene[[2]]), ]
+						inputGene[[1]] <- as.character(inputGene[[1]])
+						colnames(inputGene) <- c("gene", "score")
 						return(inputGene)
 					}
 				}

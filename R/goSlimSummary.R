@@ -85,22 +85,22 @@ goSlimSummary <- function(organism="hsapiens",geneList,outputFile,outputType="pd
 		return(error)
 	}
 
-	dataUnclassified <- setdiff(geneList,unique(goSlimData[["entrezgene"]]))
+	dataUnclassified <- setdiff(geneList, unique(goSlimData[["entrezgene"]]))
 
 	goTermCount <- tapply(goSlimData[["entrezgene"]], goSlimData[["accession"]], length)
-	goTermCount <- data.frame(accession=names(goTermCount),geneNum=goTermCount,stringsAsFactors=FALSE)
-	uniqueGoTerms <- unique(goSlimData[, c("accession", "name")])
+	goTermCount <- data.frame(accession=names(goTermCount), geneNum=unname(goTermCount), stringsAsFactors=FALSE)
+	uniqueGoCounts <- goSlimData %>% select(accession, name) %>% distinct() %>%
+		inner_join(goTermCount, by="accession") %>%
+		arrange(desc(geneNum))
 
-	uniqueGoCounts <- merge(x=uniqueGoTerms,y=goTermCount,by="accession")
-	uniqueGoCounts <- uniqueGoCounts[order(-uniqueGoCounts[["geneNum"]]),]
 	re <- list(goTermCounts=uniqueGoCounts,dataUnclassified=dataUnclassified)
 	return(re)
 }
 
 .plotData <- function(geneList,goCounts,dataUnclassified,ontology,color){
 	par(mar=c(20,5,2,2))
-	c <- c(length(geneList),goCounts[,"geneNum"],length(dataUnclassified))
-	names(c) <- c("all",goCounts[,"name"],"unclassified")
+	c <- c(length(geneList), goCounts$geneNum, length(dataUnclassified))
+	names(c) <- c("all", goCounts$name, "unclassified")
 	maxC <- max(c)
 	xx <- barplot(c,main=paste("Bar chart of ",ontology," categories",sep=""),col=color,xaxt="n",xlab="",ylim=c(0,1.2*maxC),cex.axis=1.5,las=2,cex.main=1.7)
 	text(x=xx+0.3,y=c+maxC*0.05,labels=c,pos=3,cex=1.5,col="black",srt=90)

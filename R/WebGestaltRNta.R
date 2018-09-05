@@ -10,7 +10,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 
 	geneSetUrl <- file.path(hostName, "api", "geneset")
 	response <- GET(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardid="entrezgene", filetype="dag"))
-	dagInfo <- fread(content(response), sep='\t', col.names=c("source", "target"), header=FALSE, showProgress=FALSE)
+	dagInfo <- read_tsv(content(response), col_names=c("source", "target"), col_types="cc")
 
 	## networks <- unlist(strsplit(network, ",", fixed=TRUE))
 	## May need to bring back analysis of multiple networks
@@ -34,7 +34,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 		} else {
 			queue <- queue[2:length(queue)]
 		}
-		inEdges <- dagInfo[target==goTerm]
+		inEdges <- filter(dagInfo, target == goTerm)
 		if (nrow(inEdges) > 0) {
 			edges <- c(edges, lapply(split(inEdges, seq(nrow(inEdges))), function(x) list("data"=x)))
 		}
@@ -47,15 +47,15 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	}
 
 	response <- POST(geneSetUrl, body=list(organism=organism, database="geneontology_Biological_Process",
-									filetype="des", ids=goTermList), encode="json")
-	goId2Term <- fread(content(response), sep='\t', col.names=c("id", "name"), header=FALSE)
+		filetype="des", ids=goTermList), encode="json")
+	goId2Term <- read_tsv(content(response), col_names=c("id", "name"), col_types="cc")
 
 	jsonFile <- file.path(projectDir, paste0(fileName, ".json"));
 	jsonData <- vector(mode="list", length=length(goTermList))
 	inputEndIndex <- length(goEnrichData)
 	for (i in 1:length(goTermList)) {
 		goId <- goTermList[[i]]
-		goName <- goId2Term[id==goId][[1, "name"]]
+		goName <- filter(goId2Term, id == goId)[[1, "name"]]
 		dataSets <- i <= inputEndIndex
 		jsonData[[i]] <- list(data=list(id=goId, name=goName, datasets=dataSets))
 	}

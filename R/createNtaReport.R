@@ -18,16 +18,14 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	goDataList <- as.character(goDataList[sapply(goDataList, length) > 0])
 
 	seeds <- scan(seedsFn, "character")
-	candidates <- fread(candidateFn, header=FALSE, col.names=c("candidate", "score", "label"))
+	candidates <- read_tsv(candidateFn, col_names=c("candidate", "score"), col_types="cd-")
 	candidates$score <- sprintf("%2.2E", candidates$score)
-	candidates <- candidates[-3]
-	#candidates <- unname(rowSplit(candidates))
 
-	enrichment <- fread(enrichFn, header=FALSE, col.names=c("goId", "goName", "c", "o", "geneInfo", "expect", "ratio", "rawP", "adjP"))
+	enrichment <- read_tsv(enrichFn, col_names=c("goId", "goName", "c", "o", "geneInfo", "expect", "ratio", "rawP", "adjP"), col_types=cols())
 
 	summary <- readLines(summaryFn)
 
-	network <- fread(networkFn, header=FALSE, col.names=c("source", "target"))
+	network <- read_tsv(networkFn, col_names=c("source", "target"), col_types="cc")
 	allNodes <- unique(c(network, recursive=TRUE))
 
 	## Prepare JSON data for cytoscape of gene network, add edges data first
@@ -105,4 +103,6 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	template <- readLines(system.file("templates/ntaTemplate.mustache", package="WebGestaltR"))
 	outFn <- file.path(projectDir, paste0("Report_", projectName, ".html"))
 	cat(whisker.render(template, data, partials=partials), file=outFn)
+
+	file.remove(jsonFn)
 }

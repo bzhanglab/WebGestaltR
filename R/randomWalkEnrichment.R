@@ -2,7 +2,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	fileName <- paste(projectName, network, method, sep=".")
 	geneSetUrl <- file.path(hostName, "api", "geneset")
 	response <- GET(geneSetUrl, query=list(organism=organism, database=network, standardid="entrezgene", filetype="net"))
-	net <- as.matrix(fread(content(response), sep='\t', header=FALSE, showProgress=FALSE))
+	net <- as.matrix(read_tsv(content(response), col_names=FALSE, col_types="cc"))
 	netGraph <- graph.edgelist(net, directed=FALSE)
 	netNode <- V(netGraph)$name
 
@@ -11,7 +11,8 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 
 	cat("Start Random Walk...\n")
 
-	seeds <- unlist(strsplit(inputSeed, ","))
+	#seeds <- unlist(strsplit(inputSeed, ","))
+	seeds <- inputSeed
 
 	allNum <- length(seeds)
 	write.table(seeds, file.path(projectDir, paste0(fileName, "_seeds.txt")), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
@@ -27,13 +28,13 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	pt1 <- .netwalker(seeds, netGraph, r=0.5)
 	gS <- data.frame(name=netNode, score=pt1, per=1, stringsAsFactors=F)
 	if (method == "Network_Expansion") {
-		gS <- gS[gS[, "name"] %in% setdiff(gS[, "name"], seeds), ]
-		gS <- gS[order(-gS[, "score"]), ]
+		gS <- gS %>% filter(name %in% setdiff(name, seeds)) %>%
+			arrange(desc(score))
 		candidate <- gS[1:topRank, ]
-		allN <- c(seeds, candidate[, "name"])
+		allN <- c(seeds, candidate$name)
 	} else {
-		gS <- gS[gS[, "name"] %in% seeds, ]
-		gS <- gS[order(-gS[, "score"]), ]
+		gS <- gS %>% filter(name %in% seeds) %>%
+			arrange(desc(score))
 		highSeeds <- gS[1:seedNum, "name"]
 		allN <- seeds
 		candidate <- gS
@@ -100,59 +101,55 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 
 
 .enrichmentFunction <- function(organism, reference, interest, goAnn, seeds, sigMethod, fdrThr, topThr, hostName) {
-	goAnn <- goAnn[, c(3, 1)]
-	annRef <- goAnn[goAnn[, 1] %in% reference, ]
-	annInterest <- goAnn[goAnn[, 1] %in% interest, ]
+	goAnn <- select(goAnn, gene, geneSet)
+	annRef <- filter(goAnn, gene %in% reference)
+	annInterest <- filter(goAnn, gene %in% interest)
 
-	allRefNum <- length(unique(annRef[, 1]))
-	allInterestNum <- length(unique(annInterest[, 1]))
+	allRefNum <- length(unique(annRef$gene))
+	allInterestNum <- length(unique(annInterest$gene))
 
-	refTermCount <- tapply(annRef[, 1], annRef[, 2], length)
+	refTermCount <- tapply(annRef$gene, annRef$geneSet, length)
 
 	geneSetUrl <- file.path(hostName, "api", "geneset")
 	response <- POST(geneSetUrl, body=list(organism=organism, database="geneontology_Biological_Process",
-									filetype="des", ids=unique(annRef[, 2])), encode="json")
-	refTermName <- fread(content(response), sep="\t", col.names=c("id", "name"), header=FALSE, data.table=FALSE)
-	rownames(refTermName) <- refTermName[, 1]
-	refTermName <- refTermName[names(refTermCount), ]
+		filetype="des", ids=unique(annRef$geneSet)), encode="json")
+	refTermName <- read_tsv(content(response), col_names=c("id", "name"), col_types="cc") %>%
+		filter(id %in% names(refTermCount))
 
-	refTermCount <- data.frame(goId=names(refTermCount), name=refTermName[, 2], refNum=refTermCount, stringsAsFactors=FALSE)
-	refTermCount <- refTermCount[order(refTermCount[, 1]), ]
-	interestTermCount <- tapply(annInterest[, 1], annInterest[, 2], length)
+	refTermCount <- data.frame(goId=names(refTermCount), refNum=refTermCount, stringsAsFactors=FALSE) %>%
+		left_join(refTermName, by=c("goId"="id")) %>%
+		select(goId, name, refNum) %>%
+		arrange(goId)
+	interestTermCount <- tapply(annInterest$gene, annInterest$geneSet, length)
 
-	interestTermGene <- tapply(annInterest[, 1], annInterest[, 2], .getGenes, seeds)
+	interestTermGene <- tapply(annInterest$gene, annInterest$geneSet, .getGenes, seeds)
 
 
-	interestTermCount <- data.frame(goId=names(interestTermCount), interestNum=interestTermCount, interestGene=interestTermGene, stringsAsFactors=FALSE)
-	interestTermCount <- interestTermCount[order(interestTermCount[, 1]), ]
+	interestTermCount <- data.frame(goId=names(interestTermCount), interestNum=interestTermCount, interestGene=interestTermGene, stringsAsFactors=FALSE) %>%
+		arrange(goId)
 
 	refInterestTermCount <- refTermCount
 
-	refInterestTermCount$interestNum <- array(0, dim=c(length(refInterestTermCount$goId), 1))
-	refInterestTermCount[refInterestTermCount$goId %in% interestTermCount[, 1], 4] <- interestTermCount$interestNum
+	refInterestTermCount$interestNum <- vector("numeric", nrow(refInterestTermCount))
+	refInterestTermCount[refInterestTermCount$goId %in% interestTermCount$goId, "interestNum"] <- interestTermCount$interestNum
 
-	refInterestTermCount$interestGene <= array("", dim=c(length(refInterestTermCount$goId), 1))
-	refInterestTermCount[refInterestTermCount$goId %in% interestTermCount[, 1], 5] <- interestTermCount$interestGene
+	refInterestTermCount$interestGene <- vector("numeric", nrow(refInterestTermCount))
+	refInterestTermCount[refInterestTermCount$goId %in% interestTermCount$goId, "interestGene"] <- interestTermCount$interestGene
 
-	refInterestTermCount$expected <- array(0, dim=c(length(refInterestTermCount$goId), 1))
-	refInterestTermCount$expected <- (allInterestNum / allRefNum) * refInterestTermCount[, 3]
+	refInterestTermCount <- refInterestTermCount %>%
+		mutate(expected = (allInterestNum / allRefNum) *refNum,
+			ratio = interestNum / expected,
+			pvalue = 1 - phyper(interestNum - 1, allInterestNum, allRefNum - allInterestNum, refNum, lower.tail=TRUE, log.p=FALSE),
+			fdr = p.adjust(pvalue, method="BH")
+		) %>%
+		arrange(fdr, pvalue)
 
-	refInterestTermCount$ratio <- array(0, dim=c(length(refInterestTermCount$goId), 1))
-	refInterestTermCount$ratio <- as.numeric(refInterestTermCount[, 4]) / as.numeric(refInterestTermCount[, 6])
-
-	pv <- 1 - phyper(refInterestTermCount[, 4] - 1, allInterestNum, allRefNum - allInterestNum, refInterestTermCount[, 3], lower.tail=TRUE, log.p=FALSE)
-
-	refInterestTermCount$pvalue <- pv
-	adp <- p.adjust(pv, method="BH")
-	refInterestTermCount$fdr <- adp
-	refInterestTermCount <- refInterestTermCount[order(refInterestTermCount[, 9]), ]
 
 	if(sigMethod=="fdr"){
-		refInterestTermCountSig <- refInterestTermCount[refInterestTermCount$fdr < fdrThr, ]
+		refInterestTermCountSig <- filter(refInterestTermCount, fdr < fdrThr)
 	}else{
 		refInterestTermCountSig <- refInterestTermCount[1:topThr, ]
 	}
-	refInterestTermCountSig <- refInterestTermCountSig[order(refInterestTermCountSig[, 9], refInterestTermCountSig[, 8]), ]
 
 	return(refInterestTermCountSig)
 }

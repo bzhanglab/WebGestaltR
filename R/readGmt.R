@@ -21,7 +21,7 @@ readGmt <- function(gmtFile){
 		return(gmtFormatError("incorrect"))
 	}else{
 		data <- as.data.frame(data, stringsAsFactors=FALSE)
-		colnames(data) <- c("geneSetId", "description", "geneId")
+		colnames(data) <- c("geneSet", "description", "gene")
 		return(data)
 	}
 }
@@ -39,20 +39,19 @@ readGMT <- readGmt
 }
 
 prepareInputMatrixGsea <- function(rank, gmt) {
-	# rank is 2 column Data Frame of geneId and score
-	# gmt is 3 column Data Frame of geneSetId, geneSetLink, and geneId
-	geneSetIds <- unique(gmt[,c(1,2)])[, 1]
-	geneIds <- rank[, 1]
+	# rank is 2 column Data Frame of gene and score
+	# gmt is 3 column Data Frame of geneSet, geneSetLink, and gene
+	geneSets <- (gmt %>% select(geneSet, description) %>% distinct())$geneSet
+	genes <- rank$gene
 	# 0 or 1 matrix indicating gene and geneset relationship
-	relDf <- as.data.frame(matrix(0, nrow = length(geneIds), ncol = length(geneSetIds), dimnames = list(geneIds, geneSetIds)))
+	relDf <- as.data.frame(matrix(0, nrow=length(genes), ncol=length(geneSets), dimnames=list(genes, geneSets)))
 	for (i in 1:nrow(gmt)) {
-		if (gmt[i, 3] %in% geneIds) {
-			relDf[gmt[i, 3], gmt[i, 1]] <- 1
+		if (gmt[i, "gene"] %in% genes) {
+			relDf[gmt[i, "gene"], gmt[i, "geneSet"]] <- 1
 		}
 	}
-	geneId <- colnames(rank)[1]
-	relDf[, geneId] <- geneIds
-	return(inner_join(rank, relDf, by=geneId))
+	relDf$gene <- genes
+	return(inner_join(rank, relDf, by="gene"))
 }
 
 readGMT <- function(...) {

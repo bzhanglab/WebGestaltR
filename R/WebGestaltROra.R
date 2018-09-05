@@ -51,10 +51,10 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 	}
 
 	if(organism=="others"){
-		interestGeneList <- unique(interestingGeneMap[,1])
+		interestGeneList <- unique(interestingGeneMap)
 	}else{
 		interestStandardId <- interestingGeneMap$standardId
-		interestGeneList <- unique(interestingGeneMap$mapped[,interestStandardId])
+		interestGeneList <- unique(interestingGeneMap$mapped[[interestStandardId]])
 	}
 
 	###################load reference gene set for SEA method##############
@@ -106,23 +106,24 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 	if(!is.null(enrichedSig)){
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
 			colnames(geneSetDes) <- c("geneset","description")
-			enrichedSig <- merge(x=enrichedSig,y=geneSetDes,by="geneset",all.x=TRUE)
-			enrichedSig <- enrichedSig[,c(1,ncol(enrichedSig),2:(ncol(enrichedSig)-1))]
-			enrichedSig <- enrichedSig[order(enrichedSig[,"FDR"],enrichedSig[,"PValue"]),]
+			enrichedSig <- enrichedSig %>%
+				left_join(geneSetDes, by="geneset") %>%
+				select(geneset, description, link, C, O, E, R, PValue, FDR, overlapID) %>%
+				arrange(FDR, PValue)
 		}
 
 
 		if (organism != "others") {
 			geneTables <- getGeneTables(enrichedSig, "overlapID", interestingGeneMap)
 			enrichedSig$link <- mapply(function(link, geneList) linkModification(enrichDatabase, link, geneList, interestingGeneMap),
-				enrichedSig[,"link"],
-				enrichedSig[, "overlapID"]
+				enrichedSig$link,
+				enrichedSig$overlapID
 			)
 		}
 
 		if(isOutput==TRUE){
 			if(organism!="others" && interestGeneType!=interestStandardId){
-				outputEnrichedSig <- mapUserId(enrichedSig,"overlapID",interestingGeneMap)  ###mapUserId function is in the enrichmentResultProcess_component file
+				outputEnrichedSig <- mapUserId(enrichedSig, "overlapID", interestingGeneMap)
 			}
 			write.table(outputEnrichedSig,file=file.path(projectDir,paste("enrichment_results_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 		}
