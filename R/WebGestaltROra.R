@@ -81,10 +81,10 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 					return(re)
 				}
 			}
-			write.table(interestingGeneMap$mapped,file=file.path(projectDir,paste("interestingID_Mappingtable_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
-			write.table(interestingGeneMap$unmapped,file=file.path(projectDir,paste("interestingID_unmappedList_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE)
+			write_tsv(interestingGeneMap$mapped, file.path(projectDir, paste0("interestingID_Mappingtable_", timeStamp , ".txt")))
+			write(interestingGeneMap$unmapped, file.path(projectDir, paste0("interestingID_unmappedList_", timeStamp, ".txt")))
 		}else{
-			write.table(interestGeneList,file=file.path(projectDir,paste("interestList_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=FALSE,sep="\t",quote=FALSE)
+			write(interestGeneList, file.path(projectDir, paste0("interestList_", timeStamp, ".txt")))
 		}
 	}
 
@@ -125,7 +125,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 			if(organism!="others" && interestGeneType!=interestStandardId){
 				outputEnrichedSig <- mapUserId(enrichedSig, "overlapID", interestingGeneMap)
 			}
-			write.table(outputEnrichedSig,file=file.path(projectDir,paste("enrichment_results_",timeStamp,".txt",sep="")),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", timeStamp, ".txt")))
 		}
 	}
 

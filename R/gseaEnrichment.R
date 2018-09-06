@@ -23,7 +23,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	geneRankList <- data.frame(gene=names(a), score=unname(a), stringsAsFactors=FALSE)
 
 	gseaRnk <- file.path(projectFolder, paste("Project_", projectName, "_GSEA.rnk", sep=""))
-	write.table(geneRankList, file=gseaRnk, row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
+	write_tsv(geneRankList, gseaRnk, col_names=FALSE)
 
 	outputF <- file.path(projectFolder, paste0("Project_", projectName, "_GSEA/"))
 	relativeF <- file.path(".", paste0("Project_", projectName, "_GSEA"))

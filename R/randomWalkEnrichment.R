@@ -15,9 +15,9 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	seeds <- inputSeed
 
 	allNum <- length(seeds)
-	write.table(seeds, file.path(projectDir, paste0(fileName, "_seeds.txt")), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
+	write(seeds, file.path(projectDir, paste0(fileName, "_seeds.txt")))
 	seeds <- intersect(netNode, seeds)
-	write.table(seeds, file.path(projectDir, paste0(fileName, "_seedsInNetwork.txt")), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
+	write(seeds, file.path(projectDir, paste0(fileName, "_seedsInNetwork.txt")))
 
 	if (method == "Network_Retrieval_Prioritization") {
 		if (length(seeds) < seedNum) {
@@ -73,9 +73,9 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 
 	write(x, file.path(projectDir, paste0(fileName, "_resultSummary.txt")))
 	write(overlapSeeds, file.path(projectDir, paste0(fileName, "_seedsInSubnetwork.txt")))
-	write.table(subNet, file.path(projectDir, paste0(fileName, "_randomWalkNetwork.txt")), sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
-	write.table(candidate, file.path(projectDir, paste0(fileName, "_candidate.txt")), sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
-	write.table(termInfo, file.path(projectDir, paste0(fileName, "_enrichedResult.txt")), sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
+	write_tsv(subNet, file.path(projectDir, paste0(fileName, "_randomWalkNetwork.txt")), col_names=FALSE)
+	write_tsv(candidate, file.path(projectDir, paste0(fileName, "_candidate.txt")), col_names=FALSE)
+	write_tsv(termInfo, file.path(projectDir, paste0(fileName, "_enrichedResult.txt")))
 }
 
 
