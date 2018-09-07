@@ -38,7 +38,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 	}
 
 	mappedIds <- mapRes$mapped
-	unmappedIds <- mapRes$unmapped
+	unmappedIds <- unlist(mapRes$unmapped)
 
 	if (length(mappedIds) == 0) { return(idMappingError("empty")) }
 

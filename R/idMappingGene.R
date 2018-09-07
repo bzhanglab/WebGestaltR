@@ -41,7 +41,7 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 	}
 
 	mappedIds <- mapR$mapped
-	unmappedIds <- mapR$unmapped
+	unmappedIds <- unlist(mapR$unmapped)
 	if (is.null(targetIdType)) {
 		targetIdType <- mapR$standardId
 	}
