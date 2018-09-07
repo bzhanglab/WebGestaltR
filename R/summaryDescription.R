@@ -7,18 +7,28 @@ summaryDescription <- function(timeStamp,organism,interestGeneFile,interestGene,
 		methodSpecificContent <- specificParameterSummaryGsea(organism,interestingGeneMap,geneSet,minNum,maxNum,sigMethod,fdrThr,topThr,perNum,lNum,enrichedSig,dNum)
 	}
 
-	standardId <- unname(interestingGeneMap$standardId)
 	template <- readLines(system.file("templates/summary.mustache", package="WebGestaltR"))
-	data <- list(timeStamp=timeStamp, enrichMethod=enrichMethod, organism=organism, organismIsOthers=organism=="others",
-		enrichDatabase=enrichDatabase, enrichDatabaseIsOthers=enrichDatabase=="others", enrichDatabaseFile=enrichDatabaseFile,
-		enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,
-		hasEnrichDatabaseDescriptioFile=!is.null(enrichDatabaseDescriptionFile), hasInterestGeneFile=!is.null(interestGeneFile),
-		interestGeneFileBase=basename(interestGeneFile), interestGeneType=interestGeneType,
-		numUserId=nrow(interestingGeneMap$mapped)+length(interestingGeneMap$unmapped),
-		numMappedUserId=nrow(interestingGeneMap$mapped), numUniqueMappedId=length(unique(interestingGeneMap$mapped[,standardId])),
-		numUnmappedUserId=length(interestingGeneMap$unmapped), idIsEntrezGene=standardId=="entrezgene", standardId=standardId,
-		methodSpecificContent=methodSpecificContent
+	if (organism != "others") {
+		standardId <- unname(interestingGeneMap$standardId)
+		data <- list(timeStamp=timeStamp, enrichMethod=enrichMethod, organism=organism, organismIsOthers=FALSE,
+			enrichDatabase=enrichDatabase, enrichDatabaseIsOthers=enrichDatabase=="others", enrichDatabaseFile=enrichDatabaseFile,
+			enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,
+			hasEnrichDatabaseDescriptioFile=!is.null(enrichDatabaseDescriptionFile), hasInterestGeneFile=!is.null(interestGeneFile),
+			interestGeneFileBase=basename(interestGeneFile), interestGeneType=interestGeneType,
+			numUserId=nrow(interestingGeneMap$mapped)+length(interestingGeneMap$unmapped),
+			numMappedUserId=nrow(interestingGeneMap$mapped), numUniqueMappedId=length(unique(interestingGeneMap$mapped[[standardId]])),
+			numUnmappedUserId=length(interestingGeneMap$unmapped), idIsEntrezGene=standardId=="entrezgene", standardId=standardId,
+			methodSpecificContent=methodSpecificContent
 		)
+	}else {
+		data <- list(timeStamp=timeStamp, enrichMethod=enrichMethod, organism=organism, organismIsOthers=TRUE,
+			enrichDatabase=enrichDatabase, enrichDatabaseIsOthers=enrichDatabase=="others", enrichDatabaseFile=enrichDatabaseFile,
+			enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,
+			hasEnrichDatabaseDescriptioFile=!is.null(enrichDatabaseDescriptionFile), hasInterestGeneFile=!is.null(interestGeneFile),
+			interestGeneFileBase=basename(interestGeneFile), interestGeneType=interestGeneType,
+			idIsEntrezGene=FALSE, methodSpecificContent=methodSpecificContent
+		)
+	}
 
 	return(whisker.render(template, data))
 }
@@ -67,7 +77,7 @@ specificParameterSummaryGsea <- function(organism,interestingGeneMap,geneSet,min
 	} else {
 		standardId <- NULL
 		interestGeneList <- unique(interestingGeneMap)
-		numUniqueUserId <- length(interestGeneList)
+		numUniqueUserId <- nrow(interestGeneList)
 		numAnnoUserId <- NULL
 	}
 

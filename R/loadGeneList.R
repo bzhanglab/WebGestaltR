@@ -62,7 +62,7 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 				if(.hasError(referenceGeneList)){
 					return(referenceGeneList)
 				}
-				referenceGeneList <- as.character(unique(referenceGeneList[,1]))
+				referenceGeneList <- unique(referenceGeneList)
 			}else{
 				return(referenceGeneError(type="empty"))
 			}
@@ -100,8 +100,8 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 	}
 
 	###Because if all genes are annotated to only one category, GSEA will return the error, we need to avoid this error by reporting the error in the R#
-	geneSets <- geneSet %>% filter(gene %in% geneList) %>% select(geneSet) %>% distinct()
-	if (nrow(geneSets) == 1) {
+	geneSets <- unique((filter(geneSet, gene %in% geneList))[["geneSet"]])
+	if (length(geneSets) == 1) {
 		return(interestGeneError(type="onlyOne"))
 	}
 	return(geneMap)
@@ -126,9 +126,9 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 	}
 
 	###Because if all genes are annotated to only one category, GSEA will return the error, we need to avoid this error by reporting the error in the R#
-	geneSets <- geneSet %>% filter(gene %in% geneList) %>% select(geneSet) %>% distinct()
-	if (nrow(geneSets) == 1) {
+	geneSets <- unique((filter(geneSet, gene %in% geneList))[["geneSet"]])
+	if (length(geneSets) == 1) {
 		return(interestGeneError(type="onlyOne"))
 	}
-	return(geneList)
+	return(inputGene)
 }

@@ -89,7 +89,6 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	enrichedSig <- gseaRes$enriched
 	insig <- gseaRes$background
 
-	geneTables <- list()
 	if(!is.null(enrichedSig)){
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
 			colnames(geneSetDes) <- c("geneset","description")
@@ -99,8 +98,8 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 				arrange(FDR, PValue)
 		}
 
+		geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeID", interestingGeneMap)
 		if (organism != "others") {
-			geneTables <- getGeneTables(enrichedSig, "leadingEdgeID", interestingGeneMap)
 			enrichedSig$link <- mapply(function(link, geneList) linkModification(enrichDatabase, link, geneList, interestingGeneMap),
 				enrichedSig$link,
 				enrichedSig$leadingEdgeID
@@ -110,6 +109,8 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 		if(isOutput==TRUE){
 			if(organism!="others" && interestGeneType!=interestStandardId){
 				outputEnrichedSig <- mapUserId(enrichedSig,"leadingEdgeID",interestingGeneMap)  ###mapUserId function is in the enrichmentResultProcess_component file
+			} else {
+				outputEnrichedSig <- enrichedSig
 			}
 			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", timeStamp, ".txt")))
 		}

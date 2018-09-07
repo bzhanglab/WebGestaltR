@@ -18,7 +18,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 							return(geneSet)
 						}
 						standardId <- geneSet$standardId
-						geneSet <- geneSet$mapped %>% select(geneset, link, standardId) %>% distinct()
+						geneSet <- geneSet$mapped %>% select(geneSet=geneset, description, gene=entrezgene) %>% distinct()
 						if(!is.null(enrichDatabaseDescriptionFile)){     ##upload description file
 							geneSetDes <- .loadEnrichDatabaseDescriptionFile(geneSet,enrichDatabaseDescriptionFile)
 							if(.hasError(geneSetDes)){

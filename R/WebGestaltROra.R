@@ -59,8 +59,6 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 
 	###################load reference gene set for SEA method##############
 	cat("Uploading the reference list...\n")
-	referenceGeneList <- NULL
-
 	referenceGeneList <- loadReferenceGene(organism=organism, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, collapseMethod=collapseMethod, hostName=hostName, geneSet=geneSet, interestGeneList=interestGeneList)
 
 	if(.hasError(referenceGeneList)){
@@ -102,7 +100,6 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 
 
 
-	geneTables <- list()
 	if(!is.null(enrichedSig)){
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
 			colnames(geneSetDes) <- c("geneset","description")
@@ -113,8 +110,8 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 		}
 
 
+		geneTables <- getGeneTables(organism, enrichedSig, "overlapID", interestingGeneMap)
 		if (organism != "others") {
-			geneTables <- getGeneTables(enrichedSig, "overlapID", interestingGeneMap)
 			enrichedSig$link <- mapply(function(link, geneList) linkModification(enrichDatabase, link, geneList, interestingGeneMap),
 				enrichedSig$link,
 				enrichedSig$overlapID
@@ -124,6 +121,8 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 		if(isOutput==TRUE){
 			if(organism!="others" && interestGeneType!=interestStandardId){
 				outputEnrichedSig <- mapUserId(enrichedSig, "overlapID", interestingGeneMap)
+			} else {
+				outputEnrichedSig <- enrichedSig
 			}
 			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", timeStamp, ".txt")))
 		}

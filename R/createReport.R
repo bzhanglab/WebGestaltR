@@ -50,11 +50,14 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 	}else{
 		###########Organism is others. No mapping information#############
 		#############summary for the analysis###################
+		if (enrichMethod == 'ORA') {
+			numAnnoRefUserId <- length(intersect(interestingGeneMap, intersect(referenceGeneList, geneSet$gene)))
+		}
 		bodyContent <- summaryDescription(timeStamp,organism,interestGeneFile,interestGene,interestGeneType,enrichMethod,enrichDatabase,enrichDatabaseFile,enrichDatabaseType,enrichDatabaseDescriptionFile,interestingGeneMap,referenceGeneList,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,perNum,lNum,geneSet)
 
 		##############Enrich Result################
 		if(!is.null(enrichedSig)){
-			bodyContent <- paste(bodyContent, enrichResultOthers(enrichMethod,enrichedSig,geneSetDes,fdrMethod,dNum), sep='\n')
+			bodyContent <- paste(bodyContent, enrichResultTab(enrichMethod, geneSetDes, geneSetDag), seq='\n')
 		}
 		standardId <- NULL
 	}

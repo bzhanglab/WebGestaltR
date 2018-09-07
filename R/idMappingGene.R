@@ -20,8 +20,8 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 	}
 
 	if(dataType=="gmt"){
-		colnames(inputGene) <- c("geneset", "link", sourceIdType)
-		inputGeneL <- unique(inputGene$gene)
+		colnames(inputGene) <- c("geneset", "description", sourceIdType)
+		inputGeneL <- unique(inputGene[[sourceIdType]])
 	}
 
 	mapR <- POST(file.path(hostName, "api", "idmapping"), encode="json",
@@ -57,7 +57,7 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 		inputGene <- inner_join(mappedInputGene, inputGene, by=c("userid"=sourceIdType))
 	} else if (dataType=="gmt") {
 		inputGene <- inner_join(mappedInputGene, inputGene, by=c("userid"=sourceIdType)) %>%
-			select(geneset, link, userid, genesymbol, genename, targetIdType)
+			select(geneset, description, userid, genesymbol, genename, targetIdType)
 	}
 
 	if (targetIdType != "entrezgene" && sourceIdType!=targetIdType) {
@@ -68,7 +68,7 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 		} else if (dataType=="rnk") {
 			inputGene <- select(inputGene, userid, genesymbol, genename, entrezgene, targetIdType, score)
 		} else if (dataType=="gmt") {
-			inputGene <- select(inputGene, geneset, link, userid, genesymbol, genename, entrezgene, targetIdType)
+			inputGene <- select(inputGene, geneset, description, userid, genesymbol, genename, entrezgene, targetIdType)
 		}
 	}
 	inputGene$glink <- paste0("https://www.ncbi.nlm.nih.gov/gene/?term=", inputGene$entrezgene)
