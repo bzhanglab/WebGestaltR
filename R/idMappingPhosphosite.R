@@ -14,7 +14,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 	if(dataType=="rnk"){
 		######Collapse the gene ids with multiple scores##########
 		x <- tapply(inputGene$score, inputGene$gene, collapseMethod)
-		inputGene <- data.frame(id=names(x),score=as.numeric(x),stringsAsFactors=FALSE)
+		inputGene <- data.frame(gene=names(x),score=as.numeric(x),stringsAsFactors=FALSE)
 		inputGeneL <- inputGene$gene
 		colnames(inputGene) <- c(sourceIdType,"score")
 	}
@@ -91,25 +91,25 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 		geneType <- "refseq_peptide"
 		outLink <- "https://www.ncbi.nlm.nih.gov/protein/"
 	}
-	mappedInputGene$glink <- paste(outLink,mappedInputGene[, "gene"],sep="")
+	mappedInputGene$glink <- paste0(outLink, mappedInputGene$gene)
 
 	########Get gene level information#########
 	entrezgeneMapRes <- idMappingGene(organism=organism, dataType="list", inputGene=mappedInputGene$gene, sourceIdType=geneType, targetIdType="entrezgene", mappingOutput=FALSE, hostName=hostName)
 
 	mergedRes <- entrezgeneMapRes$mapped %>% select(gene=userid, genesymbol, genename) %>%
-		right_join(mappedInputGene, by=gene)
+		right_join(mappedInputGene, by="gene")
 
 	if(dataType=="list"){
 		inputGene <- select(mergedRes, userid, genesymbol, genename, targetIdType, glink)
 	}
 
 	if(dataType=="rnk"){
-		inputGene <- mergedRes %>% left_join(inputGene, by=c(userid=sourceIdType)) %>%
+		inputGene <- mergedRes %>% left_join(inputGene, by=c("userid"=sourceIdType)) %>%
 			select(userid, genesymbol, genename, targetIdType, score, glink)
 	}
 
 	if(dataType=="gmt"){
-		inputGene <- mergedRes %>% left_join(inputGene, by=c(userid=sourceIdType)) %>%
+		inputGene <- mergedRes %>% left_join(inputGene, by=c("userid"=sourceIdType)) %>%
 			select(geneset, link, userid, genesymbol, genename, targetIdType, glink)
 	}
 
