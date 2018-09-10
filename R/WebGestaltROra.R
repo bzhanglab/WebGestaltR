@@ -69,10 +69,10 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 	if(isOutput==TRUE){
 		dir.create(projectDir)
 
-	######Summary gene annotation based on the GOSlim###########
+	######Summarize gene annotation based on the GOSlim###########
 		if(organism!="others"){
 			if(databaseStandardId=="entrezgene"){
-				cat("Summary the uploaded ID list by GO Slim data...\n")
+				cat("Summarize the uploaded ID list by GO Slim data...\n")
 				goSlimOutput <- file.path(projectDir,paste("goslim_summary_",timeStamp,sep=""))
 				re <- goSlimSummary(organism=organism,geneList=interestGeneList,outputFile=goSlimOutput,outputType="png",hostName=hostName)
 				if(.hasError(re)){
@@ -139,7 +139,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 		zip(paste0("Project_", timeStamp, ".zip"), ".", flags="-rq")
 		setwd(cwd)
 
-		cat("Results can be found in the ",projectDir,"!",sep="")
+		cat("Results can be found in the ", projectDir, "!\n", sep="")
 	}
 
 	return(enrichedSig)
