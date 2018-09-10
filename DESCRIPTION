@@ -9,7 +9,8 @@ Description: The web version WebGestalt <http://www.webgestalt.org> supports 12 
 License: LGPL
 LazyLoad: yes
 Depends: R (>= 3.3)
-Imports: methods, dplyr, doRNG, parallel (>= 3.3.2),
+Imports: methods, dplyr, doRNG, readr, parallel (>= 3.3.2),
         doParallel (>= 1.0.10), foreach (>= 1.4.0),
-        pkgmaker (>= 0.22), rjson (>= 0.2.15), httr
+        pkgmaker (>= 0.22), rjson (>= 0.2.15), httr,
+	igraph, whisker
 NeedsCompilation: no
