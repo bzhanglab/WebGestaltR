@@ -4,13 +4,12 @@ Title: The R Version of WebGestalt
 Version: 0.3.0
 Date: 2018-05-11
 Author: Jing Wang <jingwang.uestc@gmail.com>
-Maintainer: Zhiao Shi <zhiao.shi@gmail.com>
+Maintainer: Yuxing Liao <yuxingliao@gmail.com>
 Description: The web version WebGestalt <http://www.webgestalt.org> supports 12 organisms, 324 gene identifiers and 150,937 function categories. Users can upload the data and functional categories with their own gene identifiers. In addition to the Over-Representation Analysis, WebGestalt also supports Gene Set Enrichment Analysis. The user-friendly output interface allow interactive and efficient exploration of enrichment results. The WebGestaltR package not only supports all above functions but also can be integrated into other pipeline or simultaneous analyze multiple gene lists.
 License: LGPL
 LazyLoad: yes
 Depends: R (>= 3.3)
-Imports: methods, data.table (>= 1.10.0), parallel (>= 3.3.2),
+Imports: methods, dplyr, doRNG, parallel (>= 3.3.2),
         doParallel (>= 1.0.10), foreach (>= 1.4.0),
         pkgmaker (>= 0.22), rjson (>= 0.2.15), httr
-SystemRequirements: Java
 NeedsCompilation: no
