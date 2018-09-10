@@ -73,7 +73,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 
 	write(x, file.path(projectDir, paste0(fileName, "_resultSummary.txt")))
 	write(overlapSeeds, file.path(projectDir, paste0(fileName, "_seedsInSubnetwork.txt")))
-	write_tsv(subNet, file.path(projectDir, paste0(fileName, "_randomWalkNetwork.txt")), col_names=FALSE)
+	write_tsv(as.data.frame(subNet), file.path(projectDir, paste0(fileName, "_randomWalkNetwork.txt")), col_names=FALSE)
 	write_tsv(candidate, file.path(projectDir, paste0(fileName, "_candidate.txt")), col_names=FALSE)
 	write_tsv(termInfo, file.path(projectDir, paste0(fileName, "_enrichedResult.txt")))
 }
@@ -137,16 +137,16 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	refInterestTermCount[refInterestTermCount$goId %in% interestTermCount$goId, "interestGene"] <- interestTermCount$interestGene
 
 	refInterestTermCount <- refInterestTermCount %>%
-		mutate(expected = (allInterestNum / allRefNum) *refNum,
-			ratio = interestNum / expected,
-			pvalue = 1 - phyper(interestNum - 1, allInterestNum, allRefNum - allInterestNum, refNum, lower.tail=TRUE, log.p=FALSE),
-			fdr = p.adjust(pvalue, method="BH")
+		mutate(expect = (allInterestNum / allRefNum) *refNum,
+			ratio = interestNum / expect,
+			PValue = 1 - phyper(interestNum - 1, allInterestNum, allRefNum - allInterestNum, refNum, lower.tail=TRUE, log.p=FALSE),
+			FDR = p.adjust(PValue, method="BH")
 		) %>%
-		arrange(fdr, pvalue)
+		arrange(FDR, PValue)
 
 
 	if(sigMethod=="fdr"){
-		refInterestTermCountSig <- filter(refInterestTermCount, fdr < fdrThr)
+		refInterestTermCountSig <- filter(refInterestTermCount, FDR < fdrThr)
 	}else{
 		refInterestTermCountSig <- refInterestTermCount[1:topThr, ]
 	}

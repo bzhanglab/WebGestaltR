@@ -21,8 +21,8 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 
 	enrichResFile <- file.path(projectDir, paste0(fileName, "_enrichedResult.txt"))
 
-	goEnrichData <- sapply(strsplit(readLines(enrichResFile), "\t", fixed=TRUE), function(x) x[[1]])
-	goTermList <- goEnrichData
+	goTermList <- read_tsv(enrichResFile, col_types=cols())$goId
+	inputEndIndex <- length(goTermList)
 
 	queue <- as.list(goTermList)
 	## expand to include all linked nodes
@@ -52,7 +52,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 
 	jsonFile <- file.path(projectDir, paste0(fileName, ".json"));
 	jsonData <- vector(mode="list", length=length(goTermList))
-	inputEndIndex <- length(goEnrichData)
+
 	for (i in 1:length(goTermList)) {
 		goId <- goTermList[[i]]
 		goName <- filter(goId2Term, id == goId)[[1, "name"]]

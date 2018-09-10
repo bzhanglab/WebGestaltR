@@ -21,7 +21,7 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	candidates <- read_tsv(candidateFn, col_names=c("candidate", "score"), col_types="cd-")
 	candidates$score <- sprintf("%2.2E", candidates$score)
 
-	enrichment <- read_tsv(enrichFn, col_names=c("goId", "goName", "c", "o", "geneInfo", "expect", "ratio", "rawP", "adjP"), col_types=cols())
+	enrichment <- read_tsv(enrichFn, col_names=c("goId", "goName", "c", "o", "geneInfo", "expect", "ratio", "rawP", "adjP"), skip=1, col_types=cols())
 
 	summary <- readLines(summaryFn)
 
