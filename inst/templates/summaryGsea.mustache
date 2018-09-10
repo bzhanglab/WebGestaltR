@@ -6,38 +6,23 @@ The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these
 {{/organismIsOthers}}
 <b>Parameters for the enrichment analysis:</b>
 <ul><li><b>Minimum number of IDs in the category: </b>{{minNum}}</li>
-<li><b>Maximum number of IDs in the category:</b>{{maxNum}}</li>
+<li><b>Maximum number of IDs in the category: </b>{{maxNum}}</li>
 {{#methodIsFdr}}
-<li><b>Significance Level:</b> FDR<{{fdrThr}}</li>
+<li><b>Significance Level:</b> FDR < {{fdrThr}}</li>
 {{/methodIsFdr}}
 {{#methodIsTop}}
-<li><b>Significance Level:</b> Top{{topThr}}</li>
+<li><b>Significance Level:</b> Top {{topThr}}</li>
 {{/methodIsTop}}
 <li><b>Number of permutation: </b>{{perNum}}</li>
 <li><b>Number of categories with the outputted leading edge IDs: </b>{{lNum}}</li></ul>
 {{#hasEnrichedSig}}
-	{{#isPosRel}}
-		{{#showAllPos}}
-		Based on the above parameters, <b>{{numPosRel}} positive related </b>categories are identified as enriched categories and all are shown in this report.<br/>
-		{{/showAllPos}}
-		{{^showAllPos}}
-		Based on the above parameters, <b>{{numPosRel}} positive related </b>categories are identified as enriched categories, in which <b>{{dnum}}</b> most significant categories are shown in this report. All positive related significant categories can be downloaded from the 'Result Download' link.<br/>
-		{{/showAllPos}}
-	{{/isPosRel}}
-	{{^isPosRel}}
-	Based on the above parameters, <b>No positive related </b>category is identified as enriched category.<br/>
-	{{/isPosRel}}
-	{{#isNegRel}}
-		{{#showAllNeg}}
-		Based on the above parameters, <b>{{numNegRel}} negative related </b>categories are identified as enriched categories and all are shown in this report.<br/>
-		{{/showAllNeg}}
-		{{^showAllNeg}}
-		Based on the above parameters, <b>{{numNegRel}} negative related </b>categories are identified as enriched categories, in which <b>{{dNum}}</b> most significant categories are shown in this report. All positive related significant categories can be downloaded from the 'Result Download' link.<br/>
-		{{/showAllNeg}}
-	{{/isNegRel}}
-	{{^isNegRel}}
-	Based on the above parameters, <b>No negative related </b>category is identified as enriched category.<br/>
-	{{/isNegRel}}
+	Based on the above parameters, <b>{{#isPosRel}}{{numPosRel}}{{/isPosRel}}{{^isPosRel}}No{{/isPosRel}} positive related </b>categories and <b>{{#isNegRel}}{{numNegRel}}{{/isNegRel}}{{^isNegRel}}No{{/isNegRel}} negative related </b>categories are identified as enriched categories
+	{{#showAll}}
+	and all are shown in this report.
+	{{/showAll}}
+	{{^showAll}}
+	, in which <b>{{dNum}}</b> most significant categories are shown in this report. All significant categories can be downloaded from the 'Result Download' link.
+	{{/showAll}}
 {{/hasEnrichedSig}}
 {{^hasEnrichedSig}}
 Based on the above parameters, <b>No</b> category is identified as enriched category.<br/>

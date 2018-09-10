@@ -11,7 +11,7 @@ Among <b>{{numUniqueUserId}}</b> unique {{standardId}} IDs, <b>{{numAnnoRefUserI
 		<b>Reference list: </b> all mapped {{standardId}} IDs from the selected platform {{referenceSet}}<br/>
 		{{/hasRefGene}}
 	{{/hasRefGeneFile}}
-	The reference list can be mapped to <b>{{numRefGene}}</b> {{standardId}}IDs and <b> {{numAnnoRefId}}</b> IDs are annotated to the selected functional categories that are used as the reference for the enrichment analysis.<br/>
+	The reference list can be mapped to <b>{{numRefGene}}</b> {{standardId}} IDs and <b> {{numAnnoRefId}}</b> IDs are annotated to the selected functional categories that are used as the reference for the enrichment analysis.<br/>
 	{{/organismIsOthers}}
 {{#organismIsOthers}}
 The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these IDs are used to perform the enrichment analysis.<br/>
@@ -29,10 +29,10 @@ The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these
 <li><b>Maximum number of IDs in the category: </b>{{maxNum}}</li>
 <li><b>FDR Method: </b>{{fdrMethod}}</li>
 {{#methodIsFdr}}
-<li><b>Significance Level:</b> FDR<{{fdrThr}}</li>
+<li><b>Significance Level:</b> FDR < {{fdrThr}}</li>
 {{/methodIsFdr}}
 {{#methodIsTop}}
-<li><b>Significance Level:</b> Top{{topThr}}</li>
+<li><b>Significance Level:</b> Top {{topThr}}</li>
 {{/methodIsTop}}
 </ul>
 {{#hasEnrichedSig}}
@@ -40,7 +40,7 @@ The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these
 	Based on the above parameters, <b>{{numEnrichedSig}}</b> categories are identified as enriched categories and all are shown in this report.<br/>
 	{{/showAll}}
 	{{^showAll}}
-	Based on the above parameters, <b>{{numEnrichedSig}}</b>categories are identified as enriched categories, in which <b>{{dNum}}</b> most significant categories are shown in this report. All significant categories can be downloaded from the 'Result Download' link.<br/>
+	Based on the above parameters, <b>{{numEnrichedSig}}</b> categories are identified as enriched categories, in which <b>{{dNum}}</b> most significant categories are shown in this report. All significant categories can be downloaded from the 'Result Download' link.<br/>
 	{{/showAll}}
 {{/hasEnrichedSig}}
 {{^hasEnrichedSig}}

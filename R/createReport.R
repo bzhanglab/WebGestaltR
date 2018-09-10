@@ -17,6 +17,10 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 		#####Summary Tab########
 		tabsContent <- summaryDescription(timeStamp,organism,interestGeneFile,interestGene,interestGeneType,enrichMethod,enrichDatabase,enrichDatabaseFile,enrichDatabaseType,enrichDatabaseDescriptionFile,interestingGeneMap,referenceGeneList,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,perNum,lNum,geneSet)
 
+		if (sigMethod == "fdr" && dNum < nrow(enrichedSig)) {
+			enrichedSig <- enrichedSig[1:dNum, ]
+		}
+
 		###############Plot the mapping table######################
 		# tabsContent <- paste(tabsContent, mappingTableTab(interestingGeneMap), sep='\n')
 
@@ -54,6 +58,10 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 			numAnnoRefUserId <- length(intersect(interestingGeneMap, intersect(referenceGeneList, geneSet$gene)))
 		}
 		bodyContent <- summaryDescription(timeStamp,organism,interestGeneFile,interestGene,interestGeneType,enrichMethod,enrichDatabase,enrichDatabaseFile,enrichDatabaseType,enrichDatabaseDescriptionFile,interestingGeneMap,referenceGeneList,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,perNum,lNum,geneSet)
+
+		if (sigMethod == "fdr" && dNum < nrow(enrichedSig)) {
+			enrichedSig <- enrichedSig[1:dNum, ]
+		}
 
 		##############Enrich Result################
 		if(!is.null(enrichedSig)){

@@ -60,7 +60,7 @@ specificParameterSummaryOra <- function(organism,referenceGeneList,geneSet,refer
 		referenceGeneType=referenceGeneType, hasRefGene=!is.null(referenceGene), referenceSet=referenceSet,
 		numRefGene=length(referenceGeneList), numAnnoRefId=length(intersect(referenceGeneList,geneSet[,3])), minNum=minNum,
 		maxNum=maxNum, fdrMethod=fdrMethod, methodIsFdr=sigMethod=="fdr", methodIsTop=sigMethod=="top", fdrThr=fdrThr,
-		topThr=topThr, hasEnrichedSig=hasEnrichedSig, showAll=showAll, numEnrichedSig=numEnrichedSig
+		topThr=topThr, hasEnrichedSig=hasEnrichedSig, showAll=showAll, dNum=dNum, numEnrichedSig=numEnrichedSig
 		)
 	template <- readLines(system.file("templates/summaryOra.mustache", package="WebGestaltR"))
 	return(whisker.render(template, data))
@@ -84,7 +84,7 @@ specificParameterSummaryGsea <- function(organism,interestingGeneMap,geneSet,min
 	hasEnrichedSig <- !is.null(enrichedSig)
 	data <- list(organismIsOthers=organismIsOthers, numUniqueUserId=numUniqueUserId, standardId=standardId, numAnnoUserId=numAnnoUserId,
 		minNum=minNum, maxNum=maxNum, methodIsFdr=sigMethod=="fdr", methodIsTop=sigMethod=="top", fdrThr=fdrThr, topThr=topThr,
-		perNum=perNum, lNum=lNum, hasEnrichedSig=hasEnrichedSig
+		perNum=perNum, lNum=lNum, dNum=dNum, hasEnrichedSig=hasEnrichedSig
 		)
 
 	if(hasEnrichedSig){
@@ -92,8 +92,7 @@ specificParameterSummaryGsea <- function(organism,interestingGeneMap,geneSet,min
 		data$numNegRel <- nrow(filter(enrichedSig, NES<0))
 		data$isPosRel <- data$numPosRel>0
 		data$isNegRel <- data$numNegRel>0
-		data$showAllPos <- dNum>=data$numPosRel
-		data$showAllNeg <- dNum>=data$numNegRel
+		data$showAll <- dNum >= nrow(enrichedSig)
 	}
 
 	template <- readLines(system.file("templates/summaryGsea.mustache", package="WebGestaltR"))
