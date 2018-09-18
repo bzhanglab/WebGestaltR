@@ -1,0 +1,79 @@
+#' Affinity Propagation
+#' 
+#' Use affinity propagation to cluster similar gene sets to reduce redundancy in report.
+#'
+#' @param idsInSet A list of set names and their member IDs
+#' @param significance A vector of the same length used to assign input preference, i.e. -logP
+#' @return A list of \code{clusters} and \code{representatives} for each cluster
+#' \describe{
+#'  \item{clusters}{A list of character vectors of gene set IDs in each cluster}
+#'  \item{representatives}{A character vector of representatives for each cluster}
+#' }
+#' @importFrom apcluster apcluster
+#' @importFrom apcluster aggExCluster
+affinityPropagation <- function(idsInSet, significance) {
+	cat("Begin affinity propagation\n")
+	# compute the similiarity and input preference vector
+	ret <- jaccardSim(idsInSet, significance)
+
+	sim.mat <- ret$sim.mat
+	ip.vec <- ret$ip.vec
+
+	apRes <- apcluster(sim.mat,p=ip.vec)
+	#sort clusters to make exemplar the first member
+	clusters <- vector(mode="list", length(apRes@clusters))
+	for (i in 1:length(apRes@clusters)) {
+		exemplar <- apRes@exemplars[[i]]
+		clusters[[i]] <- apRes@clusters[[i]][order(apRes@clusters[[i]] == exemplar, decreasing=TRUE)]
+	}
+	return(list(clusters=sapply(clusters, names), representatives=names(apRes@exemplars)))
+}
+
+#' Jaccard Similarity
+#' 
+#' Calculate Jaccard Similarity
+#' 
+#' @inheritParams affinityPropagation
+#' @return A list of similarity matrix \code{sim.mat} and input preference vector \code{ip.vec}
+#' @importFrom proxy simil
+jaccardSim <- function(idsInSet, significance){
+	# first find out the union of sets, sorted
+	all.genes <- sort(unique(unlist(idsInSet)))
+	overlap.mat <- sapply(idsInSet, function(x) {as.integer(all.genes %in% x)})
+	# proxy::simil
+	sim.mat <- as.matrix(simil(overlap.mat, by_rows=FALSE, method="Jaccard"))
+	sim.mat[is.na(sim.mat)] <- 1
+	# if there is no overlap, set the similarity to -Inf
+	sim.mat[sim.mat == 0] <- -Inf
+	# check sim.mat to see if it is identical for each pair
+	if (max(sim.mat) == min(sim.mat)) {
+		# this will generate error, so randomy add some noise to off diagonal elements
+		mat.siz <- dim(sim.mat)[1]
+		rand.m <- matrix(rnorm(mat.siz*mat.siz,0,0.01),mat.siz)
+		# make it symmetric
+		rand.m[lower.tri(rand.m)] = t(rand.m)[lower.tri(rand.m)]
+		sim.mat <- sim.mat + rand.m
+		# make diagonal all 1
+		diag(sim.mat) <- 1
+	}
+	# set the input preference (IP) for each geneset
+	# give higher IP to geneset with larger -logP (remove sign)
+	# IP <- maxScore for geneset with largest -logP value
+	# IP <- minScore for geneset with smallest -logP value
+	# other genesets will have linearly interpolated IP value
+	max.sig <- max(significance)
+	min.sig <- min(significance)
+
+	# for Jaccard
+	minScore <- 0
+	tmp.sim.mat <- sim.mat
+	tmp.sim.mat[!is.finite(tmp.sim.mat)] <- NA
+	# get the median excluding -Inf
+	maxScore <- median(tmp.sim.mat, na.rm=TRUE)
+	if (abs(max.sig - min.sig) < .Machine$double.eps^0.5) {
+		ip.vec <- NA
+	} else{
+		ip.vec <- minScore + (maxScore-minScore) * (significance-min.sig) / (max.sig-min.sig)
+	}
+	return(list(sim.mat=sim.mat, ip.vec=ip.vec))
+}
