@@ -64,8 +64,16 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	if (!is.null(insig)) {
 		insig$leadingEdgeNum <- unname(sapply(insig$geneset, function(geneSet) {
 			rsum <- gseaRes$Running_Sums[, geneSet] # Running sum is a matrix of gene by gene set
-			maxIndex <- match(max(rsum), rsum)
-			return(sum(gseaRes$Items_in_Set[[geneSet]]$rank <= maxIndex))
+			maxPeak <- max(rsum)
+			minPeak <- min(rsum)
+			if (abs(maxPeak) >= abs(minPeak)) {
+				peakIndex <- match(max(rsum), rsum)
+				leadingEdgeNum <- sum(gseaRes$Items_in_Set[[geneSet]]$rank <= peakIndex)
+			} else {
+				peakIndex <- match(min(rsum), rsum)
+				leadingEdgeNum <- sum(gseaRes$Items_in_Set[[geneSet]]$rank >= peakIndex)
+			}
+			return(leadingEdgeNum)
 		}))
 	}
 	sig <- sig %>% left_join(geneSetName, by="geneset") %>%
@@ -76,12 +84,17 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	leadingGenes <- vector("character", numSig)
 	for (i in 1:numSig) {
 		geneSet <- sig[[i, "geneset"]]
+		es <- sig[[i, "ES"]]
+		genes <- gseaRes$Items_in_Set[[geneSet]] # rowname is gene and one column called rank
 		rsum <- gseaRes$Running_Sums[, geneSet]
-		maxIndex <- match(max(rsum), rsum)
-		indexes <- gseaRes$Items_in_Set[[geneSet]]$rank <= maxIndex
+		peakIndex <- match(ifelse(es > 0, max(rsum), min(rsum)), rsum)
+		if (es > 0) {
+			indexes <- genes$rank <= peakIndex
+		} else {
+			indexes <- genes$rank >= peakIndex
+		}
 		leadingGeneNum[[i]] <- sum(indexes)
-		leadingGenes[[i]] <- paste(rownames(gseaRes$Items_in_Set[[geneSet]])[indexes], collapse=";")
-		genes <- gseaRes$Items_in_Set[[geneSet]]
+		leadingGenes[[i]] <- paste(rownames(genes)[indexes], collapse=";")
 
 		# Plot GSEA-like enrichment plot
 		png(file.path(outputF, paste0(geneSet, ".png")), bg="transparent")
@@ -90,14 +103,14 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 		plot(1:length(gseaRes$Running_Sums[, geneSet]), gseaRes$Running_Sums[, geneSet],
 			type="l", main=paste0("Enrichment plot: ", geneSet),
 			xlab="", ylab="Enrichment Score", xaxt='n')
-		abline(v=maxIndex, lty=3)
+		abline(v=peakIndex, lty=3)
 		par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 5, 0, 3), new=TRUE)
 		plot(genes$rank, rep(1, nrow(genes)), type="h",
 			xlim=c(1, length(sortedScores)), ylim=c(0, 1), axes=FALSE, ann=FALSE)
 		par(fig=c(0, 1, 0, 0.35), mar=c(4, 5, 0, 3), new=TRUE)
 		plot(1:length(sortedScores), sortedScores, type="h",
 			ylab="Ranked list metric", xlab="Rank in Ordered Dataset")
-		abline(v=maxIndex, lty=3)
+		abline(v=peakIndex, lty=3)
 		dev.off()
 	}
 	sig$leadingEdgeNum <- leadingGeneNum
