@@ -74,7 +74,9 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 	inputGene$glink <- paste0("https://www.ncbi.nlm.nih.gov/gene/?term=", inputGene$entrezgene)
 
 	#############Output#######################
-	idMappingOutput(mappingOutput,outputFileName,unMapF,dataType,inputGene,sourceIdType,targetIdType)
+	if (mappingOutput) {
+		idMappingOutput(outputFileName, inputGene, unmappedIds, dataType, sourceIdType, targetIdType)
+	}
 	r <- list(mapped=inputGene,unmapped=unmappedIds)
 	return(r)
 }

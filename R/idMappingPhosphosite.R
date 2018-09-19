@@ -114,7 +114,9 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 	}
 
 	#############Output#######################
-	idMappingOutput(mappingOutput, outputFileName, unmappedIds, dataType, inputGene, sourceIdType, targetIdType=targetIdType)
+	if (mappingOutput) {
+		idMappingOutput(outputFileName, inputGene, unmappedIds, dataType, sourceIdType, targetIdType=targetIdType)
+	}
 	r <- list(mapped=inputGene,unmapped=unmappedIds)
 	return(r)
 }

@@ -67,7 +67,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 					return(re)
 				}
 			}
-			write_tsv(interestingGeneMap$mapped, file.path(projectDir, paste0("interestingID_Mappingtable_", timeStamp, ".txt")))
+			write_tsv(interestingGeneMap$mapped, file.path(projectDir, paste0("interestingID_mappingTable_", timeStamp, ".txt")))
 			write(interestingGeneMap$unmapped, file.path(projectDir, paste0("interestingID_unmappedList_", timeStamp, ".txt")))
 		}else{
 			write_tsv(interestGeneList, file.path(projectDir, paste0("interestList_", timeStamp, ".txt")), col_names=FALSE)

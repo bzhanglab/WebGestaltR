@@ -32,22 +32,20 @@ identifyStandardId <- function(hostName,idType,organism,type){
 }
 
 
-idMappingOutput <- function(mappingOutput,outputFileName,unMapF,dataType,mappingList,sourceIdType,targetIdType){
-	if(mappingOutput==TRUE){
-		if(length(unMapF)>0){
-			write(unMapF, paste0(outputFileName, "_unmappedList.txt"))
-		}
-		if (dataType == "list" | dataType == "rnk") {
-			dataType = "txt"
-		}
-		fileName <- paste0(outputFileName, "_mappedList_from_", sourceIdType, "_to_", targetIdType, ".", dataType)
-		if(dataType=="gmt"){
-			genes <- tapply(mappingList[[targetIdType]], mappingList$geneset, paste, collapse="\t")
-			gmtDf <- mappingList %>% select(geneset, link) %>% distinct()
-			gmtDf$genes = genes[gmtDf$geneset]
-			write_tsv(gmtDf, fileName, col_names=FALSE)
-		}else{
-			write_tsv(mappingList, fileName)
-		}
+idMappingOutput <- function(outputFileName, mappingList, unmappedList, dataType, sourceIdType, targetIdType) {
+	if (length(unmappedList)>0) {
+		write(unmappedList, paste0(outputFileName, "_unmappedList.txt"))
+	}
+	if (dataType == "list" | dataType == "rnk") {
+		dataType = "txt"
+	}
+	fileName <- paste0(outputFileName, "_mappedList_from_", sourceIdType, "_to_", targetIdType, ".", dataType)
+	if(dataType=="gmt"){
+		genes <- tapply(mappingList[[targetIdType]], mappingList$geneset, paste, collapse="\t")
+		gmtDf <- mappingList %>% select(geneset, link) %>% distinct()
+		gmtDf$genes = genes[gmtDf$geneset]
+		write_tsv(gmtDf, fileName, col_names=FALSE)
+	}else{
+		write_tsv(mappingList, fileName)
 	}
 }
