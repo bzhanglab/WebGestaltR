@@ -1,12 +1,12 @@
-createReport <- function(hostName, outputDirectory, organism="hsapiens", timeStamp, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet, interestingGeneMap, referenceGeneList, enrichedSig, geneTables, background, enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, lNum=20, dagColor="binary"){
+createReport <- function(hostName, outputDirectory, organism="hsapiens", projectName, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet, interestingGeneMap, referenceGeneList, enrichedSig, geneTables, background, enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, lNum=20, dagColor="binary"){
 
-	outputHtmlFile <- file.path(outputDirectory,paste("Project_",timeStamp,sep=""),paste("Report_",timeStamp,".html",sep=""))
+	outputHtmlFile <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, ".html"))
 
 	# if hostname starts with "file://", it is used as WebGestaltReporter
 	# all web assets are avaialble inside a parent directory called "assets"
 	## TODO: FIXME
 	if(length(grep("file://", hostName, fixed=TRUE))==1){
-		#file.symlink("../assets", file.path(outputDirectory, paste("Project_",timeStamp,sep=""),"assets"))
+		#file.symlink("../assets", file.path(outputDirectory, paste("Project_",projectName,sep=""),"assets"))
 		#hostName <- "assets"
 		hostName <- "https://s3-us-west-2.amazonaws.com/webgestalt/assets"
 	}
@@ -15,7 +15,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 	dagJson <- NULL
 	if(organism!="others"){
 		#####Summary Tab########
-		tabsContent <- summaryDescription(timeStamp,organism,interestGeneFile,interestGene,interestGeneType,enrichMethod,enrichDatabase,enrichDatabaseFile,enrichDatabaseType,enrichDatabaseDescriptionFile,interestingGeneMap,referenceGeneList,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,perNum,lNum,geneSet)
+		tabsContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, lNum, geneSet)
 
 		if (sigMethod == "fdr" && dNum < nrow(enrichedSig)) {
 			enrichedSig <- enrichedSig[1:dNum, ]
@@ -28,7 +28,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 		}
 		###########GOSlim summary#########################
 		if(standardId=="entrezgene"){
-			tabsContent <- paste(tabsContent, goSlimReport(timeStamp), sep='\n')
+			tabsContent <- paste(tabsContent, goSlimReport(projectName), sep='\n')
 		}
 
 		############Enrichment result##################
@@ -49,7 +49,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 		if (enrichMethod == 'ORA') {
 			numAnnoRefUserId <- length(intersect(interestingGeneMap, intersect(referenceGeneList, geneSet$gene)))
 		}
-		bodyContent <- summaryDescription(timeStamp,organism,interestGeneFile,interestGene,interestGeneType,enrichMethod,enrichDatabase,enrichDatabaseFile,enrichDatabaseType,enrichDatabaseDescriptionFile,interestingGeneMap,referenceGeneList,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,perNum,lNum,geneSet)
+		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, lNum, geneSet)
 
 		if (sigMethod == "fdr" && dNum < nrow(enrichedSig)) {
 			enrichedSig <- enrichedSig[1:dNum, ]

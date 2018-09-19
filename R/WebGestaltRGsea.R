@@ -2,12 +2,10 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	enrichMethod <- "GSEA"
 
 	if(is.null(projectName)){
-		timeStamp <- as.character(as.integer(Sys.time()))
-	}else{
-		timeStamp <- projectName
+		projectName <- as.character(as.integer(Sys.time()))
 	}
 
-	projectDir <- file.path(outputDirectory,paste("Project_",timeStamp,sep=""))
+	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
 	#########Web server will input "NULL" to the R package, thus, we need to change "NULL" to NULL########
 	enrichDatabase <- testNull(enrichDatabase)
@@ -61,23 +59,23 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 		if(organism!="others"){
 			if(databaseStandardId=="entrezgene"){
 				cat("Summarize the uploaded ID list by GO Slim data...\n")
-				goSlimOutput <- file.path(projectDir,paste("goslim_summary_",timeStamp,sep=""))
+				goSlimOutput <- file.path(projectDir, paste0("goslim_summary_", projectName))
 				re <- goSlimSummary(organism=organism,geneList=interestGeneList[[interestStandardId]],outputFile=goSlimOutput,outputType="png",hostName=hostName)
 				if(.hasError(re)){
 					return(re)
 				}
 			}
-			write_tsv(interestingGeneMap$mapped, file.path(projectDir, paste0("interestingID_mappingTable_", timeStamp, ".txt")))
-			write(interestingGeneMap$unmapped, file.path(projectDir, paste0("interestingID_unmappedList_", timeStamp, ".txt")))
+			write_tsv(interestingGeneMap$mapped, file.path(projectDir, paste0("interestingID_mappingTable_", projectName, ".txt")))
+			write(interestingGeneMap$unmapped, file.path(projectDir, paste0("interestingID_unmappedList_", projectName, ".txt")))
 		}else{
-			write_tsv(interestGeneList, file.path(projectDir, paste0("interestList_", timeStamp, ".txt")), col_names=FALSE)
+			write_tsv(interestGeneList, file.path(projectDir, paste0("interestList_", projectName, ".txt")), col_names=FALSE)
 		}
 	}
 
 	#############Run enrichment analysis###################
 	cat("Perform the enrichment analysis...\n")
 
-	gseaRes <- gseaEnrichment(hostName, outputDirectory, timeStamp, interestGeneList,
+	gseaRes <- gseaEnrichment(hostName, outputDirectory, projectName, interestGeneList,
 		geneSet, minNum=minNum, maxNum=maxNum, sigMethod=sigMethod, fdrThr=fdrThr,
 		topThr=topThr, perNum=perNum, lNum=lNum, isOutput=isOutput
 	)
@@ -112,18 +110,18 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 			} else {
 				outputEnrichedSig <- enrichedSig
 			}
-			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", timeStamp, ".txt")))
+			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
 		}
 	}
 
 	if(isOutput==TRUE){
 		##############Create report##################
 		cat("Generate the final report...\n")
-		createReport(hostName=hostName, outputDirectory=outputDirectory, organism=organism, timeStamp=timeStamp, enrichMethod=enrichMethod, geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet, interestingGeneMap=interestingGeneMap, enrichedSig=enrichedSig, geneTables=geneTables, background=insig, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, perNum=perNum, lNum=lNum, dagColor=dagColor)
+		createReport(hostName=hostName, outputDirectory=outputDirectory, organism=organism, projectName=projectName, enrichMethod=enrichMethod, geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet, interestingGeneMap=interestingGeneMap, enrichedSig=enrichedSig, geneTables=geneTables, background=insig, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, perNum=perNum, lNum=lNum, dagColor=dagColor)
 
 		cwd <- getwd()
 		setwd(projectDir)
-		zip(paste0("Project_", timeStamp, ".zip"), ".", flags="-rq")
+		zip(paste0("Project_", projectName, ".zip"), ".", flags="-rq")
 		setwd(cwd)
 
 		cat("Results can be found in the ", projectDir, "!\n", sep="")

@@ -2,12 +2,10 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 	enrichMethod <- "ORA"
 
 	if(is.null(projectName)){
-		timeStamp <- as.character(as.integer(Sys.time()))
-	}else{
-		timeStamp <- projectName
+		projectName <- as.character(as.integer(Sys.time()))
 	}
 
-	projectDir <- file.path(outputDirectory,paste("Project_",timeStamp,sep=""))
+	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
 	#########Web server will input "NULL" to the R package, thus, we need to change "NULL" to NULL########
 	enrichDatabase <- testNull(enrichDatabase)
@@ -73,16 +71,16 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 		if(organism!="others"){
 			if(databaseStandardId=="entrezgene"){
 				cat("Summarize the uploaded ID list by GO Slim data...\n")
-				goSlimOutput <- file.path(projectDir,paste("goslim_summary_",timeStamp,sep=""))
+				goSlimOutput <- file.path(projectDir, paste0("goslim_summary_", projectName))
 				re <- goSlimSummary(organism=organism,geneList=interestGeneList,outputFile=goSlimOutput,outputType="png",hostName=hostName)
 				if(.hasError(re)){
 					return(re)
 				}
 			}
-			write_tsv(interestingGeneMap$mapped, file.path(projectDir, paste0("interestingID_mappingTable_", timeStamp , ".txt")))
-			write(interestingGeneMap$unmapped, file.path(projectDir, paste0("interestingID_unmappedList_", timeStamp, ".txt")))
+			write_tsv(interestingGeneMap$mapped, file.path(projectDir, paste0("interestingID_mappingTable_", projectName , ".txt")))
+			write(interestingGeneMap$unmapped, file.path(projectDir, paste0("interestingID_unmappedList_", projectName, ".txt")))
 		}else{
-			write(interestGeneList, file.path(projectDir, paste0("interestList_", timeStamp, ".txt")))
+			write(interestGeneList, file.path(projectDir, paste0("interestList_", projectName, ".txt")))
 		}
 	}
 
@@ -124,11 +122,11 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 			} else {
 				outputEnrichedSig <- enrichedSig
 			}
-			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", timeStamp, ".txt")))
+			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
 			idsInSet <- sapply(enrichedSig$overlapID, strsplit, split=";")
 			names(idsInSet) <- enrichedSig$geneset
 			apRes <- affinityPropagation(idsInSet, enrichedSig$PValue)
-			writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", timeStamp, ".txt")))
+			writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
 		}
 	}
 
@@ -136,11 +134,11 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 
 	##############Create report##################
 		cat("Generate the final report...\n")
-		createReport(hostName=hostName, outputDirectory=outputDirectory, organism=organism, timeStamp=timeStamp, enrichMethod=enrichMethod, geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet, interestingGeneMap=interestingGeneMap, referenceGeneList=referenceGeneList, enrichedSig=enrichedSig, background=insig, geneTables=geneTables, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, dagColor=dagColor)
+		createReport(hostName=hostName, outputDirectory=outputDirectory, organism=organism, projectName=projectName, enrichMethod=enrichMethod, geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet, interestingGeneMap=interestingGeneMap, referenceGeneList=referenceGeneList, enrichedSig=enrichedSig, background=insig, geneTables=geneTables, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, dagColor=dagColor)
 
 		cwd <- getwd()
 		setwd(projectDir)
-		zip(paste0("Project_", timeStamp, ".zip"), ".", flags="-rq")
+		zip(paste0("Project_", projectName, ".zip"), ".", flags="-rq")
 		setwd(cwd)
 
 		cat("Results can be found in the ", projectDir, "!\n", sep="")
