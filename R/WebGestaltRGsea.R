@@ -108,7 +108,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 
 		if(isOutput==TRUE){
 			if(organism!="others" && interestGeneType!=interestStandardId){
-				outputEnrichedSig <- mapUserId(enrichedSig,"leadingEdgeID",interestingGeneMap)  ###mapUserId function is in the enrichmentResultProcess_component file
+				outputEnrichedSig <- mapUserId(enrichedSig, "leadingEdgeID", interestingGeneMap)
 			} else {
 				outputEnrichedSig <- enrichedSig
 			}

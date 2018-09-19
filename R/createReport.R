@@ -21,9 +21,6 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 			enrichedSig <- enrichedSig[1:dNum, ]
 		}
 
-		###############Plot the mapping table######################
-		# tabsContent <- paste(tabsContent, mappingTableTab(interestingGeneMap), sep='\n')
-
 		standardId <- interestingGeneMap$standardId
 		if (enrichMethod == 'ORA') {
 			interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
@@ -44,12 +41,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", timeSta
 				dagJson <- toJSON(unname(c(dagEdges, dagNodes)))
 
 			}
-			# tabsContent <- paste(tabsContent, enrichResultTabCategoryViz(outputHtmlFile,organism,enrichMethod,fdrMethod,enrichedSig,dNum,geneSetDag,geneSetDes,geneSetNet,outputDirectory,timeStamp,dagColor,hostName,interestingGeneMap,enrichDatabase), sep='\n')
 		}
-
-		#template <- readLines(system.file("templates/tab.mustache", package="WebGestaltR"))
-		#data <- list(hasEnrichedSig=!is.null(enrichedSig), idIsEntrezGene=interestingGeneMap$standardId=="entrezgene", tabsContent=tabsContent)
-		#bodyContent <- whisker.render(template, data)
 		bodyContent <- tabsContent
 	}else{
 		###########Organism is others. No mapping information#############
