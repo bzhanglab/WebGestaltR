@@ -41,9 +41,9 @@ idMappingOutput <- function(outputFileName, mappingList, unmappedList, dataType,
 	}
 	fileName <- paste0(outputFileName, "_mappedList_from_", sourceIdType, "_to_", targetIdType, ".", dataType)
 	if(dataType=="gmt"){
-		genes <- tapply(mappingList[[targetIdType]], mappingList$geneset, paste, collapse="\t")
-		gmtDf <- mappingList %>% select(geneset, link) %>% distinct()
-		gmtDf$genes = genes[gmtDf$geneset]
+		genes <- tapply(mappingList[[targetIdType]], mappingList$geneSet, paste, collapse="\t")
+		gmtDf <- mappingList %>% select(geneSet, link) %>% distinct()
+		gmtDf$genes = genes[gmtDf$geneSet]
 		write_tsv(gmtDf, fileName, col_names=FALSE)
 	}else{
 		write_tsv(mappingList, fileName)

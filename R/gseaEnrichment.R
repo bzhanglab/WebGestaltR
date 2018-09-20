@@ -7,7 +7,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	colnames(geneRankList) <- c("gene", "score")
 	sortedScores <- sort(geneRankList$score, decreasing=TRUE)
 
-	geneSetName <- geneSet %>% select(geneset=geneSet, link=description) %>% distinct()
+	geneSetName <- geneSet %>% select(geneSet, link=description) %>% distinct()
 	effectiveGeneSet <- geneSet %>% filter(gene %in% geneRankList$gene)
 
 	geneSetNum <- tapply(effectiveGeneSet$gene, effectiveGeneSet$geneSet, length)
@@ -38,15 +38,15 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 		nThreads=8, rng_seed=as.integer(format(Sys.time(), "%H%M%S"))
 	)
 	enrichRes <- gseaRes$Enrichment_Results %>%
-		mutate(geneset = rownames(gseaRes$Enrichment_Results)) %>%
-		select(geneset, ES, NES, PValue=p_val, FDR=fdr)
+		mutate(geneSet = rownames(gseaRes$Enrichment_Results)) %>%
+		select(geneSet, ES, NES, pValue=p_val, FDR=fdr)
 	# TODO: handle errors
 
 	if (sigMethod == "fdr") {
 		sig <- filter(enrichRes, FDR < fdrThr)
 		insig <- filter(enrichRes, FDR >= fdrThr)
 	} else if (sigMethod == "top") {
-		enrichRes <- arrange(enrichRes, FDR, PValue)
+		enrichRes <- arrange(enrichRes, FDR, pValue)
 		if (nrow(enrichRes) > topThr) {
 			sig <- enrichRes[1: topThr, ]
 			insig <- enrichRes[(topThr+1):nrow(enrichRes), ]
@@ -57,12 +57,13 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	}
 	numSig = nrow(sig)
 	if (numSig == 0) {
-		cat("No significant set is identified based on FDR ", fdrThr, "!", sep="")
-		return()
+		error <- paste0("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
+		cat(error)
+		return(error)
 	}
 
 	if (!is.null(insig)) {
-		insig$leadingEdgeNum <- unname(sapply(insig$geneset, function(geneSet) {
+		insig$leadingEdgeNum <- unname(sapply(insig$geneSet, function(geneSet) {
 			rsum <- gseaRes$Running_Sums[, geneSet] # Running sum is a matrix of gene by gene set
 			maxPeak <- max(rsum)
 			minPeak <- min(rsum)
@@ -76,14 +77,14 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 			return(leadingEdgeNum)
 		}))
 	}
-	sig <- sig %>% left_join(geneSetName, by="geneset") %>%
-		mutate(Size = unname(sapply(geneset, function(x) nrow(gseaRes$Items_in_Set[[x]])))) %>%
-		mutate(plotPath = unname(sapply(geneset, function(x) file.path(relativeF, paste0(x, ".png")))))
+	sig <- sig %>% left_join(geneSetName, by="geneSet") %>%
+		mutate(size = unname(sapply(geneSet, function(x) nrow(gseaRes$Items_in_Set[[x]])))) %>%
+		mutate(plotPath = unname(sapply(geneSet, function(x) file.path(relativeF, paste0(x, ".png")))))
 
 	leadingGeneNum <- vector("integer", numSig)
 	leadingGenes <- vector("character", numSig)
 	for (i in 1:numSig) {
-		geneSet <- sig[[i, "geneset"]]
+		geneSet <- sig[[i, "geneSet"]]
 		es <- sig[[i, "ES"]]
 		genes <- gseaRes$Items_in_Set[[geneSet]] # rowname is gene and one column called rank
 		rsum <- gseaRes$Running_Sums[, geneSet]
@@ -114,7 +115,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 		dev.off()
 	}
 	sig$leadingEdgeNum <- leadingGeneNum
-	sig$leadingEdgeID <- leadingGenes
+	sig$leadingEdgeId <- leadingGenes
 
 	return(list(enriched=sig, background=insig))
 }

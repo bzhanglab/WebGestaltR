@@ -18,7 +18,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 							return(geneSet)
 						}
 						standardId <- geneSet$standardId
-						geneSet <- geneSet$mapped %>% select(geneSet=geneset, description, gene=entrezgene) %>% distinct()
+						geneSet <- geneSet$mapped %>% select(geneSet, description, gene=entrezgene) %>% distinct()
 						if(!is.null(enrichDatabaseDescriptionFile)){     ##upload description file
 							geneSetDes <- .loadEnrichDatabaseDescriptionFile(geneSet,enrichDatabaseDescriptionFile)
 							if(.hasError(geneSetDes)){
@@ -38,7 +38,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 			standardId <- filter(geneSetInfo, name==enrichDatabase)[[1, "idType"]]  # get the ID type of the enriched database, such as entrezgene or phosphsiteSeq
 
 			#########Read GMT file from the existing database###########
-			gmtUrl <- modify_url(file.path(hostName,"api","geneset"), query=list(organism=organism, database=enrichDatabase, standardid=standardId, filetype="gmt"))
+			gmtUrl <- modify_url(file.path(hostName,"api","geneset"), query=list(organism=organism, database=enrichDatabase, standardId=standardId, fileType="gmt"))
 			geneSet <- readGmt(gmtUrl)
 
 			if(.hasError(geneSet)){
@@ -61,7 +61,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 				return(geneSet)
 			}
 			if(!is.null(enrichDatabaseDescriptionFile)){     ##upload description file
-				geneSetDes <- .loadEnrichDatabaseDescriptionFile(geneSet,enrichDatabaseDescriptionFile)
+				geneSetDes <- .loadEnrichDatabaseDescriptionFile(geneSet, enrichDatabaseDescriptionFile)
 				if(.hasError(geneSetDes)){
 					return(geneSetDes)
 				}
@@ -76,9 +76,9 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 }
 
 .loadGeneSetData <- function(hostName, organism, database, standardId, fileType) {
-	# read geneset files from API or returns NULL
+	# read gene set files from API or returns NULL
 	geneSetUrl <- file.path(hostName,"api","geneset")
-	response <- GET(geneSetUrl, query=list(organism=organism, database=database, standardid=standardId, filetype=fileType))
+	response <- GET(geneSetUrl, query=list(organism=organism, database=database, standardId=standardId, fileType=fileType))
 	if (response$status_code == 200) {
 		geneSetData <- read_tsv(content(response), col_names=FALSE, col_types="cc")
 	} else {
@@ -87,15 +87,15 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 	return(geneSetData)
 }
 
-.loadEnrichDatabaseDescriptionFile <- function(geneSet,enrichDatabaseDescriptionFile){
+.loadEnrichDatabaseDescriptionFile <- function(geneSet, enrichDatabaseDescriptionFile){
 	if(file_extension(enrichDatabaseDescriptionFile)!="des"){
 		return(descriptionFileError("format"))
 	}else{
-		geneSetDes <- read_tsv(enrichDatabaseDescriptionFile, col_names=c("geneset","description"), col_types="cc")
+		geneSetDes <- read_tsv(enrichDatabaseDescriptionFile, col_names=c("geneSet", "description"), col_types="cc")
 		if(ncol(geneSetDes)!=2){
 			return(descriptionFileError("columnNum"))
 		}else{
-			if(length(intersect(unique(geneSet$geneSet), geneSetDes$geneset)) < 0.6 * length(unique(geneSet[,1]))){
+			if(length(intersect(unique(geneSet$geneSet), geneSetDes$geneSet)) < 0.6 * length(unique(geneSet[,1]))){
 				return(descriptionFileError("overlap"))
 			}else{
 				return(geneSetDes)

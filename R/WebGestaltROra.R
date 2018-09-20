@@ -100,32 +100,32 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 
 	if(!is.null(enrichedSig)){
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
-			colnames(geneSetDes) <- c("geneset","description")
+			colnames(geneSetDes) <- c("geneSet", "description")
 			enrichedSig <- enrichedSig %>%
-				left_join(geneSetDes, by="geneset") %>%
-				select(geneset, description, link, C, O, E, R, PValue, FDR, overlapID) %>%
-				arrange(FDR, PValue)
+				left_join(geneSetDes, by="geneSet") %>%
+				select(geneSet, description, link, C, O, E, R, pValue, FDR, overlapId) %>%
+				arrange(FDR, pValue)
 		}
 
 
-		geneTables <- getGeneTables(organism, enrichedSig, "overlapID", interestingGeneMap)
+		geneTables <- getGeneTables(organism, enrichedSig, "overlapId", interestingGeneMap)
 		if (organism != "others") {
 			enrichedSig$link <- mapply(function(link, geneList) linkModification(enrichDatabase, link, geneList, interestingGeneMap),
 				enrichedSig$link,
-				enrichedSig$overlapID
+				enrichedSig$overlapId
 			)
 		}
 
 		if(isOutput==TRUE){
 			if(organism!="others" && interestGeneType!=interestStandardId){
-				outputEnrichedSig <- mapUserId(enrichedSig, "overlapID", interestingGeneMap)
+				outputEnrichedSig <- mapUserId(enrichedSig, "overlapId", interestingGeneMap)
 			} else {
 				outputEnrichedSig <- enrichedSig
 			}
 			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
-			idsInSet <- sapply(enrichedSig$overlapID, strsplit, split=";")
-			names(idsInSet) <- enrichedSig$geneset
-			apRes <- affinityPropagation(idsInSet, enrichedSig$PValue)
+			idsInSet <- sapply(enrichedSig$overlapId, strsplit, split=";")
+			names(idsInSet) <- enrichedSig$geneSet
+			apRes <- affinityPropagation(idsInSet, enrichedSig$pValue)
 			writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
 		}
 	}

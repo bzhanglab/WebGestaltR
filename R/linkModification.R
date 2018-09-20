@@ -21,7 +21,7 @@ keggLinkModification <- function(enrichPathwayLink,geneList){
 wikiLinkModification <- function(enrichPathwayLink,geneList,interestingGeneMap){
 	geneMap <- interestingGeneMap$mapped
 	geneList <- unlist(strsplit(geneList,";"))
-	geneSymbol <- geneMap$genesymbol[geneMap$entrezgene %in% geneList]
+	geneSymbol <- geneMap$geneSymbol[geneMap$entrezgene %in% geneList]
 	for(i in c(1:length(geneSymbol))){
 		enrichPathwayLink <- paste(enrichPathwayLink,"&label[]=",geneSymbol[i],sep="")
 	}

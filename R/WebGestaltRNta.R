@@ -9,7 +9,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	inputGene <- formatCheck("list", inputGeneFile=inputSeedFile, inputGene=inputSeed)
 
 	geneSetUrl <- file.path(hostName, "api", "geneset")
-	response <- GET(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardid="entrezgene", filetype="dag"))
+	response <- GET(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="entrezgene", fileType="dag"))
 	dagInfo <- read_tsv(content(response), col_names=c("source", "target"), col_types="cc")
 
 	## networks <- unlist(strsplit(network, ",", fixed=TRUE))
@@ -47,7 +47,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	}
 
 	response <- POST(geneSetUrl, body=list(organism=organism, database="geneontology_Biological_Process",
-		filetype="des", ids=goTermList), encode="json")
+		fileType="des", ids=goTermList), encode="json")
 	goId2Term <- read_tsv(content(response), col_names=c("id", "name"), col_types="cc")
 
 	jsonFile <- file.path(projectDir, paste0(fileName, ".json"));

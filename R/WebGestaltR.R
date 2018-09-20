@@ -7,6 +7,7 @@ WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase=
 	if ('is.output' %in% names(extraArgs)) {
 		isOutput <- extraArgs$is.output
 		cat("WARNING: Parameter is.output is deprecated and changed to isOutput!\n")
+		warning("Column names of the result data frame are modified.")
 	}
 	if ('methodType' %in% names(extraArgs)) {
 		cat("WARNING: Parameter methodType is obsolete.\n")

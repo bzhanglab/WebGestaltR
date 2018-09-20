@@ -49,7 +49,7 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 					return(referenceGeneError(type="existingRef"))
 				}
 				refStandardId <- identifyStandardId(hostName=hostName,idType=referenceSet,organism=organism,type="reference")
-				response <- GET(file.path(hostName, "api", "reference"), query=list(organism=organism, referenceset=referenceSet, standardid=refStandardId))
+				response <- GET(file.path(hostName, "api", "reference"), query=list(organism=organism, referenceSet=referenceSet, standardId=refStandardId))
 				if (response$status_code != 200) {
 					return(webRequestError(response))
 				}

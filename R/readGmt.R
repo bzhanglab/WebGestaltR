@@ -43,7 +43,7 @@ prepareInputMatrixGsea <- function(rank, gmt) {
 	# gmt is 3 column Data Frame of geneSet, geneSetLink, and gene
 	geneSets <- (gmt %>% select(geneSet, description) %>% distinct())$geneSet
 	genes <- rank$gene
-	# 0 or 1 matrix indicating gene and geneset relationship
+	# 0 or 1 matrix indicating gene and gene set relationship
 	relDf <- as.data.frame(matrix(0, nrow=length(genes), ncol=length(geneSets), dimnames=list(genes, geneSets)))
 	for (i in 1:nrow(gmt)) {
 		if (gmt[i, "gene"] %in% genes) {

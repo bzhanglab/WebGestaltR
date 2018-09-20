@@ -1,12 +1,12 @@
 randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, seedNum, sigMethod, fdrThr, topThr, projectDir, projectName, hostName) {
 	fileName <- paste(projectName, network, method, sep=".")
 	geneSetUrl <- file.path(hostName, "api", "geneset")
-	response <- GET(geneSetUrl, query=list(organism=organism, database=network, standardid="entrezgene", filetype="net"))
+	response <- GET(geneSetUrl, query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
 	net <- as.matrix(read_tsv(content(response), col_names=FALSE, col_types="cc"))
 	netGraph <- graph.edgelist(net, directed=FALSE)
 	netNode <- V(netGraph)$name
 
-	gmtUrl <- modify_url(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardid="genesymbol", filetype="gmt"))
+	gmtUrl <- modify_url(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="genesymbol", fileType="gmt"))
 	goAnn <- readGmt(gmtUrl)
 
 	cat("Start Random Walk...\n")
@@ -112,7 +112,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 
 	geneSetUrl <- file.path(hostName, "api", "geneset")
 	response <- POST(geneSetUrl, body=list(organism=organism, database="geneontology_Biological_Process",
-		filetype="des", ids=unique(annRef$geneSet)), encode="json")
+		fileType="des", ids=unique(annRef$geneSet)), encode="json")
 	refTermName <- read_tsv(content(response), col_names=c("id", "name"), col_types="cc") %>%
 		filter(id %in% names(refTermCount))
 
@@ -139,10 +139,10 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	refInterestTermCount <- refInterestTermCount %>%
 		mutate(expect = (allInterestNum / allRefNum) *refNum,
 			ratio = interestNum / expect,
-			PValue = 1 - phyper(interestNum - 1, allInterestNum, allRefNum - allInterestNum, refNum, lower.tail=TRUE, log.p=FALSE),
-			FDR = p.adjust(PValue, method="BH")
+			pValue = 1 - phyper(interestNum - 1, allInterestNum, allRefNum - allInterestNum, refNum, lower.tail=TRUE, log.p=FALSE),
+			FDR = p.adjust(pValue, method="BH")
 		) %>%
-		arrange(FDR, PValue)
+		arrange(FDR, pValue)
 
 
 	if(sigMethod=="fdr"){

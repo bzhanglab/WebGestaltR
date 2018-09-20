@@ -89,24 +89,24 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 
 	if(!is.null(enrichedSig)){
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
-			colnames(geneSetDes) <- c("geneset","description")
+			colnames(geneSetDes) <- c("geneSet", "description")
 			enrichedSig <- enrichedSig %>%
-				left_join(geneSetDes, by="geneset") %>%
-				select(geneset, description, ES, NES, PValue, FDR, link, Size, plotPath, leadingEdgeNum, leadingEdgeID) %>%
-				arrange(FDR, PValue)
+				left_join(geneSetDes, by="geneSet") %>%
+				select(geneSet, description, ES, NES, pValue, FDR, link, size, plotPath, leadingEdgeNum, leadingEdgeId) %>%
+				arrange(FDR, pValue)
 		}
 
-		geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeID", interestingGeneMap)
+		geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
 		if (organism != "others") {
 			enrichedSig$link <- mapply(function(link, geneList) linkModification(enrichDatabase, link, geneList, interestingGeneMap),
 				enrichedSig$link,
-				enrichedSig$leadingEdgeID
+				enrichedSig$leadingEdgeId
 			)
 		}
 
 		if(isOutput==TRUE){
 			if(organism!="others" && interestGeneType!=interestStandardId){
-				outputEnrichedSig <- mapUserId(enrichedSig, "leadingEdgeID", interestingGeneMap)
+				outputEnrichedSig <- mapUserId(enrichedSig, "leadingEdgeId", interestingGeneMap)
 			} else {
 				outputEnrichedSig <- enrichedSig
 			}

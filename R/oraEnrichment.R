@@ -28,25 +28,25 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 
 	###############Enrichment analysis###################
 	ra <- length(interestGene)/length(referenceGene)
-	refG <- data.frame(geneset=names(geneSetNum),C=unname(geneSetNum),stringsAsFactors=FALSE)
+	refG <- data.frame(geneSet=names(geneSetNum), C=unname(geneSetNum), stringsAsFactors=FALSE)
 
 	intG <- filter(geneSet, gene %in% interestGene)
 	intGNum <- tapply(intG$gene, intG$geneSet, length)
-	intGNum <- data.frame(geneset=names(intGNum),O=unname(intGNum),stringsAsFactors=FALSE)
+	intGNum <- data.frame(geneSet=names(intGNum), O=unname(intGNum), stringsAsFactors=FALSE)
 
 	intGId <- tapply(intG$gene, intG$geneSet, paste, collapse=";")
-	intGId <- data.frame(geneset=names(intGId), overlapID=unname(intGId), stringsAsFactors=FALSE)
+	intGId <- data.frame(geneSet=names(intGId), overlapId=unname(intGId), stringsAsFactors=FALSE)
 
 	enrichedResult <- geneSet %>% filter(!is.na(geneSet)) %>%
-		select(geneset=geneSet, link=description) %>% distinct() %>%
-		left_join(refG, by="geneset") %>%
-		left_join(intGNum, by="geneset") %>% # this may just be inner_join. O is NA should not be meaningful anyway
+		select(geneSet, link=description) %>% distinct() %>%
+		left_join(refG, by="geneSet") %>%
+		left_join(intGNum, by="geneSet") %>% # this may just be inner_join. O is NA should not be meaningful anyway
 		mutate(O=ifelse(is.na(O), 0, O), E=C*ra, R=O/E,
-			   PValue=1-phyper(O-1, length(interestGene), length(referenceGene)-length(interestGene), C, lower.tail=TRUE, log.p=FALSE),
-			   FDR=p.adjust(PValue, method=fdrMethod)
+			   pValue=1-phyper(O-1, length(interestGene), length(referenceGene)-length(interestGene), C, lower.tail=TRUE, log.p=FALSE),
+			   FDR=p.adjust(pValue, method=fdrMethod)
 		) %>%
-		left_join(intGId, by="geneset") %>%
-		arrange(FDR, PValue)
+		left_join(intGId, by="geneSet") %>%
+		arrange(FDR, pValue)
 
 	if(sigMethod=="fdr"){
 		enrichedResultSig <- filter(enrichedResult, FDR<fdrThr)
@@ -54,7 +54,7 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 			cat("No significant gene set is identified based on FDR ",fdrThr,"!",sep="")
 			return(NULL)
 		}else{
-			enrichedResultInsig <- enrichedResult %>% filter(FDR>=fdrThr, O!=0) %>% select(geneset, R, FDR, O)
+			enrichedResultInsig <- enrichedResult %>% filter(FDR>=fdrThr, O!=0) %>% select(geneSet, R, FDR, O)
 			return(list(enriched=enrichedResultSig, background=enrichedResultInsig))
 		}
 	}else{
@@ -62,7 +62,7 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 		enrichedResult <- enrichedResult %>% filter(O!=0)
 		if (nrow(enrichedResult)>topThr) {
 			enrichedResultSig <- enrichedResult[1:topThr, ]
-			enrichedResultInsig <- enrichedResult[(topThr+1):nrow(enrichedResult), c("geneset", "R", "FDR", "O")]
+			enrichedResultInsig <- enrichedResult[(topThr+1):nrow(enrichedResult), c("geneSet", "R", "FDR", "O")]
 		}else{
 			enrichedResultSig <- enrichedResult
 			enrichedResultInsig <- data.frame()

@@ -11,7 +11,7 @@
 				name-key="description"
 				{{/hasGeneSetDes}}
 				{{^hasGeneSetDes}}
-				name-key="geneset"
+				name-key="geneSet"
 				{{/hasGeneSetDes}}
 				:x-label="bar.xLabel">
 			</wg-bar-plot>
@@ -38,7 +38,7 @@
 		<b-tab-item label="DAG">
 			<div style="width: 100%; height: 600px">
 			<wg-dag
-				containerId="wg_dag"
+				container-id="wg_dag"
 				:data="dag"
 			></wg-dag>
 			</div>

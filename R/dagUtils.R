@@ -48,9 +48,9 @@ getDagNodes <- function(enrichedRes, allGoList, goIdName, enrichMethod, dagColor
 getDagNodeColor <- function(enrichedRes, goTerm, enrichMethod, schema) {
 	if (schema == "binary") {
 		if (enrichMethod == "ORA") {
-			return(ifelse(goTerm %in% enrichedRes$geneset, "red", "white"))
+			return(ifelse(goTerm %in% enrichedRes$geneSet, "red", "white"))
 		} else if (enrichMethod == "GSEA") {
-			nes <- filter(enrichedRes, geneset == goTerm)[["NES"]]
+			nes <- filter(enrichedRes, geneSet == goTerm)[["NES"]]
 			return(ifelse(nes > 0, "red", "blue"))
 		}
 	} else if (schema == "continuous") {
@@ -60,7 +60,7 @@ getDagNodeColor <- function(enrichedRes, goTerm, enrichMethod, schema) {
 			colorPalette <- colorRampPalette(c("white", "red"))(128)
 			myBreak <- seq(0, minFdrLog + 0.01, length.out=129)
 
-			fdr <- filter(enrichedRes, geneset == goTerm)[["FDR"]]
+			fdr <- filter(enrichedRes, geneSet == goTerm)[["FDR"]]
 			if (length(fdr) == 0) {
 				return(colorPalette[1])
 			}
@@ -89,11 +89,11 @@ getDagNodeColor <- function(enrichedRes, goTerm, enrichMethod, schema) {
 					}
 				}
 			}
-			fdr <- filter(enrichedRes, geneset == goTerm)[["FDR"]]
+			fdr <- filter(enrichedRes, geneSet == goTerm)[["FDR"]]
 			if (length(fdr) == 0) {
 				return(colorPalette[1])
 			}
-			nes <- filter(enrichedRes, geneset == goTerm)[["NES"]]
+			nes <- filter(enrichedRes, geneSet == goTerm)[["NES"]]
 			fdrLog <- ifelse(fdr == 0, sign(nes) * (-log10(2.2e-16)), sign(nes) * (-log10(fdr)))
 			return(colorPalette[max(which(myBreak <= fdrLog))])
 		}

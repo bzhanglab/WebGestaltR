@@ -61,10 +61,10 @@ wgLib({
 	{{/hasGeneSetDag}}
 	volcano: {
 		{{#hasGeneSetDes}}
-		labelTypes: ["geneset", "description"],
+		labelTypes: ["geneSet", "description"],
 		{{/hasGeneSetDes}}
 		{{^hasGeneSetDes}}
-		labelTypes: "geneset",
+		labelTypes: "geneSet",
 		{{/hasGeneSetDes}}
 
 		autoPlaceLabels: true,
@@ -77,10 +77,10 @@ wgLib({
 		radius: "leadingEdgeNum",
 		color: "leadingEdgeNum",
 			{{#hasGeneSetDes}}
-			tooltipContent: ["geneset", "description", "NES", "FDR", "PValue", "leadingEdgeNum"]
+			tooltipContent: ["geneSet", "description", "NES", "FDR", "pValue", "leadingEdgeNum"]
 			{{/hasGeneSetDes}}
 			{{^hasGeneSetDes}}
-			tooltipContent: ["geneset", "NES", "FDR", "PValue", "leadingEdgeNum"]
+			tooltipContent: ["geneSet", "NES", "FDR", "pValue", "leadingEdgeNum"]
 			{{/hasGeneSetDes}}
 		{{/methodIsGsea}}
 		{{^methodIsGsea}}
@@ -89,16 +89,16 @@ wgLib({
 		radius: "O",
 		color: "O",
 			{{#hasGeneSetDes}}
-			tooltipContent: ["geneset", "description", "R", "FDR", "PValue", "O"]
+			tooltipContent: ["geneSet", "description", "R", "FDR", "pValue", "O"]
 			{{/hasGeneSetDes}}
 			{{^hasGeneSetDes}}
-			tooltipContent: ["geneset", "R", "FDR", "PValue", "O"]
+			tooltipContent: ["geneSet", "R", "FDR", "pValue", "O"]
 			{{/hasGeneSetDes}}
 		{{/methodIsGsea}}
 	},
 	bar: {
 		dimensions: { width: 960, height: barHeight },
-		tooltipContent: ["geneset", "description", "R", "FDR", "PValue", "O"],
+		tooltipContent: ["geneSet", "description", "R", "FDR", "pValue", "O"],
 		{{#methodIsGsea}}
 		valueKey: "NES"
 		{{/methodIsGsea}}

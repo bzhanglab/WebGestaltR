@@ -20,13 +20,13 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 	}
 
 	if(dataType=="gmt"){
-		colnames(inputGene) <- c("geneset", "description", sourceIdType)
+		colnames(inputGene) <- c("geneSet", "description", sourceIdType)
 		inputGeneL <- unique(inputGene[[sourceIdType]])
 	}
 
 	mapR <- POST(file.path(hostName, "api", "idmapping"), encode="json",
-				body=list(organism=organism, sourcetype=sourceIdType,
-				targettype=targetIdType, ids=inputGeneL))
+				body=list(organism=organism, sourceType=sourceIdType,
+				targetType=targetIdType, ids=inputGeneL))
 
 	if (mapR$status_code != 200) {
 		return(webRequestError(mapR))
@@ -48,30 +48,30 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 
 	if (length(mappedIds) == 0) { return(idMappingError("empty")) }
 
-	names <- c("sourceid", "genesymbol", "genename", "targetid")
+	names <- c("sourceId", "geneSymbol", "geneName", "targetId")
 	mappedInputGene <- data.frame(matrix(unlist(lapply(mappedIds, FUN=function(x) { x[names] })), nrow=length(mappedIds), byrow=TRUE), stringsAsFactors=FALSE)
-	colnames(mappedInputGene) <- c("userid", "genesymbol","genename", targetIdType)
+	colnames(mappedInputGene) <- c("userId", "geneSymbol", "geneName", targetIdType)
 	if (dataType=="list") {
 		inputGene <- mappedInputGene
 	} else if (dataType=="rnk") {
-		inputGene <- inner_join(mappedInputGene, inputGene, by=c("userid"=sourceIdType))
+		inputGene <- inner_join(mappedInputGene, inputGene, by=c("userId"=sourceIdType))
 	} else if (dataType=="gmt") {
-		inputGene <- inner_join(mappedInputGene, inputGene, by=c("userid"=sourceIdType)) %>%
-			select(geneset, description, userid, genesymbol, genename, targetIdType)
+		inputGene <- inner_join(mappedInputGene, inputGene, by=c("userId"=sourceIdType)) %>%
+			select(geneSet, description, userId, geneSymbol, geneName, targetIdType)
 	}
 
 	if (targetIdType != "entrezgene" && sourceIdType!=targetIdType) {
 		entrezgeneMapRes <- idMappingGene(organism, dataType="list", inputGene=inputGeneL, sourceIdType=sourceIdType, targetIdType="entrezgene")
-		inputGene <- merge(x=inputGene, y=entrezgeneMapRes, by="userid", all.x=TRUE)
+		inputGene <- merge(x=inputGene, y=entrezgeneMapRes, by="userId", all.x=TRUE)
 		if (dataType=="list") {
-			inputGene <- select(inputGene, userid, genesymbol, genename, entrezgene, targetIdType)
+			inputGene <- select(inputGene, userId, geneSymbol, geneName, entrezgene, targetIdType)
 		} else if (dataType=="rnk") {
-			inputGene <- select(inputGene, userid, genesymbol, genename, entrezgene, targetIdType, score)
+			inputGene <- select(inputGene, userId, geneSymbol, geneName, entrezgene, targetIdType, score)
 		} else if (dataType=="gmt") {
-			inputGene <- select(inputGene, geneset, description, userid, genesymbol, genename, entrezgene, targetIdType)
+			inputGene <- select(inputGene, geneSet, description, userId, geneSymbol, geneName, entrezgene, targetIdType)
 		}
 	}
-	inputGene$glink <- paste0("https://www.ncbi.nlm.nih.gov/gene/?term=", inputGene$entrezgene)
+	inputGene$gLink <- paste0("https://www.ncbi.nlm.nih.gov/gene/?term=", inputGene$entrezgene)
 
 	#############Output#######################
 	if (mappingOutput) {

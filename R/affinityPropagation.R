@@ -1,5 +1,5 @@
 #' Affinity Propagation
-#' 
+#'
 #' Use affinity propagation to cluster similar gene sets to reduce redundancy in report.
 #'
 #' @param idsInSet A list of set names and their member IDs
@@ -30,9 +30,9 @@ affinityPropagation <- function(idsInSet, significance) {
 }
 
 #' Jaccard Similarity
-#' 
+#'
 #' Calculate Jaccard Similarity
-#' 
+#'
 #' @inheritParams affinityPropagation
 #' @return A list of similarity matrix \code{sim.mat} and input preference vector \code{ip.vec}
 #' @importFrom proxy simil
@@ -56,11 +56,11 @@ jaccardSim <- function(idsInSet, significance){
 		# make diagonal all 1
 		diag(sim.mat) <- 1
 	}
-	# set the input preference (IP) for each geneset
-	# give higher IP to geneset with larger -logP (remove sign)
-	# IP <- maxScore for geneset with largest -logP value
-	# IP <- minScore for geneset with smallest -logP value
-	# other genesets will have linearly interpolated IP value
+	# set the input preference (IP) for each gene set
+	# give higher IP to gene set with larger -logP (remove sign)
+	# IP <- maxScore for gene set with largest -logP value
+	# IP <- minScore for gene set with smallest -logP value
+	# other gene sets will have linearly interpolated IP value
 	max.sig <- max(significance)
 	min.sig <- min(significance)
 
