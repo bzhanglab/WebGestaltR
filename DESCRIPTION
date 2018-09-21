@@ -12,5 +12,5 @@ Depends: R (>= 3.3)
 Imports: methods, dplyr, doRNG, readr, parallel (>= 3.3.2),
         doParallel (>= 1.0.10), foreach (>= 1.4.0),
         pkgmaker (>= 0.22), rjson (>= 0.2.15), httr,
-	igraph, whisker, apcluster, proxy
+	igraph, whisker, apcluster
 NeedsCompilation: no

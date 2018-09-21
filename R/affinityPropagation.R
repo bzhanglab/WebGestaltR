@@ -34,14 +34,22 @@ affinityPropagation <- function(idsInSet, significance) {
 #'
 #' @inheritParams affinityPropagation
 #' @return A list of similarity matrix \code{sim.mat} and input preference vector \code{ip.vec}
-#' @importFrom proxy simil
 jaccardSim <- function(idsInSet, significance){
 	# first find out the union of sets, sorted
 	all.genes <- sort(unique(unlist(idsInSet)))
 	overlap.mat <- sapply(idsInSet, function(x) {as.integer(all.genes %in% x)})
-	# proxy::simil
-	sim.mat <- as.matrix(simil(overlap.mat, by_rows=FALSE, method="Jaccard"))
-	sim.mat[is.na(sim.mat)] <- 1
+
+	num <- length(idsInSet)
+	sim.mat <- matrix(1, num, num)
+	colnames(sim.mat) <- colnames(overlap.mat)
+
+	for (i in 1:(num-1)) {
+		for (j in (i+1):num) {
+			jaccardIndex <- sum(bitwAnd(overlap.mat[, i], overlap.mat[, j])) / sum(bitwOr(overlap.mat[, i], overlap.mat[, j]))
+			sim.mat[i, j] <- jaccardIndex
+			sim.mat[j, i] <- jaccardIndex
+		}
+	}
 	# if there is no overlap, set the similarity to -Inf
 	sim.mat[sim.mat == 0] <- -Inf
 	# check sim.mat to see if it is identical for each pair
@@ -63,7 +71,6 @@ jaccardSim <- function(idsInSet, significance){
 	max.sig <- max(significance)
 	min.sig <- min(significance)
 
-	# for Jaccard
 	minScore <- 0
 	tmp.sim.mat <- sim.mat
 	tmp.sim.mat[!is.finite(tmp.sim.mat)] <- NA
