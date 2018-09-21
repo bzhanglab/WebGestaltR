@@ -10,7 +10,6 @@
 #'  \item{representatives}{A character vector of representatives for each cluster}
 #' }
 #' @importFrom apcluster apcluster
-#' @importFrom apcluster aggExCluster
 affinityPropagation <- function(idsInSet, significance) {
 	cat("Begin affinity propagation\n")
 	# compute the similiarity and input preference vector
