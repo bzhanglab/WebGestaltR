@@ -26,6 +26,9 @@ getGeneTables <- function(organism, enrichedSig, geneColumn, interestingGeneMap)
 	if (organism != "others") {
 		standardId <- interestingGeneMap$standardId
 		mapping <- select(interestingGeneMap$mapped, userId, geneSymbol, geneName, gLink, standardId)
+		if ("score" %in% colnames(interestingGeneMap$mapped)) {
+			mapping$score <- interestingGeneMap$mapped$score
+		}
 	}
 	table <- list()
 	for (i in 1:nrow(enrichedSig)) {
