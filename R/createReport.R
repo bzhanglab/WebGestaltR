@@ -17,7 +17,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		#####Summary Tab########
 		tabsContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, lNum, geneSet)
 
-		if (sigMethod == "fdr" && dNum < nrow(enrichedSig)) {
+		if (sigMethod == "fdr" && !is.null(enrichedSig) && dNum < nrow(enrichedSig)) {
 			enrichedSig <- enrichedSig[1:dNum, ]
 		}
 
@@ -51,7 +51,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		}
 		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, lNum, geneSet)
 
-		if (sigMethod == "fdr" && dNum < nrow(enrichedSig)) {
+		if (sigMethod == "fdr" && !is.null(enrichedSig) && dNum < nrow(enrichedSig)) {
 			enrichedSig <- enrichedSig[1:dNum, ]
 		}
 
