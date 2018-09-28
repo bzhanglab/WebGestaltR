@@ -1,11 +1,15 @@
 <h4 class="title is-4 has-text-primary">Enrichment Results</h4>
 <section id="enrich-result">
+	<p class="select-redundancy">Redundancy reduction:
+		<b-radio v-model="redundancy" native-value="all">All</b-radio>
+		<b-radio v-model="redundancy" native-value="ap">Affinity propagation</b-radio>
+	</p>
 	<b-tabs v-model="activeTab" type="is-toggle">
 		<b-tab-item label="Bar chart">
 		<div class="vertical-center-container">
 			<wg-bar-plot
 				:dimensions="bar.dimensions"
-				:data="enrichment"
+				:data="barData"
 				:value-key="bar.valueKey"
 				{{#hasGeneSetDes}}
 				name-key="description"
@@ -20,7 +24,7 @@
 		<b-tab-item label="Volcano plot">
 		<div class="vertical-center-container">
 			<wg-volcano-plot
-				:data="combinedData"
+				:data="volcanoData"
 				:x="volcano.x"
 				:y="volcano.y"
 				:x-label="volcano.xLabel"
@@ -39,7 +43,7 @@
 			<div style="width: 100%; height: 600px">
 			<wg-dag
 				container-id="wg_dag"
-				:data="dag"
+				:data="dagData"
 			></wg-dag>
 			</div>
 		</b-tab-item>

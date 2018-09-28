@@ -1,4 +1,4 @@
-createReport <- function(hostName, outputDirectory, organism="hsapiens", projectName, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet, interestingGeneMap, referenceGeneList, enrichedSig, geneTables, background, enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, lNum=20, dagColor="binary"){
+createReport <- function(hostName, outputDirectory, organism="hsapiens", projectName, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet, interestingGeneMap, referenceGeneList, enrichedSig, geneTables, clusters, background, enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, lNum=20, dagColor="binary"){
 
 	outputHtmlFile <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, ".html"))
 
@@ -68,6 +68,13 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		background <- data.frame()
 	}
 	version <- packageVersion("WebGestaltR")
+	if (!is.null(clusters$ap)) {
+		apClusterJson = toJSON(unname(clusters$ap$clusters))
+		apRepJson = toJSON(unname(clusters$ap$representatives))
+	} else {
+		apClusterJson = "''"
+		apRepJson = "''"
+	}
 
 	header <- readLines(system.file("templates/header.mustache", package="WebGestaltR"))
 	footer <- readLines(system.file("templates/footer.mustache", package="WebGestaltR"))
@@ -75,6 +82,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	data <- list(hostName=hostName, geneSetNet=geneSetNet, bodyContent=bodyContent,
 				sigJson=toJSON(unname(rowSplit(enrichedSig))), insigJson=toJSON(unname(rowSplit(background))),
 				dagJson=dagJson, hasGeneSetDag=!is.null(geneSetDag), version=version,
+				apClusterJson=apClusterJson, apRepJson=apRepJson,
 				geneTableJson=toJSON(geneTables), standardId=standardId, numAnnoRefUserId=numAnnoRefUserId,
 				methodIsGsea=enrichMethod=="GSEA", hasGeneSetDes=!is.null(geneSetDes)
 				)
