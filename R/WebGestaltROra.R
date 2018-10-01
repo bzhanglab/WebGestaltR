@@ -126,7 +126,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
 			idsInSet <- sapply(enrichedSig$overlapId, strsplit, split=";")
 			names(idsInSet) <- enrichedSig$geneSet
-			apRes <- affinityPropagation(idsInSet, enrichedSig$pValue)
+			apRes <- affinityPropagation(idsInSet, -log(enrichedSig$pValue))
 			writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
 			clusters$ap <- apRes
 		}
