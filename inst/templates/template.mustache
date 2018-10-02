@@ -39,7 +39,8 @@ ga('send', 'pageview');
 var enrichment = {{{sigJson}}};
 var background = {{{insigJson}}};
 var geneTables = {{{geneTableJson}}};
-enrichment.forEach(function(d, i) { enrichment[i].options = {showLabel: true, showTooltip: true} });
+var clusters = {{{clusterJson}}};
+
 {{#hasGeneSetDag}}
 var dag = {{{dagJson}}};
 {{/hasGeneSetDag}}
@@ -48,6 +49,7 @@ wgLib({
 	enrichment: enrichment,
 	background: background,
 	geneTables: geneTables,
+	clusters: clusters,
 	{{#methodIsGsea}}
 	enrichMethod: "gsea",
 	{{/methodIsGsea}}

@@ -87,6 +87,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	enrichedSig <- gseaRes$enriched
 	insig <- gseaRes$background
 
+	clusters <- list()
 	geneTables <- list()
 	if(!is.null(enrichedSig)){
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
@@ -112,13 +113,23 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 				outputEnrichedSig <- enrichedSig
 			}
 			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
+			idsInSet <- sapply(enrichedSig$leadingEdgeId, strsplit, split=";")
+			names(idsInSet) <- enrichedSig$geneSet
+			minusLogP <- -log(enrichedSig$pValue)
+			minusLogP[minusLogP == Inf] <- 1e15
+			apRes <- affinityPropagation(idsInSet, minusLogP)
+			wscRes <- weightedSetCover(idsInSet, 1 / minusLogP, 10)
+			writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
+			writeLines(c(paste0("# Coverage: ", wscRes$coverage), wscRes$topSets), file.path(projectDir, paste0("enriched_geneset_wsc_topsets_", projectName, ".txt")))
+			clusters$ap <- apRes
+			clusters$wsc <- list(representatives=wscRes$topSets,  coverage=wscRes$coverage)
 		}
 	}
 
 	if(isOutput==TRUE){
 		##############Create report##################
 		cat("Generate the final report...\n")
-		createReport(hostName=hostName, outputDirectory=outputDirectory, organism=organism, projectName=projectName, enrichMethod=enrichMethod, geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet, interestingGeneMap=interestingGeneMap, enrichedSig=enrichedSig, geneTables=geneTables, background=insig, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, perNum=perNum, lNum=lNum, dagColor=dagColor)
+		createReport(hostName=hostName, outputDirectory=outputDirectory, organism=organism, projectName=projectName, enrichMethod=enrichMethod, geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet, interestingGeneMap=interestingGeneMap, enrichedSig=enrichedSig, background=insig, geneTables=geneTables, clusters=clusters, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, perNum=perNum, lNum=lNum, dagColor=dagColor)
 
 		cwd <- getwd()
 		setwd(projectDir)

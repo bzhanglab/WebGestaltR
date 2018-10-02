@@ -2,18 +2,22 @@
 #'
 #' Use affinity propagation to cluster similar gene sets to reduce redundancy in report.
 #'
-#' @param idsInSet A list of set names and their member IDs
-#' @param significance A vector of the same length used to assign input preference, i.e. -logP
-#' @return A list of \code{clusters} and \code{representatives} for each cluster
+#' @param idsInSet A list of set names and their member IDs.
+#' @param score A vector of addible scores with the same length used to assign input preference;
+#'  higher score has larger weight, i.e. -logP.
+#'  
+#' @return A list of \code{clusters} and \code{representatives} for each cluster.
 #' \describe{
-#'  \item{clusters}{A list of character vectors of gene set IDs in each cluster}
-#'  \item{representatives}{A character vector of representatives for each cluster}
+#'  \item{clusters}{A list of character vectors of set IDs in each cluster.}
+#'  \item{representatives}{A character vector of representatives for each cluster.}
 #' }
+#' 
 #' @importFrom apcluster apcluster
-affinityPropagation <- function(idsInSet, significance) {
+#' @author Zhiao Shi, Yuxing Liao
+affinityPropagation <- function(idsInSet, score) {
 	cat("Begin affinity propagation\n")
 	# compute the similiarity and input preference vector
-	ret <- jaccardSim(idsInSet, significance)
+	ret <- jaccardSim(idsInSet, score)
 
 	sim.mat <- ret$sim.mat
 	ip.vec <- ret$ip.vec
@@ -30,11 +34,14 @@ affinityPropagation <- function(idsInSet, significance) {
 
 #' Jaccard Similarity
 #'
-#' Calculate Jaccard Similarity
+#' Calculate Jaccard Similarity.
 #'
 #' @inheritParams affinityPropagation
-#' @return A list of similarity matrix \code{sim.mat} and input preference vector \code{ip.vec}
-jaccardSim <- function(idsInSet, significance){
+#' 
+#' @return A list of similarity matrix \code{sim.mat} and input preference vector \code{ip.vec}.
+#' 
+#' @author Zhiao Shi, Yuxing Liao
+jaccardSim <- function(idsInSet, score){
 	# first find out the union of sets, sorted
 	all.genes <- sort(unique(unlist(idsInSet)))
 	overlap.mat <- sapply(idsInSet, function(x) {as.integer(all.genes %in% x)})
@@ -68,8 +75,8 @@ jaccardSim <- function(idsInSet, significance){
 	# IP <- maxScore for gene set with largest -logP value
 	# IP <- minScore for gene set with smallest -logP value
 	# other gene sets will have linearly interpolated IP value
-	max.sig <- max(significance)
-	min.sig <- min(significance)
+	max.sig <- max(score)
+	min.sig <- min(score)
 
 	minScore <- 0
 	tmp.sim.mat <- sim.mat
@@ -79,7 +86,7 @@ jaccardSim <- function(idsInSet, significance){
 	if (abs(max.sig - min.sig) < .Machine$double.eps^0.5) {
 		ip.vec <- NA
 	} else{
-		ip.vec <- minScore + (maxScore-minScore) * (significance-min.sig) / (max.sig-min.sig)
+		ip.vec <- minScore + (maxScore-minScore) * (score-min.sig) / (max.sig-min.sig)
 	}
 	return(list(sim.mat=sim.mat, ip.vec=ip.vec))
 }
