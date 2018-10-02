@@ -2,7 +2,12 @@
 <section id="enrich-result">
 	<p class="select-redundancy">Redundancy reduction:
 		<b-radio v-model="redundancy" native-value="all">All</b-radio>
+		{{#hasAp}}
 		<b-radio v-model="redundancy" native-value="ap">Affinity propagation</b-radio>
+		{{/hasAp}}
+		{{#hasWsc}}
+		<b-radio v-model="redundancy" native-value="wsc">Set coverage</b-radio>
+		{{/hasWsc}}
 	</p>
 	<b-tabs v-model="activeTab" type="is-toggle">
 		<b-tab-item label="Bar chart">
