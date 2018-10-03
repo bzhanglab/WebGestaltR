@@ -15,7 +15,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	dagJson <- NULL
 	if(organism!="others"){
 		#####Summary Tab########
-		tabsContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, lNum, geneSet)
+		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, lNum, geneSet)
 
 		if (sigMethod == "fdr" && !is.null(enrichedSig) && dNum < nrow(enrichedSig)) {
 			enrichedSig <- enrichedSig[1:dNum, ]
@@ -28,12 +28,12 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		}
 		###########GOSlim summary#########################
 		if(standardId=="entrezgene"){
-			tabsContent <- paste(tabsContent, goSlimReport(projectName), sep='\n')
+			bodyContent <- paste(bodyContent, goSlimReport(projectName), sep='\n')
 		}
 
 		############Enrichment result##################
 		if(!is.null(enrichedSig)){
-			tabsContent <- paste(tabsContent, enrichResultTab(enrichMethod, geneSetDes, geneSetDag, clusters), seq='\n')
+			bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, geneSetDes, geneSetDag, clusters), seq='\n')
 			if (!is.null(geneSetDag)) {
 				dagRes <- expandDag(enrichedSig$geneSet, geneSetDag)
 				dagEdges <- dagRes$edges
@@ -42,7 +42,6 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 
 			}
 		}
-		bodyContent <- tabsContent
 	}else{
 		###########Organism is others. No mapping information#############
 		#############summary for the analysis###################
@@ -57,7 +56,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 
 		##############Enrich Result################
 		if(!is.null(enrichedSig)){
-			bodyContent <- paste(bodyContent, enrichResultTab(enrichMethod, geneSetDes, geneSetDag), seq='\n')
+			bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, geneSetDes, geneSetDag), seq='\n')
 		}
 		standardId <- NULL
 	}
