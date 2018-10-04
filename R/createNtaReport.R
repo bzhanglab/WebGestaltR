@@ -81,9 +81,8 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 				zipPath=paste0(projectName, ".zip"),
 				toolboxDag=list(name=dagName, nodes=goDataList)
 				)
-	partials <- list(toolbox=readLines(system.file("templates/toolbox.mustache", package="WebGestaltR")))
 	template <- readLines(system.file("templates/networkContent.mustache", package="WebGestaltR"))
-	content <- whisker.render(template, data, partials=partials)
+	content <- whisker.render(template, data)
 
 	data <- list(hostName=hostName,
 				networkName=networkName,
