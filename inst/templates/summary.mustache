@@ -16,7 +16,7 @@
 	<div class="card-header" v-on:click="summaryShown=!summaryShown">
 		<p class="card-header-title">Job summary</p>
 		<a href="#" class="card-header-icon">
-			<span class="icon"><i class="mdi mdi-24px" :class="{'mdi-chevron-up': summaryShown, 'mdi-chevron-down': !summaryShown}"></i></span>
+			<b-icon :icon="summaryShown ? 'chevron-up' : 'chevron-down'"></b-icon>
 		</a>
 	</div>
 	<div class="card-content content" v-show="summaryShown">
