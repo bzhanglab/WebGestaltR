@@ -82,7 +82,7 @@ getDagNodeColor <- function(enrichedRes, goTerm, enrichMethod, schema) {
 				}else{
 					if (abs(minFdrLog) > maxFdrLog) {
 						colorPalette <- colorRampPalette(c("blue", "white", "red"))(256)
-						myBreak <- c(seq(minFdrLog-0.01, -0.01, length.out=128), 0, seq(0.01, max(minFdrLog)+0.01, length.out=128))
+						myBreak <- c(seq(minFdrLog-0.01, -0.01, length.out=128), 0, seq(0.01, -minFdrLog+0.01, length.out=128))
 					}else{
 						colorPalette <- colorRampPalette(c("blue", "white", "red"))(256)
 						myBreak <- c(seq(-maxFdrLog-0.01, -0.01, length.out=128), 0, seq(0.01, maxFdrLog+0.01, length.out=128))
@@ -91,7 +91,7 @@ getDagNodeColor <- function(enrichedRes, goTerm, enrichMethod, schema) {
 			}
 			fdr <- filter(enrichedRes, geneSet == goTerm)[["FDR"]]
 			if (length(fdr) == 0) {
-				return(colorPalette[1])
+				return("#ffffff")
 			}
 			nes <- filter(enrichedRes, geneSet == goTerm)[["NES"]]
 			fdrLog <- ifelse(fdr == 0, sign(nes) * (-log10(2.2e-16)), sign(nes) * (-log10(fdr)))
