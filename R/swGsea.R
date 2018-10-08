@@ -361,3 +361,21 @@ swGsea <- function(input_df, thresh_type="percentile", thresh=0.9, thresh_action
 	output_df$fdr[output_df$fdr>1] <- 1
 	return(list(Enrichment_Results=output_df, Running_Sums=Running_Sum, Items_in_Set=items_in_set))
 }
+
+
+#' Prepare input for standard GSEA
+#'
+#' A helper to read files for performing standard GSEA.
+#'
+#' @param rankFile Path of the rnk file
+#' @param gmtFile Path of the GMT file
+#'
+#' @return a data frame to be used in \code{swGsea}
+#' @export
+#'
+prepareGseaInput <- function(rankFile, gmtFile) {
+	rank <- read_tsv(rankFile, col_names=c("gene", "score"), col_types="cd")
+	gmt <- readGmt(gmtFile)
+	inputDf <- prepareInputMatrixGsea(rank, gmt)
+	return(inputDf)
+}
