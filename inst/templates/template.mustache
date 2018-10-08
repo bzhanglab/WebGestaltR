@@ -44,7 +44,6 @@ var clusters = {{{clusterJson}}};
 {{#hasGeneSetDag}}
 var dag = {{{dagJson}}};
 {{/hasGeneSetDag}}
-var barHeight = 500 + 10 * Math.max(0, (enrichment.length - 10));
 wgLib({
 	enrichment: enrichment,
 	background: background,
@@ -99,7 +98,7 @@ wgLib({
 		{{/methodIsGsea}}
 	},
 	bar: {
-		dimensions: { width: 960, height: barHeight },
+		dimensions: { width: 960, height: 300 },
 		tooltipContent: ["geneSet", "description", "R", "FDR", "pValue", "O"],
 		{{#methodIsGsea}}
 		valueKey: "NES"

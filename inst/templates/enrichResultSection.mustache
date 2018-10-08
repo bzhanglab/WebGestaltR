@@ -1,12 +1,23 @@
 <h4 class="title is-4 has-text-primary">Enrichment Results</h4>
 <section id="enrich-result">
-	<p class="select-redundancy">Redundancy reduction:
+	<p class="select-redundancy">
+		<b-tooltip label="Enriched gene sets are post-processed by two methods to reduce redundancy." type="is-dark" animated multilined dashed>
+			Redundancy reduction:
+		</b-tooltip>
 		<b-radio v-model="redundancy" native-value="all">All</b-radio>
 		{{#hasAp}}
-		<b-radio v-model="redundancy" native-value="ap">Affinity propagation</b-radio>
+		<b-radio v-model="redundancy" native-value="ap">
+			<b-tooltip label="R package apcluster is used to cluster gene sets." type="is-dark" animated multilined dashed>
+				Affinity propagation
+			</b-tooltip>
+		</b-radio>
 		{{/hasAp}}
 		{{#hasWsc}}
-		<b-radio v-model="redundancy" native-value="wsc">Set coverage</b-radio>
+		<b-radio v-model="redundancy" native-value="wsc">
+			<b-tooltip label="Find top gene sets while maximizing gene coverage." type="is-dark" animated multilined dashed>
+				Weighted set cover
+			</b-tooltip>
+		</b-radio>
 		{{/hasWsc}}
 	</p>
 	<b-tabs v-model="activeTab" type="is-toggle">
