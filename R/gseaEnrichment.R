@@ -1,4 +1,4 @@
-gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, lNum=20, isOutput=TRUE) {
+gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE) {
 	projectFolder <- file.path(outputDirectory, paste("Project_", projectName, sep=""))
 	if (!dir.exists(projectFolder)) {
 		dir.create(projectFolder)
