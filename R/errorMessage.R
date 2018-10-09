@@ -152,16 +152,6 @@ parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 	}
 }
 
-.lNumError <- function(lNum){   ##Input the number of categories with leading edge genes error
-	if(!is.wholenumber(lNum) || lNum<1){
-		error <- "ERROR: The number of categories with leading edge IDs outputted from GSEA should be a positive integer."
-		cat(error)
-		return(error)
-	}else{
-		return(NULL)
-	}
-}
-
 .isOutputError <- function(isOutput){  ##Input isOutput error
 	if(!is.logical(isOutput)){
 		error <- "ERROR: isOutput should be an R logical object (TRUE or FALSE)."
