@@ -16,7 +16,7 @@ ga('send', 'pageview');
 	<!-- TODO -->
 	{{/geneSetNet}}
 	{{#hasGeneSetDag}}
-	<script src="https://aws2.zhang-lab.org/yuxingl/webgestalt-test/assets/{{version}}/build/cytoscape.min.js"></script>
+	<script src="{{hostName}}/assets/{{version}}/build/cytoscape.min.js"></script>
 	{{/hasGeneSetDag}}
 	{{^hasGeneSetDag}}
 	<script>window.cytoscape = null;</script>
