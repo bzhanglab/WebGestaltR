@@ -115,10 +115,10 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
 			idsInSet <- sapply(enrichedSig$leadingEdgeId, strsplit, split=";")
 			names(idsInSet) <- enrichedSig$geneSet
-			minusLogP <- -log(enrichedSig$pValue)
-			minusLogP[minusLogP == Inf] <- 1e15
-			apRes <- affinityPropagation(idsInSet, minusLogP)
-			wscRes <- weightedSetCover(idsInSet, 1 / minusLogP, 10)
+			signedLogP <- -log(enrichedSig$pValue) * sign(enrichedSig$ES)
+			signedLogP[signedLogP == Inf] <- 1e15
+			apRes <- affinityPropagation(idsInSet, signedLogP)
+			wscRes <- weightedSetCover(idsInSet, 1 / signedLogP, 10)
 			writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
 			writeLines(c(paste0("# Coverage: ", wscRes$coverage), wscRes$topSets), file.path(projectDir, paste0("enriched_geneset_wsc_topsets_", projectName, ".txt")))
 			clusters$ap <- apRes
