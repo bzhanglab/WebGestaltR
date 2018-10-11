@@ -19,7 +19,7 @@
 #' @importFrom parallel mclapply
 #' @author Zhiao Shi, Yuxing Liao
 weightedSetCover <- function(idsInSet, costs, topN, nThreads=4) {
-  cat("Begin weighted set cover\n")
+  cat("Begin weighted set cover...\n")
   names(costs) <- names(idsInSet)
   if (.Platform$OS.type == "windows") {
     nThreads = 1
@@ -92,7 +92,7 @@ weightedSetCover <- function(idsInSet, costs, topN, nThreads=4) {
   # not fully covered, compute the current coverage and return
   covered.genes <- unique(unlist(idsInSet[cur.res]))
   s.hat <- length(covered.genes) / length(all.genes)
-  cat("End weighted set cover\n")
+  cat("End weighted set cover...\n")
   return(list(topSets=cur.res, coverage=s.hat))
 }
 

@@ -289,7 +289,7 @@ swGsea <- function(input_df, thresh_type="percentile", thresh=0.9, thresh_action
 		c(rand_min, rand_max, rand_best)
 	}
 	stopCluster(cl)
-	cat(paste0(perms, " permutations of ", expt, " complete\n"))
+	cat(paste0(perms, " permutations of ", expt, " complete...\n"))
 
 	# split output from permutations into iteration by set dataframes for random running totals, random maxes, and random mins
 	rand_mins <- rand_stats[ , 1:ncol(inset_mat)]

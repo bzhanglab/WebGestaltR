@@ -15,7 +15,7 @@
 #' @importFrom apcluster apcluster
 #' @author Zhiao Shi, Yuxing Liao
 affinityPropagation <- function(idsInSet, score) {
-	cat("Begin affinity propagation\n")
+	cat("Begin affinity propagation...\n")
 	# compute the similiarity and input preference vector
 	ret <- jaccardSim(idsInSet, score)
 
@@ -29,6 +29,7 @@ affinityPropagation <- function(idsInSet, score) {
 		exemplar <- apRes@exemplars[[i]]
 		clusters[[i]] <- apRes@clusters[[i]][order(apRes@clusters[[i]] == exemplar, decreasing=TRUE)]
 	}
+	cat("End affinity propagation...\n")
 	return(list(clusters=sapply(clusters, names), representatives=names(apRes@exemplars)))
 }
 
