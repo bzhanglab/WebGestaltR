@@ -41,17 +41,18 @@ readGMT <- readGmt
 prepareInputMatrixGsea <- function(rank, gmt) {
 	# rank is 2 column Data Frame of gene and score
 	# gmt is 3 column Data Frame of geneSet, geneSetLink, and gene
-	geneSets <- (gmt %>% select(geneSet, description) %>% distinct())$geneSet
 	genes <- rank$gene
+	gmt <- gmt %>% filter(gene %in% genes)
+	geneSets <- (gmt %>% select(geneSet, description) %>% distinct())$geneSet
 	# 0 or 1 matrix indicating gene and gene set relationship
-	relDf <- as.data.frame(matrix(0, nrow=length(genes), ncol=length(geneSets), dimnames=list(genes, geneSets)))
+	rel <- matrix(0, nrow=length(genes), ncol=length(geneSets), dimnames=list(genes, geneSets))
+
 	for (i in 1:nrow(gmt)) {
-		if (gmt[i, "gene"] %in% genes) {
-			relDf[gmt[i, "gene"], gmt[i, "geneSet"]] <- 1
-		}
+		rel[gmt[i, "gene"], gmt[i, "geneSet"]] <- 1
 	}
-	relDf$gene <- genes
-	return(inner_join(rank, relDf, by="gene"))
+	rel <- as.data.frame(rel)
+	rel$gene <- genes
+	return(inner_join(rank, rel, by="gene"))
 }
 
 readGMT <- function(...) {
