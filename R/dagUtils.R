@@ -67,7 +67,7 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 	} else if (schema == "continuous") {
 		if (enrichMethod=="ORA") {
 			minFdr <- min(enrichedRes$FDR)
-			minFdrLog <- ifelse(minFdr==0, -log10(2.2e-16), -log10(minFdr))
+			minFdrLog <- ifelse(minFdr==0, -log10(.Machine$double.eps), -log10(minFdr))
 			colorPalette <- colorRampPalette(c(colorNeutral, colorPos))(128)
 			myBreak <- seq(0, minFdrLog + 0.01, length.out=129)
 
@@ -76,13 +76,13 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 				if (length(fdr) == 0) {
 					return(colorNeutral)
 				} else {
-					fdrLog <- ifelse(fdr == 0, -log10(2.2e-16), -log10(fdr))
+					fdrLog <- ifelse(fdr == 0, -log10(.Machine$double.eps), -log10(fdr))
 					return(colorPalette[max(which(myBreak <= fdrLog))])
 				}
 			})
 		} else if (enrichMethod=="GSEA") {
 			fdr <- enrichedRes$FDR
-			fdr[fdr == 0] <- 2.2e-16
+			fdr[fdr == 0] <- .Machine$double.eps
 			fdr <- sign(enrichedRes$NES) * (-log10(fdr))
 			minFdrLog <- min(fdr)
 			maxFdrLog <- max(fdr)
@@ -110,7 +110,7 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 				} else {
 					fdr <- row[["FDR"]]
 					nes <- row[["NES"]]
-					fdrLog <- ifelse(fdr == 0, sign(nes) * (-log10(2.2e-16)), sign(nes) * (-log10(fdr)))
+					fdrLog <- ifelse(fdr == 0, sign(nes) * (-log10(.Machine$double.eps)), sign(nes) * (-log10(fdr)))
 					return(colorPalette[max(which(myBreak <= fdrLog))])
 				}
 			})
