@@ -9,7 +9,7 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 	geneSetNum <- tapply(geneSet$gene, geneSet$geneSet,length)
 	geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
 	if(length(geneSetNum)==0){
-		error <- paste("ERROR: The number of annotated genes for all functional categories are not from ",minNum," to ",maxNum," for the ORA enrichment method.",sep="")
+		error <- paste("ERROR: The number of annotated genes for all functional categories are not from ",minNum," to ",maxNum," for the ORA enrichment method.\n",sep="")
 		cat(error)
 		return(error)
 	}
@@ -20,7 +20,7 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 	interestGene <- intersect(interestGene, referenceGene)
 
 	if(length(interestGene)==0){
-		error <- "ERROR: No genes in the interesting list can annotate to any functional category."
+		error <- "ERROR: No genes in the interesting list can annotate to any functional category.\n"
 		cat(error)
 		return(error)
 	}
@@ -51,7 +51,7 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 	if(sigMethod=="fdr"){
 		enrichedResultSig <- filter(enrichedResult, FDR<fdrThr)
 		if(nrow(enrichedResultSig)==0){
-			cat("No significant gene set is identified based on FDR ",fdrThr,"!",sep="")
+			cat("No significant gene set is identified based on FDR " , fdrThr , "!\n" , sep="")
 			return(NULL)
 		}else{
 			enrichedResultInsig <- enrichedResult %>% filter(FDR>=fdrThr, O!=0) %>% select(geneSet, R, FDR, O)
