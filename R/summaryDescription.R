@@ -14,7 +14,7 @@ summaryDescription <- function(projectName, organism, interestGeneFile, interest
 			enrichDatabase=enrichDatabase, enrichDatabaseIsOthers=enrichDatabase=="others", enrichDatabaseFile=enrichDatabaseFile,
 			enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,
 			hasEnrichDatabaseDescriptioFile=!is.null(enrichDatabaseDescriptionFile), hasInterestGeneFile=!is.null(interestGeneFile),
-			interestGeneFileBase=basename(interestGeneFile), interestGeneType=interestGeneType,
+			interestGeneFileBase=ifelse(is.null(interestGeneFile), "", basename(interestGeneFile)), interestGeneType=interestGeneType,
 			numUserId=nrow(interestingGeneMap$mapped)+length(interestingGeneMap$unmapped),
 			numMappedUserId=nrow(interestingGeneMap$mapped), numUniqueMappedId=length(unique(interestingGeneMap$mapped[[standardId]])),
 			numUnmappedUserId=length(interestingGeneMap$unmapped), idIsEntrezGene=standardId=="entrezgene", standardId=standardId,
@@ -25,7 +25,7 @@ summaryDescription <- function(projectName, organism, interestGeneFile, interest
 			enrichDatabase=enrichDatabase, enrichDatabaseIsOthers=enrichDatabase=="others", enrichDatabaseFile=enrichDatabaseFile,
 			enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,
 			hasEnrichDatabaseDescriptioFile=!is.null(enrichDatabaseDescriptionFile), hasInterestGeneFile=!is.null(interestGeneFile),
-			interestGeneFileBase=basename(interestGeneFile), interestGeneType=interestGeneType,
+			interestGeneFileBase=ifelse(is.null(interestGeneFile), "", basename(interestGeneFile)), interestGeneType=interestGeneType,
 			idIsEntrezGene=FALSE, methodSpecificContent=methodSpecificContent
 		)
 	}
