@@ -12,7 +12,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	}
 
 	numAnnoRefUserId <- NULL
-	dagJson <- NULL
+	dagJson <- list()
 	if(organism!="others"){
 		#####Summary Tab########
 		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, geneSet)
@@ -38,7 +38,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 				dagRes <- expandDag(enrichedSig$geneSet, geneSetDag)
 				dagEdges <- dagRes$edges
 				dagNodes <- getDagNodes(enrichedSig, dagRes$allNodes, geneSetDes, enrichMethod, dagColor)
-				dagJson <- toJSON(unname(c(dagEdges, dagNodes)))
+				dagJson <- c(dagEdges, dagNodes)
 
 			}
 		}
@@ -73,7 +73,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	template <- readLines(system.file("templates/template.mustache", package="WebGestaltR"))
 	data <- list(hostName=hostName, geneSetNet=geneSetNet, bodyContent=bodyContent,
 				sigJson=toJSON(unname(rowSplit(enrichedSig))), insigJson=toJSON(unname(rowSplit(background))),
-				dagJson=dagJson, hasGeneSetDag=!is.null(geneSetDag), version=version,
+				dagJson=toJSON(unname(dagJson)), hasGeneSetDag=!is.null(geneSetDag), version=version,
 				clusterJson=toJSON(clusters),
 				geneTableJson=toJSON(geneTables), standardId=standardId, numAnnoRefUserId=numAnnoRefUserId,
 				methodIsGsea=enrichMethod=="GSEA", hasGeneSetDes=!is.null(geneSetDes)
