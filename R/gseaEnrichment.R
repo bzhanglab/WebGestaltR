@@ -1,4 +1,4 @@
-gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, nThreads=1) {
+gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE, nThreads=1) {
 	projectFolder <- file.path(outputDirectory, paste("Project_", projectName, sep=""))
 	if (!dir.exists(projectFolder)) {
 		dir.create(projectFolder)
@@ -27,7 +27,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 
 	outputF <- file.path(projectFolder, paste0("Project_", projectName, "_GSEA/"))
 	relativeF <- file.path(".", paste0("Project_", projectName, "_GSEA"))
-	if (!dir.exists(outputF)) {
+	if (!dir.exists(outputF) && isOutput) {
 		dir.create(outputF)
 	}
 
@@ -97,22 +97,24 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 		leadingGeneNum[[i]] <- sum(indexes)
 		leadingGenes[[i]] <- paste(rownames(genes)[indexes], collapse=";")
 
-		# Plot GSEA-like enrichment plot
-		png(file.path(outputF, paste0(geneSet, ".png")), bg="transparent")
-		plot.new()
-		par(fig=c(0, 1, 0.5, 1), mar=c(0, 5, 2, 3), new=TRUE)
-		plot(1:length(gseaRes$Running_Sums[, geneSet]), gseaRes$Running_Sums[, geneSet],
-			type="l", main=paste0("Enrichment plot: ", geneSet),
-			xlab="", ylab="Enrichment Score", xaxt='n')
-		abline(v=peakIndex, lty=3)
-		par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 5, 0, 3), new=TRUE)
-		plot(genes$rank, rep(1, nrow(genes)), type="h",
-			xlim=c(1, length(sortedScores)), ylim=c(0, 1), axes=FALSE, ann=FALSE)
-		par(fig=c(0, 1, 0, 0.35), mar=c(4, 5, 0, 3), new=TRUE)
-		plot(1:length(sortedScores), sortedScores, type="h",
-			ylab="Ranked list metric", xlab="Rank in Ordered Dataset")
-		abline(v=peakIndex, lty=3)
-		dev.off()
+		if (isOutput) {
+			# Plot GSEA-like enrichment plot
+			png(file.path(outputF, paste0(geneSet, ".png")), bg="transparent")
+			plot.new()
+			par(fig=c(0, 1, 0.5, 1), mar=c(0, 5, 2, 3), new=TRUE)
+			plot(1:length(gseaRes$Running_Sums[, geneSet]), gseaRes$Running_Sums[, geneSet],
+				type="l", main=paste0("Enrichment plot: ", geneSet),
+				xlab="", ylab="Enrichment Score", xaxt='n')
+			abline(v=peakIndex, lty=3)
+			par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 5, 0, 3), new=TRUE)
+			plot(genes$rank, rep(1, nrow(genes)), type="h",
+				xlim=c(1, length(sortedScores)), ylim=c(0, 1), axes=FALSE, ann=FALSE)
+			par(fig=c(0, 1, 0, 0.35), mar=c(4, 5, 0, 3), new=TRUE)
+			plot(1:length(sortedScores), sortedScores, type="h",
+				ylab="Ranked list metric", xlab="Rank in Ordered Dataset")
+			abline(v=peakIndex, lty=3)
+			dev.off()
+		}
 	}
 	sig$leadingEdgeNum <- leadingGeneNum
 	sig$leadingEdgeId <- leadingGenes

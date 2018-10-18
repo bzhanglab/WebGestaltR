@@ -77,7 +77,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 
 	gseaRes <- gseaEnrichment(hostName, outputDirectory, projectName, interestGeneList,
 		geneSet, minNum=minNum, maxNum=maxNum, sigMethod=sigMethod, fdrThr=fdrThr,
-		topThr=topThr, perNum=perNum, nThreads=nThreads
+		topThr=topThr, perNum=perNum, nThreads=nThreads, isOutput=isOutput
 	)
 
 	if(.hasError(gseaRes)){
