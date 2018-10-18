@@ -1,7 +1,7 @@
 #' Site Weighted Gene Set Enrichment Analysis
 #'
 #' Performs site weighted gene set enrichment analysis or standard GSEA when
-#' likelihood/weight columns in \code{input_df} are 1 or 0, \cdoe{p=1},
+#' likelihood/weight columns in \code{input_df} are 1 or 0, \code{p=1},
 #' \code{q=1} and \code{thresh_type="val"}.
 #' 
 #' The formula for weighting is as follows
@@ -212,6 +212,7 @@ swGsea <- function(input_df, thresh_type="percentile", thresh=0.9, thresh_action
 	scaled_scores <- inset_mat
 	set_scores <- inset_mat * input_df[ , colnames(inset_mat)]
 	set_tot <- vector(mode = "numeric", length = ncol(inset_mat))
+	adj_expr_val <- (abs(input_df$expression_val))^p
 	for(d in 1:ncol(set_scores)){
 		if(max_score=="max"){
 			max_scores[d] <- max(set_scores[ , d])
@@ -231,7 +232,7 @@ swGsea <- function(input_df, thresh_type="percentile", thresh=0.9, thresh_action
 		scaled_scores[ , d] <- ((set_scores[ , d] - min_scores[d] + pc)/(max_scores[d] - min_scores[d] + pc))^q
 		# multiple by inset_mat to set scores for items not in set to 0
 		scaled_scores[ , d] <- scaled_scores[ ,d ] * inset_mat[ , d]
-		set_scores[ , d] <- scaled_scores[ , d] * ((abs(input_df$expression_val))^p)
+		set_scores[ , d] <- scaled_scores[ , d] * adj_expr_val
 		set_tot[d] <- sum(set_scores[ , d])
 	}
 
@@ -239,7 +240,7 @@ swGsea <- function(input_df, thresh_type="percentile", thresh=0.9, thresh_action
 	outset_mat <- 1 - inset_mat
 
 	# convert to vectors to matrices with same dimensions as inset_mat to use to calculate Running_Sum and for permutations below
-	expr_mat <- matrix(rep(input_df$expression_val, times = ncol(inset_mat)), nrow = nrow(input_df), dimnames = list(rownames(inset_mat), colnames(inset_mat)))
+	# expr_mat <- matrix(rep(input_df$expression_val, times = ncol(inset_mat)), nrow = nrow(input_df), dimnames = list(rownames(inset_mat), colnames(inset_mat)))
 	set_tot <- t(matrix(rep(set_tot, times=nrow(inset_mat)), nrow=length(set_tot), dimnames=list(colnames(inset_mat), rownames(inset_mat))))
 	outset_mat_sums <- t(matrix(rep(colSums(outset_mat), times=nrow(outset_mat)), nrow = ncol(outset_mat), dimnames = list(colnames(outset_mat), rownames(outset_mat))))
 	outset_scores <- outset_mat/outset_mat_sums
@@ -264,29 +265,35 @@ swGsea <- function(input_df, thresh_type="percentile", thresh=0.9, thresh_action
 	registerDoParallel(cl)
 	# use dorng instead of dopar to properly pass rng seed to foreach loop
 	rand_stats <- foreach(i=1:perms, .combine = 'rbind') %dorng% {
-		rand_df <- input_df[sample(nrow(input_df)), , drop = F]
-		rand_df$expression_val <- input_df$expression_val
-		rand_df <- rand_df[ , c("item","expression_val", colnames(inset_mat)), drop = F]
-		rand_scaled_scores <- scaled_scores[rand_df$item, , drop=F]
-		rand_outset_scores <- outset_scores[rand_df$item, , drop=F]
-		rand_set_tot <- numeric(ncol(inset_mat))
-		rand_adj_scores <- rand_scaled_scores * (abs(expr_mat)^p)
-		rand_set_tot <- colSums(rand_adj_scores)
-		rand_set_tot <- t(matrix(rep(rand_set_tot, times = nrow(rand_adj_scores)), nrow = length(rand_set_tot), dimnames = list(colnames(rand_adj_scores), rownames(rand_adj_scores))))
-		rand_scores <- (rand_adj_scores / (rand_set_tot + 0.000001)) - rand_outset_scores
-		rand_tot <- matrix(0, nrow = nrow(rand_scores), ncol = ncol(rand_scores))
-		rand_max <- numeric(ncol(inset_mat))
-		rand_min <- numeric(ncol(inset_mat))
-		rand_best <- numeric(ncol(inset_mat))
-		for(j in 1:ncol(rand_tot)){
-			rand_tot[ , j] <- cumsum(rand_scores[ , j])
-			rand_max[j] <- max(rand_tot[ , j])
-			rand_min[j] <- min(rand_tot[ , j])
-			if(rand_max[j] >= abs(rand_min[j])){
-				rand_best[j] <- rand_max[j]
-			} else { rand_best[j] <- rand_min[j] }
-		}
-		c(rand_min, rand_max, rand_best)
+		gseaPermutation(scaled_scores, outset_scores, adj_expr_val)
+
+		## R implementation of permutations
+		#
+		# rand_df <- input_df[sample(nrow(input_df)), , drop = F]
+		# rand_df$expression_val <- input_df$expression_val
+		# rand_df <- rand_df[ , c("item","expression_val", colnames(inset_mat)), drop = F]
+		# rand_scaled_scores <- scaled_scores[rand_df$item, , drop=F]
+		# rand_outset_scores <- outset_scores[rand_df$item, , drop=F]
+		#
+		# rand_adj_scores <- rand_scaled_scores * (abs(expr_mat)^p)
+		#
+		# rand_set_tot <- colSums(rand_adj_scores)
+		# rand_set_tot <- t(matrix(rep(rand_set_tot, times = nrow(rand_adj_scores)), nrow = length(rand_set_tot), dimnames = list(colnames(rand_adj_scores), rownames(rand_adj_scores))))
+		# rand_scores <- (rand_adj_scores / (rand_set_tot + 0.000001)) - rand_outset_scores
+		#
+		# rand_tot <- matrix(0, nrow = nrow(rand_scores), ncol = ncol(rand_scores))
+		# rand_max <- numeric(ncol(inset_mat))
+		# rand_min <- numeric(ncol(inset_mat))
+		# rand_best <- numeric(ncol(inset_mat))
+		# for(j in 1:ncol(rand_tot)){
+		# 	rand_tot[ , j] <- cumsum(rand_scores[ , j])
+		# 	rand_max[j] <- max(rand_tot[ , j])
+		# 	rand_min[j] <- min(rand_tot[ , j])
+		# 	if(rand_max[j] >= abs(rand_min[j])){
+		# 		rand_best[j] <- rand_max[j]
+		# 	} else { rand_best[j] <- rand_min[j] }
+		# }
+		# c(rand_min, rand_max, rand_best)
 	}
 	stopCluster(cl)
 	cat(paste0(perms, " permutations of ", expt, " complete...\n"))
