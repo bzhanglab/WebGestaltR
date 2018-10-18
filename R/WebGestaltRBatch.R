@@ -17,7 +17,7 @@ WebGestaltRBatch <- function(interestGeneFolder=NULL, interestGeneType=NULL, enr
 		cl <- makeCluster(nThreads)
 		registerDoParallel(cl)
 		resultList <- foreach(i=1:length(interestGeneFiles), .packages="WebGestaltR") %dopar% {
-			sig <- WebGestaltR(enrichMethod=enrichMethod, organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFiles[i], interestGene=NULL, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, perNum=perNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectNames[i], hostName=hostName)
+			sig <- WebGestaltR(enrichMethod=enrichMethod, organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFiles[i], interestGene=NULL, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, dNum=dNum, perNum=perNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectNames[i], nThreads=nThreads, hostName=hostName)
 			re <- list(filename=interestGeneFiles[i],enrichResult=sig)
 			return(re)
 		}

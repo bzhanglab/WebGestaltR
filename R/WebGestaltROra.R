@@ -1,4 +1,4 @@
-WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", hostName="http://www.webgestalt.org/"){
+WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", nThreads=1, hostName="http://www.webgestalt.org/"){
 	enrichMethod <- "ORA"
 
 	if(is.null(projectName)){
@@ -129,7 +129,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 			minusLogFdr <- -log(enrichedSig$FDR)
 			minusLogFdr[minusLogFdr == Inf] <- -log(.Machine$double.eps)
 			apRes <- affinityPropagation(idsInSet, minusLogFdr)
-			wscRes <- weightedSetCover(idsInSet, 1 / minusLogFdr, 10)
+			wscRes <- weightedSetCover(idsInSet, 1 / minusLogFdr, 10, nThreads)
 			writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
 			writeLines(c(paste0("# Coverage: ", wscRes$coverage), wscRes$topSets), file.path(projectDir, paste0("enriched_geneset_wsc_topsets_", projectName, ".txt")))
 			clusters$ap <- apRes

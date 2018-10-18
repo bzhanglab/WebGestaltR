@@ -1,4 +1,4 @@
-gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE) {
+gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, nThreads=1) {
 	projectFolder <- file.path(outputDirectory, paste("Project_", projectName, sep=""))
 	if (!dir.exists(projectFolder)) {
 		dir.create(projectFolder)
@@ -35,7 +35,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 
 	gseaRes <- swGsea(inputDf, thresh_type="val", perms=perNum,
 		min_set_size=minNum, max_set_size=maxNum,
-		nThreads=8, rng_seed=as.integer(format(Sys.time(), "%H%M%S"))
+		nThreads=nThreads, rng_seed=as.integer(format(Sys.time(), "%H%M%S"))
 	)
 	enrichRes <- gseaRes$Enrichment_Results %>%
 		mutate(geneSet = rownames(gseaRes$Enrichment_Results)) %>%
