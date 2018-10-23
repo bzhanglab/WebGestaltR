@@ -5,6 +5,19 @@
 
 using namespace Rcpp;
 
+// fillInputDataFrame
+DataFrame fillInputDataFrame(DataFrame gmt, CharacterVector genes, CharacterVector geneSets);
+RcppExport SEXP _WebGestaltR_fillInputDataFrame(SEXP gmtSEXP, SEXP genesSEXP, SEXP geneSetsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type gmt(gmtSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type genes(genesSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type geneSets(geneSetsSEXP);
+    rcpp_result_gen = Rcpp::wrap(fillInputDataFrame(gmt, genes, geneSets));
+    return rcpp_result_gen;
+END_RCPP
+}
 // gseaPermutation
 NumericVector gseaPermutation(NumericMatrix inset_scores, NumericMatrix outset_scores, NumericVector expression_value);
 RcppExport SEXP _WebGestaltR_gseaPermutation(SEXP inset_scoresSEXP, SEXP outset_scoresSEXP, SEXP expression_valueSEXP) {
@@ -20,6 +33,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_WebGestaltR_fillInputDataFrame", (DL_FUNC) &_WebGestaltR_fillInputDataFrame, 3},
     {"_WebGestaltR_gseaPermutation", (DL_FUNC) &_WebGestaltR_gseaPermutation, 3},
     {NULL, NULL, 0}
 };
