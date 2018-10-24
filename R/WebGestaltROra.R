@@ -126,10 +126,10 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
 			idsInSet <- sapply(enrichedSig$overlapId, strsplit, split=";")
 			names(idsInSet) <- enrichedSig$geneSet
-			minusLogFdr <- -log(enrichedSig$FDR)
-			minusLogFdr[minusLogFdr == Inf] <- -log(.Machine$double.eps)
-			apRes <- affinityPropagation(idsInSet, minusLogFdr)
-			wscRes <- weightedSetCover(idsInSet, 1 / minusLogFdr, setNum, nThreads)
+			minusLogP <- -log(enrichedSig$pValue)
+			minusLogP[minusLogP == Inf] <- -log(.Machine$double.eps)
+			apRes <- affinityPropagation(idsInSet, minusLogP)
+			wscRes <- weightedSetCover(idsInSet, 1 / minusLogP, setNum, nThreads)
 			writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
 			writeLines(c(paste0("# Coverage: ", wscRes$coverage), wscRes$topSets), file.path(projectDir, paste0("enriched_geneset_wsc_topsets_", projectName, ".txt")))
 			clusters$ap <- apRes
