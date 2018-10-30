@@ -95,7 +95,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 			enrichedSig <- enrichedSig %>%
 				left_join(geneSetDes, by="geneSet") %>%
 				select(geneSet, description, ES, NES, pValue, FDR, link, size, plotPath, leadingEdgeNum, leadingEdgeId) %>%
-				arrange(FDR, pValue)
+				arrange(FDR, pValue, desc(NES))
 		}
 
 		geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)

@@ -105,7 +105,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 			enrichedSig <- enrichedSig %>%
 				left_join(geneSetDes, by="geneSet") %>%
 				select(geneSet, description, link, C, O, E, R, pValue, FDR, overlapId) %>%
-				arrange(FDR, pValue)
+				arrange(FDR, pValue, desc(C))
 		}
 
 
