@@ -67,14 +67,17 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		background <- data.frame()
 	}
 	version <- packageVersion("WebGestaltR")
+	hasGeneSetDag = !is.null(geneSetDag)
+	hasCytoscape <- hasGeneSetDag || grepl("^network_", enrichDatabase) # DAG or network needs cytoscape
 
 	header <- readLines(system.file("templates/header.mustache", package="WebGestaltR"))
 	footer <- readLines(system.file("templates/footer.mustache", package="WebGestaltR"))
 	template <- readLines(system.file("templates/template.mustache", package="WebGestaltR"))
 	data <- list(hostName=hostName, geneSetNet=geneSetNet, bodyContent=bodyContent,
+				organism=organism, enrichDatabase=enrichDatabase,
 				sigJson=toJSON(unname(rowSplit(enrichedSig))), insigJson=toJSON(unname(rowSplit(background))),
-				dagJson=toJSON(unname(dagJson)), hasGeneSetDag=!is.null(geneSetDag), version=version,
-				clusterJson=toJSON(clusters),
+				dagJson=toJSON(unname(dagJson)), hasGeneSetDag=hasGeneSetDag, version=version,
+				clusterJson=toJSON(clusters), hasCytoscape=hasCytoscape,
 				geneTableJson=toJSON(geneTables), standardId=standardId, numAnnoRefUserId=numAnnoRefUserId,
 				methodIsGsea=enrichMethod=="GSEA", hasGeneSetDes=!is.null(geneSetDes)
 				)
