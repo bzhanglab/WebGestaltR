@@ -15,12 +15,12 @@ ga('send', 'pageview');
 	{{#geneSetNet}}
 	<!-- TODO -->
 	{{/geneSetNet}}
-	{{#hasGeneSetDag}}
+	{{#hasCytoscape}}
 	<script src="{{hostName}}/assets/{{version}}/build/cytoscape.min.js"></script>
-	{{/hasGeneSetDag}}
-	{{^hasGeneSetDag}}
+	{{/hasCytoscape}}
+	{{^hasCytoscape}}
 	<script>window.cytoscape = null;</script>
-	{{/hasGeneSetDag}}
+	{{/hasCytoscape}}
 	<link rel="stylesheet" href="{{hostName}}/assets/{{version}}/build/wg.css">
 <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
 </head>
@@ -45,6 +45,9 @@ var clusters = {{{clusterJson}}};
 var dag = {{{dagJson}}};
 {{/hasGeneSetDag}}
 wgLib({
+	enrichDatabase: "{{enrichDatabase}}",
+	organism: "{{organism}}",
+	hostName: "{{hostName}}",
 	enrichment: enrichment,
 	background: background,
 	geneTables: geneTables,
