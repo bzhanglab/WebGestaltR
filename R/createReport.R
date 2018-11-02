@@ -18,7 +18,11 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, geneSet)
 
 		if (!is.null(enrichedSig) && dNum < nrow(enrichedSig)) {
-			enrichedSig <- enrichedSig[1:dNum, ]
+			if (enrichMethod == "ORA") {
+				enrichedSig <- enrichedSig[1:dNum, ]
+			} else if (enrichMethod == "GSEA") {
+				enrichedSig <- getTopGseaResults(enrichedSig, dNum / 2)[[1]]
+			}
 		}
 
 		standardId <- interestingGeneMap$standardId
@@ -51,7 +55,11 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, geneSet)
 
 		if (!is.null(enrichedSig) && dNum < nrow(enrichedSig)) {
-			enrichedSig <- enrichedSig[1:dNum, ]
+			if (enrichMethod == "ORA") {
+				enrichedSig <- enrichedSig[1:dNum, ]
+			} else if (enrichMethod == "GSEA") {
+				enrichedSig <- getTopGseaResults(enrichedSig, dNum / 2)[[1]]
+			}
 		}
 
 		##############Enrich Result################

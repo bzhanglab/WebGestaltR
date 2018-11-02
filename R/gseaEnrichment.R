@@ -47,13 +47,9 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 		insig <- filter(enrichRes, FDR >= fdrThr)
 	} else if (sigMethod == "top") {
 		enrichRes <- arrange(enrichRes, FDR, pValue)
-		if (nrow(enrichRes) > topThr) {
-			sig <- enrichRes[1: topThr, ]
-			insig <- enrichRes[(topThr+1):nrow(enrichRes), ]
-		} else {
-			sig <- enrichRes
-			insig <- NULL
-		}
+		tmpRes <- getTopGseaResults(enrichRes, topThr)
+		sig <- tmpRes[[1]]
+		insig <-tmpRes[[2]]
 	}
 	numSig = nrow(sig)
 	if (numSig == 0) {

@@ -48,3 +48,31 @@ getGeneTables <- function(organism, enrichedSig, geneColumn, interestingGeneMap)
 	return(table)
 }
 
+getTopGseaResults <- function(results, topThr) {
+	if (is.wholenumber(topThr)) {
+		posThr <- topThr
+		negThr <- topThr
+	} else {
+		posThr <- floor(topThr) + 1
+		negThr <- floor(topThr)
+	}
+	posRes <- filter(results, NES > 0)
+	if (nrow(posRes) > posThr) {
+		posSig <- posRes[1:posThr, ]
+		posInsig <- posRes[(posThr+1):nrow(posRes), ]
+	} else {
+		posSig <- posRes
+		posInsig <- NULL
+	}
+	negRes <- filter(results, NES < 0)
+	if (nrow(negRes) > negThr) {
+		negSig <- negRes[1: negThr, ]
+		negInsig <- negRes[(negThr+1):nrow(negRes), ]
+	} else {
+		negSig <- negRes
+		negInsig <- NULL
+	}
+	sig <- bind_rows(posSig, negSig)
+	insig <- bind_rows(posInsig, negInsig)
+	return(list(sig, insig))
+}
