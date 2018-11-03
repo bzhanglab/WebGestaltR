@@ -31,7 +31,7 @@ NumericVector gseaPermutation(NumericMatrix inset_scores, NumericMatrix outset_s
 	size_t num_set = inset_scores.ncol();
 	NumericMatrix rand_tot(num_gene, num_set);
 	NumericVector rand_res(3 * num_set); //rand_min, rand_max, rand_best concatenated
-	double rand_min, rand_max;
+	double rand_min = 0, rand_max = 0;
 
 	IntegerVector rand_index = sample(num_gene, num_gene);
 	NumericMatrix rand_inset_scores = shuffleAndMultiplyColumn(inset_scores, expression_value, rand_index);
@@ -47,7 +47,7 @@ NumericVector gseaPermutation(NumericMatrix inset_scores, NumericMatrix outset_s
 		rand_tot(_, j) = cumsum(rand_inset_scores(_, j)).get();
 		rand_max = max(rand_tot(_, j));
 		rand_min = min(rand_tot(_, j));
-		if (rand_max > abs(rand_min)) {
+		if (rand_max > std::abs(rand_min)) {
 			rand_res[j + 2 * num_set] = rand_max;
 		} else {
 			rand_res[j + 2 * num_set] = rand_min;
