@@ -13,22 +13,17 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 				cat(error)
 				return(error)
 			}else{
-				inputGene <- tryCatch(read_tsv(inputGeneFile, col_names=FALSE, col_types="c"),
-					error=function(e) return("ERROR: The format of the uploaded gene list is incorrect, the file name contains the special characters or the character encoding in the file is not UTF-8. Please check the file format, file name or character encoding.")
+				inputGene <- read_tsv(inputGeneFile, col_names=FALSE, col_types="c")
+				error <- tryCatch(stop_for_problems(inputGene),
+					error=function(e) return("ERROR: The format of the uploaded gene list is incorrect. Please make sure the file only contains one column of gene IDs.")
 				)
 
-				if(.hasError(inputGene)){
-					cat(inputGene)
-					return(inputGene)
-				}
-
-				if(ncol(inputGene)!=1){
-					error <- "ERROR: For the user ID list, please upload a 'txt' file with only one column."
+				if(.hasError(error)){
 					cat(error)
 					return(error)
-				}else{
-					return(inputGene[[1]])
 				}
+
+				return(inputGene[[1]])
 			}
 		}else{
 			if(!is.null(inputGene)){
@@ -55,24 +50,25 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 				cat(error)
 				return(error)
 			}else{
-				inputGene <- tryCatch(read_tsv(inputGeneFile, col_names=c("gene", "score"), col_types="cd"),
-					error=function(e) return("ERROR: The format of the uploaded ranked list is incorrect, the file name contains the special characters or the character encoding in the file is not UTF-8. Please check the file format, file name or character encoding.")
-				)
-
-				if(.hasError(inputGene)){
-					cat(inputGene)
-					return(inputGene)
-				}
-
-				if(ncol(inputGene)!=2){
+				inputGene <- read_tsv(inputGeneFile, col_names=c("gene", "score"), col_types="cd")
+				# readr just gives warning
+				if (all(is.na(inputGene$gene)) || all(is.na(inputGene$score))) {
 					error <- "ERROR: For the ranked list, please upload a 'rnk' file with two columns (ids and scores)."
 					cat(error)
 					return(error)
-				}else{
-					#########GSEA do not allow the second column contains NA. Thus, we should remove NA first############
-					#inputGene <- inputGene[!is.na(inputGene$score), ]
-					return(filter(inputGene, !is.na(score)))
 				}
+
+				error <- tryCatch(stop_for_problems(inputGene),
+					error=function(e) return("ERROR: The format of the uploaded ranked list is incorrect. Please make sure the file contains two column of gene IDs and scores.")
+				 )
+
+				if(.hasError(error)){
+					cat(error)
+					return(error)
+				}
+
+				#########GSEA do not allow the second column contains NA. Thus, we should remove NA first############
+				return(filter(inputGene, !is.na(score)))
 			}
 		}else{
 			if(!is.null(inputGene)){
