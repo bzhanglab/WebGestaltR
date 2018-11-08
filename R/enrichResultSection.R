@@ -1,7 +1,8 @@
-enrichResultSection <- function(enrichMethod, geneSetDes, geneSetDag, clusters) {
+enrichResultSection <- function(enrichMethod, geneSetDes, geneSetDag, geneSetNet, clusters) {
 	data <- list(methodIsOra=enrichMethod=='ORA',
 				hasGeneSetDes=!is.null(geneSetDes),
 				hasGeneSetDag=!is.null(geneSetDag),
+				hasGeneSetNet=!is.null(geneSetNet),
 				hasAp=!is.null(clusters$ap),
 				hasWsc=!is.null(clusters$wsc)
 				)

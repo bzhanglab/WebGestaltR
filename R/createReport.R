@@ -37,7 +37,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 
 		############Enrichment result##################
 		if(!is.null(enrichedSig)){
-			bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, geneSetDes, geneSetDag, clusters), seq='\n')
+			bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, geneSetDes, geneSetDag, geneSetNet, clusters), seq='\n')
 			if (!is.null(geneSetDag)) {
 				dagRes <- expandDag(enrichedSig$geneSet, geneSetDag)
 				dagEdges <- dagRes$edges
@@ -64,7 +64,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 
 		##############Enrich Result################
 		if(!is.null(enrichedSig)){
-			bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, geneSetDes, geneSetDag), seq='\n')
+			bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, geneSetDes, geneSetDag, geneSetNet, clusters), seq='\n')
 		}
 		standardId <- NULL
 	}
@@ -76,7 +76,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	}
 	version <- packageVersion("WebGestaltR")
 	hasGeneSetDag = !is.null(geneSetDag)
-	hasCytoscape <- hasGeneSetDag || grepl("^network_", enrichDatabase) # DAG or network needs cytoscape
+	hasCytoscape <- hasGeneSetDag || !is.null(geneSetNet) # DAG or network needs cytoscape
 
 	header <- readLines(system.file("templates/header.mustache", package="WebGestaltR"))
 	footer <- readLines(system.file("templates/footer.mustache", package="WebGestaltR"))
