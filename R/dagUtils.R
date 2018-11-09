@@ -45,10 +45,12 @@ getDagNodes <- function(enrichedRes, allGoList, goIdName, enrichMethod, dagColor
 	}))
 }
 
+
+colorPos <- "steelblue"
+colorNeg <- "darkorange"
+colorNeutral <- "white"
+
 getColorPalette <- function(enrichedRes, enrichMethod, schema) {
-	colorPos <- "steelblue"
-	colorNeg <- "darkorange"
-	colorNeutral <- "white"
 	if (schema == "binary") {
 		if (enrichMethod == "ORA") {
 			return(function(goTerm) {
@@ -86,23 +88,9 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 			fdr <- sign(enrichedRes$NES) * (-log10(fdr))
 			minFdrLog <- min(fdr)
 			maxFdrLog <- max(fdr)
-			if (minFdrLog > 0) {
-				colorPalette <- colorRampPalette(c(colorNeutral, colorPos))(128)
-				myBreak <- seq(0, maxFdrLog + 0.01, length.out=129)
-			}else{
-				if (maxFdrLog < 0) {
-					colorPalette <- colorRampPalette(c(colorNeg, colorNeutral))(128)
-					myBreak <- seq(minFdrLog- 0.01, 0, length.out=129)
-				}else{
-					if (abs(minFdrLog) > maxFdrLog) {
-						colorPalette <- colorRampPalette(c(colorNeg, colorNeutral, colorPos))(256)
-						myBreak <- c(seq(minFdrLog-0.01, -0.01, length.out=128), 0, seq(0.01, -minFdrLog+0.01, length.out=128))
-					}else{
-						colorPalette <- colorRampPalette(c(colorNeg, colorNeutral, colorPos))(256)
-						myBreak <- c(seq(-maxFdrLog-0.01, -0.01, length.out=128), 0, seq(0.01, maxFdrLog+0.01, length.out=128))
-					}
-				}
-			}
+			tmp <- getPaletteForGsea(maxFdrLog, minFdrLog)
+			colorPalette <- tmp[[1]]
+			myBreak <- tmp[[2]]
 			return(function(goTerm) {
 				row <- filter(enrichedRes, geneSet == goTerm)
 				if (nrow(row) == 0) {
@@ -116,5 +104,25 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 			})
 		}
 	}
+}
 
+getPaletteForGsea <- function(maxScore, minScore) {
+	if (minScore > 0) {
+		colorPalette <- colorRampPalette(c(colorNeutral, colorPos))(128)
+		myBreak <- seq(0, maxScore + 0.01, length.out=129)
+	}else{
+		if (maxScore < 0) {
+			colorPalette <- colorRampPalette(c(colorNeg, colorNeutral))(128)
+			myBreak <- seq(minScore- 0.01, 0, length.out=129)
+		}else{
+			if (abs(minScore) > maxScore) {
+				colorPalette <- colorRampPalette(c(colorNeg, colorNeutral, colorPos))(256)
+				myBreak <- c(seq(minScore-0.01, -0.01, length.out=128), 0, seq(0.01, -minScore+0.01, length.out=128))
+			}else{
+				colorPalette <- colorRampPalette(c(colorNeg, colorNeutral, colorPos))(256)
+				myBreak <- c(seq(-maxScore-0.01, -0.01, length.out=128), 0, seq(0.01, maxScore+0.01, length.out=128))
+			}
+		}
+	}
+	return(list(colorPalette, myBreak))
 }

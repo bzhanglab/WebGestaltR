@@ -1,4 +1,4 @@
-linkModification <- function(enrichDatabase,enrichPathwayLink,geneList,interestingGeneMap){
+linkModification <- function(enrichMethod, enrichDatabase, enrichPathwayLink, geneList, interestingGeneMap) {
 	#####Modify the link to highlight the genes in the pathways. Currently, we only have wikipathway and kegg pathways that need to modify the link########
 
 	if(enrichDatabase=="pathway_KEGG"){
@@ -6,7 +6,7 @@ linkModification <- function(enrichDatabase,enrichPathwayLink,geneList,interesti
 		return(link)
 	}
 	if(startsWith(enrichDatabase, "pathway_Wikipathway")){
-		link <- wikiLinkModification(enrichPathwayLink,geneList,interestingGeneMap)
+		link <- wikiLinkModification(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap)
 		return(link)
 	}
 	return(enrichPathwayLink)
@@ -18,13 +18,27 @@ keggLinkModification <- function(enrichPathwayLink,geneList){
 	return(enrichPathwayLink)
 }
 
-wikiLinkModification <- function(enrichPathwayLink,geneList,interestingGeneMap){
+wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap) {
 	geneMap <- interestingGeneMap$mapped
 	geneList <- unlist(strsplit(geneList,";"))
-	geneSymbol <- geneMap$geneSymbol[geneMap$entrezgene %in% geneList]
-	for(i in c(1:length(geneSymbol))) {
-		enrichPathwayLink <- paste0(enrichPathwayLink, "&label[]=", geneSymbol[i], "&xref[]=", geneList[i], ",Entrez Gene")
+	geneMap <- filter(geneMap, entrezgene %in% geneList)
+	enrichPathwayLink <- paste0(enrichPathwayLink,
+		paste0(sapply(geneMap$geneSymbol, function(x) paste0("&label[]=", x)), collapse="")
+		#not many pathway have entrezgene xref. Using both also seem to interfere with coloring
+		#paste0(sapply(geneMap$entrezgene, function(x) paste0("&xref[]=", x, ",Entrez Gene")), collapse="")
+	)
+	if (enrichMethod == "ORA") {
+		enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
+	} else if (enrichMethod == "GSEA") {
+		scores <- filter(interestingGeneMap$mapped, entrezgene %in% geneList)[["score"]]
+		maxScore <- max(scores)
+		minScore <- min(scores)
+		tmp <- getPaletteForGsea(maxScore, minScore)
+		palette <- tmp[[1]]
+		breaks <- tmp[[2]]
+		colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
+		colorStr <- paste(gsub("#", "%23", colors, fixed=TRUE), collapse=",")
+		enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorStr)
 	}
-	enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=red")
 	return(enrichPathwayLink)
 }
