@@ -60,7 +60,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 			if(databaseStandardId=="entrezgene"){
 				cat("Summarize the uploaded ID list by GO Slim data...\n")
 				goSlimOutput <- file.path(projectDir, paste0("goslim_summary_", projectName))
-				re <- goSlimSummary(organism=organism,geneList=interestGeneList[[interestStandardId]],outputFile=goSlimOutput,outputType="png",hostName=hostName)
+				re <- goSlimSummary(organism=organism, geneList=interestGeneList[[interestStandardId]], outputFile=goSlimOutput, outputType="png", isOutput=isOutput, hostName=hostName)
 				if(.hasError(re)){
 					return(re)
 				}

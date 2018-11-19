@@ -1,5 +1,5 @@
-goSlimSummary <- function(organism="hsapiens",geneList,outputFile,outputType="pdf",hostName="http://www.webgestalt.org"){
-	organisms <- listOrganism(hostName=hostName)
+goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType="pdf",isOutput=TRUE, hostName="http://www.webgestalt.org") {
+	organisms <- listOrganism(hostName=hostName) 
 	if(!(organism %in% organisms)){
 		error <- paste("ERROR: ",organism," can not be supported.",sep="")
 		cat(error)
@@ -27,6 +27,9 @@ goSlimSummary <- function(organism="hsapiens",geneList,outputFile,outputType="pd
 	}else{
 		bpGoCnts<- bpRes$goTermCounts
 		bpUnclassified <- bpRes$dataUnclassified
+		if (isOutput) {
+			write.table(bpGoCnts, paste0(outputFile, "_bp.txt"), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
+		}
 	}
 
 	ccRes <- .processData(organism,hostName,geneList,"CellularComponent")
@@ -35,6 +38,9 @@ goSlimSummary <- function(organism="hsapiens",geneList,outputFile,outputType="pd
 	}else{
 		ccGoCnts <- ccRes$goTermCounts
 		ccUnclassified <- ccRes$dataUnclassified
+		if (isOutput) {
+			write.table(ccGoCnts, paste0(outputFile, "_cc.txt"), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
+		}
 	}
 
 	mfRes <- .processData(organism,hostName,geneList,"MolecularFunction")
@@ -43,6 +49,9 @@ goSlimSummary <- function(organism="hsapiens",geneList,outputFile,outputType="pd
 	}else{
 		mfGoCnts <- mfRes$goTermCounts
 		mfUnclassified <- mfRes$dataUnclassified
+		if (isOutput) {
+			write.table(mfGoCnts, paste0(outputFile, "_mf.txt"), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
+		}
 	}
 
 	if(outputType=="pdf"){
