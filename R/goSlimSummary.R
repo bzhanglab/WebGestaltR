@@ -1,5 +1,5 @@
 goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType="pdf",isOutput=TRUE, hostName="http://www.webgestalt.org") {
-	organisms <- listOrganism(hostName=hostName) 
+	organisms <- listOrganism(hostName=hostName)
 	if(!(organism %in% organisms)){
 		error <- paste("ERROR: ",organism," can not be supported.",sep="")
 		cat(error)

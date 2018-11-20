@@ -31,7 +31,8 @@ readGMT <- readGmt
 .toList <- function(data){
 	if(length(data)>2){
 		data <- data[!is.na(data)]
-		data1 <- cbind(rep(data[1],length(data)-2),rep(data[2],length(data)-2),data[c(-1,-2)])
+		# replace % in gene set names to _, because png treats % in filename specially
+		data1 <- cbind(rep(gsub('%', '_', data[1], fixed=TRUE), length(data)-2), rep(data[2], length(data)-2), data[c(-1,-2)])
 		return(data1)
 	}else{
 		return(NULL)
