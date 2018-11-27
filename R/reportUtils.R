@@ -74,5 +74,11 @@ getTopGseaResults <- function(results, topThr) {
 	}
 	sig <- bind_rows(posSig, negSig)
 	insig <- bind_rows(posInsig, negInsig)
+	if (nrow(sig) == 0) {
+		sig <- NULL
+	}
+	if (nrow(insig) == 0) {
+		insig <- NULL
+	}
 	return(list(sig, insig))
 }
