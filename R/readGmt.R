@@ -11,7 +11,8 @@ readGmt <- function(gmtFile){
 		if(file_extension(gmtFile) != "gmt"){
 			return(gmtFormatError("empty"))
 		}
-		data <- readLines(gmtFile)
+		# remove BOM in some windows files
+		data <- gsub("\xEF\xBB\xBF", "", readLines(gmtFile), useBytes=TRUE)
 	}
 	data <- strsplit(data,"\t")
 	data <- lapply(data,.toList)
