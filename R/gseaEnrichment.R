@@ -95,17 +95,17 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 
 		if (isOutput) {
 			# Plot GSEA-like enrichment plot
-			png(file.path(outputF, paste0(geneSet, ".png")), bg="transparent")
+			png(file.path(outputF, paste0(geneSet, ".png")), bg="transparent", width=1000, height=1000)
 			plot.new()
-			par(fig=c(0, 1, 0.5, 1), mar=c(0, 5, 2, 3), new=TRUE)
+			par(fig=c(0, 1, 0.5, 1), mar=c(0, 5, 3, 2), cex.axis=1.8, cex.main=2.5, cex.lab=2.5, new=TRUE)
 			plot(1:length(gseaRes$Running_Sums[, geneSet]), gseaRes$Running_Sums[, geneSet],
 				type="l", main=paste0("Enrichment plot: ", geneSet),
 				xlab="", ylab="Enrichment Score", xaxt='n')
 			abline(v=peakIndex, lty=3)
-			par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 5, 0, 3), new=TRUE)
+			par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 5, 0, 2), new=TRUE)
 			plot(genes$rank, rep(1, nrow(genes)), type="h",
 				xlim=c(1, length(sortedScores)), ylim=c(0, 1), axes=FALSE, ann=FALSE)
-			par(fig=c(0, 1, 0, 0.35), mar=c(4, 5, 0, 3), new=TRUE)
+			par(fig=c(0, 1, 0, 0.35), mar=c(4, 5, 0, 2), cex.axis=1.8, cex.lab=2.5, new=TRUE)
 			plot(1:length(sortedScores), sortedScores, type="h",
 				ylab="Ranked list metric", xlab="Rank in Ordered Dataset")
 			abline(v=peakIndex, lty=3)
