@@ -2,7 +2,6 @@
 #include <stdlib.h>
 using namespace Rcpp;
 
-const double SMALL_NUM = 0.000001;
 
 NumericMatrix shuffleAndMultiplyColumn(NumericMatrix mat, NumericVector vec, IntegerVector rand_index) {
 	//multiply vector with matrix columns which are shuffled ad hoc by index
@@ -11,6 +10,13 @@ NumericMatrix shuffleAndMultiplyColumn(NumericMatrix mat, NumericVector vec, Int
 	for (size_t j = 0; j < ncol; j++) {
 		for (size_t i = 0; i < nrow; i++) {
 			m(i, j) = mat(rand_index[i] - 1, j) * vec[i];
+		}
+		// rare cases when all genes have zero expression values in permutation
+		// adjust to just 1/0 for standard GSEA, or weighted set membership inset matrix
+		if (is_true(all(m(_, j) == 0))) {
+			for (size_t i = 0; i < nrow; i++) {
+				m(i, j) = mat(rand_index[i] - 1, j);
+			}
 		}
 	}
 	return m;
@@ -39,7 +45,7 @@ NumericVector gseaPermutation(NumericMatrix inset_scores, NumericMatrix outset_s
 
 	for (size_t i = 0; i < num_gene; i++) {
 		//shuffle outset scores here when in use without copying values beforehand
-		rand_inset_scores(i, _) = (rand_inset_scores(i, _) / (rand_set_tot + SMALL_NUM)) - outset_scores(rand_index[i] - 1, _);
+		rand_inset_scores(i, _) = (rand_inset_scores(i, _) / rand_set_tot) - outset_scores(rand_index[i] - 1, _);
 	}
 
 	for (size_t j = 0; j < num_set; j++) {

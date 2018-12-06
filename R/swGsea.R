@@ -233,8 +233,10 @@ swGsea <- function(input_df, thresh_type="percentile", thresh=0.9, thresh_action
 		# multiple by inset_mat to set scores for items not in set to 0
 		scaled_scores[ , d] <- scaled_scores[ ,d ] * inset_mat[ , d]
 		set_scores[ , d] <- scaled_scores[ , d] * adj_expr_val
-		tmp_sum <- sum(set_scores[ , d])
-		set_tot[d] <- ifelse(tmp_sum == 0, 0.000001, tmp_sum)
+		if (sum(set_scores[ , d]) == 0) {
+			set_scores[ , d] <- scaled_scores[ , d]
+		}
+		set_tot[d] <- sum(set_scores[ , d])
 	}
 
 	# get set of items not in in_set
