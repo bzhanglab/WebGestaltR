@@ -61,14 +61,15 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 	}
 
 	if (targetIdType != "entrezgene" && sourceIdType!=targetIdType) {
-		entrezgeneMapRes <- idMappingGene(organism, dataType="list", inputGene=inputGeneL, sourceIdType=sourceIdType, targetIdType="entrezgene")
-		inputGene <- merge(x=inputGene, y=entrezgeneMapRes, by="userId", all.x=TRUE)
+		entrezgeneMapRes <- idMappingGene(organism, dataType="list", inputGene=inputGeneL, sourceIdType=sourceIdType, targetIdType="entrezgene", hostName=hostName)
+		inputGene <- left_join(inputGene, entrezgeneMapRes$mapped, by="userId")
+
 		if (dataType=="list") {
-			inputGene <- select(inputGene, userId, geneSymbol, geneName, entrezgene, targetIdType)
+			inputGene <- select(inputGene, userId, geneSymbol=geneSymbol.x, geneName=geneName.x, entrezgene, targetIdType)
 		} else if (dataType=="rnk") {
-			inputGene <- select(inputGene, userId, geneSymbol, geneName, entrezgene, targetIdType, score)
+			inputGene <- select(inputGene, userId, geneSymbol=geneSymbol.x, geneName=geneName.x, entrezgene, targetIdType, score)
 		} else if (dataType=="gmt") {
-			inputGene <- select(inputGene, geneSet, description, userId, geneSymbol, geneName, entrezgene, targetIdType)
+			inputGene <- select(inputGene, geneSet, description, userId, geneSymbol.x=geneSymbol.x, geneName=geneName.x, entrezgene, targetIdType)
 		}
 	}
 	inputGene$gLink <- paste0("https://www.ncbi.nlm.nih.gov/gene/?term=", inputGene$entrezgene)
