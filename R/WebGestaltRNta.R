@@ -7,6 +7,10 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	dir.create(projectDir)
 
 	inputGene <- formatCheck("list", inputGeneFile=inputSeedFile, inputGene=inputSeed)
+	# only networks are in gene symbols
+	# mapping always returns gene symbol, could map to genesymbol but takes two requests
+	inputGene <- idMappingGene(organism=organism, dataType="list", inputGene=inputGene, sourceIdType="entrezgene", targetIdType="entrezgene", mappingOutput=FALSE, hostName=hostName)
+	inputGene <- inputGene$mapped$geneSymbol
 
 	geneSetUrl <- file.path(hostName, "api", "geneset")
 	response <- GET(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="entrezgene", fileType="dag"))

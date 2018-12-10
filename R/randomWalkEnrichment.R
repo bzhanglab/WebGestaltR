@@ -46,6 +46,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	if (length(allN) != 0){
 		termInfo <- .enrichmentFunction(organism, netNode, allN, goAnn, seeds, sigMethod, fdrThr, topThr, hostName)
 	} else {
+		# should raise a error?
 		termInfo <- NULL
 	}
 
@@ -75,7 +76,9 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	write(overlapSeeds, file.path(projectDir, paste0(fileName, "_seedsInSubnetwork.txt")))
 	write_tsv(as.data.frame(subNet), file.path(projectDir, paste0(fileName, "_randomWalkNetwork.txt")), col_names=FALSE)
 	write_tsv(candidate, file.path(projectDir, paste0(fileName, "_candidate.txt")), col_names=FALSE)
-	write_tsv(termInfo, file.path(projectDir, paste0(fileName, "_enrichedResult.txt")))
+	if (!is.null(termInfo)) {
+		write_tsv(termInfo, file.path(projectDir, paste0(fileName, "_enrichedResult.txt")))
+	}
 }
 
 
