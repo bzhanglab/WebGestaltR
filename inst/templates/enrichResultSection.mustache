@@ -21,6 +21,12 @@
 		{{/hasWsc}}
 	</p>
 	<b-tabs v-model="activeTab" type="is-toggle">
+		<b-tab-item label="Table">
+			<wg-result-table
+				:data="enrichment"
+				:method="enrichMethod"
+			></wg-resutl-table>
+		</b-tab-item>
 		<b-tab-item label="Bar chart">
 		<div class="vertical-center-container">
 			<wg-bar-plot
