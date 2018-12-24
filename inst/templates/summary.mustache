@@ -20,38 +20,41 @@
 		</a>
 	</div>
 	<div class="card-content content" v-show="summaryShown">
-<b>Enrich method:</b> {{enrichMethod}}<br/>
-<b>Organism: </b>{{organism}}<br/>
-{{^organismIsOthers}}
-	{{#enrichDatabaseIsOthers}}
-	<b>Enrichment Categories: </b>{{enrichDatabaseFile}} <b>ID Type:</b>{{enrichDatabaseType}}{{#hasEnrichDatabaseDescriptioFile}} <b>Description File:</b>{{enrichDatabaseDescriptionFile}}{{/hasEnrichDatabaseDescriptioFile}}<br/>
-	{{/enrichDatabaseIsOthers}}
-	{{^enrichDatabaseIsOthers}}
-	<b>Enrichment Categories: </b>{{enrichDatabase}}<br/>
-	{{/enrichDatabaseIsOthers}}
-{{/organismIsOthers}}
+		<ul id="summary-list"> {{! end of list in summaryOra or summaryGsea }}
+		<li><b>Enrich method:</b> {{enrichMethod}}</li>
+		<li><b>Organism: </b>{{organism}}</li>
+		<li>
+		{{^organismIsOthers}}
+			{{#enrichDatabaseIsOthers}}
+			<b>Enrichment Categories: </b>{{enrichDatabaseFile}} <b>ID Type: </b>{{enrichDatabaseType}}{{#hasEnrichDatabaseDescriptioFile}} <b>Description File: </b>{{enrichDatabaseDescriptionFile}}{{/hasEnrichDatabaseDescriptioFile}}
+			{{/enrichDatabaseIsOthers}}
+			{{^enrichDatabaseIsOthers}}
+			<b>Enrichment Categories: </b>{{enrichDatabase}}
+			{{/enrichDatabaseIsOthers}}
+		{{/organismIsOthers}}
+		</li>
 
-{{^organismIsOthers}}
-	{{#hasInterestGeneFile}}
-	<b>Interesting list: </b>{{interestGeneFileBase}}. <b>ID type: </b>{{interestGeneType}}<br/>
-	{{/hasInterestGeneFile}}
-	{{^hasInterestGeneFile}}
-	<b>Interesting list: </b> a R object. <b> ID type: </b>{{interestGeneType}}<br/>
-	{{/hasInterestGeneFile}}
-	The interesting list contains <b>{{numUserId}}</b> user IDs in which <b>{{numMappedUserId}}</b> user IDs are unambiguously mapped to <b>{{numUniqueMappedId}}</b> unique {{standardId}} IDs and <b>{{numUnmappedUserId}}</b> user IDs can not be mapped to any {{standardId}} ID.<br/>
-	{{#idIsEntrezGene}}
-	The GO Slim summary are based upon the <b>{{numUniqueMappedId}}</b> unique {{standardId}} IDs.<br/>
-	{{/idIsEntrezGene}}
-{{/organismIsOthers}}
-{{#organismIsOthers}}
-	{{#hasInterestGeneFile}}
-	<b>Interesting list: </b>{{interestGeneFileBase}}.<br/>
-	{{/hasInterestGeneFile}}
-	{{^hasInterestGeneFile}}
-	<b>Interesting list: </b> a R object.<br/>
-	{{/hasInterestGeneFile}}
-{{/organismIsOthers}}
-{{{methodSpecificContent}}}
+		{{^organismIsOthers}}
+			{{#hasInterestGeneFile}}
+			<li><b>Interesting list: </b>{{interestGeneFileBase}}. <b>ID type: </b>{{interestGeneType}}</li>
+			{{/hasInterestGeneFile}}
+			{{^hasInterestGeneFile}}
+			<li><b>Interesting list: </b> a R object. <b> ID type: </b>{{interestGeneType}}</li>
+			{{/hasInterestGeneFile}}
+			<li>The interesting list contains <b>{{numUserId}}</b> user IDs in which <b>{{numMappedUserId}}</b> user IDs are unambiguously mapped to <b>{{numUniqueMappedId}}</b> unique {{standardId}} IDs and <b>{{numUnmappedUserId}}</b> user IDs can not be mapped to any {{standardId}} ID.</li>
+			{{#idIsEntrezGene}}
+			<li>The GO Slim summary are based upon the <b>{{numUniqueMappedId}}</b> unique {{standardId}} IDs.</li>
+			{{/idIsEntrezGene}}
+		{{/organismIsOthers}}
+		{{#organismIsOthers}}
+			{{#hasInterestGeneFile}}
+			<li><b>Interesting list: </b>{{interestGeneFileBase}}.</li>
+			{{/hasInterestGeneFile}}
+			{{^hasInterestGeneFile}}
+			<li><b>Interesting list: </b> a R object.</li>
+			{{/hasInterestGeneFile}}
+		{{/organismIsOthers}}
+		{{{methodSpecificContent}}}
 	</div>
 </div>
 </section>

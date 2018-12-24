@@ -1,10 +1,12 @@
 {{^organismIsOthers}}
-Among the <b>{{numUniqueUserId}}</b> unique {{standardId}} IDs, <b>{{numAnnoUserId}}</b> IDs are annotated to the selected functional categories, which are used for the enrichment analysis.<br/>
+<li>Among the <b>{{numUniqueUserId}}</b> unique {{standardId}} IDs, <b>{{numAnnoUserId}}</b> IDs are annotated to the selected functional categories, which are used for the enrichment analysis.</li>
 {{/organismIsOthers}}
 {{#organismIsOthers}}
-The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these IDs are used to perform the enrichment analysis.<br/>
+<li>The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these IDs are used to perform the enrichment analysis.</li>
 {{/organismIsOthers}}
-<b>Parameters for the enrichment analysis:</b>
+</ul> {{! end of summary list}}
+
+<p><b>Parameters for the enrichment analysis:</b></p>
 <ul><li><b>Minimum number of IDs in the category: </b>{{minNum}}</li>
 <li><b>Maximum number of IDs in the category: </b>{{maxNum}}</li>
 {{#methodIsFdr}}
@@ -14,15 +16,16 @@ The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these
 <li><b>Significance Level:</b> Top {{topThr}}</li>
 {{/methodIsTop}}
 <li><b>Number of permutation: </b>{{perNum}}</li>
+</ul>
 {{#hasEnrichedSig}}
-	Based on the above parameters, <b>{{#isPosRel}}{{numPosRel}}{{/isPosRel}}{{^isPosRel}}No{{/isPosRel}} positive related </b>categories and <b>{{#isNegRel}}{{numNegRel}}{{/isNegRel}}{{^isNegRel}}no{{/isNegRel}} negative related </b>categories are identified as enriched categories
+	<p>Based on the above parameters, <b>{{#isPosRel}}{{numPosRel}}{{/isPosRel}}{{^isPosRel}}No{{/isPosRel}} positive related </b>categories and <b>{{#isNegRel}}{{numNegRel}}{{/isNegRel}}{{^isNegRel}}no{{/isNegRel}} negative related </b>categories are identified as enriched categories
 	{{#showAll}}
 	and all are shown in this report.
 	{{/showAll}}
 	{{^showAll}}
-	, in which <b>{{dNum}}</b> most significant categories are shown in this report. All significant categories can be downloaded from the 'Result Download' link.
+	, in which <b>{{dNum}}</b> most significant categories are shown in this report. All significant categories can be downloaded from the 'Result Download' link.</p>
 	{{/showAll}}
 {{/hasEnrichedSig}}
 {{^hasEnrichedSig}}
-Based on the above parameters, <b>No</b> category is identified as enriched category.<br/>
+<p>Based on the above parameters, <b>No</b> category is identified as enriched category.</p>
 {{/hasEnrichedSig}}

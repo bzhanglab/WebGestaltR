@@ -1,30 +1,31 @@
 {{^organismIsOthers}}
-Among <b>{{numUniqueUserId}}</b> unique {{standardId}} IDs, <b>{{numAnnoRefUserId}}</b> IDs are annotated to the selected functional categories and also in the reference list, which are used for the enrichment analysis.<br/>
+<li>Among <b>{{numUniqueUserId}}</b> unique {{standardId}} IDs, <b>{{numAnnoRefUserId}}</b> IDs are annotated to the selected functional categories and also in the reference list, which are used for the enrichment analysis.</li>
 	{{#hasRefGeneFile}}
-	<b>Reference list: </b>{{referenceGeneFile}} <b>ID type: </b>{{referenceGeneType}}<br/>
+	<li><b>Reference list: </b>{{referenceGeneFile}} <b>ID type: </b>{{referenceGeneType}}</li>
 	{{/hasRefGeneFile}}
 	{{#hasRefGene}}
-	<b>Reference list: </b>a R object. <b>ID type: </b>{{referenceGeneType}}<br/>
+	<li><b>Reference list: </b>a R object. <b>ID type: </b>{{referenceGeneType}}</li>
 	{{/hasRefGene}}
 	{{^hasRefGeneFile}}
 		{{^hasRefGene}}
-		<b>Reference list: </b> all mapped {{standardId}} IDs from the selected platform {{referenceSet}}<br/>
+		<li><b>Reference list: </b> all mapped {{standardId}} IDs from the selected platform {{referenceSet}}</li>
 		{{/hasRefGene}}
 	{{/hasRefGeneFile}}
-	The reference list can be mapped to <b>{{numRefGene}}</b> {{standardId}} IDs and <b> {{numAnnoRefId}}</b> IDs are annotated to the selected functional categories that are used as the reference for the enrichment analysis.<br/>
+	<li>The reference list can be mapped to <b>{{numRefGene}}</b> {{standardId}} IDs and <b> {{numAnnoRefId}}</b> IDs are annotated to the selected functional categories that are used as the reference for the enrichment analysis.</li>
 	{{/organismIsOthers}}
 {{#organismIsOthers}}
-The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these IDs are used to perform the enrichment analysis.<br/>
+<li>The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these IDs are used to perform the enrichment analysis.</li>
 	{{#hasRefGeneFile}}
-	<b>Reference List: </b>{{referenceGeneFile}}<br/>
+	<li><b>Reference List: </b>{{referenceGeneFile}}</li>
 	{{/hasRefGeneFile}}
 	{{^hasRefGeneFile}}
-	<b>Reference List: </b>a R object<br/>
+	<li><b>Reference List: </b>a R object</li>
 	{{/hasRefGeneFile}}
-<b>Total number of reference IDs: </b>{{numRefGene}}<br/>
+<li><b>Total number of reference IDs: </b>{{numRefGene}}</li>
 {{/organismIsOthers}}
+</ul> {{! end of summary list}}
 
-<b>Parameters for the enrichment analysis:</b>
+<p><b>Parameters for the enrichment analysis:</b></p>
 <ul><li><b>Minimum number of IDs in the category: </b>{{minNum}}</li>
 <li><b>Maximum number of IDs in the category: </b>{{maxNum}}</li>
 <li><b>FDR Method: </b>{{fdrMethod}}</li>
@@ -37,12 +38,12 @@ The file contains <b>{{numUniqueUserId}}</b> user IDs (no ID mapping). All these
 </ul>
 {{#hasEnrichedSig}}
 	{{#showAll}}
-	Based on the above parameters, <b>{{numEnrichedSig}}</b> categories are identified as enriched categories and all are shown in this report.<br/>
+	<p>Based on the above parameters, <b>{{numEnrichedSig}}</b> categories are identified as enriched categories and all are shown in this report.</p>
 	{{/showAll}}
 	{{^showAll}}
-	Based on the above parameters, <b>{{numEnrichedSig}}</b> categories are identified as enriched categories, in which <b>{{dNum}}</b> most significant categories are shown in this report. All significant categories can be downloaded from the 'Result Download' link.<br/>
+	<p>Based on the above parameters, <b>{{numEnrichedSig}}</b> categories are identified as enriched categories, in which <b>{{dNum}}</b> most significant categories are shown in this report. All significant categories can be downloaded from the 'Result Download' link.</p>
 	{{/showAll}}
 {{/hasEnrichedSig}}
 {{^hasEnrichedSig}}
-Based on the above parameters, <b>No</b> category is identified as enriched category.<br/>
+<p>Based on the above parameters, <b>No</b> category is identified as enriched category.</p>
 {{/hasEnrichedSig}}
