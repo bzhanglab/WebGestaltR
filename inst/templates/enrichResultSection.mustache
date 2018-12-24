@@ -23,7 +23,7 @@
 	<b-tabs v-model="activeTab" type="is-toggle">
 		<b-tab-item label="Table">
 			<wg-result-table
-				:data="enrichment"
+				:data="enrichmentData"
 				:method="enrichMethod"
 			></wg-resutl-table>
 		</b-tab-item>
@@ -31,7 +31,7 @@
 		<div class="vertical-center-container">
 			<wg-bar-plot
 				:dimensions="bar.dimensions"
-				:data="barData"
+				:data="enrichmentData"
 				:value-key="bar.valueKey"
 				{{#hasGeneSetDes}}
 				name-key="description"
