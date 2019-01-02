@@ -30,6 +30,9 @@
 			{{/enrichDatabaseIsOthers}}
 			{{^enrichDatabaseIsOthers}}
 			<b>Enrichment Categories: </b>{{enrichDatabase}}
+			<a class="has-text-info" href="{{hostName}}/api/geneset?organism={{organism}}&database={{enrichDatabase}}&fileType=gmt">
+				<b-icon icon="download" size="is-small"></b-icon>
+			</a>
 			{{/enrichDatabaseIsOthers}}
 		{{/organismIsOthers}}
 		</li>

@@ -1,4 +1,4 @@
-summaryDescription <- function(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, geneSet) {
+summaryDescription <- function(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, geneSet, hostName) {
 	if(enrichMethod=="ORA"){
 		methodSpecificContent <- specificParameterSummaryOra(organism,referenceGeneList,geneSet,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,dNum,interestingGeneMap)
 	}
@@ -18,7 +18,7 @@ summaryDescription <- function(projectName, organism, interestGeneFile, interest
 			numUserId=nrow(interestingGeneMap$mapped)+length(interestingGeneMap$unmapped),
 			numMappedUserId=nrow(interestingGeneMap$mapped), numUniqueMappedId=length(unique(interestingGeneMap$mapped[[standardId]])),
 			numUnmappedUserId=length(interestingGeneMap$unmapped), idIsEntrezGene=standardId=="entrezgene", standardId=standardId,
-			methodSpecificContent=methodSpecificContent
+			methodSpecificContent=methodSpecificContent, hostName=hostName
 		)
 	}else {
 		data <- list(projectName=projectName, enrichMethod=enrichMethod, organism=organism, organismIsOthers=TRUE,
