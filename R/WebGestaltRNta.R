@@ -1,4 +1,4 @@
-WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", method="Network_Retrieval_Prioritization", inputSeed, inputSeedFile, interestGeneType=interestGeneType, edgeNum=10, seedNum=10, sigMethod="fdr", fdrThr=0.05, topThr=10, highlightOption="Seeds", outputDirectory=getwd(), projectName=NULL, hostName="http://www.webgestalt.org/") {
+WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", method="Network_Retrieval_Prioritization", inputSeed, inputSeedFile, interestGeneType="genesymbol", edgeNum=10, seedNum=10, sigMethod="fdr", fdrThr=0.05, topThr=10, highlightOption="Seeds", outputDirectory=getwd(), projectName=NULL, hostName="http://www.webgestalt.org/") {
 
 	if(is.null(projectName)){
 		projectName <- as.character(as.integer(Sys.time()))
