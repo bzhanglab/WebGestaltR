@@ -132,8 +132,8 @@ parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 	}
 }
 
-.dNumError <- function(dNum){   ##Input the number of visualized enriched category error
-	if (!is.wholenumber(dNum) || dNum<0) {
+.reportNumError <- function(reportNum){   ##Input the number of visualized enriched category error
+	if (!is.wholenumber(reportNum) || reportNum<0) {
 		error <- "ERROR: The number of enriched categories shown in the final report should be a positive integer."
 		cat(error)
 		return(error)

@@ -75,12 +75,12 @@ library("WebGestaltR")
 #interestGeneFile <- system.file("extdata","interestingGenes.txt",package="WebGestaltR")
 #referenceGeneFile <- system.file("extdata","referenceGenes.txt",package="WebGestaltR")
 #outputDirectory <- getwd()
-#enrichResult <-WebGestaltR(enrichMethod="ORA", organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=interestGeneFile, interestGene=NULL, interestGeneType="genesymbol", collapseMethod="mean", referenceGeneFile=referenceGeneFile, referenceGene=NULL, referenceGeneType="genesymbol", referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.01, topThr=10, dNum=20, perNum=1000, lNum=20, is.output=TRUE, outputDirectory=outputDirectory, projectName=NULL, keepGSEAFolder=FALSE,methodType="R",dagColor="continuous",hostName="http://www.webgestalt.org/")
+#enrichResult <-WebGestaltR(enrichMethod="ORA", organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=interestGeneFile, interestGene=NULL, interestGeneType="genesymbol", collapseMethod="mean", referenceGeneFile=referenceGeneFile, referenceGene=NULL, referenceGeneType="genesymbol", referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.01, topThr=10, reportNum=20, perNum=1000, lNum=20, is.output=TRUE, outputDirectory=outputDirectory, projectName=NULL, keepGSEAFolder=FALSE,methodType="R",dagColor="continuous",hostName="http://www.webgestalt.org/")
 
 ########GSEA example#######
 #geneRankFile <- system.file("extdata","GeneRankList.rnk",package="WebGestaltR")
 #outputDirectory <- getwd()
-#enrichResult <-WebGestaltR(enrichMethod="GSEA", organism="hsapiens", enrichDatabase="pathway_KEGG", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=geneRankFile, interestGene=NULL, interestGeneType="genesymbol", collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.01, topThr=10, dNum=20, perNum=1000, lNum=20, is.output=TRUE, outputDirectory=outputDirectory, projectName=NULL, keepGSEAFolder=FALSE,methodType="R",hostName="http://www.webgestalt.org/")
+#enrichResult <-WebGestaltR(enrichMethod="GSEA", organism="hsapiens", enrichDatabase="pathway_KEGG", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=geneRankFile, interestGene=NULL, interestGeneType="genesymbol", collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.01, topThr=10, reportNum=20, perNum=1000, lNum=20, is.output=TRUE, outputDirectory=outputDirectory, projectName=NULL, keepGSEAFolder=FALSE,methodType="R",hostName="http://www.webgestalt.org/")
 
 @
 
@@ -127,7 +127,7 @@ This section describes the arguments of the WebGestaltR function:
       
       20. \emph{topThr}: The threshold for the \emph{top} method. The default is \emph{10}.
       
-      21. \emph{dNum}: The number of enriched categories visualized in the DAG (directed acyclic graph) of the final report if the selected enrichment database contains a DAG structure. The default is \emph{20} and the maximum is \emph{100}. A larger \emph{dNum} will increase the running time.
+      21. \emph{reportNum}: The number of enriched categories visualized in the DAG (directed acyclic graph) of the final report if the selected enrichment database contains a DAG structure. The default is \emph{20} and the maximum is \emph{100}. A larger \emph{reportNum} will increase the running time.
       
       22. \emph{perNum}: The number of permutations for the GSEA method. The default is \emph{1000}.
       

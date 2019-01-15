@@ -16,7 +16,7 @@ organism="hsapiens",enrichDatabase="geneontology_Biological_Process",
 enrichDatabaseFile=NULL,enrichDatabaseType=NULL,enrichDatabaseDescriptionFile=NULL,
 collapseMethod="mean",referenceGeneFile=NULL,referenceGene=NULL,referenceGeneType=NULL,
 referenceSet=NULL, minNum=10, maxNum=500,fdrMethod="BH",sigMethod="fdr",fdrThr=0.05,
-topThr=10,dNum=20,perNum=1000,lNum=20,is.output=TRUE,outputDirectory=getwd(),
+topThr=10,reportNum=20,perNum=1000,lNum=20,is.output=TRUE,outputDirectory=getwd(),
 keepGSEAFolder=FALSE,methodType="R",hostName="http://www.webgestalt.org/",
 is_parallel=FALSE,nThreads=3)
 }
@@ -130,9 +130,9 @@ is_parallel=FALSE,nThreads=3)
   \item{topThr}{
 	The threshold for the \code{top} method. The default is \code{10}.
   }
-   \item{dNum}{
+   \item{reportNum}{
 	The number of enriched categories visualized in the final report. 
-	The default is \code{20} and the maximum is \code{100}. A larger \code{dNum} 
+	The default is \code{20} and the maximum is \code{100}. A larger \code{reportNum} 
 	will increase the running time.
   }
    \item{perNum}{

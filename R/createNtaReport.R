@@ -1,4 +1,4 @@
-createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, highlightOption, outputDirectory, projectDir, projectName, hostName) {
+createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, highlightType, outputDirectory, projectDir, projectName, hostName) {
 	namePrefix <- paste(projectName, networkName, method, sep=".")
 	seedsFn <- file.path(projectDir, paste0(namePrefix, "_seedsInSubnetwork.txt"))
 	networkFn <- file.path(projectDir, paste0(namePrefix, "_randomWalkNetwork.txt"))
@@ -36,7 +36,7 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	if (method == "Network_Expansion") {
 		seeds <- seeds
 		highlight <- sapply(allNodes, function(x) x %in% seeds)
-		if (highlightOption != "Seeds") {
+		if (highlightType != "Seeds") {
 			highlight <- !highlight
 		}
 	} else {
@@ -59,8 +59,8 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 			splitInfo <- unlist(strsplit(geneInfoList[[j]], "|", fixed=TRUE))
 			geneName <- splitInfo[1]
 			label <- splitInfo[2]
-			if ((method == "Network_Expansion" && highlightOption == "Seeds" && label != 0) ||
-					(method == "Network_Expansion" && highlightOption != "Seeds" && label == 0)) {
+			if ((method == "Network_Expansion" && highlightType == "Seeds" && label != 0) ||
+					(method == "Network_Expansion" && highlightType != "Seeds" && label == 0)) {
 				highlight <- TRUE
 			} else {
 				highlight <- FALSE
@@ -75,7 +75,7 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	netName <- paste(networkName, "net", sep="_")
 	dagName <- paste(networkName, "dag", sep="_")
 
-	data <- list(networkName=networkName, summary=summary, highlightOption=highlightOption,
+	data <- list(networkName=networkName, summary=summary, highlightType=highlightType,
 				hostName=hostName,
 				dagName=dagName, netName=netName,
 				zipPath=paste0(projectName, ".zip"),

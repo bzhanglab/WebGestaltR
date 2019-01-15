@@ -1,4 +1,4 @@
-createReport <- function(hostName, outputDirectory, organism="hsapiens", projectName, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet, interestingGeneMap, referenceGeneList, enrichedSig, geneTables, clusters, background, enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, dNum=20, perNum=1000, dagColor="binary"){
+createReport <- function(hostName, outputDirectory, organism="hsapiens", projectName, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet, interestingGeneMap, referenceGeneList, enrichedSig, geneTables, clusters, background, enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, dagColor="binary"){
 
 	outputHtmlFile <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, ".html"))
 
@@ -15,13 +15,13 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	dagJson <- list()
 	if(organism!="others"){
 		#####Summary Tab########
-		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, geneSet, hostName)
+		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, perNum, geneSet, hostName)
 
-		if (!is.null(enrichedSig) && dNum < nrow(enrichedSig)) {
+		if (!is.null(enrichedSig) && reportNum < nrow(enrichedSig)) {
 			if (enrichMethod == "ORA") {
-				enrichedSig <- enrichedSig[1:dNum, ]
+				enrichedSig <- enrichedSig[1:reportNum, ]
 			} else if (enrichMethod == "GSEA") {
-				enrichedSig <- getTopGseaResults(enrichedSig, dNum / 2)[[1]]
+				enrichedSig <- getTopGseaResults(enrichedSig, reportNum / 2)[[1]]
 			}
 		}
 
@@ -52,13 +52,13 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		if (enrichMethod == 'ORA') {
 			numAnnoRefUserId <- length(intersect(interestingGeneMap, intersect(referenceGeneList, geneSet$gene)))
 		}
-		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, dNum, perNum, geneSet)
+		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, perNum, geneSet)
 
-		if (!is.null(enrichedSig) && dNum < nrow(enrichedSig)) {
+		if (!is.null(enrichedSig) && reportNum < nrow(enrichedSig)) {
 			if (enrichMethod == "ORA") {
-				enrichedSig <- enrichedSig[1:dNum, ]
+				enrichedSig <- enrichedSig[1:reportNum, ]
 			} else if (enrichMethod == "GSEA") {
-				enrichedSig <- getTopGseaResults(enrichedSig, dNum / 2)[[1]]
+				enrichedSig <- getTopGseaResults(enrichedSig, reportNum / 2)[[1]]
 			}
 		}
 
