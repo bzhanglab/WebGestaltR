@@ -1,4 +1,4 @@
-randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, seedNum, sigMethod, fdrThr, topThr, projectDir, projectName, hostName) {
+randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, highlightSeedNum, sigMethod, fdrThr, topThr, projectDir, projectName, hostName) {
 	fileName <- paste(projectName, network, method, sep=".")
 	geneSetUrl <- file.path(hostName, "api", "geneset")
 	response <- GET(geneSetUrl, query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
@@ -20,8 +20,8 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	write(seeds, file.path(projectDir, paste0(fileName, "_seedsInNetwork.txt")))
 
 	if (method == "Network_Retrieval_Prioritization") {
-		if (length(seeds) < seedNum) {
-			seedNum <- length(seeds)
+		if (length(seeds) < highlightSeedNum) {
+			highlightSeedNum <- length(seeds)
 		}
 	}
 
@@ -35,7 +35,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	} else {
 		gS <- gS %>% filter(name %in% seeds) %>%
 			arrange(desc(score))
-		highSeeds <- gS[1:seedNum, "name"]
+		highSeeds <- gS[1:highlightSeedNum, "name"]
 		allN <- seeds
 		candidate <- gS
 	}

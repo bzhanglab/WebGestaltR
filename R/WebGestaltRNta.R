@@ -1,4 +1,4 @@
-WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", method="Network_Retrieval_Prioritization", inputSeed, inputSeedFile, interestGeneType="genesymbol", edgeNum=10, seedNum=10, sigMethod="fdr", fdrThr=0.05, topThr=10, highlightType="Seeds", outputDirectory=getwd(), projectName=NULL, hostName="http://www.webgestalt.org/") {
+WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", method="Network_Retrieval_Prioritization", inputSeed, inputSeedFile, interestGeneType="genesymbol", neighborNum=10, highlightSeedNum=10, sigMethod="fdr", fdrThr=0.05, topThr=10, highlightType="Seeds", outputDirectory=getwd(), projectName=NULL, hostName="http://www.webgestalt.org/") {
 
 	if(is.null(projectName)){
 		projectName <- as.character(as.integer(Sys.time()))
@@ -19,9 +19,9 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	## networks <- unlist(strsplit(network, ",", fixed=TRUE))
 	## May need to bring back analysis of multiple networks
 	fileName <- paste(projectName, network, method, sep=".")
-	randomWalkEnrichment(organism=organism, network=network, method=method, seedNum=seedNum, inputSeed=inputGene,
+	randomWalkEnrichment(organism=organism, network=network, method=method, highlightSeedNum=highlightSeedNum, inputSeed=inputGene,
 						sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, projectDir=projectDir,
-						topRank=edgeNum, projectName=projectName, hostName=hostName)
+						topRank=neighborNum, projectName=projectName, hostName=hostName)
 
 	enrichResFile <- file.path(projectDir, paste0(fileName, "_enrichedResult.txt"))
 
