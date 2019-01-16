@@ -1,7 +1,6 @@
-WebGestaltRBatch <- function(interestGeneFolder=NULL, interestGeneType=NULL, enrichMethod="ORA", organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), hostName="http://www.webgestalt.org/", isParallel=FALSE, nThreads=3) {
-
-	###HARD CODE#####
-	if(enrichMethod=="ORA"){
+WebGestaltRBatch <- function(interestGeneFolder=NULL, enrichMethod="ORA", isParallel=FALSE, nThreads=3, ...) {
+	args <- list(...)
+	if(enrichMethod=="ORA" || enrichMethod=="NTA"){
 		interestGeneFiles <- list.files(interestGeneFolder,pattern="\\.txt",full.names=TRUE)
 	}
 
@@ -17,16 +16,20 @@ WebGestaltRBatch <- function(interestGeneFolder=NULL, interestGeneType=NULL, enr
 		cl <- makeCluster(nThreads)
 		registerDoParallel(cl)
 		resultList <- foreach(i=1:length(interestGeneFiles), .packages="WebGestaltR") %dopar% {
-			sig <- WebGestaltR(enrichMethod=enrichMethod, organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFiles[i], interestGene=NULL, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, perNum=perNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectNames[i], nThreads=nThreads, hostName=hostName)
-			re <- list(filename=interestGeneFiles[i],enrichResult=sig)
+			args$interestGeneFile <- interestGeneFiles[i]
+			args$projectName <- projectNames[i]
+			sig <- do.call(WebGestaltR, args)
+			re <- list(filename=interestGeneFiles[i], enrichResult=sig)
 			return(re)
 		}
 		stopCluster(cl)
 	}else{
 		for(i in c(1:length(interestGeneFiles))){
-			cat("Process file:",interestGeneFiles[i],"\n",sep="")
-			sig <- WebGestaltR(enrichMethod=enrichMethod, organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFiles[i], interestGene=NULL, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, perNum=perNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectNames[i], hostName=hostName)
-			re <- list(filename=interestGeneFiles[i],enrichResult=sig)
+			cat("Process file: ",interestGeneFiles[i],"\n",sep="")
+			args$interestGeneFile <- interestGeneFiles[i]
+			args$projectName <- projectNames[i]
+			sig <- do.call(WebGestaltR, args)
+			re <- list(filename=interestGeneFiles[i], enrichResult=sig)
 			resultList[[i]] <- re
 		}
 	}
