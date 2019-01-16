@@ -72,6 +72,7 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	enrichmentJson = toJSON(enrichmentList)
 
 	version <- packageVersion("WebGestaltR")
+	version <- paste(version[1, 1], version[1, 2], sep=".")
 	netName <- paste(networkName, "net", sep="_")
 	dagName <- paste(networkName, "dag", sep="_")
 

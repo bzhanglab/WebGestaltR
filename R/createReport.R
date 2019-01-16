@@ -1,5 +1,4 @@
 createReport <- function(hostName, outputDirectory, organism="hsapiens", projectName, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet, interestingGeneMap, referenceGeneList, enrichedSig, geneTables, clusters, background, enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, dagColor="binary"){
-
 	outputHtmlFile <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, ".html"))
 
 	# if hostname starts with "file://", it is used as WebGestaltReporter
@@ -75,6 +74,9 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		background <- data.frame()
 	}
 	version <- packageVersion("WebGestaltR")
+	# use major and minor version numbers. If API changes, version should be bumped
+	# patch number should not matter
+	version <- paste(version[1, 1], version[1, 2], sep=".")
 	hasGeneSetDag = !is.null(geneSetDag)
 	hasCytoscape <- hasGeneSetDag || !is.null(geneSetNet) # DAG or network needs cytoscape
 
