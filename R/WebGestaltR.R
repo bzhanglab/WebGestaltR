@@ -24,6 +24,9 @@ WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase=
 		return(errorTest)
 	}
 
+	if(is.null(projectName)){
+		projectName <- as.character(as.integer(Sys.time()))
+	}
 	projectName <- gsub('%', '_', projectName, fixed=TRUE) # use for GOSlim summary file name, need to escape %
 	if (enrichMethod == "ORA") {
 		enrichR <- WebGestaltROra(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,  interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectName, dagColor=dagColor, nThreads=nThreads, hostName=hostName)

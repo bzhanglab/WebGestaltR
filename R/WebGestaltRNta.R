@@ -1,8 +1,4 @@
 WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", method="Network_Retrieval_Prioritization", inputSeed, inputSeedFile, interestGeneType="genesymbol", neighborNum=10, highlightSeedNum=10, sigMethod="fdr", fdrThr=0.05, topThr=10, highlightType="Seeds", outputDirectory=getwd(), projectName=NULL, hostName="http://www.webgestalt.org/") {
-
-	if(is.null(projectName)){
-		projectName <- as.character(as.integer(Sys.time()))
-	}
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 	dir.create(projectDir)
 
