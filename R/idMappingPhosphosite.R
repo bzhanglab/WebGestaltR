@@ -74,7 +74,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 			colnames(uniMapRes) <- c("userId", targetIdType)
 			uniMapRes$gene <- unlist(lapply(strsplit(uniMapRes[, targetIdType], "_"), .combineG))
 			# Map ID may change nrow due to unmapped ones
-			mappedInputGene <- uniMapRes %>% select(userId, gene) %>% right_join(mappedInputGene, by=userId)
+			mappedInputGene <- uniMapRes %>% select(.data$userId, .data$gene) %>% right_join(mappedInputGene, by="userId")
 		}
 	}
 
@@ -98,21 +98,21 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 	########Get gene level information#########
 	entrezgeneMapRes <- idMappingGene(organism=organism, dataType="list", inputGene=mappedInputGene$gene, sourceIdType=geneType, targetIdType="entrezgene", mappingOutput=FALSE, hostName=hostName)
 
-	mergedRes <- entrezgeneMapRes$mapped %>% select(gene=userId, geneSymbol, geneName) %>%
+	mergedRes <- entrezgeneMapRes$mapped %>% select(gene=.data$userId, .data$geneSymbol, .data$geneName) %>%
 		right_join(mappedInputGene, by="gene")
 
 	if(dataType=="list"){
-		inputGene <- select(mergedRes, userId, geneSymbol, geneName, targetIdType, gLink)
+		inputGene <- select(mergedRes, .data$userId, .data$geneSymbol, .data$geneName, .data$targetIdType, .data$gLink)
 	}
 
 	if(dataType=="rnk"){
 		inputGene <- mergedRes %>% left_join(inputGene, by=c("userId"=sourceIdType)) %>%
-			select(userId, geneSymbol, geneName, targetIdType, score, gLink)
+			select(.data$userId, .data$geneSymbol, .data$geneName, .data$targetIdType, .data$score, .data$gLink)
 	}
 
 	if(dataType=="gmt"){
 		inputGene <- mergedRes %>% left_join(inputGene, by=c("userId"=sourceIdType)) %>%
-			select(geneSet, link, userId, geneSymbol, geneName, targetIdType, gLink)
+			select(.data$geneSet, .data$link, .data$userId, .data$geneSymbol, .data$geneName, .data$targetIdType, .data$gLink)
 	}
 
 	#############Output#######################

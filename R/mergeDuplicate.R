@@ -1,3 +1,4 @@
+#' @importFrom stats sd IQR
 mergeDuplicate <- function(id,data,collapseMode="maxSD"){
 	data <- as.data.frame(data, stringsAsFactors=FALSE)
 	if(!is.vector(id)){

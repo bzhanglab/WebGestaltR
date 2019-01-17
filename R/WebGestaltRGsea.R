@@ -45,7 +45,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 		interestGeneList <- unique(interestingGeneMap)
 	}else{
 		interestStandardId <- interestingGeneMap$standardId
-		interestGeneList <- interestingGeneMap$mapped %>% select(interestStandardId, score) %>% distinct()
+		interestGeneList <- interestingGeneMap$mapped %>% select(interestStandardId, .data$score) %>% distinct()
 	}
 
 	##########Create project folder##############
@@ -91,8 +91,8 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 			colnames(geneSetDes) <- c("geneSet", "description")
 			enrichedSig <- enrichedSig %>%
 				left_join(geneSetDes, by="geneSet") %>%
-				select(geneSet, description, ES, NES, pValue, FDR, link, size, plotPath, leadingEdgeNum, leadingEdgeId) %>%
-				arrange(FDR, pValue, desc(NES))
+				select(.data$geneSet, .data$description, .data$ES, .data$NES, .data$pValue, .data$FDR, .data$link, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
+				arrange(.data$FDR, .data$pValue, desc(.data$NES))
 		}
 
 		geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)

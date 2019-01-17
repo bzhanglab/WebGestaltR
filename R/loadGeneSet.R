@@ -20,7 +20,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 							return(geneSet)
 						}
 						standardId <- geneSet$standardId
-						geneSet <- geneSet$mapped %>% select(geneSet, description, gene=entrezgene) %>% distinct()
+						geneSet <- geneSet$mapped %>% select(.data$geneSet, .data$description, gene=.data$entrezgene) %>% distinct()
 						if(!is.null(enrichDatabaseDescriptionFile)){     ##upload description file
 							geneSetDes <- .loadEnrichDatabaseDescriptionFile(geneSet,enrichDatabaseDescriptionFile)
 							if(.hasError(geneSetDes)){
@@ -37,7 +37,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 				return(enrichDatabaseError(type="empty"))
 			}
 		}else{  #input a correct enrichDatabase
-			standardId <- filter(geneSetInfo, name==enrichDatabase)[[1, "idType"]]  # get the ID type of the enriched database, such as entrezgene or phosphsiteSeq
+			standardId <- filter(geneSetInfo, .data$name==enrichDatabase)[[1, "idType"]]  # get the ID type of the enriched database, such as entrezgene or phosphsiteSeq
 
 			#########Read GMT file from the existing database###########
 			gmtUrl <- modify_url(file.path(hostName,"api","geneset"), query=list(organism=organism, database=enrichDatabase, standardId=standardId, fileType="gmt"))

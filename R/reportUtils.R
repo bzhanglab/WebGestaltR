@@ -27,7 +27,7 @@ geneM <- function(geneList,mappingTable){
 getGeneTables <- function(organism, enrichedSig, geneColumn, interestingGeneMap) {
 	if (organism != "others") {
 		standardId <- interestingGeneMap$standardId
-		mapping <- select(interestingGeneMap$mapped, userId, geneSymbol, geneName, gLink, standardId)
+		mapping <- select(interestingGeneMap$mapped, .data$userId, .data$geneSymbol, .data$geneName, .data$gLink, standardId)
 		if ("score" %in% colnames(interestingGeneMap$mapped)) {
 			mapping$score <- interestingGeneMap$mapped$score
 		}
@@ -59,7 +59,7 @@ getTopGseaResults <- function(results, topThr) {
 		posThr <- floor(topThr) + 1
 		negThr <- floor(topThr)
 	}
-	posRes <- filter(results, NES > 0)
+	posRes <- filter(results, .data$NES > 0)
 	if (nrow(posRes) > posThr) {
 		posSig <- posRes[1:posThr, ]
 		posInsig <- posRes[(posThr+1):nrow(posRes), ]
@@ -67,7 +67,7 @@ getTopGseaResults <- function(results, topThr) {
 		posSig <- posRes
 		posInsig <- NULL
 	}
-	negRes <- filter(results, NES < 0)
+	negRes <- filter(results, .data$NES < 0)
 	if (nrow(negRes) > negThr) {
 		negSig <- negRes[1: negThr, ]
 		negInsig <- negRes[(negThr+1):nrow(negRes), ]

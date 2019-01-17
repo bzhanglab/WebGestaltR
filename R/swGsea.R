@@ -104,7 +104,7 @@ swGsea <- function(input_df, thresh_type="percentile", thresh=0.9, thresh_action
 	expt <- colnames(input_df)[2]
 	enr_test <- colnames(input_df)[3:ncol(input_df)]
 	colnames(input_df)[c(1,2)] <- c("item", "expression_val")
-	input_df <- arrange(input_df, desc(expression_val))
+	input_df <- arrange(input_df, desc(.data$expression_val))
 
 	# get and check size of set items; build in-set matrix of 1's for items in set and 0's for items not in set
 	inset_mat <- matrix(0, nrow = length(input_df$item), ncol = length(enr_test))

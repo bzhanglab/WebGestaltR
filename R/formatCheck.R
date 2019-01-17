@@ -79,7 +79,7 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 				}
 
 				#########GSEA do not allow the second column contains NA. Thus, we should remove NA first############
-				return(filter(inputGene, !is.na(score)))
+				return(filter(inputGene, !is.na(.data$score)))
 			}
 		}else{
 			if(!is.null(inputGene)){

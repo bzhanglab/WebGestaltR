@@ -6,7 +6,7 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 
 	referenceGene <- intersect(referenceGene, geneSet$gene)
 
-	geneSet <- filter(geneSet, gene %in% referenceGene)
+	geneSet <- filter(geneSet, .data$gene %in% referenceGene)
 
 	geneSetNum <- tapply(geneSet$gene, geneSet$geneSet,length)
 	geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
@@ -16,7 +16,7 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 		return(error)
 	}
 
-	geneSet <-filter(geneSet, geneSet %in% names(geneSetNum))
+	geneSet <-filter(geneSet, .data$geneSet %in% names(geneSetNum))
 
 	interestGene <- intersect(interestGene, geneSet$gene)
 	interestGene <- intersect(interestGene, referenceGene)
@@ -32,36 +32,36 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 	ra <- length(interestGene)/length(referenceGene)
 	refG <- data.frame(geneSet=names(geneSetNum), C=unname(geneSetNum), stringsAsFactors=FALSE)
 
-	intG <- filter(geneSet, gene %in% interestGene)
+	intG <- filter(geneSet, .data$gene %in% interestGene)
 	intGNum <- tapply(intG$gene, intG$geneSet, length)
 	intGNum <- data.frame(geneSet=names(intGNum), O=unname(intGNum), stringsAsFactors=FALSE)
 
 	intGId <- tapply(intG$gene, intG$geneSet, paste, collapse=";")
 	intGId <- data.frame(geneSet=names(intGId), overlapId=unname(intGId), stringsAsFactors=FALSE)
 
-	enrichedResult <- geneSet %>% filter(!is.na(geneSet)) %>%
-		select(geneSet, link=description) %>% distinct() %>%
+	enrichedResult <- geneSet %>% filter(!is.na(.data$geneSet)) %>%
+		select(.data$geneSet, link=.data$description) %>% distinct() %>%
 		left_join(refG, by="geneSet") %>%
 		left_join(intGNum, by="geneSet") %>% # this may just be inner_join. O is NA should not be meaningful anyway
-		mutate(O=ifelse(is.na(O), 0, O), E=C*ra, R=O/E,
-			   pValue=1-phyper(O-1, length(interestGene), length(referenceGene)-length(interestGene), C, lower.tail=TRUE, log.p=FALSE),
-			   FDR=p.adjust(pValue, method=fdrMethod)
+		mutate(O=ifelse(is.na(.data$O), 0, .data$O), E=.data$C*ra, R=.data$O/.data$E,
+			   pValue=1-phyper(.data$O-1, length(interestGene), length(referenceGene)-length(interestGene), .data$C, lower.tail=TRUE, log.p=FALSE),
+			   FDR=p.adjust(.data$pValue, method=fdrMethod)
 		) %>%
 		left_join(intGId, by="geneSet") %>%
-		arrange(FDR, pValue)
+		arrange(.data$FDR, .data$pValue)
 
 	if(sigMethod=="fdr"){
-		enrichedResultSig <- filter(enrichedResult, FDR<fdrThr)
+		enrichedResultSig <- filter(enrichedResult, .data$FDR<fdrThr)
 		if(nrow(enrichedResultSig)==0){
 			cat("No significant gene set is identified based on FDR " , fdrThr , "!\n" , sep="")
 			return(NULL)
 		}else{
-			enrichedResultInsig <- enrichedResult %>% filter(FDR>=fdrThr, O!=0) %>% select(geneSet, R, FDR, O)
+			enrichedResultInsig <- enrichedResult %>% filter(.data$FDR>=fdrThr, .data$O!=0) %>% select(.data$geneSet, .data$R, .data$FDR, .data$O)
 			return(list(enriched=enrichedResultSig, background=enrichedResultInsig))
 		}
 	}else{
 		#for the top method, we only select the terms with at least one annotated interesting gene
-		enrichedResult <- enrichedResult %>% filter(O!=0)
+		enrichedResult <- enrichedResult %>% filter(.data$O!=0)
 		if (nrow(enrichedResult)>topThr) {
 			enrichedResultSig <- enrichedResult[1:topThr, ]
 			enrichedResultInsig <- enrichedResult[(topThr+1):nrow(enrichedResult), c("geneSet", "R", "FDR", "O")]

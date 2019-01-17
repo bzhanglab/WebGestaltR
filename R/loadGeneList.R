@@ -1,6 +1,5 @@
 #' @importFrom httr GET content
 #' @importFrom readr read_tsv
-#' @importFrom dplyr filter
 loadInterestGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, geneType="entrezgene", collapseMethod="mean", hostName="http://www.webgestalt.org/", geneSet){
 	if(is.null(inputGeneFile) && is.null(inputGene)){
 		return(interestGeneError(type="empty"))
@@ -80,6 +79,7 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 }
 
 
+#' @importFrom dplyr filter
 .uploadGeneExistingOrganism <- function(organism, dataType, inputGeneFile, inputGene, geneType, collapseMethod, geneSet, hostName) {
 	geneMap <- idMapping(organism=organism, dataType=dataType, inputGeneFile=inputGeneFile, inputGene=inputGene, sourceIdType=geneType, targetIdType=NULL, collapseMethod=collapseMethod, mappingOutput=FALSE, hostName=hostName)
 
@@ -103,7 +103,7 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 	}
 
 	###Because if all genes are annotated to only one category, GSEA will return the error, we need to avoid this error by reporting the error in the R#
-	geneSets <- unique((filter(geneSet, gene %in% geneList))[["geneSet"]])
+	geneSets <- unique((filter(geneSet, .data$gene %in% geneList))[["geneSet"]])
 	if (length(geneSets) == 1) {
 		return(interestGeneError(type="onlyOne"))
 	}
@@ -111,6 +111,7 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 }
 
 
+#' @importFrom dplyr filter
 .uploadGeneOthers <- function(dataType,inputGeneFile,inputGene,geneSet){
 	inputGene <- formatCheck(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
 	if(.hasError(inputGene)){
@@ -129,7 +130,7 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 	}
 
 	###Because if all genes are annotated to only one category, GSEA will return the error, we need to avoid this error by reporting the error in the R#
-	geneSets <- unique((filter(geneSet, gene %in% geneList))[["geneSet"]])
+	geneSets <- unique((filter(geneSet, .data$gene %in% geneList))[["geneSet"]])
 	if (length(geneSets) == 1) {
 		return(interestGeneError(type="onlyOne"))
 	}

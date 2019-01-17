@@ -9,8 +9,8 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	colnames(geneRankList) <- c("gene", "score")
 	sortedScores <- sort(geneRankList$score, decreasing=TRUE)
 
-	geneSetName <- geneSet %>% select(geneSet, link=description) %>% distinct()
-	effectiveGeneSet <- geneSet %>% filter(gene %in% geneRankList$gene)
+	geneSetName <- geneSet %>% select(geneSet, link=.data$description) %>% distinct()
+	effectiveGeneSet <- geneSet %>% filter(.data$gene %in% geneRankList$gene)
 
 	geneSetNum <- tapply(effectiveGeneSet$gene, effectiveGeneSet$geneSet, length)
 	geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
@@ -41,14 +41,14 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	)
 	enrichRes <- gseaRes$Enrichment_Results %>%
 		mutate(geneSet = rownames(gseaRes$Enrichment_Results)) %>%
-		select(geneSet, ES, NES, pValue=p_val, FDR=fdr)
+		select(.data$geneSet, .data$ES, .data$NES, pValue=.data$p_val, FDR=.data$fdr)
 	# TODO: handle errors
 
 	if (sigMethod == "fdr") {
-		sig <- filter(enrichRes, FDR < fdrThr)
-		insig <- filter(enrichRes, FDR >= fdrThr)
+		sig <- filter(enrichRes, .data$FDR < fdrThr)
+		insig <- filter(enrichRes, .data$FDR >= fdrThr)
 	} else if (sigMethod == "top") {
-		enrichRes <- arrange(enrichRes, FDR, pValue)
+		enrichRes <- arrange(enrichRes, .data$FDR, .data$pValue)
 		tmpRes <- getTopGseaResults(enrichRes, topThr)
 		sig <- tmpRes[[1]]
 		insig <-tmpRes[[2]]

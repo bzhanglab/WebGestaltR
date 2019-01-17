@@ -43,6 +43,7 @@ affinityPropagation <- function(idsInSet, score) {
 #'
 #' @return A list of similarity matrix \code{sim.mat} and input preference vector \code{ip.vec}.
 #'
+#' @importFrom stats median
 #' @author Zhiao Shi, Yuxing Liao
 jaccardSim <- function(idsInSet, score){
 	# first find out the union of sets, sorted

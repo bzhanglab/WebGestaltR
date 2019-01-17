@@ -11,7 +11,7 @@
 #' @aliases listArchiveURL
 #'
 listArchiveUrl <- function(){
-	archiveUrl <- read_tsv("http://www.webgestalt.org/archiveURL.txt", col_names=False)
+	archiveUrl <- read_tsv("http://www.webgestalt.org/archiveURL.txt", col_names=FALSE)
 	return(archiveUrl)
 }
 

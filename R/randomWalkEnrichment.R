@@ -32,13 +32,13 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	pt1 <- .netwalker(seeds, netGraph, r=0.5)
 	gS <- data.frame(name=netNode, score=pt1, per=1, stringsAsFactors=F)
 	if (method == "Network_Expansion") {
-		gS <- gS %>% filter(name %in% setdiff(name, seeds)) %>%
-			arrange(desc(score))
+		gS <- gS %>% filter(.data$name %in% setdiff(.data$name, seeds)) %>%
+			arrange(desc(.data$score))
 		candidate <- gS[1:topRank, ]
 		allN <- c(seeds, candidate$name)
 	} else {
-		gS <- gS %>% filter(name %in% seeds) %>%
-			arrange(desc(score))
+		gS <- gS %>% filter(.data$name %in% seeds) %>%
+			arrange(desc(.data$score))
 		highSeeds <- gS[1:highlightSeedNum, "name"]
 		allN <- seeds
 		candidate <- gS
@@ -111,9 +111,9 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 #' @importFrom readr read_tsv
 #' @importFrom stats p.adjust phyper
 .enrichmentFunction <- function(organism, reference, interest, goAnn, seeds, sigMethod, fdrThr, topThr, hostName) {
-	goAnn <- select(goAnn, gene, geneSet)
-	annRef <- filter(goAnn, gene %in% reference)
-	annInterest <- filter(goAnn, gene %in% interest)
+	goAnn <- select(goAnn, .data$gene, .data$geneSet)
+	annRef <- filter(goAnn, .data$gene %in% reference)
+	annInterest <- filter(goAnn, .data$gene %in% interest)
 
 	allRefNum <- length(unique(annRef$gene))
 	allInterestNum <- length(unique(annInterest$gene))
@@ -124,19 +124,19 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	response <- POST(geneSetUrl, body=list(organism=organism, database="geneontology_Biological_Process",
 		fileType="des", ids=unique(annRef$geneSet)), encode="json")
 	refTermName <- read_tsv(content(response), col_names=c("id", "name"), col_types="cc") %>%
-		filter(id %in% names(refTermCount))
+		filter(.data$id %in% names(refTermCount))
 
 	refTermCount <- data.frame(goId=names(refTermCount), refNum=refTermCount, stringsAsFactors=FALSE) %>%
 		left_join(refTermName, by=c("goId"="id")) %>%
-		select(goId, name, refNum) %>%
-		arrange(goId)
+		select(.data$goId, .data$name, .data$refNum) %>%
+		arrange(.data$goId)
 	interestTermCount <- tapply(annInterest$gene, annInterest$geneSet, length)
 
 	interestTermGene <- tapply(annInterest$gene, annInterest$geneSet, .getGenes, seeds)
 
 
 	interestTermCount <- data.frame(goId=names(interestTermCount), interestNum=interestTermCount, interestGene=interestTermGene, stringsAsFactors=FALSE) %>%
-		arrange(goId)
+		arrange(.data$goId)
 
 	refInterestTermCount <- refTermCount
 
@@ -147,16 +147,16 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	refInterestTermCount[refInterestTermCount$goId %in% interestTermCount$goId, "interestGene"] <- interestTermCount$interestGene
 
 	refInterestTermCount <- refInterestTermCount %>%
-		mutate(expect = (allInterestNum / allRefNum) *refNum,
-			ratio = interestNum / expect,
-			pValue = 1 - phyper(interestNum - 1, allInterestNum, allRefNum - allInterestNum, refNum, lower.tail=TRUE, log.p=FALSE),
-			FDR = p.adjust(pValue, method="BH")
+		mutate(expect = (allInterestNum / allRefNum) * .data$refNum,
+			ratio = .data$interestNum / .data$expect,
+			pValue = 1 - phyper(.data$interestNum - 1, allInterestNum, allRefNum - allInterestNum, .data$refNum, lower.tail=TRUE, log.p=FALSE),
+			FDR = p.adjust(.data$pValue, method="BH")
 		) %>%
-		arrange(FDR, pValue)
+		arrange(.data$FDR, .data$pValue)
 
 
 	if(sigMethod=="fdr"){
-		refInterestTermCountSig <- filter(refInterestTermCount, FDR < fdrThr)
+		refInterestTermCountSig <- filter(refInterestTermCount, .data$FDR < fdrThr)
 	}else{
 		refInterestTermCountSig <- refInterestTermCount[1:topThr, ]
 	}

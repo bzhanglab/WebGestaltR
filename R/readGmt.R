@@ -62,8 +62,8 @@ readGMT <- readGmt
 #'
 prepareInputMatrixGsea <- function(rank, gmt) {
 	genes <- rank$gene
-	gmt <- gmt %>% filter(gene %in% genes)
-	geneSets <- (gmt %>% select(geneSet, description) %>% distinct())$geneSet
+	gmt <- gmt %>% filter(.data$gene %in% genes)
+	geneSets <- (gmt %>% select(.data$geneSet, .data$description) %>% distinct())$geneSet
 	# 0 or 1 matrix indicating gene and gene set relationship
 	rel <- fillInputDataFrame(gmt, genes, geneSets)
 	# R implementation

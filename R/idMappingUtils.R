@@ -28,7 +28,7 @@ identifyStandardId <- function(hostName,idType,organism,type){
 	names <- unlist(lapply(idTypes, function(e) return(e$name)))
 	standardIds <- unlist(lapply(idTypes,function(e) return(e$type)))
 	idTypes <- data.frame(name=names, standardId=standardIds, stringsAsFactors=FALSE)
-	return(filter(idTypes, name == idType)[[1, "standardId"]])
+	return(filter(idTypes, .data$name == idType)[[1, "standardId"]])
 }
 
 #' @importFrom dplyr select distinct %>%
@@ -43,7 +43,7 @@ idMappingOutput <- function(outputFileName, mappingList, unmappedList, dataType,
 	fileName <- paste0(outputFileName, "_mappedList_from_", sourceIdType, "_to_", targetIdType, ".", dataType)
 	if(dataType=="gmt"){
 		genes <- tapply(mappingList[[targetIdType]], mappingList$geneSet, paste, collapse="\t")
-		gmtDf <- mappingList %>% select(geneSet, link) %>% distinct()
+		gmtDf <- mappingList %>% select(.data$geneSet, .data$link) %>% distinct()
 		gmtDf$genes = genes[gmtDf$geneSet]
 		write_tsv(gmtDf, fileName, col_names=FALSE)
 	}else{

@@ -7,12 +7,11 @@
 #' @import graphics
 #' @import utils
 #' @importFrom Rcpp sourceCpp
+#' @importFrom rlang .data
 #' @useDynLib WebGestaltR
 #'
 NULL
 
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
 .onAttach <- function(lib, pkg) {
 	packageStartupMessage("******************************************\n")

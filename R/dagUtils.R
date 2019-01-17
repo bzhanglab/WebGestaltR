@@ -17,7 +17,7 @@ expandDag <- function(goTermList, dagEdgeList) {
 		} else {
 			queue <- queue[2:length(queue)]
 		}
-		inEdges <- filter(dagEdgeList, target == goTerm)
+		inEdges <- filter(dagEdgeList, .data$target == goTerm)
 		if (nrow(inEdges) > 0) {
 			edges <- c(edges, lapply(split(inEdges, seq(nrow(inEdges))), function(x) list("data"=x)))
 		}
@@ -39,7 +39,7 @@ getDagNodes <- function(enrichedRes, allGoList, goIdName, enrichMethod, dagColor
 	}
 	palette <- getColorPalette(enrichedRes, enrichMethod, dagColorSchema)
 	return(lapply(allGoList, function(x) {
-		goName <- ifelse(is.null(goIdName), "", filter(goIdName, id == x)[[1, "name"]])
+		goName <- ifelse(is.null(goIdName), "", filter(goIdName, .data$id == x)[[1, "name"]])
 		color <- palette(x)
 		return(list(
 			data=list(
@@ -65,7 +65,7 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 			})
 		} else if (enrichMethod == "GSEA") {
 			return(function(goTerm) {
-				nes <- filter(enrichedRes, geneSet == goTerm)[["NES"]]
+				nes <- filter(enrichedRes, .data$geneSet == goTerm)[["NES"]]
 				if (length(nes) == 0) {
 					return(colorNeutral)
 				} else {
@@ -81,7 +81,7 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 			myBreak <- seq(0, minFdrLog + 0.01, length.out=129)
 
 			return(function(goTerm) {
-				fdr <- filter(enrichedRes, geneSet == goTerm)[["FDR"]]
+				fdr <- filter(enrichedRes, .data$geneSet == goTerm)[["FDR"]]
 				if (length(fdr) == 0) {
 					return(colorNeutral)
 				} else {
@@ -99,7 +99,7 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 			colorPalette <- tmp[[1]]
 			myBreak <- tmp[[2]]
 			return(function(goTerm) {
-				row <- filter(enrichedRes, geneSet == goTerm)
+				row <- filter(enrichedRes, .data$geneSet == goTerm)
 				if (nrow(row) == 0) {
 					return(colorNeutral)
 				} else {

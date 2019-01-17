@@ -101,8 +101,8 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 			colnames(geneSetDes) <- c("geneSet", "description")
 			enrichedSig <- enrichedSig %>%
 				left_join(geneSetDes, by="geneSet") %>%
-				select(geneSet, description, link, C, O, E, R, pValue, FDR, overlapId) %>%
-				arrange(FDR, pValue, desc(C))
+				select(.data$geneSet, .data$description, .data$link, .data$C, .data$O, .data$E, .data$R, .data$pValue, .data$FDR, .data$overlapId) %>%
+				arrange(.data$FDR, .data$pValue, desc(.data$C))
 		}
 
 

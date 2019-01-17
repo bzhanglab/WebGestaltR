@@ -13,7 +13,7 @@ LazyLoad: yes
 Depends: R (>= 3.3)
 Imports: methods, dplyr, doRNG, readr, parallel (>= 3.3.2),
         doParallel (>= 1.0.10), foreach (>= 1.4.0),
-        rjson (>= 0.2.15), httr,
+        rjson (>= 0.2.15), httr, rlang,
 	igraph, whisker, apcluster, Rcpp
 NeedsCompilation: yes
 LinkingTo: Rcpp

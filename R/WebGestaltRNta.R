@@ -37,7 +37,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 		} else {
 			queue <- queue[2:length(queue)]
 		}
-		inEdges <- filter(dagInfo, target == goTerm)
+		inEdges <- filter(dagInfo, .data$target == goTerm)
 		if (nrow(inEdges) > 0) {
 			edges <- c(edges, lapply(split(inEdges, seq(nrow(inEdges))), function(x) list("data"=x)))
 		}
@@ -58,7 +58,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 
 	for (i in 1:length(goTermList)) {
 		goId <- goTermList[[i]]
-		goName <- filter(goId2Term, id == goId)[[1, "name"]]
+		goName <- filter(goId2Term, .data$id == goId)[[1, "name"]]
 		dataSets <- i <= inputEndIndex
 		jsonData[[i]] <- list(data=list(id=goId, name=goName, datasets=dataSets))
 	}

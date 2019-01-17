@@ -25,7 +25,7 @@ keggLinkModification <- function(enrichPathwayLink,geneList){
 wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap) {
 	geneMap <- interestingGeneMap$mapped
 	geneList <- unlist(strsplit(geneList,";"))
-	geneMap <- filter(geneMap, entrezgene %in% geneList)
+	geneMap <- filter(geneMap, .data$entrezgene %in% geneList)
 	enrichPathwayLink <- paste0(enrichPathwayLink,
 		paste0(sapply(geneMap$geneSymbol, function(x) paste0("&label[]=", x)), collapse="")
 		#not many pathway have entrezgene xref. Using both also seem to interfere with coloring
@@ -34,7 +34,7 @@ wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
 	if (enrichMethod == "ORA") {
 		enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
 	} else if (enrichMethod == "GSEA") {
-		scores <- filter(interestingGeneMap$mapped, entrezgene %in% geneList)[["score"]]
+		scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
 		maxScore <- max(scores)
 		minScore <- min(scores)
 		tmp <- getPaletteForGsea(maxScore, minScore)
