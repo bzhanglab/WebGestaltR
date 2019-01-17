@@ -14,7 +14,7 @@
 #'  \item{coverage}{The percentage of IDs covered in the top sets.}
 #' }
 #'
-#' @importFrom dplyr bind_rows
+#' @importFrom dplyr bind_rows %>%
 #' @importFrom parallel mclapply
 #' @export
 #' @author Zhiao Shi, Yuxing Liao

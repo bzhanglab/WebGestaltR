@@ -57,7 +57,7 @@ readGMT <- readGmt
 #'
 #' @return A matrix used for input to \code{swGsea}.
 #'
-#' @importFrom dplyr filter select distinct inner_join
+#' @importFrom dplyr filter select distinct inner_join %>%
 #' @export
 #'
 prepareInputMatrixGsea <- function(rank, gmt) {

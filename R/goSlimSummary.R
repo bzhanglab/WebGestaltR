@@ -91,7 +91,7 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 }
 
 #' @importFrom httr POST content
-#' @importFrom dplyr select distinct inner_join arrange
+#' @importFrom dplyr select distinct inner_join arrange %>%
 .processData <- function(organism,hostName,geneList,ontology){
 	goUrl <- file.path(hostName, "api", "goslim")
 	response <- POST(goUrl, body=list(organism=organism, ontology=ontology, entrezgenes=geneList), encode="json")

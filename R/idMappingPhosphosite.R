@@ -1,5 +1,5 @@
 #' @importFrom httr POST content
-#' @importFrom dplyr right_join select left_join
+#' @importFrom dplyr right_join select left_join %>%
 idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, sourceIdType, targetIdType, collapseMethod="mean", mappingOutput=FALSE,  outputFileName="", hostName="http://www.webgestalt.org/") {
 
 	###########Check input data type###############

@@ -1,4 +1,4 @@
-#' @importFrom dplyr select distinct filter
+#' @importFrom dplyr select distinct filter %>%
 #' @importFrom httr modify_url
 loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, collapseMethod="mean", hostName="http://www.webgestalt.org/") {
 	geneSet <- NULL    ##gene sets

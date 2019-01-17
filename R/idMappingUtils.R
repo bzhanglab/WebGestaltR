@@ -31,7 +31,7 @@ identifyStandardId <- function(hostName,idType,organism,type){
 	return(filter(idTypes, name == idType)[[1, "standardId"]])
 }
 
-#' @importFrom dplyr select distinct
+#' @importFrom dplyr select distinct %>%
 #' @importFrom readr write_tsv
 idMappingOutput <- function(outputFileName, mappingList, unmappedList, dataType, sourceIdType, targetIdType) {
 	if (length(unmappedList)>0) {
