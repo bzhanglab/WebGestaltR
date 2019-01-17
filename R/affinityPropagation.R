@@ -52,6 +52,10 @@ jaccardSim <- function(idsInSet, score){
 	sim.mat <- matrix(1, num, num)
 	colnames(sim.mat) <- colnames(overlap.mat)
 
+	if (num == 1) {
+		return(list(sim.mat=sim.mat, ip.vec=c(1)))
+	}
+
 	for (i in 1:(num-1)) {
 		for (j in (i+1):num) {
 			jaccardIndex <- sum(bitwAnd(overlap.mat[, i], overlap.mat[, j])) / sum(bitwOr(overlap.mat[, i], overlap.mat[, j]))
