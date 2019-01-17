@@ -2,17 +2,20 @@ Package: WebGestaltR
 Type: Package
 Title: The R Version of WebGestalt
 Version: 0.3.0
-Date: 2018-05-11
-Author: Jing Wang <jingwang.uestc@gmail.com>
-Maintainer: Yuxing Liao <yuxingliao@gmail.com>
-Description: The web version WebGestalt <http://www.webgestalt.org> supports 12 organisms, 324 gene identifiers and 150,937 function categories. Users can upload the data and functional categories with their own gene identifiers. In addition to the Over-Representation Analysis, WebGestalt also supports Gene Set Enrichment Analysis. The user-friendly output interface allow interactive and efficient exploration of enrichment results. The WebGestaltR package not only supports all above functions but also can be integrated into other pipeline or simultaneous analyze multiple gene lists.
+Date: 2019-01-16
+Authors@R: c(
+        person("Jing", "Wang", email = "jingwang.uestc@gmail.com", role = "aut"),
+        person("Yuxing", "Liao", email = "yuxingliao@gmail.com", role = c("aut", "cre")))
+Description: The web version WebGestalt <http://www.webgestalt.org> supports 12 organisms, 354 gene identifiers and 321,251 function categories. Users can upload the data and functional categories with their own gene identifiers. In addition to the Over-Representation Analysis, WebGestalt also supports Gene Set Enrichment Analysis and Network Topology Analysis. The user-friendly output report allows interactive and efficient exploration of enrichment results. The WebGestaltR package not only supports all above functions but also can be integrated into other pipeline or simultaneously analyze multiple gene lists.
 License: LGPL
+URL: https://github.com/bzhanglab/WebGestaltR
 LazyLoad: yes
 Depends: R (>= 3.3)
 Imports: methods, dplyr, doRNG, readr, parallel (>= 3.3.2),
         doParallel (>= 1.0.10), foreach (>= 1.4.0),
-        pkgmaker (>= 0.22), rjson (>= 0.2.15), httr,
+        rjson (>= 0.2.15), httr,
 	igraph, whisker, apcluster, Rcpp
 NeedsCompilation: yes
 LinkingTo: Rcpp
 SystemRequirements: C++11
+RoxygenNote: 6.1.1
