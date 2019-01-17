@@ -1,6 +1,6 @@
 #' Create HTML Report for NTA
 #'
-#' @importFrom readr read_tsv
+#' @importFrom readr read_tsv cols
 #' @importFrom rjson fromJSON toJSON
 #' @importFrom whisker whisker.render rowSplit
 #'
