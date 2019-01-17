@@ -1,3 +1,22 @@
+#' ID Mapping
+#'
+#' ID mapping utility with WebGestalt server.
+#'
+#' @inheritParams WebGestaltR
+#' @param dataType Type of data, either \code{list}, \code{rnk} or \code{gmt}.
+#'   Could be \code{list}, \code{rnk} or \code{matrix} for \code{idToSymbol}.
+#' @param inputGeneFile The data file to be mapped.
+#' @param inputGene Or the input could be given as an R object.
+#'   GMT file should be read with \code{readGmt}.
+#' @param sourceIdType The ID type of the data.
+#' @param targetIdType The ID type of the mapped data.
+#' @param mappingOutput Boolean if the mapping output is written to file.
+#' @param outputFileName The output file name.
+#'
+#' @return A list of \code{mapped} and \code{unmapped} IDs.
+#' @export
+#' @aliases IDMapping
+#'
 idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, sourceIdType, targetIdType=NULL, collapseMethod="mean", mappingOutput=FALSE, outputFileName="", hostName="http://www.webgestalt.org/"){
 	#############Check general parameters########
 	errorTest <- parameterErrorMessage(organism=organism, dataType=dataType, collapseMethod=collapseMethod, hostName=hostName, mappingOutput=mappingOutput)
@@ -46,6 +65,7 @@ idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, 
 	}
 }
 
+#' @export
 IDMapping <- function(...) {
 	cat("WARNING: Function IDMapping is deprecated and changed to idMapping!\n")
 	return(idMapping(...))

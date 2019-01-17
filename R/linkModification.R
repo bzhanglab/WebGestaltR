@@ -1,5 +1,9 @@
+#' Modify the link to highlight the genes in the pathways
+#'
+#' Currently, we only have wikipathway and kegg pathways that need to modify the link
+#'
+#' @keywords internal
 linkModification <- function(enrichMethod, enrichDatabase, enrichPathwayLink, geneList, interestingGeneMap) {
-	#####Modify the link to highlight the genes in the pathways. Currently, we only have wikipathway and kegg pathways that need to modify the link########
 
 	if(enrichDatabase=="pathway_KEGG"){
 		link <- keggLinkModification(enrichPathwayLink,geneList)

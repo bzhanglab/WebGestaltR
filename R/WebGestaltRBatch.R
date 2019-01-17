@@ -1,3 +1,18 @@
+#' Wrapper for batch WebGestaltR runs
+#'
+#' @param interestGeneFolder Run WebGestaltR for gene list files in the folder.
+#' @param isParallel If jobs are run parallelly in the batch.
+#'
+#' @return The WebGestaltRBatch function returns a list of enrichment results.
+#'
+#' @importFrom parallel makeCluster stopCluster
+#' @importFrom doParallel registerDoParallel
+#' @importFrom foreach foreach %dopar%
+#'
+#' @export
+#' @aliases WebGestaltR_batch
+#' @rdname WebGestaltR
+#'
 WebGestaltRBatch <- function(interestGeneFolder=NULL, enrichMethod="ORA", isParallel=FALSE, nThreads=3, ...) {
 	args <- list(...)
 	if(enrichMethod=="ORA" || enrichMethod=="NTA"){
@@ -36,6 +51,7 @@ WebGestaltRBatch <- function(interestGeneFolder=NULL, enrichMethod="ORA", isPara
 	return(resultList)
 }
 
+#' @export
 WebGestaltR_batch <- function(is.output=TRUE, ...) {
 	cat("WARNING: Function WebGestaltR_batch is deprecated and changed to WebGestaltRBatch!\n")
 	return(WebGestaltRBatch(isOutput=is.output, ...))

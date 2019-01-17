@@ -14,10 +14,11 @@
 #'  \item{coverage}{The percentage of IDs covered in the top sets.}
 #' }
 #'
-#' @export
 #' @importFrom dplyr bind_rows
 #' @importFrom parallel mclapply
+#' @export
 #' @author Zhiao Shi, Yuxing Liao
+#'
 weightedSetCover <- function(idsInSet, costs, topN, nThreads=4) {
   cat("Begin weighted set cover...\n")
   names(costs) <- names(idsInSet)

@@ -22,6 +22,8 @@ geneM <- function(geneList,mappingTable){
 	}
 }
 
+#' @importFrom dplyr select
+#' @importFrom whisker rowSplit
 getGeneTables <- function(organism, enrichedSig, geneColumn, interestingGeneMap) {
 	if (organism != "others") {
 		standardId <- interestingGeneMap$standardId
@@ -48,6 +50,7 @@ getGeneTables <- function(organism, enrichedSig, geneColumn, interestingGeneMap)
 	return(table)
 }
 
+#' @importFrom dplyr filter bind_rows
 getTopGseaResults <- function(results, topThr) {
 	if (is.wholenumber(topThr)) {
 		posThr <- topThr

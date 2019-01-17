@@ -1,3 +1,13 @@
+#' Read GMT File
+#'
+#' @param gmtFile The file path or URL of the GMT file.
+#'
+#' @return A data frame with columns of "geneSet", "description", "gene".
+#'
+#' @importFrom httr GET content
+#' @importFrom tools file_ext
+#' @export
+#'
 readGmt <- function(gmtFile){
 #####Change a gmt file to a three column matrix (gene set name, gene set description and genes)#######
 	if (startsWith(gmtFile, "http")) {
@@ -8,7 +18,7 @@ readGmt <- function(gmtFile){
 			return(webRequestError(response))
 		}
 	} else {
-		if(file_extension(gmtFile) != "gmt"){
+		if(file_ext(gmtFile) != "gmt"){
 			return(gmtFormatError("empty"))
 		}
 		# remove BOM in some windows files
@@ -40,9 +50,17 @@ readGMT <- readGmt
 	}
 }
 
+#' Prepare Input Matrix for GSEA
+#'
+#' @param rank A 2 column Data Frame of gene and score
+#' @param gmt 3 column Data Frame of geneSet, description, and gene
+#'
+#' @return A matrix used for input to \code{swGsea}.
+#'
+#' @importFrom dplyr filter select distinct inner_join
+#' @export
+#'
 prepareInputMatrixGsea <- function(rank, gmt) {
-	# rank is 2 column Data Frame of gene and score
-	# gmt is 3 column Data Frame of geneSet, geneSetLink, and gene
 	genes <- rank$gene
 	gmt <- gmt %>% filter(gene %in% genes)
 	geneSets <- (gmt %>% select(geneSet, description) %>% distinct())$geneSet

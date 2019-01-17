@@ -3,7 +3,7 @@
 #' Performs site weighted gene set enrichment analysis or standard GSEA when
 #' likelihood/weight columns in \code{input_df} are 1 or 0, \code{p=1},
 #' \code{q=1} and \code{thresh_type="val"}.
-#' 
+#'
 #' The formula for weighting is as follows
 #' \deqn{\frac{s_{j}^{q}|r_{j}|^{p}}{\sum s^{q}|r|^{p}}}{(s_j^q * abs(r_j)^p) / (\sum s^q * abs(r)^p)}
 #' Where r is log ratio score, s is likelihood score, j is the index of the gene.
@@ -64,14 +64,14 @@
 #'  \item{Running_Sums}{Running sum scores along genes sorted by ranked scores,
 #'  with gene sets as columns.}
 #' }
-#' 
+#'
 #' @importFrom dplyr arrange
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach
 #' @importFrom doRNG %dorng%
-#' @author Eric Jaehnig
 #' @export
+#' @author Eric Jaehnig
 #'
 swGsea <- function(input_df, thresh_type="percentile", thresh=0.9, thresh_action="exclude", min_set_size=10, max_set_size=500, max_score="max", min_score="min", psuedocount=0.001, perms=1000, p=1, q=1, nThreads=1, rng_seed=1, fork=FALSE){
 	# check input parameters
@@ -381,6 +381,9 @@ swGsea <- function(input_df, thresh_type="percentile", thresh=0.9, thresh_action
 #' @param gmtFile Path of the GMT file
 #'
 #' @return a data frame to be used in \code{swGsea}
+#'
+#' @importFrom readr read_tsv
+#'
 #' @export
 #'
 prepareGseaInput <- function(rankFile, gmtFile) {

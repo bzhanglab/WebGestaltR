@@ -1,3 +1,6 @@
+#' @importFrom httr GET content
+#' @importFrom readr read_tsv
+#' @importFrom dplyr filter
 loadInterestGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, geneType="entrezgene", collapseMethod="mean", hostName="http://www.webgestalt.org/", geneSet){
 	if(is.null(inputGeneFile) && is.null(inputGene)){
 		return(interestGeneError(type="empty"))

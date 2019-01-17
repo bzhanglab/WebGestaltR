@@ -1,3 +1,5 @@
+#' @importFrom dplyr select distinct filter arrange mutate left_join
+#' @importFrom readr write_tsv
 gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE, nThreads=1) {
 	projectFolder <- file.path(outputDirectory, paste("Project_", projectName, sep=""))
 	if (!dir.exists(projectFolder)) {

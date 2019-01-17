@@ -1,3 +1,14 @@
+#' List Gene Sets
+#'
+#' List available gene sets for the given organism on WebGestalt server.
+#'
+#' @inheritParams WebGestaltR
+#'
+#' @return A data frame of available gene sets.
+#'
+#' @importFrom httr GET content
+#' @export
+#'
 listGeneSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/"){
 	response <- GET(file.path(hostName, "api", "summary", "geneset"))
 	if (response$status_code != 200) {

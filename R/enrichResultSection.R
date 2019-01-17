@@ -1,3 +1,10 @@
+#' enrichResultSection
+#'
+#' Conditionally render template of main result section. Actual work is carried out in front end
+#'
+#' @importFrom whisker whisker.render
+#' @keywords internal
+#'
 enrichResultSection <- function(enrichMethod, geneSetDes, geneSetDag, geneSetNet, clusters) {
 	data <- list(methodIsOra=enrichMethod=='ORA',
 				hasGeneSetDes=!is.null(geneSetDes),

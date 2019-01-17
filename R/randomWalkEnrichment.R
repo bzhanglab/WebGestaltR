@@ -1,3 +1,7 @@
+#' @importFrom httr GET content modify_url
+#' @importFrom readr read_tsv
+#' @importFrom dplyr filter arrange
+#' @importFrom igraph graph.edgelist V
 randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, highlightSeedNum, sigMethod, fdrThr, topThr, projectDir, projectName, hostName) {
 	fileName <- paste(projectName, network, method, sep=".")
 	geneSetUrl <- file.path(hostName, "api", "geneset")
@@ -81,7 +85,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	}
 }
 
-
+#' @importFrom igraph get.adjacency
 .netwalker <- function(seed, network, r=0.5) {
 	adjMatrix <- get.adjacency(network, sparse=FALSE)
 	de <- apply(adjMatrix, 2, sum)
@@ -102,7 +106,9 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	return(pt1)
 }
 
-
+#' @importFrom dplyr select filter arrange left_join mutate
+#' @importFrom httr POST content
+#' @importFrom readr read_tsv
 .enrichmentFunction <- function(organism, reference, interest, goAnn, seeds, sigMethod, fdrThr, topThr, hostName) {
 	goAnn <- select(goAnn, gene, geneSet)
 	annRef <- filter(goAnn, gene %in% reference)

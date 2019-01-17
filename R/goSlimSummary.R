@@ -1,3 +1,17 @@
+#' GO Slim Summary
+#'
+#' Outputs a brief summary of input genes based on GO Slim data.
+#'
+#' @inheritParams WebGestaltR
+#' @param geneList A list of input genes.
+#' @param outputFile Output file name.
+#' @param isOutput Boolean if a plot is save to \code{outputFile}.
+#' @param outputType File format of the plot: \code{pdf}, \code{bmp} or \code{png}.
+#'
+#' @return A list of the summary result.
+#' @export
+#' @aliases GOSlimSummary
+#'
 goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType="pdf",isOutput=TRUE, hostName="http://www.webgestalt.org") {
 	organisms <- listOrganism(hostName=hostName)
 	if(!(organism %in% organisms)){
@@ -76,6 +90,8 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 	return(NULL)
 }
 
+#' @importFrom httr POST content
+#' @importFrom dplyr select distinct inner_join arrange
 .processData <- function(organism,hostName,geneList,ontology){
 	goUrl <- file.path(hostName, "api", "goslim")
 	response <- POST(goUrl, body=list(organism=organism, ontology=ontology, entrezgenes=geneList), encode="json")
@@ -117,6 +133,7 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 }
 
 
+#' @export
 GOSlimSummary <- function(...) {
 	cat("WARNING: Function GOSlimSummary is deprecated and changed to goSlimSummary!\n")
 	return(goSlimSummary(...))

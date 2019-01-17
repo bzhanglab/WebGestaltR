@@ -1,3 +1,11 @@
+#' Create HTML Report for NTA
+#'
+#' @importFrom readr read_tsv
+#' @importFrom rjson fromJSON toJSON
+#' @importFrom whisker whisker.render rowSplit
+#'
+#' @keywords internal
+#'
 createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, highlightType, outputDirectory, projectDir, projectName, hostName) {
 	namePrefix <- paste(projectName, networkName, method, sep=".")
 	seedsFn <- file.path(projectDir, paste0(namePrefix, "_seedsInSubnetwork.txt"))

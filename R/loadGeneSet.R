@@ -1,3 +1,5 @@
+#' @importFrom dplyr select distinct filter
+#' @importFrom httr modify_url
 loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, collapseMethod="mean", hostName="http://www.webgestalt.org/") {
 	geneSet <- NULL    ##gene sets
 	geneSetDes <- NULL ##gene set description file
@@ -75,6 +77,8 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 	return(re)
 }
 
+#' @importFrom httr GET content
+#' @importFrom readr read_tsv
 .loadGeneSetData <- function(hostName, organism, database, standardId, fileType) {
 	# read gene set files from API or returns NULL
 	geneSetUrl <- file.path(hostName,"api","geneset")
@@ -87,8 +91,10 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 	return(geneSetData)
 }
 
+#' @importFrom readr read_tsv
+#' @importFrom tools file_ext
 .loadEnrichDatabaseDescriptionFile <- function(geneSet, enrichDatabaseDescriptionFile){
-	if(file_extension(enrichDatabaseDescriptionFile)!="des"){
+	if(file_ext(enrichDatabaseDescriptionFile)!="des"){
 		return(descriptionFileError("format"))
 	}else{
 		geneSetDes <- read_tsv(enrichDatabaseDescriptionFile, col_names=c("geneSet", "description"), col_types="cc")

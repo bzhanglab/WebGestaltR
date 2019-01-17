@@ -1,3 +1,10 @@
+#' summaryDescription
+#'
+#' Render job summary section
+#'
+#' @importFrom whisker whisker.render
+#' @keywords internal
+#'
 summaryDescription <- function(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, perNum, geneSet, hostName) {
 	if(enrichMethod=="ORA"){
 		methodSpecificContent <- specificParameterSummaryOra(organism,referenceGeneList,geneSet,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,reportNum,interestingGeneMap)
@@ -34,6 +41,14 @@ summaryDescription <- function(projectName, organism, interestGeneFile, interest
 }
 
 
+#' specificParameterSummaryOra
+#'
+#' Render job summary section of ORA specific parameters
+#'
+#' @importFrom whisker whisker.render
+#'
+#' @keywords internal
+#'
 specificParameterSummaryOra <- function(organism,referenceGeneList,geneSet,referenceGeneFile,referenceGene,referenceGeneType,referenceSet,minNum,maxNum,sigMethod,fdrThr,topThr,fdrMethod,enrichedSig,reportNum,interestingGeneMap){
 	organismIsOthers <- organism == "others"
 	if(!organismIsOthers){
@@ -66,7 +81,15 @@ specificParameterSummaryOra <- function(organism,referenceGeneList,geneSet,refer
 	return(whisker.render(template, data))
 }
 
-
+#' specificParameterSummaryGsea
+#'
+#' Render job summary section of GSEA specific parameters
+#'
+#' @importFrom whisker whisker.render
+#' @importFrom dplyr filter
+#'
+#' @keywords internal
+#'
 specificParameterSummaryGsea <- function(organism, interestingGeneMap, geneSet, minNum, maxNum, sigMethod, fdrThr, topThr, perNum, enrichedSig, reportNum){
 	organismIsOthers <- organism == "others"
 	if(!organismIsOthers){

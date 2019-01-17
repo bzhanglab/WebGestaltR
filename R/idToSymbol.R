@@ -1,3 +1,11 @@
+#' Wrapper for mapping ids to "genesymbol"
+#'
+#' @inheritParams idMapping
+#'
+#' @importFrom tools file_ext
+#'
+#' @export
+#' @rdname idMapping
 idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
                        inputGene=NULL, sourceIdType="ensembl_gene_id", collapseMethod="mean",
                        mappingOutput=FALSE, outputFileName=NULL,

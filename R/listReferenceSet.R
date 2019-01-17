@@ -1,3 +1,14 @@
+#' List Reference Sets
+#'
+#' List available reference sets for the given organism on WebGestalt server.
+#'
+#' @inheritParams WebGestaltR
+#'
+#' @return A list of reference sets.
+#'
+#' @importFrom httr GET content
+#' @export
+#'
 listReferenceSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/"){
 	response <- GET(file.path(hostName, "api", "summary", "referenceset"))
 	if (response$status_code != 200) {

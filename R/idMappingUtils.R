@@ -12,7 +12,7 @@ idMappingInput <- function(dataType="list",inputGeneFile,inputGene){
 	}
 }
 
-
+#' @importFrom httr GET content
 identifyStandardId <- function(hostName,idType,organism,type){
 	if(type=="interest"){
 		response <- GET(file.path(hostName, "api", "summary", "idtype"))
@@ -31,7 +31,8 @@ identifyStandardId <- function(hostName,idType,organism,type){
 	return(filter(idTypes, name == idType)[[1, "standardId"]])
 }
 
-
+#' @importFrom dplyr select distinct
+#' @importFrom readr write_tsv
 idMappingOutput <- function(outputFileName, mappingList, unmappedList, dataType, sourceIdType, targetIdType) {
 	if (length(unmappedList)>0) {
 		write(unmappedList, paste0(outputFileName, "_unmappedList.txt"))

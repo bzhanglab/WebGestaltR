@@ -1,6 +1,11 @@
+#' Expand enriched GO IDs to include ancestors up to the root
+#'
+#' Returns expanded nodes and DAG tree edges
+#'
+#' @importFrom dplyr filter
+#' @keywords internal
+#'
 expandDag <- function(goTermList, dagEdgeList) {
-## Expand enriched GO IDs to include ancestors up to the root
-## returns expanded nodes and DAG tree edges.
 	colnames(dagEdgeList) <- c("source", "target")
 	queue <- as.list(goTermList)
 	## expand to include all linked nodes
@@ -27,6 +32,7 @@ expandDag <- function(goTermList, dagEdgeList) {
 	return(list(allNodes=goTermList, edges=edges))
 }
 
+#' @importFrom dplyr filter
 getDagNodes <- function(enrichedRes, allGoList, goIdName, enrichMethod, dagColorSchema) {
 	if (!is.null(goIdName)) {
 		colnames(goIdName) <- c("id", "name")
@@ -50,6 +56,7 @@ colorPos <- "steelblue"
 colorNeg <- "darkorange"
 colorNeutral <- "white"
 
+#' @importFrom dplyr filter
 getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 	if (schema == "binary") {
 		if (enrichMethod == "ORA") {

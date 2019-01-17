@@ -1,3 +1,14 @@
+#' Check Format and Read Data
+#'
+#' @inheritParams idMapping
+#'
+#' @return A list of data frame
+#'
+#' @importFrom tools file_ext
+#' @importFrom readr read_tsv stop_for_problems
+#'
+#' @export
+#'
 formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 	dataTypeA <- c("list","rnk")
 	if(length(dataType)>1 || !is.character(dataType) || length(which(dataTypeA==dataType))==0){
@@ -8,7 +19,7 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 
 	if(dataType=="list"){
 		if(!is.null(inputGeneFile)){
-			if(file_extension(inputGeneFile)!="txt"){
+			if(file_ext(inputGeneFile)!="txt"){
 				error <- "ERROR: For the user ID list, please upload a 'txt' file with only one column."
 				cat(error)
 				return(error)
@@ -45,7 +56,7 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 
 	if(dataType=="rnk"){
 		if(!is.null(inputGeneFile)){
-			if(file_extension(inputGeneFile)!="rnk"){
+			if(file_ext(inputGeneFile)!="rnk"){
 				error <- "ERROR: For the ranked list, please upload a 'rnk' file with two columns (ids and scores)."
 				cat(error)
 				return(error)

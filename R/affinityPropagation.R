@@ -12,6 +12,7 @@
 #'  \item{representatives}{A character vector of representatives for each cluster.}
 #' }
 #' 
+#' @export
 #' @importFrom apcluster apcluster
 #' @author Zhiao Shi, Yuxing Liao
 affinityPropagation <- function(idsInSet, score) {

@@ -1,3 +1,5 @@
+#' @importFrom dplyr select distinct left_join arrange
+#' @importFrom readr write_tsv
 WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", nThreads=1, hostName="http://www.webgestalt.org/") {
 	enrichMethod <- "GSEA"
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
