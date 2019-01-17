@@ -5,15 +5,16 @@
 #' @param idsInSet A list of set names and their member IDs.
 #' @param score A vector of addible scores with the same length used to assign input preference;
 #'  higher score has larger weight, i.e. -logP.
-#'  
+#'
 #' @return A list of \code{clusters} and \code{representatives} for each cluster.
 #' \describe{
 #'  \item{clusters}{A list of character vectors of set IDs in each cluster.}
 #'  \item{representatives}{A character vector of representatives for each cluster.}
 #' }
-#' 
+#'
 #' @export
 #' @importFrom apcluster apcluster
+#' @importFrom stats rnorm
 #' @author Zhiao Shi, Yuxing Liao
 affinityPropagation <- function(idsInSet, score) {
 	cat("Begin affinity propagation...\n")
@@ -39,9 +40,9 @@ affinityPropagation <- function(idsInSet, score) {
 #' Calculate Jaccard Similarity.
 #'
 #' @inheritParams affinityPropagation
-#' 
+#'
 #' @return A list of similarity matrix \code{sim.mat} and input preference vector \code{ip.vec}.
-#' 
+#'
 #' @author Zhiao Shi, Yuxing Liao
 jaccardSim <- function(idsInSet, score){
 	# first find out the union of sets, sorted

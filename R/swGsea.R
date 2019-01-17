@@ -65,7 +65,8 @@
 #'  with gene sets as columns.}
 #' }
 #'
-#' @importFrom dplyr arrange
+#' @importFrom stats quantile
+#' @importFrom dplyr arrange desc
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach

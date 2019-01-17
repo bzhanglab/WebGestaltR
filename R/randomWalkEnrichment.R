@@ -1,6 +1,6 @@
 #' @importFrom httr GET content modify_url
 #' @importFrom readr read_tsv
-#' @importFrom dplyr filter arrange %>%
+#' @importFrom dplyr filter arrange %>% desc
 #' @importFrom igraph graph.edgelist V
 randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, highlightSeedNum, sigMethod, fdrThr, topThr, projectDir, projectName, hostName) {
 	fileName <- paste(projectName, network, method, sep=".")
@@ -109,6 +109,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 #' @importFrom dplyr select filter arrange left_join mutate %>%
 #' @importFrom httr POST content
 #' @importFrom readr read_tsv
+#' @importFrom stats p.adjust phyper
 .enrichmentFunction <- function(organism, reference, interest, goAnn, seeds, sigMethod, fdrThr, topThr, hostName) {
 	goAnn <- select(goAnn, gene, geneSet)
 	annRef <- filter(goAnn, gene %in% reference)

@@ -1,4 +1,5 @@
 #' @importFrom dplyr filter select left_join mutate arrange %>%
+#' @importFrom stats p.adjust phyper
 oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=500,fdrMethod="BH",sigMethod="fdr",fdrThr=0.05,topThr=10){
 	#before running this code, the main code has checked the overlap among interestGene, referenceGene and geneSet.
 	#And this three sets should have overlapping genes.

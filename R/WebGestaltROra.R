@@ -1,5 +1,5 @@
 #' @importFrom readr write_tsv
-#' @importFrom dplyr left_join select arrange %>%
+#' @importFrom dplyr left_join select arrange %>% desc
 WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", nThreads=1, hostName="http://www.webgestalt.org/"){
 	enrichMethod <- "ORA"
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
