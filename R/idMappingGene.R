@@ -59,7 +59,7 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 		inputGene <- inner_join(mappedInputGene, inputGene, by=c("userId"=sourceIdType))
 	} else if (dataType=="gmt") {
 		inputGene <- inner_join(mappedInputGene, inputGene, by=c("userId"=sourceIdType)) %>%
-			select(.data$geneSet, .data$description, .data$userId, .data$geneSymbol, .data$geneName, .data$targetIdType)
+			select(.data$geneSet, .data$description, .data$userId, .data$geneSymbol, .data$geneName, targetIdType)
 	}
 
 	if (targetIdType != "entrezgene" && sourceIdType!=targetIdType) {
@@ -67,11 +67,11 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 		inputGene <- left_join(inputGene, entrezgeneMapRes$mapped, by="userId")
 
 		if (dataType=="list") {
-			inputGene <- select(inputGene, .data$userId, geneSymbol=.data$geneSymbol.x, geneName=.data$geneName.x, .data$entrezgene, .data$targetIdType)
+			inputGene <- select(inputGene, .data$userId, geneSymbol=.data$geneSymbol.x, geneName=.data$geneName.x, .data$entrezgene, targetIdType)
 		} else if (dataType=="rnk") {
-			inputGene <- select(inputGene, .data$userId, geneSymbol=.data$geneSymbol.x, geneName=.data$geneName.x, .data$entrezgene, .data$targetIdType, .data$score)
+			inputGene <- select(inputGene, .data$userId, geneSymbol=.data$geneSymbol.x, geneName=.data$geneName.x, .data$entrezgene, targetIdType, .data$score)
 		} else if (dataType=="gmt") {
-			inputGene <- select(inputGene, .data$geneSet, .data$description, .data$userId, geneSymbol=.data$geneSymbol.x, geneName=.data$geneName.x, .data$entrezgene, .data$targetIdType)
+			inputGene <- select(inputGene, .data$geneSet, .data$description, .data$userId, geneSymbol=.data$geneSymbol.x, geneName=.data$geneName.x, .data$entrezgene, targetIdType)
 		}
 	}
 	inputGene$gLink <- paste0("https://www.ncbi.nlm.nih.gov/gene/?term=", inputGene$entrezgene)
