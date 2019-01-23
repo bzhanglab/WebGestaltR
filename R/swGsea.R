@@ -196,6 +196,10 @@ swGsea <- function(input_df, thresh_type="percentile", thresh=0.9, thresh_action
 	# print(c("sets that don't contain proper number of items:", skipped_sets))
 	inset_mat <- inset_mat[ , !(colnames(inset_mat)%in%skipped_sets)]
 
+	if (is.null(ncol(inset_mat))) {
+		stop("All gene sets are skipped! Please try to descrease the minimum set size.\n")
+	}
+
 	# generate list containing names of items in each set and ranks of those items
 	items_in_set <- list()
 	for(it in 1:ncol(inset_mat)){
