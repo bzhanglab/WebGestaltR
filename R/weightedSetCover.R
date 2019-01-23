@@ -77,18 +77,20 @@ weightedSetCover <- function(idsInSet, costs, topN, nThreads=4) {
     # first remove the one just been selected
     candidates <- candidates[-1, ]
     # recalculate gain, remove rows with gain == 0
-    mc_results <- mclapply(seq(nrow(candidates)), function(row, candidates, cur_res, idsInSet, costs){
-         cur_name <- candidates[row, "geneset.name"]
-         cur_gain <- marginalGain(cur_name, cur_res, idsInSet, costs)
-         if(cur_gain != 0) {
-           candidates[candidates$geneset.name == cur_name, "gain"] <- cur_gain
-           tmp_candidate <- candidates[candidates$geneset.name == cur_name,]
-           return(tmp_candidate)
-         }
-      }, candidates=candidates, cur_res=cur.res, idsInSet=idsInSet, costs=costs, mc.cores=nThreads)
+    if (nrow(candidates) > 0) {
+      mc_results <- mclapply(seq(nrow(candidates)), function(row, candidates, cur_res, idsInSet, costs){
+      cur_name <- candidates[row, "geneset.name"]
+      cur_gain <- marginalGain(cur_name, cur_res, idsInSet, costs)
+      if(cur_gain != 0) {
+        candidates[candidates$geneset.name == cur_name, "gain"] <- cur_gain
+        tmp_candidate <- candidates[candidates$geneset.name == cur_name,]
+         return(tmp_candidate)
+      }
+    }, candidates=candidates, cur_res=cur.res, idsInSet=idsInSet, costs=costs, mc.cores=nThreads)
 
-    new_candidates <- mc_results %>% bind_rows()
-    candidates <- new_candidates
+      new_candidates <- mc_results %>% bind_rows()
+      candidates <- new_candidates
+    }
   }
   # not fully covered, compute the current coverage and return
   covered.genes <- unique(unlist(idsInSet[cur.res]))
