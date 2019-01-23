@@ -25,7 +25,6 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 		colnames(inputGene) <- c("geneSet", "link", sourceIdType)
 		inputGeneL <- unique(inputGene$gene)
 	}
-
 	response <- POST(file.path(hostName, "api", "idmapping"), encode="json",
 				body=list(organism=organism, sourceType=sourceIdType,
 				targetType=targetIdType, ids=inputGeneL, standardId="phosphositeSeq"
@@ -43,7 +42,6 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 	unmappedIds <- unlist(mapRes$unmapped)
 
 	if (length(mappedIds) == 0) { return(idMappingError("empty")) }
-
 	names <- c("sourceId", "targetId")
 	mappedInputGene <- data.frame(matrix(unlist(lapply(mappedIds, FUN=function(x) { x[names] })), nrow=length(mappedIds), byrow=TRUE), stringsAsFactors=FALSE)
 	colnames(mappedInputGene) <- c("userId", targetIdType)
@@ -57,7 +55,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 			mappedInputGene$gene <- unlist(lapply(strsplit(mappedInputGene[, targetIdType], "_"), .combineG))
 		} else {
 			response <- POST(file.path(hostName, "api", "idmapping"), encode="json",
-						body=list(organism=organism, sourceType=sourceIdType,
+						body=list(organism=organism, sourceType=sourceIdType, standardId="phosphositeSeq",
 						targetType="phosphositeUniprot", ids=inputGeneL))
 
 			if (response$status_code != 200) {
@@ -71,16 +69,16 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 
 			names <- c("sourceId", "targetId")
 			uniMapRes <- data.frame(matrix(unlist(lapply(uniMapRes$mapped, FUN=function(x) { x[names] })), nrow=length(uniMapRes$mapped), byrow=TRUE), stringsAsFactors=FALSE)
-			colnames(uniMapRes) <- c("userId", targetIdType)
-			uniMapRes$gene <- unlist(lapply(strsplit(uniMapRes[, targetIdType], "_"), .combineG))
+			colnames(uniMapRes) <- c(sourceIdType, "phosphositeUniprot")
+			uniMapRes$gene <- unlist(lapply(strsplit(uniMapRes[, "phosphositeUniprot"], "_"), .combineG))
 			# Map ID may change nrow due to unmapped ones
-			mappedInputGene <- uniMapRes %>% select(.data$userId, .data$gene) %>% right_join(mappedInputGene, by="userId")
+			mappedInputGene <- uniMapRes %>% select(sourceIdType, .data$gene) %>% right_join(mappedInputGene, by="phosphositeSeq")
 		}
 	}
 
 	#####Hard code#######
 	if (grepl("Uniprot", sourceIdType, fixed=TRUE) || sourceIdType == "phosphositeSeq") {
-		geneType <- "uniprot_swissprot"
+		geneType <- "uniprotswissprot"
 		outLink <- "http://www.uniprot.org/uniprot/"
 	}
 
@@ -102,17 +100,17 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 		right_join(mappedInputGene, by="gene")
 
 	if(dataType=="list"){
-		inputGene <- select(mergedRes, .data$userId, .data$geneSymbol, .data$geneName, .data$targetIdType, .data$gLink)
+		inputGene <- select(mergedRes, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
 	}
 
 	if(dataType=="rnk"){
 		inputGene <- mergedRes %>% left_join(inputGene, by=c("userId"=sourceIdType)) %>%
-			select(.data$userId, .data$geneSymbol, .data$geneName, .data$targetIdType, .data$score, .data$gLink)
+			select(.data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$score, .data$gLink)
 	}
 
 	if(dataType=="gmt"){
 		inputGene <- mergedRes %>% left_join(inputGene, by=c("userId"=sourceIdType)) %>%
-			select(.data$geneSet, .data$link, .data$userId, .data$geneSymbol, .data$geneName, .data$targetIdType, .data$gLink)
+			select(.data$geneSet, .data$link, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
 	}
 
 	#############Output#######################
