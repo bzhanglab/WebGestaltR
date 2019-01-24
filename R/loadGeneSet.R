@@ -82,7 +82,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 #' @importFrom readr read_tsv
 .loadGeneSetData <- function(hostName, organism, database, standardId, fileType) {
 	# read gene set files from API or returns NULL
-  cacheData<-cacheFileTxt("geneset", query=list(organism=organism, database=database, standardId=standardId, fileType=fileType))
+  cacheData<-cacheFileTxt(hostName, "geneset", query=list(organism=organism, database=database, standardId=standardId, fileType=fileType))
 	if (cacheData$Succeed) {
 		geneSetData <- read_tsv(cacheData$txtData, col_names=FALSE, col_types="cc")
 	} else {

@@ -8,7 +8,7 @@
 #' @importFrom tools file_ext
 #' @export
 #'
-readGmt <- function(gmtFile, hostName=NULL, paths=NULL, query=NULL){
+readGmt <- function(gmtFile, hostName="", paths="", query=""){
 #####Change a gmt file to a three column matrix (gene set name, gene set description and genes)#######
 	if (startsWith(gmtFile, "http")) {
 	  cacheData<-cacheFileTxt(hostName, paths, query)

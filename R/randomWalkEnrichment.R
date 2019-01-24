@@ -5,7 +5,7 @@
 randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, highlightSeedNum, sigMethod, fdrThr, topThr, projectDir, projectName, hostName) {
 	fileName <- paste(projectName, network, method, sep=".")
 	
-	cacheData<-cacheFileTxt("geneset", query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
+	cacheData<-cacheFileTxt(hostName, "geneset", query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
 	if (! cacheData$Succeed) {
 	  return (cacheData$Error)
 	}
