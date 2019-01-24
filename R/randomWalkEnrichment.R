@@ -7,15 +7,16 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	
 	cacheData<-cacheFileTxt(hostName, "geneset", query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
 	if (! cacheData$Succeed) {
-	  return (cacheData$Error)
+	  return
 	}
 
 	net <- as.matrix(read_tsv(cacheData$txtData, col_names=FALSE, col_types="cc"))
 	netGraph <- graph.edgelist(net, directed=FALSE)
 	netNode <- V(netGraph)$name
 
-	gmtUrl <- modify_url(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="genesymbol", fileType="gmt"))
-	goAnn <- readGmt(gmtUrl)
+	query=list(organism=organism, database="geneontology_Biological_Process", standardId="genesymbol", fileType="gmt")
+	gmtUrl <- modify_url(file.path(hostName, "api", "geneset"), query=query)
+	goAnn <- readGmt(gmtUrl, hostName, "geneset", query)
 
 	cat("Start Random Walk...\n")
 
