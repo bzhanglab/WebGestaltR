@@ -4,5 +4,7 @@ WebGestaltR function can perform popular enrichment analyses: ORA (Over-Represen
 
 This modified WebGestaltR package is based version 0.3.0 The modified version supports R only and will store temporary files downloaded from server to workspace folder. Please install the package by:
 
+```
 library(devtools)
 install_github("shengqh/WebGestaltR")
+```
