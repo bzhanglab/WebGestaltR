@@ -11,9 +11,11 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	inputGene <- idMappingGene(organism=organism, dataType="list", inputGene=inputGene, sourceIdType=interestGeneType, targetIdType="entrezgene", mappingOutput=FALSE, hostName=hostName)
 	inputGene <- inputGene$mapped$geneSymbol
 
-	geneSetUrl <- file.path(hostName, "api", "geneset")
-	response <- GET(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="entrezgene", fileType="dag"))
-	dagInfo <- read_tsv(content(response), col_names=c("source", "target"), col_types="cc")
+	cacheData<-cacheFileTxt(hostName, "geneset", query=list(organism=organism, database="geneontology_Biological_Process", standardId="entrezgene", fileType="dag"))
+	if (! cacheData$Succeed) {
+	  return(cacheData$ERROR)
+	}
+	dagInfo <- read_tsv(cacheData$txtData, col_names=c("source", "target"), col_types="cc")
 
 	## networks <- unlist(strsplit(network, ",", fixed=TRUE))
 	## May need to bring back analysis of multiple networks

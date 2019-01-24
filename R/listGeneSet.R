@@ -10,11 +10,11 @@
 #' @export
 #'
 listGeneSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/"){
-	response <- GET(file.path(hostName, "api", "summary", "geneset"))
-	if (response$status_code != 200) {
-		return(webRequestError(response))
-	}
-	jsonData <- content(response)
+  cacheData <- cacheFile(hostName, c("summary", "geneset"))
+  if (! cacheData$Succeed) {
+    return(cacheData$ERROR)
+  }
+  jsonData <- cacheData$jsonData
 	ids <- jsonData[[organism]]
 	name1 <- names(ids)
 	idList <- data.frame(name="",description="",idType="",stringsAsFactors=F)

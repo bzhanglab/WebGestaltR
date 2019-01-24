@@ -8,14 +8,14 @@
 #' @importFrom tools file_ext
 #' @export
 #'
-readGmt <- function(gmtFile){
+readGmt <- function(gmtFile, hostName=NULL, paths=NULL, query=NULL){
 #####Change a gmt file to a three column matrix (gene set name, gene set description and genes)#######
 	if (startsWith(gmtFile, "http")) {
-		response <- GET(gmtFile)
-		if (response$status_code == 200) {
-			data <- unlist(strsplit(content(response), "\n", fixed=TRUE))
+	  cacheData<-cacheFileTxt(hostName, paths, query)
+		if (cacheData$Succeed) {
+			data <- unlist(strsplit(cacheData$txtData, "\n", fixed=TRUE))
 		} else {
-			return(webRequestError(response))
+			return(cacheData$Error)
 		}
 	} else {
 		if(file_ext(gmtFile) != "gmt"){

@@ -40,8 +40,9 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 			standardId <- filter(geneSetInfo, .data$name==enrichDatabase)[[1, "idType"]]  # get the ID type of the enriched database, such as entrezgene or phosphsiteSeq
 
 			#########Read GMT file from the existing database###########
-			gmtUrl <- modify_url(file.path(hostName,"api","geneset"), query=list(organism=organism, database=enrichDatabase, standardId=standardId, fileType="gmt"))
-			geneSet <- readGmt(gmtUrl)
+			query=list(organism=organism, database=enrichDatabase, standardId=standardId, fileType="gmt")
+			gmtUrl <- modify_url(file.path(hostName,"api","geneset"), query=query)
+			geneSet <- readGmt(gmtUrl, hostName, paths=c("geneset"), query=query)
 
 			if(.hasError(geneSet)){
 				return(geneSet)
@@ -81,10 +82,9 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 #' @importFrom readr read_tsv
 .loadGeneSetData <- function(hostName, organism, database, standardId, fileType) {
 	# read gene set files from API or returns NULL
-	geneSetUrl <- file.path(hostName,"api","geneset")
-	response <- GET(geneSetUrl, query=list(organism=organism, database=database, standardId=standardId, fileType=fileType))
-	if (response$status_code == 200) {
-		geneSetData <- read_tsv(content(response), col_names=FALSE, col_types="cc")
+  cacheData<-cacheFileTxt("geneset", query=list(organism=organism, database=database, standardId=standardId, fileType=fileType))
+	if (cacheData$Succeed) {
+		geneSetData <- read_tsv(cacheData$txtData, col_names=FALSE, col_types="cc")
 	} else {
 		geneSetData <- NULL
 	}

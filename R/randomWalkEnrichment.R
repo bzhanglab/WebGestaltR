@@ -4,9 +4,13 @@
 #' @importFrom igraph graph.edgelist V
 randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, highlightSeedNum, sigMethod, fdrThr, topThr, projectDir, projectName, hostName) {
 	fileName <- paste(projectName, network, method, sep=".")
-	geneSetUrl <- file.path(hostName, "api", "geneset")
-	response <- GET(geneSetUrl, query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
-	net <- as.matrix(read_tsv(content(response), col_names=FALSE, col_types="cc"))
+	
+	cacheData<-cacheFileTxt("geneset", query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
+	if (! cacheData$Succeed) {
+	  return (cacheData$Error)
+	}
+
+	net <- as.matrix(read_tsv(cacheData$txtData, col_names=FALSE, col_types="cc"))
 	netGraph <- graph.edgelist(net, directed=FALSE)
 	netNode <- V(netGraph)$name
 

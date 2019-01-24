@@ -15,15 +15,15 @@ idMappingInput <- function(dataType="list",inputGeneFile,inputGene){
 #' @importFrom httr GET content
 identifyStandardId <- function(hostName,idType,organism,type){
 	if(type=="interest"){
-		response <- GET(file.path(hostName, "api", "summary", "idtype"))
+		cacheData <- cacheFile(hostName, c("summary", "idtype"))
 	}
 	if(type=="reference"){
-		response <- GET(file.path(hostName, "api", "summary", "referenceset"))
+	  cacheData <- cacheFile(hostName, c("summary", "referenceset"))
 	}
-	if (response$status_code != 200) {
-		return(webRequestError(response))
+	if (! cacheData$Succeed) {
+		return(cacheData$ERROR)
 	}
-	jsonData <- content(response)
+	jsonData <- cacheData$jsonData
 	idTypes <- jsonData[[organism]]
 	names <- unlist(lapply(idTypes, function(e) return(e$name)))
 	standardIds <- unlist(lapply(idTypes,function(e) return(e$type)))

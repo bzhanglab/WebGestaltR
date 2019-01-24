@@ -10,11 +10,11 @@
 #' @export
 #'
 listOrganism <- function(hostName="http://www.webgestalt.org/"){
-	response <- GET(file.path(hostName, "api", "summary", "idtype"))
-	if (response$status_code != 200) {
-		return(webRequestError(response))
-	}
-	jsonData <- content(response)
+  cacheData <- cacheFile(hostName, c("summary", "idtype"))
+  if (! cacheData$Succeed) {
+    return(cacheData$ERROR)
+  }
+  jsonData <- cacheData$jsonData
 	organisms <- names(jsonData)
 	return(organisms)
 }
