@@ -77,7 +77,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	}
 	sig <- sig %>% left_join(geneSetName, by="geneSet") %>%
 		mutate(size = unname(sapply(geneSet, function(x) nrow(gseaRes$Items_in_Set[[x]])))) %>%
-		mutate(plotPath = unname(sapply(geneSet, function(x) file.path(relativeF, paste0(x, ".png")))))
+		mutate(plotPath = unname(sapply(geneSet, function(x) file.path(relativeF, paste0(sanitizeFileName(x), ".png")))))
 
 	leadingGeneNum <- vector("integer", numSig)
 	leadingGenes <- vector("character", numSig)
