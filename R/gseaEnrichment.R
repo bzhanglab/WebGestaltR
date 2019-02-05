@@ -97,7 +97,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 
 		if (isOutput) {
 			# Plot GSEA-like enrichment plot
-			png(file.path(outputF, paste0(geneSet, ".png")), bg="transparent", width=1000, height=1000)
+			png(file.path(outputF, paste0(sanitizeFileName(geneSet), ".png")), bg="transparent", width=1000, height=1000)
 			plot.new()
 			par(fig=c(0, 1, 0.5, 1), mar=c(0, 5, 3, 2), cex.axis=1.8, cex.main=2.5, cex.lab=2.5, new=TRUE)
 			plot(1:length(gseaRes$Running_Sums[, geneSet]), gseaRes$Running_Sums[, geneSet],

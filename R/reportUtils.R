@@ -85,3 +85,7 @@ getTopGseaResults <- function(results, topThr) {
 	}
 	return(list(sig, insig))
 }
+
+sanitizeFileName <- function(name) {
+	return(gsub("[[:punct:]]", "_", name))
+}
