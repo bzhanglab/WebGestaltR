@@ -4,14 +4,22 @@
 #' @importFrom igraph graph.edgelist V
 randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, highlightSeedNum, sigMethod, fdrThr, topThr, projectDir, projectName, hostName) {
 	fileName <- paste(projectName, network, method, sep=".")
-	geneSetUrl <- file.path(hostName, "api", "geneset")
-	response <- GET(geneSetUrl, query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
-	net <- as.matrix(read_tsv(content(response), col_names=FALSE, col_types="cc"))
+	if (startsWith(hostName, "file://")) {
+		net <- as.matrix(read_tsv(
+			removeFileProtocol(file.path(hostName, "geneset", paste(organism, network, "entrezgene.net", sep="_"))),
+			col_names=FALSE, col_types="cc"))
+		goAnn <- readGmt(removeFileProtocol(file.path(hostName, "geneset", paste(organism, "geneontology_Biological_Process", "genesymbol.gmt", sep="_"))))
+	} else {
+		geneSetUrl <- file.path(hostName, "api", "geneset")
+		# actually standard id is gene symbol for network
+		response <- GET(geneSetUrl, query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
+		net <- as.matrix(read_tsv(content(response), col_names=FALSE, col_types="cc"))
+		gmtUrl <- modify_url(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="genesymbol", fileType="gmt"))
+		goAnn <- readGmt(gmtUrl)
+	}
 	netGraph <- graph.edgelist(net, directed=FALSE)
 	netNode <- V(netGraph)$name
 
-	gmtUrl <- modify_url(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="genesymbol", fileType="gmt"))
-	goAnn <- readGmt(gmtUrl)
 
 	cat("Start Random Walk...\n")
 
@@ -120,11 +128,18 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 
 	refTermCount <- tapply(annRef$gene, annRef$geneSet, length)
 
-	geneSetUrl <- file.path(hostName, "api", "geneset")
-	response <- POST(geneSetUrl, body=list(organism=organism, database="geneontology_Biological_Process",
-		fileType="des", ids=unique(annRef$geneSet)), encode="json")
-	refTermName <- read_tsv(content(response), col_names=c("id", "name"), col_types="cc") %>%
-		filter(.data$id %in% names(refTermCount))
+	if (startsWith(hostName, "file://")) {
+		refTermName <- read_tsv(
+			removeFileProtocol(file.path(hostName, "geneset", paste(organism, "geneontology_Biological_Process", "entrezgene.des", sep="_"))),
+			col_names=c("id", "name"), col_types="cc"
+		) %>% filter(.data$id %in% names(refTermCount))
+	} else {
+		geneSetUrl <- file.path(hostName, "api", "geneset")
+		response <- POST(geneSetUrl, body=list(organism=organism, database="geneontology_Biological_Process",
+			fileType="des", ids=unique(annRef$geneSet)), encode="json")
+		refTermName <- read_tsv(content(response), col_names=c("id", "name"), col_types="cc") %>%
+			filter(.data$id %in% names(refTermCount))
+	}
 
 	refTermCount <- data.frame(goId=names(refTermCount), refNum=refTermCount, stringsAsFactors=FALSE) %>%
 		left_join(refTermName, by=c("goId"="id")) %>%

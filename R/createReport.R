@@ -11,12 +11,9 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	outputHtmlFile <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, ".html"))
 
 	# if hostname starts with "file://", it is used as WebGestaltReporter
-	# all web assets are avaialble inside a parent directory called "assets"
-	## TODO: FIXME
-	if(length(grep("file://", hostName, fixed=TRUE))==1){
-		#file.symlink("../assets", file.path(outputDirectory, paste("Project_",projectName,sep=""),"assets"))
-		#hostName <- "assets"
-		hostName <- "https://s3-us-west-2.amazonaws.com/webgestalt/assets"
+	if (startsWith(hostName, "file://")) {
+		# change back hostName for web assets and browsers will cache it.
+		hostName <- "http://www.webgestalt.org"
 	}
 
 	numAnnoRefUserId <- NULL

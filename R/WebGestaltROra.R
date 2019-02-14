@@ -105,7 +105,6 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 				arrange(.data$FDR, .data$pValue, desc(.data$C))
 		}
 
-
 		geneTables <- getGeneTables(organism, enrichedSig, "overlapId", interestingGeneMap)
 		if (organism != "others") {
 			enrichedSig$link <- mapply(function(link, geneList) linkModification("ORA", enrichDatabase, link, geneList, interestingGeneMap),

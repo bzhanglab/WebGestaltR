@@ -11,9 +11,16 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	inputGene <- idMappingGene(organism=organism, dataType="list", inputGene=inputGene, sourceIdType=interestGeneType, targetIdType="entrezgene", mappingOutput=FALSE, hostName=hostName)
 	inputGene <- inputGene$mapped$geneSymbol
 
-	geneSetUrl <- file.path(hostName, "api", "geneset")
-	response <- GET(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="entrezgene", fileType="dag"))
-	dagInfo <- read_tsv(content(response), col_names=c("source", "target"), col_types="cc")
+	if (startsWith(hostName, "file://")) {
+		dagInfo <- read_tsv(
+			removeFileProtocol(file.path(hostName, "geneset", paste(organism, "geneontology_Biological_Process", "entrezgene.dag", sep="_"))),
+			col_names=c("source", "target"), col_types="cc"
+		)
+	} else {
+		geneSetUrl <- file.path(hostName, "api", "geneset")
+		response <- GET(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="entrezgene", fileType="dag"))
+		dagInfo <- read_tsv(content(response), col_names=c("source", "target"), col_types="cc")
+	}
 
 	## networks <- unlist(strsplit(network, ",", fixed=TRUE))
 	## May need to bring back analysis of multiple networks
@@ -49,9 +56,16 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 		}
 	}
 
-	response <- POST(geneSetUrl, body=list(organism=organism, database="geneontology_Biological_Process",
-		fileType="des", ids=goTermList), encode="json")
-	goId2Term <- read_tsv(content(response), col_names=c("id", "name"), col_types="cc")
+	if (startsWith(hostName, "file://")) {
+		goId2Term <- read_tsv(
+			removeFileProtocol(file.path(hostName, "geneset", paste(organism, "geneontology_Biological_Process", "entrezgene.des", sep="_"))),
+			col_names=c("id", "name"), col_types="cc"
+		)
+	} else {
+		response <- POST(geneSetUrl, body=list(organism=organism, database="geneontology_Biological_Process",
+			fileType="des", ids=goTermList), encode="json")
+		goId2Term <- read_tsv(content(response), col_names=c("id", "name"), col_types="cc")
+	}
 
 	jsonFile <- file.path(projectDir, paste0(fileName, ".json"));
 	jsonData <- vector(mode="list", length=length(goTermList))

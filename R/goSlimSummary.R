@@ -35,7 +35,7 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 		return(error)
 	}
 
-	bpRes <- .processData(organism,hostName,geneList,"BiologicalProcess")
+	bpRes <- .processData(organism, hostName, geneList, "Biological_Process")
 	if(.hasError(bpRes)){
 		return(bpRes)
 	}else{
@@ -46,7 +46,7 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 		}
 	}
 
-	ccRes <- .processData(organism,hostName,geneList,"CellularComponent")
+	ccRes <- .processData(organism, hostName, geneList, "Cellular_Component")
 	if(.hasError(ccRes)){
 		return(ccRes)
 	}else{
@@ -57,7 +57,7 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 		}
 	}
 
-	mfRes <- .processData(organism,hostName,geneList,"MolecularFunction")
+	mfRes <- .processData(organism, hostName, geneList, "Molecular_Function")
 	if(.hasError(mfRes)){
 		return(mfRes)
 	}else{
@@ -91,17 +91,24 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 }
 
 #' @importFrom httr POST content
-#' @importFrom dplyr select distinct inner_join arrange %>%
+#' @importFrom dplyr select distinct inner_join arrange filter %>%
+#' @importFrom readr read_tsv
 .processData <- function(organism,hostName,geneList,ontology){
-	goUrl <- file.path(hostName, "api", "goslim")
-	response <- POST(goUrl, body=list(organism=organism, ontology=ontology, entrezgenes=geneList), encode="json")
-	if (response$status_code != 200) {
-		return(webRequestError(response))
-	}
 	names <- c("entrezgene", "accession", "name")
-	goSlimData <- content(response)[["goslim"]]
-	goSlimData <- data.frame(matrix(unlist(lapply(goSlimData, FUN=function(x) { x[names] })), nrow=length(goSlimData), byrow=TRUE), stringsAsFactors=FALSE)
-	colnames(goSlimData) <- names
+	if (startsWith(hostName, "file://")) {
+		goPath <- removeFileProtocol(file.path(hostName, "goslim", paste0(organism, "_GOSlim_", ontology, ".table")))
+		goSlimData <- read_tsv(goPath, col_names=names, col_types="ccc", quote="")
+		goSlimData <- filter(goSlimData, .data$entrezgene %in% geneList)
+	} else {
+		goUrl <- file.path(hostName, "api", "goslim")
+		response <- POST(goUrl, body=list(organism=organism, ontology=ontology, entrezgenes=geneList), encode="json")
+		if (response$status_code != 200) {
+			return(webRequestError(response))
+		}
+		goSlimData <- content(response)[["goslim"]]
+		goSlimData <- data.frame(matrix(unlist(lapply(goSlimData, FUN=function(x) { x[names] })), nrow=length(goSlimData), byrow=TRUE), stringsAsFactors=FALSE)
+		colnames(goSlimData) <- names
+	}
 
 
 	if(nrow(goSlimData)==0){

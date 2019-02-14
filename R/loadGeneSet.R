@@ -40,8 +40,13 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 			standardId <- filter(geneSetInfo, .data$name==enrichDatabase)[[1, "idType"]]  # get the ID type of the enriched database, such as entrezgene or phosphsiteSeq
 
 			#########Read GMT file from the existing database###########
-			gmtUrl <- modify_url(file.path(hostName,"api","geneset"), query=list(organism=organism, database=enrichDatabase, standardId=standardId, fileType="gmt"))
-			geneSet <- readGmt(gmtUrl)
+			if (startsWith(hostName, "file://")) {
+				gmtPath <- removeFileProtocol(file.path(hostName, "geneset", paste0(paste(organism, enrichDatabase, standardId, sep="_"), ".gmt")))
+				geneSet <- readGmt(gmtPath)
+			} else {
+				gmtUrl <- modify_url(file.path(hostName,"api","geneset"), query=list(organism=organism, database=enrichDatabase, standardId=standardId, fileType="gmt"))
+				geneSet <- readGmt(gmtUrl)
+			}
 
 			if(.hasError(geneSet)){
 				return(geneSet)
@@ -81,12 +86,21 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 #' @importFrom readr read_tsv
 .loadGeneSetData <- function(hostName, organism, database, standardId, fileType) {
 	# read gene set files from API or returns NULL
-	geneSetUrl <- file.path(hostName,"api","geneset")
-	response <- GET(geneSetUrl, query=list(organism=organism, database=database, standardId=standardId, fileType=fileType))
-	if (response$status_code == 200) {
-		geneSetData <- read_tsv(content(response), col_names=FALSE, col_types="cc")
+	if (startsWith(hostName, "file://")) {
+		geneSetPath <- removeFileProtocol(file.path(hostName, "geneset", paste(paste(organism, database, standardId, sep="_"), fileType, sep=".")))
+		if (file.exists(geneSetPath)) {
+			geneSetData <- read_tsv(geneSetPath, col_names=FALSE, col_types="cc")
+		} else {
+			geneSetData <- NULL
+		}
 	} else {
-		geneSetData <- NULL
+		geneSetUrl <- file.path(hostName,"api","geneset")
+		response <- GET(geneSetUrl, query=list(organism=organism, database=database, standardId=standardId, fileType=fileType))
+		if (response$status_code == 200) {
+			geneSetData <- read_tsv(content(response), col_names=FALSE, col_types="cc")
+		} else {
+			geneSetData <- NULL
+		}
 	}
 	return(geneSetData)
 }

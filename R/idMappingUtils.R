@@ -13,17 +13,28 @@ idMappingInput <- function(dataType="list",inputGeneFile,inputGene){
 }
 
 #' @importFrom httr GET content
+#' @importFrom rjson fromJSON
 identifyStandardId <- function(hostName,idType,organism,type){
-	if(type=="interest"){
-		response <- GET(file.path(hostName, "api", "summary", "idtype"))
+	if (startsWith(hostName, "file://")) {
+		if (type=="interest") {
+			summaryPath <- removeFileProtocol(file.path(hostName, "idtypesummary.json"))
+		}
+		if (type=="reference") {
+			summaryPath <- removeFileProtocol(file.path(hostName, "referencesetsummary.json"))
+		}
+		jsonData <- fromJSON(file=summaryPath)
+	} else {
+		if (type=="interest") {
+			response <- GET(file.path(hostName, "api", "summary", "idtype"))
+		}
+		if (type=="reference") {
+			response <- GET(file.path(hostName, "api", "summary", "referenceset"))
+		}
+		if (response$status_code != 200) {
+			return(webRequestError(response))
+		}
+		jsonData <- content(response)
 	}
-	if(type=="reference"){
-		response <- GET(file.path(hostName, "api", "summary", "referenceset"))
-	}
-	if (response$status_code != 200) {
-		return(webRequestError(response))
-	}
-	jsonData <- content(response)
 	idTypes <- jsonData[[organism]]
 	names <- unlist(lapply(idTypes, function(e) return(e$name)))
 	standardIds <- unlist(lapply(idTypes,function(e) return(e$type)))

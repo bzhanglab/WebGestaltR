@@ -15,6 +15,11 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	summaryFn <- file.path(projectDir, paste0(namePrefix, "_resultSummary.txt"))
 	jsonFn <- file.path(projectDir, paste0(namePrefix, ".json"))
 
+	if (startsWith(hostName, "file://")) {
+		# change back hostName for web assets and browsers will cache it.
+		hostName <- "http://www.webgestalt.org"
+	}
+
 	if (method == "Network_Retrieval_Prioritization") {
 		highSeedsFn <- file.path(projectDir, paste0(namePrefix, "_highlightedSeeds.txt"))
 	}

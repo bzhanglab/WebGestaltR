@@ -9,7 +9,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	colnames(geneRankList) <- c("gene", "score")
 	sortedScores <- sort(geneRankList$score, decreasing=TRUE)
 
-	geneSetName <- geneSet %>% select(geneSet, link=.data$description) %>% distinct()
+	geneSetName <- geneSet %>% select(.data$geneSet, link=.data$description) %>% distinct()
 	effectiveGeneSet <- geneSet %>% filter(.data$gene %in% geneRankList$gene)
 
 	geneSetNum <- tapply(effectiveGeneSet$gene, effectiveGeneSet$geneSet, length)

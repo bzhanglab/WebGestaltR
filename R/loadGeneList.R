@@ -1,5 +1,3 @@
-#' @importFrom httr GET content
-#' @importFrom readr read_tsv
 loadInterestGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, geneType="entrezgene", collapseMethod="mean", hostName="http://www.webgestalt.org/", geneSet){
 	if(is.null(inputGeneFile) && is.null(inputGene)){
 		return(interestGeneError(type="empty"))
@@ -26,6 +24,8 @@ loadInterestGene <- function(organism="hsapiens", dataType="list", inputGeneFile
 	return(mapRe)
 }
 
+#' @importFrom httr GET content
+#' @importFrom readr read_tsv
 loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType="entrezgene", referenceSet=NULL, collapseMethod="mean", hostName="http://www.webgestalt.org/", geneSet, interestGeneList) {
 	referenceGeneList <- NULL
 	referenceGeneMap <- NULL
@@ -51,12 +51,18 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 					return(referenceGeneError(type="existingRef"))
 				}
 				refStandardId <- identifyStandardId(hostName=hostName,idType=referenceSet,organism=organism,type="reference")
-				response <- GET(file.path(hostName, "api", "reference"), query=list(organism=organism, referenceSet=referenceSet, standardId=refStandardId))
-				if (response$status_code != 200) {
-					return(webRequestError(response))
+				if (startsWith(hostName, "file://")) {
+					# Getting data from local directory in the old way
+					refPath <- removeFileProtocol(file.path(hostName, "reference", paste0(paste(organism, referenceSet, refStandardId, sep="_"), ".table")))
+					referenceGeneList <- read_tsv(refPath, col_names=FALSE, col_types="c-")[[1]]
+				} else {
+					response <- GET(file.path(hostName, "api", "reference"), query=list(organism=organism, referenceSet=referenceSet, standardId=refStandardId))
+					if (response$status_code != 200) {
+						return(webRequestError(response))
+					}
+					# reference is still a 2 column of entrezID and some other ID
+					referenceGeneList <- read_tsv(content(response), col_names=FALSE, col_types="c-")[[1]]
 				}
-				# reference is still a 2 column of entrezID and some other ID
-				referenceGeneList <- read_tsv(content(response), col_names=FALSE, col_types="c-")[[1]]
 			}
 		}else{ ##For other organisms
 			if(!is.null(referenceGeneFile) || !is.null(referenceGene)){

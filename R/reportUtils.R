@@ -2,7 +2,7 @@ mapUserId <- function(enrichedSig,geneColumn,interestingGeneMap){
 	####map entrez gene back to the original user id and add one more column to the enrichedSig
 	standardId <- interestingGeneMap$standardId
 	mapgene <- interestingGeneMap$mapped[, c("userId", standardId)]
-	gene <- enrichedSig[,geneColumn]
+	gene <- enrichedSig[[geneColumn]]
 	gene <- strsplit(gene,";")
 	gene <- unlist(lapply(gene,geneM,mapgene))
 	enrichedSig <- data.frame(enrichedSig, userId=gene, stringsAsFactors=FALSE)
@@ -84,6 +84,10 @@ getTopGseaResults <- function(results, topThr) {
 		insig <- NULL
 	}
 	return(list(sig, insig))
+}
+
+removeFileProtocol <- function(path) {
+	return(normalizePath(sub("^file://", "", path), mustWork=FALSE))
 }
 
 sanitizeFileName <- function(name) {
