@@ -103,6 +103,10 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 				left_join(geneSetDes, by="geneSet") %>%
 				select(.data$geneSet, .data$description, .data$link, .data$C, .data$O, .data$E, .data$R, .data$pValue, .data$FDR, .data$overlapId) %>%
 				arrange(.data$FDR, .data$pValue, desc(.data$C))
+		} else {
+			enrichedSig <- enrichedSig %>%
+				select(.data$geneSet, .data$link, .data$C, .data$O, .data$E, .data$R, .data$pValue, .data$FDR, .data$overlapId) %>%
+				arrange(.data$FDR, .data$pValue, desc(.data$C))
 		}
 
 		geneTables <- getGeneTables(organism, enrichedSig, "overlapId", interestingGeneMap)

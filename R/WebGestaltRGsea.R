@@ -93,6 +93,10 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 				left_join(geneSetDes, by="geneSet") %>%
 				select(.data$geneSet, .data$description, .data$ES, .data$NES, .data$pValue, .data$FDR, .data$link, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
 				arrange(.data$FDR, .data$pValue, desc(.data$NES))
+		} else {
+			enrichedSig <- enrichedSig %>%
+				select(.data$geneSet, .data$ES, .data$NES, .data$pValue, .data$FDR, .data$link, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
+				arrange(.data$FDR, .data$pValue, desc(.data$NES))
 		}
 
 		geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
