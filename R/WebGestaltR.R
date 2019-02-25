@@ -174,6 +174,7 @@ WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase=
 	}
 	if ('dNum' %in% names(extraArgs)) {
 		cat("WARNING: Parameter dNum is deprecated and changed to reportNum.\n")
+		reportNum <- extraArgs$dNum
 	}
 
 	## TODO: add para test for NTA
