@@ -140,5 +140,5 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 
 		cat("Results can be found in the ", projectDir, "!\n", sep="")
 	}
-	return(enrichedSig)
+	return(outputEnrichedSig)
 }

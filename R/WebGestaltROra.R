@@ -151,5 +151,5 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 		cat("Results can be found in the ", projectDir, "!\n", sep="")
 	}
 
-	return(enrichedSig)
+	return(outputEnrichedSig)
 }
