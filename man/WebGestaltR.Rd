@@ -170,7 +170,7 @@ either \code{Seeds} or \code{Neighbors}.}
 \item{hostName}{The server URL for accessing data. Mostly for development purposes.}
 
 \item{...}{In batch function, passes parameters to WebGestaltR function.
-Also hanldes backward compatibility for some parameters in old versions.}
+Also handles backward compatibility for some parameters in old versions.}
 
 \item{interestGeneFolder}{Run WebGestaltR for gene list files in the folder.}
 
@@ -191,7 +191,7 @@ ORA (Over-Representation Analysis) and GSEA (Gene Set Enrichment Analysis).and
 NTA (Network Topology Analysis). Based on the user-uploaded gene list or gene list
 with scores, WebGestaltR function will first map the gene list to the entrez gene
 ids and then summarize the gene list based on the GO (Gene Ontology) Slim. After
-performing the enrichment analysis, WebGestaltR function also returns an user-friendly
+performing the enrichment analysis, WebGestaltR function also returns a user-friendly
 HTML report containing GO Slim summary and the enrichment analysis result. If functional
 categories have DAG (directed acyclic graph) structure or genes in the functional
 categories have network structure, those relationship can also be visualized in the

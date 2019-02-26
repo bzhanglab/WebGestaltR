@@ -1,5 +1,19 @@
+#' Load gene set data
+#'
+#' @inheritParams WebGestaltR
+#'
+#' @return A list of \code{geneSet}, \code{geneSetDes}, \code{geneSetDag}, \code{geneSetNet}, \code{standardId}.
+#' \describe{
+#'  \item{geneSet}{Gene set: A data frame with columns of "geneSet", "description", "genes"}
+#'  \item{geneSetDes}{Description: A data frame with columns of two columns of gene set ID and description}
+#'  \item{geneSetDag}{DAG: A edge list data frame of two columns of parent and child}
+#'  \item{geneSetNet}{Network: A edge list data frame of two columns connecting nodes}
+#'  \item{standardId}{The standard ID of the gene set}
+#' }
+#'
 #' @importFrom dplyr select distinct filter %>%
 #' @importFrom httr modify_url
+#' @export
 loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, collapseMethod="mean", hostName="http://www.webgestalt.org/") {
 	geneSet <- NULL    ##gene sets
 	geneSetDes <- NULL ##gene set description file
