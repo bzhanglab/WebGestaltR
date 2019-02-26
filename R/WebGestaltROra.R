@@ -93,9 +93,15 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 	enrichedSig <- oraRes$enriched
 	insig <- oraRes$background
 
+	if(organism!="others" && interestGeneType!=interestStandardId){
+		outputEnrichedSig <- mapUserId(enrichedSig, "overlapId", interestingGeneMap)
+	} else {
+		outputEnrichedSig <- enrichedSig
+	}
 
 	clusters <- list()
 	geneTables <- list()
+
 	if(!is.null(enrichedSig)){
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
 			colnames(geneSetDes) <- c("geneSet", "description")
@@ -118,11 +124,6 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 		}
 
 		if(isOutput==TRUE){
-			if(organism!="others" && interestGeneType!=interestStandardId){
-				outputEnrichedSig <- mapUserId(enrichedSig, "overlapId", interestingGeneMap)
-			} else {
-				outputEnrichedSig <- enrichedSig
-			}
 			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
 			idsInSet <- sapply(enrichedSig$overlapId, strsplit, split=";")
 			names(idsInSet) <- enrichedSig$geneSet

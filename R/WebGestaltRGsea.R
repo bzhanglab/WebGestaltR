@@ -84,6 +84,12 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	enrichedSig <- gseaRes$enriched
 	insig <- gseaRes$background
 
+	if(organism!="others" && interestGeneType!=interestStandardId){
+		outputEnrichedSig <- mapUserId(enrichedSig, "leadingEdgeId", interestingGeneMap)
+	} else {
+		outputEnrichedSig <- enrichedSig
+	}
+
 	clusters <- list()
 	geneTables <- list()
 	if(!is.null(enrichedSig)){
@@ -108,11 +114,6 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 		}
 
 		if(isOutput==TRUE){
-			if(organism!="others" && interestGeneType!=interestStandardId){
-				outputEnrichedSig <- mapUserId(enrichedSig, "leadingEdgeId", interestingGeneMap)
-			} else {
-				outputEnrichedSig <- enrichedSig
-			}
 			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
 			idsInSet <- sapply(enrichedSig$leadingEdgeId, strsplit, split=";")
 			names(idsInSet) <- enrichedSig$geneSet
