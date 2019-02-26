@@ -11,10 +11,10 @@ mapUserId <- function(enrichedSig,geneColumn,interestingGeneMap){
 
 geneM <- function(geneList,mappingTable){
 	if(length(geneList)==1 && is.na(geneList)){
-		###The categories outputted from GSEA may not have leading edge genes
+		###The categories outputted from GSEA may not have leading edge genes. TODO: obsolete
 		return(NA)
 	}else{
-		u <- mappingTable[mappingTable[,2] %in% geneList,1]
+		u <- mappingTable[mappingTable[[2]] %in% geneList, ][[1]]
 		# although user ID could contain ;, like in some gene symbols.
 		# but this is only concatenated in output
 		u <- paste(u,collapse=";")
