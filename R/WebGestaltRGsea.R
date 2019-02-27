@@ -84,15 +84,16 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	enrichedSig <- gseaRes$enriched
 	insig <- gseaRes$background
 
-	if(organism!="others" && interestGeneType!=interestStandardId){
-		outputEnrichedSig <- mapUserId(enrichedSig, "leadingEdgeId", interestingGeneMap)
-	} else {
-		outputEnrichedSig <- enrichedSig
-	}
 
 	clusters <- list()
 	geneTables <- list()
 	if(!is.null(enrichedSig)){
+		if (organism != "others" && interestGeneType != interestStandardId) {
+			outputEnrichedSig <- mapUserId(enrichedSig, "leadingEdgeId", interestingGeneMap)
+		} else {
+			outputEnrichedSig <- enrichedSig
+		}
+
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
 			colnames(geneSetDes) <- c("geneSet", "description")
 			enrichedSig <- enrichedSig %>%

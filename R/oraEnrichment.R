@@ -53,8 +53,9 @@ oraEnrichment <- function(interestGene,referenceGene,geneSet,minNum=10,maxNum=50
 	if(sigMethod=="fdr"){
 		enrichedResultSig <- filter(enrichedResult, .data$FDR<fdrThr)
 		if(nrow(enrichedResultSig)==0){
-			cat("No significant gene set is identified based on FDR " , fdrThr , "!\n" , sep="")
-			return(NULL)
+			error <- paste0("No significant gene set is identified based on FDR ", fdrThr, "!\n")
+			cat(error)
+			return(error)
 		}else{
 			enrichedResultInsig <- enrichedResult %>% filter(.data$FDR>=fdrThr, .data$O!=0) %>% select(.data$geneSet, .data$R, .data$FDR, .data$O)
 			return(list(enriched=enrichedResultSig, background=enrichedResultInsig))
