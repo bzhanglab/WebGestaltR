@@ -131,7 +131,9 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 			minusLogP[minusLogP == Inf] <- -log(.Machine$double.eps)
 			apRes <- affinityPropagation(idsInSet, minusLogP)
 			wscRes <- weightedSetCover(idsInSet, 1 / minusLogP, setCoverNum, nThreads)
-			writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
+      if(!is.null(apRes)){
+			  writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
+      }
 			writeLines(c(paste0("# Coverage: ", wscRes$coverage), wscRes$topSets), file.path(projectDir, paste0("enriched_geneset_wsc_topsets_", projectName, ".txt")))
 			clusters$ap <- apRes
 			clusters$wsc <- list(representatives=wscRes$topSets,  coverage=wscRes$coverage)
