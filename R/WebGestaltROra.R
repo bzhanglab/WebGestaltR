@@ -97,12 +97,6 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 	geneTables <- list()
 
 	if(!is.null(enrichedSig)){
-		if (organism != "others" && interestGeneType != interestStandardId) {
-			outputEnrichedSig <- mapUserId(enrichedSig, "overlapId", interestingGeneMap)
-		} else {
-			outputEnrichedSig <- enrichedSig
-		}
-
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
 			colnames(geneSetDes) <- c("geneSet", "description")
 			enrichedSig <- enrichedSig %>%
@@ -121,6 +115,12 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase="geneontology_Bio
 				enrichedSig$link,
 				enrichedSig$overlapId
 			)
+		}
+
+		if (organism != "others" && interestGeneType != interestStandardId) {
+			outputEnrichedSig <- mapUserId(enrichedSig, "overlapId", interestingGeneMap)
+		} else {
+			outputEnrichedSig <- enrichedSig
 		}
 
 		if(isOutput==TRUE){

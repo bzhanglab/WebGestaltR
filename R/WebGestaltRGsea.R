@@ -88,12 +88,6 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	clusters <- list()
 	geneTables <- list()
 	if(!is.null(enrichedSig)){
-		if (organism != "others" && interestGeneType != interestStandardId) {
-			outputEnrichedSig <- mapUserId(enrichedSig, "leadingEdgeId", interestingGeneMap)
-		} else {
-			outputEnrichedSig <- enrichedSig
-		}
-
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
 			colnames(geneSetDes) <- c("geneSet", "description")
 			enrichedSig <- enrichedSig %>%
@@ -112,6 +106,12 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 				enrichedSig$link,
 				enrichedSig$leadingEdgeId
 			)
+		}
+
+		if (organism != "others" && interestGeneType != interestStandardId) {
+			outputEnrichedSig <- mapUserId(enrichedSig, "overlapId", interestingGeneMap)
+		} else {
+			outputEnrichedSig <- enrichedSig
 		}
 
 		if(isOutput==TRUE){
