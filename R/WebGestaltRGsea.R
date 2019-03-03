@@ -109,7 +109,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 		}
 
 		if (organism != "others" && interestGeneType != interestStandardId) {
-			outputEnrichedSig <- mapUserId(enrichedSig, "overlapId", interestingGeneMap)
+			outputEnrichedSig <- mapUserId(enrichedSig, "leadingEdgeId", interestingGeneMap)
 		} else {
 			outputEnrichedSig <- enrichedSig
 		}
