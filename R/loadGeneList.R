@@ -60,8 +60,8 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 					if (response$status_code != 200) {
 						return(webRequestError(response))
 					}
-					# reference is still a 2 column of entrezID and some other ID
-					referenceGeneList <- read_tsv(content(response), col_names=FALSE, col_types="c-")[[1]]
+					# API now just returns one single column
+					referenceGeneList <- read_tsv(content(response), col_names=FALSE, col_types="c")[[1]]
 				}
 			}
 		}else{ ##For other organisms
