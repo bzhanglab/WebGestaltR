@@ -116,6 +116,9 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase="geneontology_Biolog
 			geneSetData <- NULL
 		}
 	}
+	if (!is.null(geneSetData) && fileType == "des") {
+		colnames(geneSetData) <- c("geneSet", "description")
+	}
 	return(geneSetData)
 }
 

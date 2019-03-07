@@ -1,6 +1,6 @@
 #' @importFrom dplyr select distinct filter arrange mutate left_join %>%
 #' @importFrom readr write_tsv
-gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE, nThreads=1) {
+gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, geneSetDes=NULL, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE, nThreads=1) {
 	projectFolder <- file.path(outputDirectory, paste("Project_", projectName, sep=""))
 	if (!dir.exists(projectFolder)) {
 		dir.create(projectFolder)
@@ -97,11 +97,18 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 
 		if (isOutput) {
 			# Plot GSEA-like enrichment plot
+			if (!is.null(geneSetDes)) {
+				# same name of variable and column name, use quasiquotation !!
+				title <- as.character((geneSetDes %>% filter(.data$geneSet == !!geneSet))[1, "description"])
+			} else {
+				title <- geneSet
+			}
+			wrappedTitle <- strwrap(paste0("Enrichment plot: ", title), 60)
 			png(file.path(outputF, paste0(sanitizeFileName(geneSet), ".png")), bg="transparent", width=2000, height=2000)
 			plot.new()
-			par(fig=c(0, 1, 0.5, 1), mar=c(0, 6, 6, 2), cex.axis=2.5, cex.main=5, cex.lab=3.2, lwd=2, new=TRUE)
+			par(fig=c(0, 1, 0.5, 1), mar=c(0, 6, 6 * length(wrappedTitle), 2), cex.axis=2.5, cex.main=5, cex.lab=3.2, lwd=2, new=TRUE)
 			plot(1:length(gseaRes$Running_Sums[, geneSet]), gseaRes$Running_Sums[, geneSet],
-				type="l", main=paste0("Enrichment plot: ", geneSet),
+				type="l", main=paste(wrappedTitle, collapse="\n"),
 				xlab="", ylab="Enrichment Score", xaxt='n', lwd=3)
 			abline(v=peakIndex, lty=3)
 			par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 6, 0, 2), new=TRUE)

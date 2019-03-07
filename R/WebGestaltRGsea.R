@@ -73,7 +73,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	cat("Perform the enrichment analysis...\n")
 
 	gseaRes <- gseaEnrichment(hostName, outputDirectory, projectName, interestGeneList,
-		geneSet, minNum=minNum, maxNum=maxNum, sigMethod=sigMethod, fdrThr=fdrThr,
+		geneSet, geneSetDes=geneSetDes, minNum=minNum, maxNum=maxNum, sigMethod=sigMethod, fdrThr=fdrThr,
 		topThr=topThr, perNum=perNum, nThreads=nThreads, isOutput=isOutput
 	)
 
@@ -89,7 +89,6 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	geneTables <- list()
 	if(!is.null(enrichedSig)){
 		if(!is.null(geneSetDes)){ #######Add extra description information###########
-			colnames(geneSetDes) <- c("geneSet", "description")
 			enrichedSig <- enrichedSig %>%
 				left_join(geneSetDes, by="geneSet") %>%
 				select(.data$geneSet, .data$description, .data$ES, .data$NES, .data$pValue, .data$FDR, .data$link, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
