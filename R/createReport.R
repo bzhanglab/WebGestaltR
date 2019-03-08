@@ -18,17 +18,24 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 
 	numAnnoRefUserId <- NULL
 	dagJson <- list()
+	allEnrichedSig <- enrichedSig
+	repAdded <- FALSE
 	if(organism!="others"){
-		#####Summary Tab########
-		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, perNum, geneSet, hostName)
-
 		if (!is.null(enrichedSig) && reportNum < nrow(enrichedSig)) {
 			if (enrichMethod == "ORA") {
 				enrichedSig <- enrichedSig[1:reportNum, ]
 			} else if (enrichMethod == "GSEA") {
 				enrichedSig <- getTopGseaResults(enrichedSig, reportNum / 2)[[1]]
 			}
+			# Add representatives if they are not in top ReportNum. So could be more if ReportNum.is small and high redundancy in top
+			numRes <- nrow(enrichedSig)
+			enrichedSig <- keepRep(enrichedSig, allEnrichedSig, clusters$ap$representatives)
+			enrichedSig <- keepRep(enrichedSig, allEnrichedSig, clusters$wsc$representatives)
+			repAdded <- nrow(enrichedSig) > numRes
 		}
+
+		#####Summary Tab########
+		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, geneSet, repAdded, hostName)
 
 		standardId <- interestingGeneMap$standardId
 		if (enrichMethod == 'ORA') {
@@ -48,7 +55,6 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 				dagEdges <- dagRes$edges
 				dagNodes <- getDagNodes(enrichedSig, dagRes$allNodes, geneSetDes, enrichMethod, dagColor)
 				dagJson <- c(dagEdges, dagNodes)
-
 			}
 		}
 	}else{
@@ -57,15 +63,20 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		if (enrichMethod == 'ORA') {
 			numAnnoRefUserId <- length(intersect(interestingGeneMap, intersect(referenceGeneList, geneSet$gene)))
 		}
-		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, perNum, geneSet)
-
 		if (!is.null(enrichedSig) && reportNum < nrow(enrichedSig)) {
 			if (enrichMethod == "ORA") {
 				enrichedSig <- enrichedSig[1:reportNum, ]
 			} else if (enrichMethod == "GSEA") {
 				enrichedSig <- getTopGseaResults(enrichedSig, reportNum / 2)[[1]]
 			}
+			# Add representatives if they are not in top ReportNum. So could be more if ReportNum.is small and high redundancy in top
+			numRes <- nrow(enrichedSig)
+			enrichedSig <- keepRep(enrichedSig, allEnrichedSig, clusters$ap$representatives)
+			enrichedSig <- keepRep(enrichedSig, allEnrichedSig, clusters$wsc$representatives)
+			repAdded <- nrow(enrichedSig) > numRes
 		}
+
+		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, repAdded, geneSet)
 
 		##############Enrich Result################
 		if(!is.null(enrichedSig)){

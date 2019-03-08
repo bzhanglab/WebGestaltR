@@ -41,7 +41,7 @@
 	<p>Based on the above parameters, <b>{{numEnrichedSig}}</b> categories are identified as enriched categories and all are shown in this report.</p>
 	{{/showAll}}
 	{{^showAll}}
-	<p>Based on the above parameters, <b>{{numEnrichedSig}}</b> categories are identified as enriched categories, in which <b>{{reportNum}}</b> most significant categories are shown in this report. All significant categories can be downloaded from the 'Result Download' link.</p>
+	<p>Based on the above parameters, <b>{{numEnrichedSig}}</b> categories are identified as enriched categories, in which <b>{{reportNum}}</b> most significant categories{{#hasRepAdded}} and represetatives in the reduced sets{{/hasRepAdded}} are shown in this report. All significant categories can be downloaded from the 'Result Download' link.</p>
 	{{/showAll}}
 {{/hasEnrichedSig}}
 {{^hasEnrichedSig}}

@@ -86,6 +86,20 @@ getTopGseaResults <- function(results, topThr) {
 	return(list(sig, insig))
 }
 
+#' Add representatives to topResult if they are missing
+keepRep <- function(topResult, allResult, reps) {
+	missing <- NULL
+	for (rep in reps) {
+		if (!rep %in% topResult$geneSet) {
+			missing <- c(missing, rep)
+		}
+	}
+	if (!is.null(missing)) {
+		topResult <- rbind(topResult, allResult[allResult$geneSet %in% missing, ])
+	}
+	return(topResult)
+}
+
 removeFileProtocol <- function(path) {
 	return(normalizePath(sub("^file://", "", path), mustWork=FALSE))
 }
