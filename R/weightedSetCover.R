@@ -30,10 +30,12 @@ weightedSetCover <- function(idsInSet, costs, topN, nThreads=4) {
   # significant sets to reduce computational cost
   max_num_set <- multiplier * topN
   if (length(idsInSet) > max_num_set) {
-    index <- order(costs)
+    # sort by absolute of cost (1/signedLogP)
+    index <- order(abs(costs), decreasing=FALSE)
     costs <- costs[index][1:max_num_set]
     idsInSet <- idsInSet[index][1:max_num_set]
   }
+
 
   s.hat <- 1.0
   # get all unique genes in all enriched sets
@@ -118,7 +120,7 @@ marginalBenefit <- function(cur.set.name, cur.res, idsInSet) {
 
 
 marginalGain <- function(cur.set.name, cur.res, idsInSet, costs) {
-  cur.cost <- costs[cur.set.name]
+  abs_cur_cost <- abs(costs[cur.set.name])
   cur.mben <- marginalBenefit(cur.set.name, cur.res, idsInSet)
-  return(length(cur.mben) / cur.cost)
+  return(length(cur.mben) / abs_cur_cost)
 }
