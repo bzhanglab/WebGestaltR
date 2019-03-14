@@ -1,8 +1,8 @@
 Package: WebGestaltR
 Type: Package
 Title: The R Version of WebGestalt
-Version: 0.3.0
-Date: 2019-01-16
+Version: 0.3.1
+Date: 2019-03-14
 Authors@R: c(
         person("Jing", "Wang", email = "jingwang.uestc@gmail.com", role = "aut"),
         person("Yuxing", "Liao", email = "yuxingliao@gmail.com", role = c("aut", "cre")))
