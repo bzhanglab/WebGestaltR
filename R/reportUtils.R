@@ -86,7 +86,12 @@ getTopGseaResults <- function(results, topThr) {
 	return(list(sig, insig))
 }
 
+#' keepRep
+#'
 #' Add representatives to topResult if they are missing
+#'
+#' @keywords internal
+#'
 keepRep <- function(topResult, allResult, reps) {
 	missing <- NULL
 	for (rep in reps) {
