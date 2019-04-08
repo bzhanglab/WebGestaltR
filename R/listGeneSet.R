@@ -7,7 +7,7 @@
 #' @return A data frame of available gene sets.
 #'
 #' @importFrom httr GET content
-#' @importFrom rjson fromJSON
+#' @importFrom jsonlite fromJSON
 #' @export
 #'
 listGeneSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/"){

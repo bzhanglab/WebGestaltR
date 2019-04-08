@@ -1,6 +1,6 @@
 #' @importFrom httr GET POST content
 #' @importFrom readr read_tsv cols
-#' @importFrom rjson toJSON
+#' @importFrom jsonlite toJSON
 WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", method="Network_Retrieval_Prioritization", inputSeed, inputSeedFile, interestGeneType="genesymbol", neighborNum=10, highlightSeedNum=10, sigMethod="fdr", fdrThr=0.05, topThr=10, highlightType="Seeds", outputDirectory=getwd(), projectName=NULL, hostName="http://www.webgestalt.org/") {
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 	dir.create(projectDir)
@@ -34,27 +34,10 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	goTermList <- read_tsv(enrichResFile, col_types=cols())$goId
 	inputEndIndex <- length(goTermList)
 
-	queue <- as.list(goTermList)
-	## expand to include all linked nodes
-	edges <- list()
-	while (length(queue) > 0 ) {
-		goTerm <- queue[[1]]
-		if (length(queue) == 1) {
-			queue <- list()
-		} else {
-			queue <- queue[2:length(queue)]
-		}
-		inEdges <- filter(dagInfo, .data$target == goTerm)
-		if (nrow(inEdges) > 0) {
-			edges <- c(edges, lapply(split(inEdges, seq(nrow(inEdges))), function(x) list("data"=x)))
-		}
-		for (parentNode in inEdges$source) {
-			if (!parentNode %in% goTermList) {
-				queue <- c(queue, parentNode)
-				goTermList <- c(goTermList, parentNode)
-			}
-		}
-	}
+	dagTree <- expandDag(goTermList, dagInfo)
+	goTermList <- dagTree$allNodes
+	edges <- dagTree$edges
+	rm(dagTree)
 
 	if (startsWith(hostName, "file://")) {
 		goId2Term <- read_tsv(
@@ -78,7 +61,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	}
 	jsonData <- unname(c(jsonData, edges))
 
-	cat(toJSON(jsonData), "\n", sep="", file=jsonFile)
+	cat(toJSON(jsonData, auto_unbox=TRUE), "\n", sep="", file=jsonFile)
 
 	createNtaReport(networkName=network, method=method, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr,
 					highlightType=highlightType, outputDirectory=outputDirectory, projectDir=projectDir,

@@ -23,7 +23,6 @@ geneM <- function(geneList,mappingTable){
 }
 
 #' @importFrom dplyr select
-#' @importFrom whisker rowSplit
 getGeneTables <- function(organism, enrichedSig, geneColumn, interestingGeneMap) {
 	if (organism != "others") {
 		standardId <- interestingGeneMap$standardId
@@ -41,9 +40,9 @@ getGeneTables <- function(organism, enrichedSig, geneColumn, interestingGeneMap)
 		} else {
 			genes <- unlist(strsplit(genes, ";"))
 			if (organism != "others") {
-				table[[geneSetId]] <- unname(rowSplit(mapping[mapping[[standardId]] %in% genes, ]))
+				table[[geneSetId]] <- mapping[mapping[[standardId]] %in% genes, ]
 			} else {
-				table[[geneSetId]] <- unname(rowSplit(data.frame("userId"=genes)))
+				table[[geneSetId]] <- data.frame("userId"=genes)
 			}
 		}
 	}

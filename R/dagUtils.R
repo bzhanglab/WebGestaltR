@@ -19,7 +19,9 @@ expandDag <- function(goTermList, dagEdgeList) {
 		}
 		inEdges <- filter(dagEdgeList, .data$target == goTerm)
 		if (nrow(inEdges) > 0) {
-			edges <- c(edges, lapply(split(inEdges, seq(nrow(inEdges))), function(x) list("data"=x)))
+			edges <- c(edges, lapply(split(inEdges, seq(nrow(inEdges))), function(x) {
+				return(list(data=as.list(x)))
+			}))
 		}
 		for (parentNode in inEdges$source) {
 			if (!parentNode %in% goTermList) {

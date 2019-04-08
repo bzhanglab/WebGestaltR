@@ -13,7 +13,7 @@ idMappingInput <- function(dataType="list",inputGeneFile,inputGene){
 }
 
 #' @importFrom httr GET content
-#' @importFrom rjson fromJSON
+#' @importFrom jsonlite fromJSON
 identifyStandardId <- function(hostName,idType,organism,type){
 	if (startsWith(hostName, "file://")) {
 		if (type=="interest") {

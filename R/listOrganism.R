@@ -7,7 +7,7 @@
 #' @return A list of supported organisms.
 #'
 #' @importFrom httr GET content
-#' @importFrom rjson fromJSON
+#' @importFrom jsonlite fromJSON
 #' @export
 #'
 listOrganism <- function(hostName="http://www.webgestalt.org/"){

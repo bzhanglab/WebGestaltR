@@ -1,7 +1,7 @@
 #' Create HTML Report for NTA
 #'
 #' @importFrom readr read_tsv cols
-#' @importFrom rjson fromJSON toJSON
+#' @importFrom jsonlite fromJSON toJSON
 #' @importFrom whisker whisker.render rowSplit
 #'
 #' @keywords internal
@@ -42,7 +42,7 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	allNodes <- unique(c(network, recursive=TRUE))
 
 	## Prepare JSON data for cytoscape of gene network, add edges data first
-	cyJson <- lapply(split(network, seq(nrow(network))), function(x) list(data=x))
+	cyJson <- lapply(split(network, seq(nrow(network))), function(x) list(data=as.list(x)))
 	## Highlight (larger node, colored red in table for expansion)
 	## for expansion, option to decide seeds or neighbors
 	## for retrieval, highlight seeds
@@ -58,12 +58,11 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	}
 	## add node data
 	cyJson <- c(cyJson, mapply(function(x, y) list(data=list(id=x, highlight=y)), allNodes, highlight, SIMPLIFY=FALSE))
-	cyJson <- toJSON(unname(cyJson))
+	cyJson <- toJSON(unname(cyJson), auto_unbox=TRUE)
 
 	## Prepare GO enrichment table data
 	#rowSplit still keeps each list element as data.frame
 	enrichmentList <- lapply(unname(rowSplit(enrichment)), as.list)
-	geneList <- vector("list", nrow(enrichment))
 	for (i in 1:nrow(enrichment)) {
 		#decode geneInfo
 		geneInfoList <- unlist(strsplit(enrichment[[i, "geneInfo"]], ";", fixed=TRUE))
@@ -82,7 +81,7 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 		}
 		enrichmentList[[i]]$geneInfo <- geneData
 	}
-	enrichmentJson = toJSON(enrichmentList)
+	enrichmentJson <- toJSON(enrichmentList, auto_unbox=TRUE)
 
 	version <- packageVersion("WebGestaltR")
 	version <- paste(version[1, 1], version[1, 2], sep=".")
@@ -104,7 +103,7 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 				version=version,
 				networkJson=cyJson,
 				enrichmentJson=enrichmentJson,
-				candidateJson=toJSON(unname(rowSplit(candidates))),
+				candidateJson=toJSON(candidates),
 				seedJson=toJSON(seeds),
 				method=method, sigMethod=sigMethod,
 				threshold=ifelse(sigMethod=='fdr', fdrThr, topThr),

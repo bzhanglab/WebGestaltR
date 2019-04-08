@@ -2,8 +2,8 @@
 #'
 #' Generate HTML report for ORA and GSEA
 #'
-#' @importFrom rjson toJSON
-#' @importFrom whisker whisker.render rowSplit
+#' @importFrom jsonlite toJSON
+#' @importFrom whisker whisker.render
 #'
 #' @keywords internal
 #'
@@ -103,8 +103,8 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	template <- readLines(system.file("templates/template.mustache", package="WebGestaltR"))
 	data <- list(hostName=hostName, geneSetNet=geneSetNet, bodyContent=bodyContent,
 				organism=organism, enrichDatabase=enrichDatabase,
-				sigJson=toJSON(unname(rowSplit(enrichedSig))), insigJson=toJSON(unname(rowSplit(background))),
-				dagJson=toJSON(unname(dagJson)), hasGeneSetDag=hasGeneSetDag, version=version,
+				sigJson=toJSON(enrichedSig), insigJson=toJSON(background),
+				dagJson=toJSON(unname(dagJson), auto_unbox=TRUE), hasGeneSetDag=hasGeneSetDag, version=version,
 				clusterJson=toJSON(clusters), hasCytoscape=hasCytoscape,
 				geneTableJson=toJSON(geneTables), standardId=standardId, numAnnoRefUserId=numAnnoRefUserId,
 				methodIsGsea=enrichMethod=="GSEA", hasGeneSetDes=!is.null(geneSetDes)

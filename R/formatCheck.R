@@ -43,7 +43,7 @@ formatCheck <- function(dataType="list",inputGeneFile=NULL,inputGene=NULL){
 					cat(error)
 					return(error)
 				}else{
-					inputGene <- as.character(inputGene)
+					inputGene <- unname(sapply(inputGene, as.character)) # as.character will convert length-1 vector to primitive
 					return(inputGene)
 				}
 			}else{
