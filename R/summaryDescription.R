@@ -14,15 +14,6 @@ summaryDescription <- function(projectName, organism, interestGeneFile, interest
 		methodSpecificContent <- specificParameterSummaryGsea(organism, interestingGeneMap, geneSet, minNum, maxNum, sigMethod, fdrThr, topThr, perNum, enrichedSig, reportNum, repAdded)
 	}
 
-	if (!is.vector(enrichDatabase)) {
-		enrichDatabase <- list(enrichDatabase)
-	}
-	if (!is.vector(enrichDatabaseFile)) {
-		enrichDatabaseFile <- list(enrichDatabaseFile)
-	}
-	if (!is.vector(enrichDatabaseDescriptionFile)) {
-		enrichDatabaseDescriptionFile <- list(enrichDatabaseDescriptionFile)
-	}
 	template <- readLines(system.file("templates/summary.mustache", package="WebGestaltR"))
 	enrichDatabaseInfo <- list()
 	for (enrichDb in enrichDatabase) {

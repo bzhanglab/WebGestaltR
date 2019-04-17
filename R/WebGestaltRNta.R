@@ -5,7 +5,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 	dir.create(projectDir)
 
-	if (is.vector(network)) {
+	if (length(network) > 1) {
 		stop("NTA does not support multiple databases.")
 	}
 	inputGene <- formatCheck("list", inputGeneFile=inputSeedFile, inputGene=inputSeed)

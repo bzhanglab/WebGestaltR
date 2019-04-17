@@ -25,21 +25,13 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 	if (!is.null(enrichDatabaseFile) && is.null(enrichDatabaseType)) {
 		stop("The ID type should be given in enrichDatabaseType for custom GMT files, e.g. genesymbol.")
 	}
-	if (!is.vector(enrichDatabase)) {
-		enrichDatabase <- list(enrichDatabase)
-	}
-	if (!is.vector(enrichDatabaseFile)) {
-		enrichDatabaseFile <- list(enrichDatabaseFile)
-	}
-	if (!is.vector(enrichDatabaseDescriptionFile)) {
-		enrichDatabaseDescriptionFile <- list(enrichDatabaseDescriptionFile)
-	}
 	if (length(enrichDatabaseFile) != length(enrichDatabaseDescriptionFile)) {
 		stop("The number of custom database and its description files should be equal. Use NULL for placeholder.")
 	}
 	if (organism != "others") {  # supported organism
 		geneSetInfo <- listGeneSet(organism=organism, hostName=hostName)
 		#  load build-in databases
+		# Works even with single database, since it is implicitly a vector in R
 		for (enrichDb in enrichDatabase) {
 			if (is.null(enrichDb) || enrichDb == "others") { next }  # just for backward compatibility
 			if (!enrichDb %in% geneSetInfo$name) {
