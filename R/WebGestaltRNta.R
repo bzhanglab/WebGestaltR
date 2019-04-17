@@ -5,6 +5,9 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 	dir.create(projectDir)
 
+	if (is.vector(network)) {
+		stop("NTA does not support multiple databases.")
+	}
 	inputGene <- formatCheck("list", inputGeneFile=inputSeedFile, inputGene=inputSeed)
 	# only networks are in gene symbols
 	# mapping always returns gene symbol, could map to genesymbol but takes two requests
