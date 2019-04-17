@@ -12,12 +12,14 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-42098540-1', 'auto');
 ga('send', 'pageview');
 </script>
+<script src="{{hostName}}/assets/{{version}}/build/vendor.min.js"></script>
 	{{#hasCytoscape}}
 	<script src="{{hostName}}/assets/{{version}}/build/cytoscape.min.js"></script>
 	{{/hasCytoscape}}
 	{{^hasCytoscape}}
 	<script>window.cytoscape = null;</script>
 	{{/hasCytoscape}}
+	<link rel="stylesheet" href="{{hostName}}/assets/{{version}}/build/vendor.css">
 	<link rel="stylesheet" href="{{hostName}}/assets/{{version}}/build/wg.css">
 <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
 </head>
