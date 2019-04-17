@@ -4,7 +4,7 @@
 \alias{linkModification}
 \title{Modify the link to highlight the genes in the pathways}
 \usage{
-linkModification(enrichMethod, enrichDatabase, enrichPathwayLink, geneList,
+linkModification(enrichMethod, enrichPathwayLink, geneList,
   interestingGeneMap)
 }
 \description{

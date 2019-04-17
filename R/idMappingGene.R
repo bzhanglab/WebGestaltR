@@ -4,9 +4,6 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 
 	###########Check input data type###############
 	inputGene <- idMappingInput(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
-	if(.hasError(inputGene)){
-		return(inputGene)
-	}
 
 	##########ID Mapping Specify to gene level###############
 	if(dataType=="list"){
@@ -61,15 +58,11 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 		)
 
 		if (mapR$status_code != 200) {
-			return(webRequestError(mapR))
+			stop(webRequestError(mapR))
 		}
 		mapR <- content(mapR)
 		if (mapR$status == 1) {
-			return(webApiError(mapR))
-		}
-
-		if(.hasError(mapR)){
-			return(mapR)
+			stop(webApiError(mapR))
 		}
 
 		mappedIds <- mapR$mapped
@@ -78,7 +71,7 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 			targetIdType <- mapR$standardId
 		}
 
-		if (length(mappedIds) == 0) { return(idMappingError("empty")) }
+		if (length(mappedIds) == 0) { stop(idMappingError("empty")) }
 
 		names <- c("sourceId", "geneSymbol", "geneName", "targetId")
 		mappedInputGene <- data.frame(matrix(unlist(lapply(mappedIds, FUN=function(x) { x[names] })), nrow=length(mappedIds), byrow=TRUE), stringsAsFactors=FALSE)

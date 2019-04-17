@@ -22,21 +22,17 @@
 #'   the other organisms, the above data should have the same ID type.
 #' @param enrichDatabase The functional categories for the enrichment analysis. Users can use
 #'   the function \code{listGeneSet} to check the available functional databases for the
-#'   selected organism. Users can also input \code{others} to provide a custom functional
-#'   databases not supported by WebGestaltR for the selected organism.
-#' @param enrichDatabaseFile If users set \code{organism} as \code{others} or set
-#'   \code{enrichDatabase} as \code{others}, users need to provide a GMT file as the functional
+#'   selected organism. Multiple databases in a vector are supported for ORA and GSEA.
+#' @param enrichDatabaseFile Users can provide one or more GMT files as the functional
 #'   category for enrichment analysis. The extension of the file should be \code{gmt} and the
 #'   first column of the file is the category ID, the second one is the external link for the
 #'   category. Genes annotated to the category are from the third column. All columns are
-#'   separated by tabs.
-#' @param enrichDatabaseType If users set \code{enrichDatabase} as \code{others}, WebGestaltR
-#'   will also perform ID mapping for the supplied GMT file. Thus, users need to set the ID
-#'   type of the genes in the \code{enrichDatabaseFile}. If users set \code{organism} as
-#'   \code{others}, users do not need to set this ID type because WebGestaltR will not perform
-#'   ID mapping for other organisms. The supported ID types of WebGestaltR for the selected
-#'   organism can be found by the function \code{listIdType}.
-#' @param enrichDatabaseDescriptionFile Users can also provide a description file for the custom
+#'   separated by tabs. The GMT files will be combined with \code{enrichDatabase}.
+#' @param enrichDatabaseType The ID type of the genes in the \code{enrichDatabaseFile}.
+#'   If users set \code{organism} as \code{others}, users do not need to set this ID type because
+#'   WebGestaltR will not perform ID mapping for other organisms. The supported ID types of
+#'   WebGestaltR for the selected organism can be found by the function \code{listIdType}.
+#' @param enrichDatabaseDescriptionFile Users can also provide description files for the custom
 #'   \code{enrichDatabaseFile}. The extension of the description file should be \code{des}. The
 #'   description file contains two columns: the first column is the category ID that should be
 #'   exactly the same as the category ID in the custom \code{enrichDatabaseFile} and the second
@@ -156,7 +152,7 @@
 #'   networkConstructionMethod="Network_Retrieval_Prioritization")
 #' }
 #'
-WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, sigMethod="fdr", fdrMethod="BH", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="continuous", setCoverNum=10, networkConstructionMethod=NULL, neighborNum=10, highlightType="Seeds", highlightSeedNum=10, nThreads=1, hostName="http://www.webgestalt.org/",  ...) {
+WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, sigMethod="fdr", fdrMethod="BH", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="continuous", setCoverNum=10, networkConstructionMethod=NULL, neighborNum=10, highlightType="Seeds", highlightSeedNum=10, nThreads=1, hostName="http://www.webgestalt.org/",  ...) {
 	extraArgs <- list(...)
 	if ('keepGSEAFolder' %in% names(extraArgs) | 'keepGseaFolder' %in% names(extraArgs)) {
 		cat("WARNING: Parameter keepGSEAFolder is obsolete.\n")

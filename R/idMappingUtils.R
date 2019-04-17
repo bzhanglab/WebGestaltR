@@ -4,7 +4,7 @@ idMappingInput <- function(dataType="list",inputGeneFile,inputGene){
 			inputGene <- readGmt(inputGeneFile)
 			return(inputGene)
 		}else{
-			return(gmtFormatError("empty"))
+			stop(gmtFormatError("empty"))
 		}
 	}else{
 		inputGene <- formatCheck(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
@@ -31,7 +31,7 @@ identifyStandardId <- function(hostName,idType,organism,type){
 			response <- GET(file.path(hostName, "api", "summary", "referenceset"))
 		}
 		if (response$status_code != 200) {
-			return(webRequestError(response))
+			stop(webRequestError(response))
 		}
 		jsonData <- content(response)
 	}

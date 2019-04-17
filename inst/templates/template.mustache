@@ -12,9 +12,6 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-42098540-1', 'auto');
 ga('send', 'pageview');
 </script>
-	{{#geneSetNet}}
-	<!-- TODO -->
-	{{/geneSetNet}}
 	{{#hasCytoscape}}
 	<script src="{{hostName}}/assets/{{version}}/build/cytoscape.min.js"></script>
 	{{/hasCytoscape}}
@@ -45,7 +42,7 @@ var clusters = {{{clusterJson}}};
 var dag = {{{dagJson}}};
 {{/hasGeneSetDag}}
 wgLib({
-	enrichDatabase: "{{enrichDatabase}}",
+	enrichDatabase: {{{enrichDatabaseJson}}},
 	organism: "{{organism}}",
 	hostName: "{{hostName}}",
 	enrichment: enrichment,

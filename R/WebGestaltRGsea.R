@@ -1,10 +1,10 @@
-#' @importFrom dplyr select distinct left_join arrange %>%
+#' @importFrom dplyr select distinct left_join arrange %>% mutate
 #' @importFrom readr write_tsv
-WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", nThreads=1, hostName="http://www.webgestalt.org/") {
+WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", nThreads=1, hostName="http://www.webgestalt.org/") {
 	enrichMethod <- "GSEA"
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
-	#########Web server will input "NULL" to the R package, thus, we need to change "NULL" to NULL########
+	######### Web server will input "NULL" to the R package, thus, we need to change "NULL" to NULL ########
 	enrichDatabase <- testNull(enrichDatabase)
 	enrichDatabaseFile <- testNull(enrichDatabaseFile)
 	enrichDatabaseType <- testNull(enrichDatabaseType)
@@ -13,73 +13,61 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 	interestGene <- testNull(interestGene)
 	interestGeneType <- testNull(interestGeneType)
 
-	################Check parameter################
+	################ Check parameter ################
 	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod, organism=organism, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, perNum=perNum, isOutput=isOutput, outputDirectory=outputDirectory, dagColor=dagColor, hostName=hostName)
 
 	if(!is.null(errorTest)){
-		return(errorTest)
+		stop(errorTest)
 	}
 
-	#############Check enriched database#############
-	cat("Uploading the functional categories...\n")
-	enrichD <- loadGeneSet(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, collapseMethod=collapseMethod, hostName=hostName)
-	if(.hasError(enrichD)){
-		return(enrichD)
-	}
+	############# Check enriched database #############
+	cat("Loading the functional categories...\n")
+	enrichD <- loadGeneSet(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, hostName=hostName)
 
 	geneSet <- enrichD$geneSet
 	geneSetDes <- enrichD$geneSetDes
 	geneSetDag <- enrichD$geneSetDag
 	geneSetNet <- enrichD$geneSetNet
 	databaseStandardId <- enrichD$standardId
+	rm(enrichD)
 
-	###########Check input interesting gene list###############
-	cat("Uploading the ID list...\n")
+	########### Check input interesting gene list ###############
+	cat("Loading the ID list...\n")
 	interestingGeneMap <- loadInterestGene(organism=organism, dataType="rnk", inputGeneFile=interestGeneFile, inputGene=interestGene, geneType=interestGeneType, collapseMethod=collapseMethod, hostName=hostName, geneSet=geneSet)
 
-	if(.hasError(interestingGeneMap)){
-		return(interestingGeneMap)
-	}
-
-	if(organism=="others"){
+	if (organism == "others") {
 		interestGeneList <- unique(interestingGeneMap)
-	}else{
+	} else {
 		interestStandardId <- interestingGeneMap$standardId
 		interestGeneList <- interestingGeneMap$mapped %>% select(interestStandardId, .data$score) %>% distinct()
 	}
 
-	##########Create project folder##############
-	if(isOutput==TRUE){
+	########## Create project folder ##############
+	if (isOutput) {
 		dir.create(projectDir)
 
-	######Summarize gene annotation based on the GOSlim###########
-		if(organism!="others"){
-			if(databaseStandardId=="entrezgene"){
-				cat("Summarize the uploaded ID list by GO Slim data...\n")
+	###### Summarize gene annotation based on the GOSlim ###########
+		if (organism != "others") {
+			if (databaseStandardId == "entrezgene") {
+				cat("Summarizing the uploaded ID list by GO Slim data...\n")
 				goSlimOutput <- file.path(projectDir, paste0("goslim_summary_", projectName))
 				re <- goSlimSummary(organism=organism, geneList=interestGeneList[[interestStandardId]], outputFile=goSlimOutput, outputType="png", isOutput=isOutput, hostName=hostName)
-				if(.hasError(re)){
-					return(re)
-				}
 			}
 			write_tsv(interestingGeneMap$mapped, file.path(projectDir, paste0("interestingID_mappingTable_", projectName, ".txt")))
 			write(interestingGeneMap$unmapped, file.path(projectDir, paste0("interestingID_unmappedList_", projectName, ".txt")))
-		}else{
+		} else {
 			write_tsv(interestGeneList, file.path(projectDir, paste0("interestList_", projectName, ".txt")), col_names=FALSE)
 		}
 	}
 
-	#############Run enrichment analysis###################
-	cat("Perform the enrichment analysis...\n")
+	############# Run enrichment analysis ###################
+	cat("Performing the enrichment analysis...\n")
 
 	gseaRes <- gseaEnrichment(hostName, outputDirectory, projectName, interestGeneList,
 		geneSet, geneSetDes=geneSetDes, minNum=minNum, maxNum=maxNum, sigMethod=sigMethod, fdrThr=fdrThr,
 		topThr=topThr, perNum=perNum, nThreads=nThreads, isOutput=isOutput
 	)
 
-	if(.hasError(gseaRes)){
-		return(gseaRes)
-	}
 
 	enrichedSig <- gseaRes$enriched
 	insig <- gseaRes$background
@@ -87,12 +75,13 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 
 	clusters <- list()
 	geneTables <- list()
-	if(!is.null(enrichedSig)){
-		if(!is.null(geneSetDes)){ #######Add extra description information###########
+	if (!is.null(enrichedSig)) {
+		if (!is.null(geneSetDes)) { ####### Add extra description information ###########
 			enrichedSig <- enrichedSig %>%
 				left_join(geneSetDes, by="geneSet") %>%
 				select(.data$geneSet, .data$description, .data$ES, .data$NES, .data$pValue, .data$FDR, .data$link, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
-				arrange(.data$FDR, .data$pValue, desc(.data$NES))
+				arrange(.data$FDR, .data$pValue, desc(.data$NES)) %>%
+				mutate(description=ifelse(is.na(.data$description), "", .data$description))
 		} else {
 			enrichedSig <- enrichedSig %>%
 				select(.data$geneSet, .data$ES, .data$NES, .data$pValue, .data$FDR, .data$link, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
@@ -101,10 +90,15 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 
 		geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
 		if (organism != "others") {
-			enrichedSig$link <- mapply(function(link, geneList) linkModification("GSEA", enrichDatabase, link, geneList, interestingGeneMap),
+			enrichedSig$link <- mapply(function(link, geneList) linkModification("GSEA", link, geneList, interestingGeneMap),
 				enrichedSig$link,
 				enrichedSig$leadingEdgeId
 			)
+		}
+
+		if ("database" %in% colnames(geneSet)) {
+			# add source database for multiple databases
+			enrichedSig <- enrichedSig %>% left_join(unique(geneSet[, c("geneSet", "database")]), by="geneSet")
 		}
 
 		if (organism != "others" && interestGeneType != interestStandardId) {
@@ -113,7 +107,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 			outputEnrichedSig <- enrichedSig
 		}
 
-		if(isOutput==TRUE){
+		if (isOutput) {
 			write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
 			idsInSet <- sapply(enrichedSig$leadingEdgeId, strsplit, split=";")
 			names(idsInSet) <- enrichedSig$geneSet
@@ -137,8 +131,8 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase="geneontology_Bi
 		}
 	}
 
-	if(isOutput==TRUE){
-		##############Create report##################
+	if (isOutput) {
+		############## Create report ##################
 		cat("Generate the final report...\n")
 		createReport(hostName=hostName, outputDirectory=outputDirectory, organism=organism, projectName=projectName, enrichMethod=enrichMethod, geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet, interestingGeneMap=interestingGeneMap, enrichedSig=enrichedSig, background=insig, geneTables=geneTables, clusters=clusters, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, perNum=perNum, dagColor=dagColor)
 

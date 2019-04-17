@@ -7,15 +7,14 @@
 createReport(hostName, outputDirectory, organism = "hsapiens",
   projectName, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet,
   interestingGeneMap, referenceGeneList, enrichedSig, geneTables, clusters,
-  background, enrichDatabase = "geneontology_Biological_Process",
-  enrichDatabaseFile = NULL, enrichDatabaseType = NULL,
-  enrichDatabaseDescriptionFile = NULL, interestGeneFile = NULL,
-  interestGene = NULL, interestGeneType = NULL,
-  collapseMethod = "mean", referenceGeneFile = NULL,
-  referenceGene = NULL, referenceGeneType = NULL,
-  referenceSet = NULL, minNum = 10, maxNum = 500, fdrMethod = "BH",
-  sigMethod = "fdr", fdrThr = 0.05, topThr = 10, reportNum = 20,
-  perNum = 1000, dagColor = "binary")
+  background, enrichDatabase = NULL, enrichDatabaseFile = NULL,
+  enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL,
+  interestGeneFile = NULL, interestGene = NULL,
+  interestGeneType = NULL, collapseMethod = "mean",
+  referenceGeneFile = NULL, referenceGene = NULL,
+  referenceGeneType = NULL, referenceSet = NULL, minNum = 10,
+  maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05,
+  topThr = 10, reportNum = 20, perNum = 1000, dagColor = "binary")
 }
 \description{
 Generate HTML report for ORA and GSEA

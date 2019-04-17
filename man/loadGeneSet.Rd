@@ -4,10 +4,9 @@
 \alias{loadGeneSet}
 \title{Load gene set data}
 \usage{
-loadGeneSet(organism = "hsapiens",
-  enrichDatabase = "geneontology_Biological_Process",
+loadGeneSet(organism = "hsapiens", enrichDatabase = NULL,
   enrichDatabaseFile = NULL, enrichDatabaseType = NULL,
-  enrichDatabaseDescriptionFile = NULL, collapseMethod = "mean",
+  enrichDatabaseDescriptionFile = NULL,
   hostName = "http://www.webgestalt.org/")
 }
 \arguments{
@@ -20,32 +19,24 @@ the other organisms, the above data should have the same ID type.}
 
 \item{enrichDatabase}{The functional categories for the enrichment analysis. Users can use
 the function \code{listGeneSet} to check the available functional databases for the
-selected organism. Users can also input \code{others} to provide a custom functional
-databases not supported by WebGestaltR for the selected organism.}
+selected organism. Multiple databases in a vector are supported for ORA and GSEA.}
 
-\item{enrichDatabaseFile}{If users set \code{organism} as \code{others} or set
-\code{enrichDatabase} as \code{others}, users need to provide a GMT file as the functional
+\item{enrichDatabaseFile}{Users can provide one or more GMT files as the functional
 category for enrichment analysis. The extension of the file should be \code{gmt} and the
 first column of the file is the category ID, the second one is the external link for the
 category. Genes annotated to the category are from the third column. All columns are
-separated by tabs.}
+separated by tabs. The GMT files will be combined with \code{enrichDatabase}.}
 
-\item{enrichDatabaseType}{If users set \code{enrichDatabase} as \code{others}, WebGestaltR
-will also perform ID mapping for the supplied GMT file. Thus, users need to set the ID
-type of the genes in the \code{enrichDatabaseFile}. If users set \code{organism} as
-\code{others}, users do not need to set this ID type because WebGestaltR will not perform
-ID mapping for other organisms. The supported ID types of WebGestaltR for the selected
-organism can be found by the function \code{listIdType}.}
+\item{enrichDatabaseType}{The ID type of the genes in the \code{enrichDatabaseFile}.
+If users set \code{organism} as \code{others}, users do not need to set this ID type because
+WebGestaltR will not perform ID mapping for other organisms. The supported ID types of
+WebGestaltR for the selected organism can be found by the function \code{listIdType}.}
 
-\item{enrichDatabaseDescriptionFile}{Users can also provide a description file for the custom
+\item{enrichDatabaseDescriptionFile}{Users can also provide description files for the custom
 \code{enrichDatabaseFile}. The extension of the description file should be \code{des}. The
 description file contains two columns: the first column is the category ID that should be
 exactly the same as the category ID in the custom \code{enrichDatabaseFile} and the second
 column is the description of the category. All columns are separated by tabs.}
-
-\item{collapseMethod}{The method to collapse duplicate IDs with scores. \code{mean},
-\code{median}, \code{min} and \code{max} represent the mean, median, minimum and maximum
-of scores for the duplicate IDs.}
 
 \item{hostName}{The server URL for accessing data. Mostly for development purposes.}
 }
@@ -54,8 +45,8 @@ A list of \code{geneSet}, \code{geneSetDes}, \code{geneSetDag}, \code{geneSetNet
 \describe{
  \item{geneSet}{Gene set: A data frame with columns of "geneSet", "description", "genes"}
  \item{geneSetDes}{Description: A data frame with columns of two columns of gene set ID and description}
- \item{geneSetDag}{DAG: A edge list data frame of two columns of parent and child}
- \item{geneSetNet}{Network: A edge list data frame of two columns connecting nodes}
+ \item{geneSetDag}{DAG: A edge list data frame of two columns of parent and child. Or a list of data frames if multilple databases are given.}
+ \item{geneSetNet}{Network: A edge list data frame of two columns connecting nodes. Or a list of data frames if multilple databases are given.}
  \item{standardId}{The standard ID of the gene set}
 }
 }

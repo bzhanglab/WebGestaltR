@@ -12,79 +12,57 @@
 #' @export
 #' @aliases GOSlimSummary
 #'
-goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType="pdf",isOutput=TRUE, hostName="http://www.webgestalt.org") {
+goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType="pdf", isOutput=TRUE, hostName="http://www.webgestalt.org") {
 	organisms <- listOrganism(hostName=hostName)
-	if(!(organism %in% organisms)){
-		error <- paste("ERROR: ",organism," can not be supported.",sep="")
-		cat(error)
-		return(error)
+	if (!organism %in% organisms) {
+		stop("ERROR: ", organism, " can not be supported.")
 	}
 
-	if(!is.vector(geneList)){
-		error <- "ERROR: Please upload a list of entrez gene ids.\n"
-		cat(error)
-		return(error)
-	}else{
+	if (!is.vector(geneList)) {
+		stop("ERROR: Please upload a list of entrez gene ids.")
+	} else {
 		geneList <- as.character(geneList)
 	}
 
 	outputTypeList <- c("pdf","png","bmp")
-	if(!(outputType %in% outputTypeList)){
-		error <- paste("ERROR: The output Type ",outputType," is invalid. Please select one from pdf, png, and bmp.",sep="")
-		cat(error)
-		return(error)
+	if (!outputType %in% outputTypeList) {
+	stop("ERROR: The output Type ", outputType ," is invalid. Please select one from pdf, png, and bmp.")
 	}
 
 	bpRes <- .processData(organism, hostName, geneList, "Biological_Process")
-	if(.hasError(bpRes)){
-		return(bpRes)
-	}else{
-		bpGoCnts<- bpRes$goTermCounts
-		bpUnclassified <- bpRes$dataUnclassified
-		if (isOutput) {
-			write.table(bpGoCnts, paste0(outputFile, "_bp.txt"), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
-		}
+	bpGoCnts <- bpRes$goTermCounts
+	bpUnclassified <- bpRes$dataUnclassified
+	if (isOutput) {
+		write.table(bpGoCnts, paste0(outputFile, "_bp.txt"), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
 	}
 
 	ccRes <- .processData(organism, hostName, geneList, "Cellular_Component")
-	if(.hasError(ccRes)){
-		return(ccRes)
-	}else{
-		ccGoCnts <- ccRes$goTermCounts
-		ccUnclassified <- ccRes$dataUnclassified
-		if (isOutput) {
-			write.table(ccGoCnts, paste0(outputFile, "_cc.txt"), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
-		}
+	ccGoCnts <- ccRes$goTermCounts
+	ccUnclassified <- ccRes$dataUnclassified
+	if (isOutput) {
+		write.table(ccGoCnts, paste0(outputFile, "_cc.txt"), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
 	}
 
 	mfRes <- .processData(organism, hostName, geneList, "Molecular_Function")
-	if(.hasError(mfRes)){
-		return(mfRes)
-	}else{
-		mfGoCnts <- mfRes$goTermCounts
-		mfUnclassified <- mfRes$dataUnclassified
-		if (isOutput) {
-			write.table(mfGoCnts, paste0(outputFile, "_mf.txt"), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
-		}
+	mfGoCnts <- mfRes$goTermCounts
+	mfUnclassified <- mfRes$dataUnclassified
+	if (isOutput) {
+		write.table(mfGoCnts, paste0(outputFile, "_mf.txt"), row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE)
 	}
 
-	if(outputType=="pdf"){
-		pdf(paste(outputFile,".pdf",sep=""),height=8,width=16)
-	}
-
-	if(outputType=="png"){
-		png(paste(outputFile,".png",sep=""),width=2800,height=1300,res=200)
-	}
-
-	if(outputType=="bmp"){
-		bmp(paste(outputFile,".bmp",sep=""),width=2800,height=1300,res=200)
+	if (outputType=="pdf") {
+		pdf(paste0(outputFile, ".pdf"), height=8, width=16)
+	} else if (outputType=="png") {
+		png(paste0(outputFile, ".png"), width=2800, height=1300, res=200)
+	} else if (outputType=="bmp") {
+		bmp(paste0(outputFile, ".bmp"), width=2800, height=1300, res=200)
 	}
 
 	layout(matrix(1:3,1,3))
 
-	.plotData(geneList,bpGoCnts,bpUnclassified,"Biological Process","red")
-	.plotData(geneList,ccGoCnts,ccUnclassified,"Cellular Component","blue")
-	.plotData(geneList,mfGoCnts,mfUnclassified,"Molecular Function","green")
+	.plotData(geneList, bpGoCnts, bpUnclassified, "Biological Process", "red")
+	.plotData(geneList, ccGoCnts, ccUnclassified, "Cellular Component", "blue")
+	.plotData(geneList, mfGoCnts, mfUnclassified, "Molecular Function", "green")
 
 	dev.off()
 	return(NULL)
@@ -93,7 +71,7 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 #' @importFrom httr POST content
 #' @importFrom dplyr select distinct inner_join arrange filter %>%
 #' @importFrom readr read_tsv
-.processData <- function(organism,hostName,geneList,ontology){
+.processData <- function(organism, hostName, geneList, ontology) {
 	names <- c("entrezgene", "accession", "name")
 	if (startsWith(hostName, "file://")) {
 		goPath <- removeFileProtocol(file.path(hostName, "goslim", paste0(organism, "_GOSlim_", ontology, ".table")))
@@ -103,7 +81,7 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 		goUrl <- file.path(hostName, "api", "goslim")
 		response <- POST(goUrl, body=list(organism=organism, ontology=ontology, entrezgenes=geneList), encode="json")
 		if (response$status_code != 200) {
-			return(webRequestError(response))
+			stop(webRequestError(response))
 		}
 		goSlimData <- content(response)[["goslim"]]
 		goSlimData <- data.frame(matrix(unlist(lapply(goSlimData, FUN=function(x) { x[names] })), nrow=length(goSlimData), byrow=TRUE), stringsAsFactors=FALSE)
@@ -111,10 +89,8 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 	}
 
 
-	if(nrow(goSlimData)==0){
-		error <- "ERROR: The ID type of the uploaded list is not entrez gene id. Please use IDMapping function to map other id types to entrez gene id."
-		cat(error)
-		return(error)
+	if (nrow(goSlimData) == 0) {
+		stop("ERROR: The ID type of the uploaded list is not entrez gene id. Please use IDMapping function to map other id types to entrez gene id.")
 	}
 
 	dataUnclassified <- setdiff(geneList, unique(goSlimData[["entrezgene"]]))
@@ -142,6 +118,6 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 
 #' @export
 GOSlimSummary <- function(...) {
-	cat("WARNING: Function GOSlimSummary is deprecated and changed to goSlimSummary!\n")
+	warning("WARNING: Function GOSlimSummary is deprecated and changed to goSlimSummary!")
 	return(goSlimSummary(...))
 }

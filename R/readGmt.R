@@ -15,11 +15,11 @@ readGmt <- function(gmtFile){
 		if (response$status_code == 200) {
 			data <- unlist(strsplit(content(response), "\n", fixed=TRUE))
 		} else {
-			return(webRequestError(response))
+			stop(webRequestError(response))
 		}
 	} else {
-		if(file_ext(gmtFile) != "gmt"){
-			return(gmtFormatError("empty"))
+		if (file_ext(gmtFile) != "gmt") {
+			stop(gmtFormatError("empty"))
 		}
 		# remove BOM in some windows files
 		data <- gsub("\xEF\xBB\xBF", "", readLines(gmtFile), useBytes=TRUE)
@@ -28,9 +28,9 @@ readGmt <- function(gmtFile){
 	data <- lapply(data,.toList)
 	data <- do.call("rbind",data)
 
-	if(is.null(data)){
-		return(gmtFormatError("incorrect"))
-	}else{
+	if (is.null(data)) {
+		stop(gmtFormatError("incorrect"))
+	} else {
 		data <- as.data.frame(data, stringsAsFactors=FALSE)
 		colnames(data) <- c("geneSet", "description", "gene")
 		return(data)
@@ -39,13 +39,13 @@ readGmt <- function(gmtFile){
 readGMT <- readGmt
 
 
-.toList <- function(data){
-	if(length(data)>2){
+.toList <- function(data) {
+	if (length(data)>2) {
 		data <- data[!is.na(data)]
 		# replace % in gene set names to _, because png treats % in filename specially
 		data1 <- cbind(rep(gsub('%', '_', data[1], fixed=TRUE), length(data)-2), rep(data[2], length(data)-2), data[c(-1,-2)])
 		return(data1)
-	}else{
+	} else {
 		return(NULL)
 	}
 }

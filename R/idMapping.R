@@ -22,13 +22,13 @@ idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, 
 	errorTest <- parameterErrorMessage(organism=organism, dataType=dataType, collapseMethod=collapseMethod, hostName=hostName, mappingOutput=mappingOutput)
 
 	if(!is.null(errorTest)){
-		return(errorTest)
+		stop(errorTest)
 	}
 
 	############Check source id type#########
 	errorTest <- idTypeError(idType=sourceIdType,organism=organism,hostName=hostName)
 	if(!is.null(errorTest)){
-		return(errorTest)
+		stop(errorTest)
 	}
 
 	##########Identify the standardId for the input ID type###########
@@ -38,12 +38,12 @@ idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, 
 	if(!is.null(targetIdType)){
 		errorTest <- targetIdTypeError(idType=targetIdType,organism=organism,hostName=hostName)
 		if(!is.null(errorTest)){
-			return(errorTest)
+			stop(errorTest)
 		}else{
 			standardTarget <- identifyStandardId(hostName=hostName,idType=targetIdType,organism=organism,type="interest")
 			errorTest <- stardardDiffError(standardSource=standardSource,standardTarget=standardTarget)
 			if(!is.null(errorTest)){
-				return(errorTest)
+				stop(errorTest)
 			}
 		}
 	}else{
@@ -57,12 +57,9 @@ idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, 
 		idMap <- idMappingPhosphosite(organism=organism, dataType=dataType, inputGeneFile=inputGeneFile, inputGene=inputGene, sourceIdType=sourceIdType, targetIdType=targetIdType, collapseMethod=collapseMethod, mappingOutput=mappingOutput, outputFileName=outputFileName, hostName=hostName)
 	}
 
-	if(.hasError(idMap)){
-		return(idMap)
-	}else{
-		idMap$standardId <- standardSource
-		return(idMap)
-	}
+
+	idMap$standardId <- standardSource
+	return(idMap)
 }
 
 #' @export

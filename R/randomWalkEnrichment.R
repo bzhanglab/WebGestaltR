@@ -58,7 +58,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	if (length(allN) != 0){
 		termInfo <- .enrichmentFunction(organism, netNode, allN, goAnn, seeds, sigMethod, fdrThr, topThr, hostName)
 	} else {
-		stop("No sub-network is generated.")
+		stop("Error: No sub-network is generated.")
 	}
 
 	cat("Output\n")

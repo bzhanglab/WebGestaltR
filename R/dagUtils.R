@@ -7,6 +7,7 @@
 #'
 expandDag <- function(goTermList, dagEdgeList) {
 	colnames(dagEdgeList) <- c("source", "target")
+	goTermList <- goTermList[goTermList %in% unique(unlist(dagEdgeList, use.names=FALSE))]
 	queue <- as.list(goTermList)
 	## expand to include all linked nodes
 	edges <- list()
@@ -19,9 +20,9 @@ expandDag <- function(goTermList, dagEdgeList) {
 		}
 		inEdges <- filter(dagEdgeList, .data$target == goTerm)
 		if (nrow(inEdges) > 0) {
-			edges <- c(edges, lapply(split(inEdges, seq(nrow(inEdges))), function(x) {
+			edges <- c(edges, unname(lapply(split(inEdges, seq(nrow(inEdges))), function(x) {
 				return(list(data=as.list(x)))
-			}))
+			})))
 		}
 		for (parentNode in inEdges$source) {
 			if (!parentNode %in% goTermList) {
@@ -40,8 +41,12 @@ getDagNodes <- function(enrichedRes, allGoList, goIdName, enrichMethod, dagColor
 		colnames(goIdName) <- c("id", "name")
 	}
 	palette <- getColorPalette(enrichedRes, enrichMethod, dagColorSchema)
-	return(lapply(allGoList, function(x) {
-		goName <- ifelse(is.null(goIdName), "", filter(goIdName, .data$id == x)[[1, "name"]])
+	return(unname(lapply(allGoList, function(x) {
+		if (!is.null(goIdName) && x %in% goIdName$id) {
+			goName <- filter(goIdName, .data$id == x)[[1, "name"]]
+		} else {
+			goName <- ""
+		}
 		color <- palette(x)
 		return(list(
 			data=list(
@@ -50,7 +55,7 @@ getDagNodes <- function(enrichedRes, allGoList, goIdName, enrichMethod, dagColor
 				color=color
 			)
 		))
-	}))
+	})))
 }
 
 

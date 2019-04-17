@@ -7,7 +7,7 @@
 #'
 #' @keywords internal
 #'
-createReport <- function(hostName, outputDirectory, organism="hsapiens", projectName, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet, interestingGeneMap, referenceGeneList, enrichedSig, geneTables, clusters, background, enrichDatabase="geneontology_Biological_Process", enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, dagColor="binary"){
+createReport <- function(hostName, outputDirectory, organism="hsapiens", projectName, enrichMethod, geneSet, geneSetDes, geneSetDag, geneSetNet, interestingGeneMap, referenceGeneList, enrichedSig, geneTables, clusters, background, enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, dagColor="binary") {
 	outputHtmlFile <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, ".html"))
 
 	# if hostname starts with "file://", it is used as WebGestaltReporter
@@ -20,7 +20,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	dagJson <- list()
 	allEnrichedSig <- enrichedSig
 	repAdded <- FALSE
-	if(organism!="others"){
+	if (organism!="others") {
 		if (!is.null(enrichedSig) && reportNum < nrow(enrichedSig)) {
 			if (enrichMethod == "ORA") {
 				enrichedSig <- enrichedSig[1:reportNum, ]
@@ -34,8 +34,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 			repAdded <- nrow(enrichedSig) > numRes
 		}
 
-		#####Summary Tab########
-		#bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, perNum, geneSet, repAdded, hostName)
+		##### Summary Tab ########
 		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, geneSet, repAdded, hostName)
 
 		standardId <- interestingGeneMap$standardId
@@ -43,24 +42,36 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 			interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
 			numAnnoRefUserId <- length(intersect(interestGeneList, intersect(referenceGeneList, geneSet$gene)))
 		}
-		###########GOSlim summary#########################
+		########### GOSlim summary #########################
 		if(standardId=="entrezgene"){
 			bodyContent <- paste(bodyContent, goSlimReport(projectName), sep='\n')
 		}
 
-		############Enrichment result##################
-		if(!is.null(enrichedSig)){
-			bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, geneSetDes, geneSetDag, geneSetNet, clusters), seq='\n')
+		############ Enrichment result ##################
+		if (!is.null(enrichedSig)) {
+			bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, enrichedSig, geneSet, geneSetDes, geneSetDag, geneSetNet, clusters), seq='\n')
 			if (!is.null(geneSetDag)) {
-				dagRes <- expandDag(enrichedSig$geneSet, geneSetDag)
-				dagEdges <- dagRes$edges
-				dagNodes <- getDagNodes(enrichedSig, dagRes$allNodes, geneSetDes, enrichMethod, dagColor)
-				dagJson <- c(dagEdges, dagNodes)
+				if (!is.vector(geneSetDag)) {
+					# for backward compatibility, it is unlisted for single dataset
+					geneSetDag <- list(geneSetDag)
+					names(geneSetDag) <- ifelse(is.character(enrichDatabase), enrichDatabase, gsub(".gmt", "", basename(enrichDatabaseFile), fixed=TRUE))
+				}
+				for (name in names(geneSetDag)) {
+					dag <- geneSetDag[[name]]
+					if (is.null(dag)) {
+						#dagJson[[name]] <- list(NULL)
+						next
+					}
+					dagRes <- expandDag(enrichedSig$geneSet, dag)
+					dagEdges <- dagRes$edges
+					dagNodes <- getDagNodes(enrichedSig, dagRes$allNodes, geneSetDes, enrichMethod, dagColor)
+					dagJson[[name]] <- c(dagEdges, dagNodes)
+				}
 			}
 		}
-	}else{
-		###########Organism is others. No mapping information#############
-		#############summary for the analysis###################
+	} else {
+		########### Organism is others. No mapping information #############
+		############# Summary for the analysis ###################
 		if (enrichMethod == 'ORA') {
 			numAnnoRefUserId <- length(intersect(interestingGeneMap, intersect(referenceGeneList, geneSet$gene)))
 		}
@@ -79,9 +90,9 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 
 		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, geneSet, repAdded)
 
-		##############Enrich Result################
-		if(!is.null(enrichedSig)){
-			bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, geneSetDes, geneSetDag, geneSetNet, clusters), seq='\n')
+		############## Enrich Result ################
+		if (!is.null(enrichedSig)) {
+			bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, enrichedSig, geneSet, geneSetDes, geneSetDag, geneSetNet, clusters), seq='\n')
 		}
 		standardId <- NULL
 	}
@@ -97,14 +108,17 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	version <- paste(version[1, 1], version[1, 2], sep=".")
 	hasGeneSetDag = !is.null(geneSetDag)
 	hasCytoscape <- hasGeneSetDag || !is.null(geneSetNet) # DAG or network needs cytoscape
+	allDbNames <- unlist(c(enrichDatabase, unname(sapply(enrichDatabaseFile, function(x) {
+		gsub(".gmt", "", basename(x), fixed=TRUE)
+	}))))  # sapply on NULL will return a list
 
 	header <- readLines(system.file("templates/header.mustache", package="WebGestaltR"))
 	footer <- readLines(system.file("templates/footer.mustache", package="WebGestaltR"))
 	template <- readLines(system.file("templates/template.mustache", package="WebGestaltR"))
-	data <- list(hostName=hostName, geneSetNet=geneSetNet, bodyContent=bodyContent,
-				organism=organism, enrichDatabase=enrichDatabase,
+	data <- list(hostName=hostName, bodyContent=bodyContent,
+				organism=organism, enrichDatabaseJson=toJSON(allDbNames, auto_unbox=TRUE),
 				sigJson=toJSON(enrichedSig), insigJson=toJSON(background),
-				dagJson=toJSON(unname(dagJson), auto_unbox=TRUE), hasGeneSetDag=hasGeneSetDag, version=version,
+				dagJson=toJSON(dagJson, auto_unbox=TRUE), hasGeneSetDag=hasGeneSetDag, version=version,
 				clusterJson=toJSON(clusters), hasCytoscape=hasCytoscape,
 				geneTableJson=toJSON(geneTables), standardId=standardId, numAnnoRefUserId=numAnnoRefUserId,
 				methodIsGsea=enrichMethod=="GSEA", hasGeneSetDes=!is.null(geneSetDes)

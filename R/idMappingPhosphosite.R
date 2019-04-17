@@ -4,9 +4,6 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 
 	###########Check input data type###############
 	inputGene <- idMappingInput(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
-	if(.hasError(inputGene)){
-		return(inputGene)
-	}
 
 	##########ID Mapping Specify to phosphosite level###############
 	if(dataType=="list"){
@@ -49,17 +46,17 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 			targetType=targetIdType, ids=inputGeneL, standardId="phosphositeSeq")
 		)
 		if (response$status_code != 200) {
-			return(webRequestError(response))
+			stop(webRequestError(response))
 		}
 		mapRes <- content(response)
 		if (mapRes$status == 1) {
-			return(webApiError(mapRes))
+			stop(webApiError(mapRes))
 		}
 
 		mappedIds <- mapRes$mapped
 		unmappedIds <- unlist(mapRes$unmapped)
 
-		if (length(mappedIds) == 0) { return(idMappingError("empty")) }
+		if (length(mappedIds) == 0) { stop(idMappingError("empty")) }
 		names <- c("sourceId", "targetId")
 		mappedInputGene <- data.frame(matrix(unlist(lapply(mappedIds, FUN=function(x) { x[names] })), nrow=length(mappedIds), byrow=TRUE), stringsAsFactors=FALSE)
 		colnames(mappedInputGene) <- c("userId", targetIdType)
@@ -87,11 +84,11 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 				)
 
 				if (response$status_code != 200) {
-					return(webRequestError(response))
+					stop(webRequestError(response))
 				}
 				uniMapRes <- content(response)
 				if (uniMapRes$status == 1) {
-					return(webApiError(uniMapRes))
+					stop(webApiError(uniMapRes))
 				}
 				if (length(uniMapRes$mapped) == 0) { return(idMappingError("empty")) }
 

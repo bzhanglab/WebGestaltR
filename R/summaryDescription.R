@@ -6,21 +6,42 @@
 #' @keywords internal
 #'
 summaryDescription <- function(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, perNum, geneSet, repAdded, hostName) {
-	if(enrichMethod=="ORA"){
+	if (enrichMethod == "ORA") {
 		methodSpecificContent <- specificParameterSummaryOra(organism, referenceGeneList, geneSet, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, repAdded, interestingGeneMap)
 	}
 
-	if(enrichMethod=="GSEA"){
+	if (enrichMethod == "GSEA") {
 		methodSpecificContent <- specificParameterSummaryGsea(organism, interestingGeneMap, geneSet, minNum, maxNum, sigMethod, fdrThr, topThr, perNum, enrichedSig, reportNum, repAdded)
 	}
 
+	if (!is.vector(enrichDatabase)) {
+		enrichDatabase <- list(enrichDatabase)
+	}
+	if (!is.vector(enrichDatabaseFile)) {
+		enrichDatabaseFile <- list(enrichDatabaseFile)
+	}
+	if (!is.vector(enrichDatabaseDescriptionFile)) {
+		enrichDatabaseDescriptionFile <- list(enrichDatabaseDescriptionFile)
+	}
 	template <- readLines(system.file("templates/summary.mustache", package="WebGestaltR"))
+	enrichDatabaseInfo <- list()
+	for (enrichDb in enrichDatabase) {
+		if (!is.null(enrichDb)) {
+			enrichDatabaseInfo <- c(enrichDatabaseInfo, list(list(isBuiltIn=TRUE, enrichDatabase=enrichDb)))
+		}
+	}
+	for (i in 1:length(enrichDatabaseFile)) {
+		if (!is.null(enrichDatabaseFile[[i]])) {
+			enrichDatabaseInfo <- c(enrichDatabaseInfo, list(list(isBuiltIn=FALSE, enrichDatabaseFile=enrichDatabaseFile[[i]],
+				hasEnrichDatabaseDescriptionFile=is.null(enrichDatabaseDescriptionFile[[i]]),
+				enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile[[i]])))
+		}
+	}
 	if (organism != "others") {
 		standardId <- unname(interestingGeneMap$standardId)
 		data <- list(projectName=projectName, enrichMethod=enrichMethod, organism=organism, organismIsOthers=FALSE,
-			enrichDatabase=enrichDatabase, enrichDatabaseIsOthers=enrichDatabase=="others", enrichDatabaseFile=enrichDatabaseFile,
-			enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,
-			hasEnrichDatabaseDescriptioFile=!is.null(enrichDatabaseDescriptionFile), hasInterestGeneFile=!is.null(interestGeneFile),
+			enrichDatabaseInfo=enrichDatabaseInfo, enrichDatabaseType=enrichDatabaseType,
+			hasInterestGeneFile=!is.null(interestGeneFile),
 			interestGeneFileBase=ifelse(is.null(interestGeneFile), "", basename(interestGeneFile)), interestGeneType=interestGeneType,
 			numUserId=nrow(interestingGeneMap$mapped)+length(interestingGeneMap$unmapped),
 			numMappedUserId=nrow(interestingGeneMap$mapped), numUniqueMappedId=length(unique(interestingGeneMap$mapped[[standardId]])),
@@ -29,9 +50,8 @@ summaryDescription <- function(projectName, organism, interestGeneFile, interest
 		)
 	}else {
 		data <- list(projectName=projectName, enrichMethod=enrichMethod, organism=organism, organismIsOthers=TRUE,
-			enrichDatabase=enrichDatabase, enrichDatabaseIsOthers=enrichDatabase=="others", enrichDatabaseFile=enrichDatabaseFile,
-			enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,
-			hasEnrichDatabaseDescriptioFile=!is.null(enrichDatabaseDescriptionFile), hasInterestGeneFile=!is.null(interestGeneFile),
+			enrichDatabaseInfo=enrichDatabaseInfo, enrichDatabaseType=enrichDatabaseType,
+			hasInterestGeneFile=!is.null(interestGeneFile),
 			interestGeneFileBase=ifelse(is.null(interestGeneFile), "", basename(interestGeneFile)), interestGeneType=interestGeneType,
 			idIsEntrezGene=FALSE, methodSpecificContent=methodSpecificContent
 		)
@@ -51,15 +71,14 @@ summaryDescription <- function(projectName, organism, interestGeneFile, interest
 #'
 specificParameterSummaryOra <- function(organism, referenceGeneList, geneSet, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, repAdded, interestingGeneMap) {
 	organismIsOthers <- organism == "others"
-	if(!organismIsOthers){
+	if (!organismIsOthers) {
 		standardId <- interestingGeneMap$standardId
 		interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
 		numAnnoRefUserId <- length(intersect(interestGeneList, intersect(referenceGeneList, geneSet$gene)))
-	}else{  ###for others
+	} else {  ### for others
 		standardId <- NULL
 		interestGeneList <- unique(interestingGeneMap)
 		numAnnoRefUserId <- NULL
-
 	}
 	numAnnoRefId <- length(intersect(referenceGeneList, geneSet$gene))
 	hasEnrichedSig <- !is.null(enrichedSig)
@@ -92,7 +111,7 @@ specificParameterSummaryOra <- function(organism, referenceGeneList, geneSet, re
 #'
 specificParameterSummaryGsea <- function(organism, interestingGeneMap, geneSet, minNum, maxNum, sigMethod, fdrThr, topThr, perNum, enrichedSig, reportNum, repAdded) {
 	organismIsOthers <- organism == "others"
-	if(!organismIsOthers){
+	if (!organismIsOthers) {
 		standardId <- interestingGeneMap$standardId
 		interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
 		numUniqueUserId <- length(interestGeneList)

@@ -3,13 +3,13 @@
 #' Currently, we only have wikipathway and kegg pathways that need to modify the link
 #'
 #' @keywords internal
-linkModification <- function(enrichMethod, enrichDatabase, enrichPathwayLink, geneList, interestingGeneMap) {
+linkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap) {
 
-	if(enrichDatabase=="pathway_KEGG"){
-		link <- keggLinkModification(enrichPathwayLink,geneList)
+	if (grepl("www.kegg.jp", enrichPathwayLink, fixed=TRUE)) {
+		link <- keggLinkModification(enrichPathwayLink, geneList)
 		return(link)
 	}
-	if(startsWith(enrichDatabase, "pathway_Wikipathway")){
+	if (grepl("www.wikipathways.org", enrichPathwayLink, fixed=TRUE)) {
 		link <- wikiLinkModification(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap)
 		return(link)
 	}
