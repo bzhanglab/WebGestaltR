@@ -22,9 +22,10 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 	geneSetNet <- list() ##gene set network file
 	standardId <- NULL
 
-	if (!is.null(enrichDatabaseFile) && is.null(enrichDatabaseType)) {
+	if (organism != "others" && !is.null(enrichDatabaseFile) && is.null(enrichDatabaseType)) {
 		stop("The ID type should be given in enrichDatabaseType for custom GMT files, e.g. genesymbol.")
 	}
+	# necessary because loop with length used below. enrichDatabase will skip NULL
 	if (!is.vector(enrichDatabaseFile)) {
 		enrichDatabaseFile = list(enrichDatabaseFile)
 	}
