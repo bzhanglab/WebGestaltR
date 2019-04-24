@@ -22,9 +22,9 @@ readGmt <- function(gmtFile){
 			stop(gmtFormatError("empty"))
 		}
 		# remove BOM in some windows files
-		data <- gsub("\xEF\xBB\xBF", "", readLines(gmtFile), useBytes=TRUE)
+		data <- gsub("\xEF\xBB\xBF", "", readLines(gmtFile, skipNul=TRUE), useBytes=TRUE)
 	}
-	data <- strsplit(data,"\t")
+	data <- strsplit(data, "\t", useBytes=TRUE)
 	data <- lapply(data,.toList)
 	data <- do.call("rbind",data)
 
@@ -41,7 +41,7 @@ readGMT <- readGmt
 
 .toList <- function(data) {
 	if (length(data)>2) {
-		data <- data[!is.na(data)]
+		data <- data[!is.na(data) && !is.null(data)]
 		# replace % in gene set names to _, because png treats % in filename specially
 		data1 <- cbind(rep(gsub('%', '_', data[1], fixed=TRUE), length(data)-2), rep(data[2], length(data)-2), data[c(-1,-2)])
 		return(data1)
