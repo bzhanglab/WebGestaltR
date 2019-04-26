@@ -41,7 +41,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	)
 	enrichRes <- gseaRes$Enrichment_Results %>%
 		mutate(geneSet = rownames(gseaRes$Enrichment_Results)) %>%
-		select(.data$geneSet, .data$ES, .data$NES, pValue=.data$p_val, FDR=.data$fdr)
+		select(.data$geneSet, enrichmentScore=.data$ES, normalizedEnrichmentScore=.data$NES, pValue=.data$p_val, FDR=.data$fdr)
 	# TODO: handle errors
 
 	if (sigMethod == "fdr") {
@@ -83,7 +83,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	leadingGenes <- vector("character", numSig)
 	for (i in 1:numSig) {
 		geneSet <- sig[[i, "geneSet"]]
-		es <- sig[[i, "ES"]]
+		es <- sig[[i, "enrichmentScore"]]
 		genes <- gseaRes$Items_in_Set[[geneSet]] # rowname is gene and one column called rank
 		rsum <- gseaRes$Running_Sums[, geneSet]
 		peakIndex <- match(ifelse(es > 0, max(rsum), min(rsum)), rsum)

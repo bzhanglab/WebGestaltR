@@ -174,6 +174,35 @@ Also handles backward compatibility for some parameters in old versions.}
 \value{
 The WebGestaltR function returns a data frame containing the enrichment analysis
   result and also outputs an user-friendly HTML report if \code{isOutput} is \code{TRUE}.
+  The columns in the data frame depend on the \code{enrichMethod} and they are the following:
+  \describe{
+    \item{geneSet}{ID of the gene set.}
+    \item{description}{Description of the gene set if available.}
+    \item{link}{Link to the data source.}
+    \item{size}{The number of genes in the set after filtering by \code{minNum} and \code{maxNum}.}
+    \item{overlap}{The number of mapped input genes that are annotated in the gene set.}
+    \item{expect}{Expected number of input genes that are annotated in the gene set.}
+    \item{enrichmentRatio}{Enrichment ratio, overlap / expect.}
+    \item{enrichmentScore}{Enrichment score, the maximum running sum of scores for the ranked list.}
+    \item{normalizedEnrichmentScore}{Normalized enrichment score, normalized against the average
+      enrichment score of all permutations.}
+    \item{leadingEdgeNum}{Number of genes/phosphosites in the leading edge.}
+    \item{pValue}{P-value from hypergeometric test for ORA. For GSEA, please refer to its original
+      publication or online at \url{https://software.broadinstitute.org/gsea/doc/GSEAUserGuideTEXT.htm}.}
+    \item{FDR}{Corrected P-value for mulilple testing with \code{fdrMethod} for ORA.}
+    \item{overlapId}{The gene/phosphosite IDs of \code{overlap} for ORA (entrez gene IDs or
+      phosphosite sequence).}
+    \item{leadingEdgeId}{Genes/phosphosites in the leading edge in entrez gene ID or
+      phosphosite sequence.}
+    \item{userId}{The gene/phosphosite IDs of \code{overlap} for ORA or \code{leadingEdgeId}
+      for GSEA in User input IDs.}
+    \item{plotPath}{Path of the GSEA enrichment plot.}
+    \item{database}{Name of the source database if multiple enrichment databases are given.}
+    \item{goId}{In NTA, like \code{geneSet}, the enriched GO terms of genes in the
+      returned subnetwork.}
+    \item{interestGene}{In NTA, the gene IDs in the subnetwork with 0/1 annotations indicating
+      if it is from user input.}
+  }
 
 The WebGestaltRBatch function returns a list of enrichment results.
 }

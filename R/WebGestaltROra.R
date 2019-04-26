@@ -82,13 +82,13 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatab
 		if (!is.null(geneSetDes)) { ####### Add extra description information ###########
 			enrichedSig <- enrichedSig %>%
 				left_join(geneSetDes, by="geneSet") %>%
-				select(.data$geneSet, .data$description, .data$link, .data$C, .data$O, .data$E, .data$R, .data$pValue, .data$FDR, .data$overlapId) %>%
-				arrange(.data$FDR, .data$pValue, desc(.data$C)) %>%
+				select(.data$geneSet, .data$description, .data$link, .data$size, .data$overlap, .data$expect, .data$enrichmentRatio, .data$pValue, .data$FDR, .data$overlapId) %>%
+				arrange(.data$FDR, .data$pValue, desc(.data$size)) %>%
 				mutate(description=ifelse(is.na(.data$description), "", .data$description)) # now des could be mixture
 		} else {
 			enrichedSig <- enrichedSig %>%
-				select(.data$geneSet, .data$link, .data$C, .data$O, .data$E, .data$R, .data$pValue, .data$FDR, .data$overlapId) %>%
-				arrange(.data$FDR, .data$pValue, desc(.data$C))
+				select(.data$geneSet, .data$link, .data$size, .data$overlap, .data$expect, .data$enrichmentRatio, .data$pValue, .data$FDR, .data$overlapId) %>%
+				arrange(.data$FDR, .data$pValue, desc(.data$size))
 		}
 
 		geneTables <- getGeneTables(organism, enrichedSig, "overlapId", interestingGeneMap)

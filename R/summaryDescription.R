@@ -75,7 +75,7 @@ specificParameterSummaryOra <- function(organism, referenceGeneList, geneSet, re
 	hasEnrichedSig <- !is.null(enrichedSig)
 	if (hasEnrichedSig) {
 		numEnrichedSig <- nrow(enrichedSig)
-		showAll <- reportNum>=numEnrichedSig
+		showAll <- reportNum >= numEnrichedSig
 	} else {
 		numEnrichedSig <- NULL
 		showAll <- NULL
@@ -121,10 +121,10 @@ specificParameterSummaryGsea <- function(organism, interestingGeneMap, geneSet, 
 		)
 
 	if(hasEnrichedSig){
-		data$numPosRel <- nrow(filter(enrichedSig, .data$NES>0))
-		data$numNegRel <- nrow(filter(enrichedSig, .data$NES<0))
-		data$isPosRel <- data$numPosRel>0
-		data$isNegRel <- data$numNegRel>0
+		data$numPosRel <- nrow(filter(enrichedSig, .data$normalizedEnrichmentScore > 0))
+		data$numNegRel <- nrow(filter(enrichedSig, .data$normalizedEnrichmentScore < 0))
+		data$isPosRel <- data$numPosRel > 0
+		data$isNegRel <- data$numNegRel > 0
 		data$showAll <- reportNum >= nrow(enrichedSig)
 	}
 

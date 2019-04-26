@@ -28,7 +28,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	## networks <- unlist(strsplit(network, ",", fixed=TRUE))
 	## May need to bring back analysis of multiple networks
 	fileName <- paste(projectName, network, method, sep=".")
-	randomWalkEnrichment(organism=organism, network=network, method=method, highlightSeedNum=highlightSeedNum, inputSeed=inputGene,
+	goEnrichRes <- randomWalkEnrichment(organism=organism, network=network, method=method, highlightSeedNum=highlightSeedNum, inputSeed=inputGene,
 						sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, projectDir=projectDir,
 						topRank=neighborNum, projectName=projectName, hostName=hostName)
 
@@ -76,5 +76,5 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	setwd(cwd)
 
 	cat("Results can be found in the ", projectDir, "!\n", sep="")
-
+	return(goEnrichRes)
 }

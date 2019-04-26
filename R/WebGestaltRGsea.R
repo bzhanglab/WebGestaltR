@@ -79,13 +79,13 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichData
 		if (!is.null(geneSetDes)) { ####### Add extra description information ###########
 			enrichedSig <- enrichedSig %>%
 				left_join(geneSetDes, by="geneSet") %>%
-				select(.data$geneSet, .data$description, .data$ES, .data$NES, .data$pValue, .data$FDR, .data$link, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
-				arrange(.data$FDR, .data$pValue, desc(.data$NES)) %>%
+				select(.data$geneSet, .data$description, .data$link, .data$enrichmentScore, .data$normalizedEnrichmentScore, .data$pValue, .data$FDR, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
+				arrange(.data$FDR, .data$pValue, desc(.data$normalizedEnrichmentScore)) %>%
 				mutate(description=ifelse(is.na(.data$description), "", .data$description))
 		} else {
 			enrichedSig <- enrichedSig %>%
-				select(.data$geneSet, .data$ES, .data$NES, .data$pValue, .data$FDR, .data$link, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
-				arrange(.data$FDR, .data$pValue, desc(.data$NES))
+				select(.data$geneSet, .data$link, .data$enrichmentScore, .data$normalizedEnrichmentScore, .data$pValue, .data$FDR, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
+				arrange(.data$FDR, .data$pValue, desc(.data$normalizedEnrichmentScore))
 		}
 
 		geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
@@ -113,7 +113,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichData
 			names(idsInSet) <- enrichedSig$geneSet
 			pValue <- enrichedSig$pValue
 			pValue[pValue == 0] <- .Machine$double.eps
-			signedLogP <- -log(pValue) * sign(enrichedSig$ES)
+			signedLogP <- -log(pValue) * sign(enrichedSig$enrichmentScore)
 			apRes <- affinityPropagation(idsInSet, signedLogP)
 			wscRes <- weightedSetCover(idsInSet, 1 / signedLogP, setCoverNum, nThreads)
 			if (!is.null(apRes)) {

@@ -72,7 +72,7 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 			})
 		} else if (enrichMethod == "GSEA") {
 			return(function(goTerm) {
-				nes <- filter(enrichedRes, .data$geneSet == goTerm)[["NES"]]
+				nes <- filter(enrichedRes, .data$geneSet == goTerm)[["normalizedEnrichmentScore"]]
 				if (length(nes) == 0) {
 					return(colorNeutral)
 				} else {
@@ -99,7 +99,7 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 		} else if (enrichMethod=="GSEA") {
 			fdr <- enrichedRes$FDR
 			fdr[fdr == 0] <- .Machine$double.eps
-			fdr <- sign(enrichedRes$NES) * (-log10(fdr))
+			fdr <- sign(enrichedRes$normalizedEnrichmentScore) * (-log10(fdr))
 			minFdrLog <- min(fdr)
 			maxFdrLog <- max(fdr)
 			tmp <- getPaletteForGsea(maxFdrLog, minFdrLog)
@@ -111,7 +111,7 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 					return(colorNeutral)
 				} else {
 					fdr <- row[["FDR"]]
-					nes <- row[["NES"]]
+					nes <- row[["normalizedEnrichmentScore"]]
 					fdrLog <- ifelse(fdr == 0, sign(nes) * (-log10(.Machine$double.eps)), sign(nes) * (-log10(fdr)))
 					return(colorPalette[max(which(myBreak <= fdrLog))])
 				}
