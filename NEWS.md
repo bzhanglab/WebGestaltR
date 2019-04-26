@@ -1,3 +1,5 @@
+#WebGestalt 0.4.0
+20190422 —— Support of multiple databases for ORA and GSEA. Adjusted column names of the returned data frame.
 #WebGestalt 0.3.1
 20190314 —— Bug fixes. The version with NAR update manuscript
 #WebGestalt 0.3.0
