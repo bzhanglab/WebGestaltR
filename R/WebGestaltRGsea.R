@@ -67,7 +67,9 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichData
 		geneSet, geneSetDes=geneSetDes, minNum=minNum, maxNum=maxNum, sigMethod=sigMethod, fdrThr=fdrThr,
 		topThr=topThr, perNum=perNum, nThreads=nThreads, isOutput=isOutput
 	)
-
+	if (is.null(gseaRes)) {
+		return(NULL)
+	}
 
 	enrichedSig <- gseaRes$enriched
 	insig <- gseaRes$background

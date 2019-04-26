@@ -31,7 +31,9 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	goEnrichRes <- randomWalkEnrichment(organism=organism, network=network, method=method, highlightSeedNum=highlightSeedNum, inputSeed=inputGene,
 						sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, projectDir=projectDir,
 						topRank=neighborNum, projectName=projectName, hostName=hostName)
-
+	if (is.null(goEnrichRes)) {
+		return(NULL)
+	}
 	enrichResFile <- file.path(projectDir, paste0(fileName, "_enrichedResult.txt"))
 
 	goTermList <- read_tsv(enrichResFile, col_types=cols())$goId

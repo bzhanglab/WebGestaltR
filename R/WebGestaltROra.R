@@ -71,7 +71,9 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatab
 	############# Run enrichment analysis ###################
 	cat("Performing the enrichment analysis...\n")
 	oraRes <- oraEnrichment(interestGeneList, referenceGeneList, geneSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr)
-
+	if (is.null(oraRes)) {
+		return(NULL)
+	}
 	enrichedSig <- oraRes$enriched
 	insig <- oraRes$background
 

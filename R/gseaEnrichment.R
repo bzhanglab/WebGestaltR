@@ -55,9 +55,8 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	}
 	numSig = nrow(sig)
 	if (numSig == 0) {
-		error <- paste0("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
-		cat(error)
-		return(error)
+		warning("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
+		return(NULL)
 	}
 
 	if (!is.null(insig)) {
