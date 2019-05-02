@@ -27,6 +27,9 @@ affinityPropagation <- function(idsInSet, score) {
 	apRes <- apcluster(sim.mat,p=ip.vec)
 	#sort clusters to make exemplar the first member
 	clusters <- vector(mode="list", length(apRes@clusters))
+	if(length(apRes@clusters) == 0){
+		return(NULL)
+	}
 	for (i in 1:length(apRes@clusters)) {
 		exemplar <- apRes@exemplars[[i]]
 		clusters[[i]] <- apRes@clusters[[i]][order(apRes@clusters[[i]] == exemplar, decreasing=TRUE)]

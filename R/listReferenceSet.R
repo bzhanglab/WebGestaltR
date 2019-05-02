@@ -10,11 +10,15 @@
 #' @export
 #'
 listReferenceSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/"){
-  cacheData <- cacheFile(hostName, c("summary", "referenceset"))
-  if (! cacheData$Succeed) {
-    return(cacheData$ERROR)
-  }
-  jsonData <- cacheData$jsonData
+	if (startsWith(hostName, "file://")) {
+		jsonData <- fromJSON(file=removeFileProtocol(file.path(hostName, "referencesetsummary.json")))
+	} else {
+		response <- cacheUrl(file.path(hostName, "api", "summary", "referenceset"))
+		if (response$status_code != 200) {
+			return(webRequestError(response))
+		}
+		jsonData <- content(response)
+	}
 	idType <- jsonData[[organism]]
 	idType <- sapply(idType,function(e){return(e$name)})
 	return(idType)

@@ -1,42 +1,38 @@
-cacheFile <- function(hostName, paths){
-  cacheDir<-".webgestalt_cache"
-  dir.create(cacheDir, showWarnings = FALSE)
-  localFile<-paste0(cacheDir, "/", paste0(paste(paths, collapse="_"), ".json"))
-  if(!file.exists(localFile)){
-    response <- GET(file.path(hostName, "api", paste(paths, collapse="/")))
-
-    if (response$status_code != 200) {
-      return(list(Succeed=FALSE, Error=webRequestError(response), jsonData=NA ))
-    }
-    jsonData <- content(response)
-    jsonStr <-toJSON(jsonData)
-    fileConn<-file(localFile)
-    writeLines(jsonStr, fileConn)
-    close(fileConn)
-  }else{
-    jsonData <-fromJSON(file=localFile)
-  }
-  
-  return(list(Succeed=TRUE, Error=NA, jsonData=jsonData))
+urlToFile <- function(dataUrl) {
+  result<-gsub("http://","",dataUrl)
+  result<-gsub("https://","", result)
+  result<-gsub("\\?[^?]+?=","_",result)
+  result<-gsub("&[^&]+?=","_",result)
+  result<-gsub("[:/.]","_",result)
+	result<-gsub("_+", "_",result)
+	return(result)
 }
 
-cacheFileTxt <- function(hostName, paths, query) {
+cacheUrl <- function(dataUrl, query=NA){
   cacheDir<-".webgestalt_cache"
   dir.create(cacheDir, showWarnings = FALSE)
-  localFile<-paste0(cacheDir, "/", paste0(paste(c(paths, query), collapse="_"), ".txt"))
+  if(!is.na(query)){
+    localFilePrefix<-urlToFile(paste0(dataUrl, "_", paste0(query, collapse="_")))
+  }else{
+    localFilePrefix<-urlToFile(dataUrl)
+  }
+  localFile<-paste0(cacheDir, "/", localFilePrefix, ".rds")
   if(!file.exists(localFile)){
-    response <- GET(file.path(hostName, "api", paste(paths, collapse="/")), query=query)
+    cat("Reading from ", dataUrl, "\n")
+    if(!is.na(query)){
+      response <- GET(dataUrl, query=query)
+    }else{
+      response <- GET(dataUrl)
+    }
     
     if (response$status_code != 200) {
-      return(list(Succeed=FALSE, Error=webRequestError(response), txtData=NA ))
+      return(response)
     }
-    txtData <- content(response)
-    fileConn<-file(localFile)
-    writeLines(txtData, fileConn)
-    close(fileConn)
+    saveRDS(response, localFile)
   }else{
-    txtData <-readLines(localFile)
+    cat("Reading from ", localFile, "\n")
+    response <-readRDS(localFile)
   }
   
-  return(list(Succeed=TRUE, Error=NA, txtData=txtData))
+  return(response)
 }

@@ -12,15 +12,14 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-42098540-1', 'auto');
 ga('send', 'pageview');
 </script>
-	{{#geneSetNet}}
-	<!-- TODO -->
-	{{/geneSetNet}}
+<script src="{{hostName}}/assets/{{version}}/build/vendor.min.js"></script>
 	{{#hasCytoscape}}
 	<script src="{{hostName}}/assets/{{version}}/build/cytoscape.min.js"></script>
 	{{/hasCytoscape}}
 	{{^hasCytoscape}}
 	<script>window.cytoscape = null;</script>
 	{{/hasCytoscape}}
+	<link rel="stylesheet" href="{{hostName}}/assets/{{version}}/build/vendor.css">
 	<link rel="stylesheet" href="{{hostName}}/assets/{{version}}/build/wg.css">
 <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
 </head>
@@ -45,7 +44,7 @@ var clusters = {{{clusterJson}}};
 var dag = {{{dagJson}}};
 {{/hasGeneSetDag}}
 wgLib({
-	enrichDatabase: "{{enrichDatabase}}",
+	enrichDatabase: {{{enrichDatabaseJson}}},
 	organism: "{{organism}}",
 	hostName: "{{hostName}}",
 	enrichment: enrichment,
@@ -75,39 +74,40 @@ wgLib({
 		y: "FDR",
 
 		{{#methodIsGsea}}
-		x: "NES",
-		xLabel: "NES",
+		x: "normalizedEnrichmentScore",
+		xLabel: "normalizedEnrichmentScore",
 		xTransform: null,
 		radius: "leadingEdgeNum",
 		color: "leadingEdgeNum",
 			{{#hasGeneSetDes}}
-			tooltipContent: ["geneSet", "description", "NES", "FDR", "pValue", "leadingEdgeNum"]
+			tooltipContent: ["geneSet", "description", "normalizedEnrichmentScore", "FDR", "pValue", "leadingEdgeNum"]
 			{{/hasGeneSetDes}}
 			{{^hasGeneSetDes}}
-			tooltipContent: ["geneSet", "NES", "FDR", "pValue", "leadingEdgeNum"]
+			tooltipContent: ["geneSet", "normalizedEnrichmentScore", "FDR", "pValue", "leadingEdgeNum"]
 			{{/hasGeneSetDes}}
 		{{/methodIsGsea}}
 		{{^methodIsGsea}}
-		x: "R",
+		x: "enrichmentRatio",
 		xLabel: "log2 of enrichment ratio",
-		radius: "O",
-		color: "O",
+		radius: "overlap",
+		color: "overlap",
 			{{#hasGeneSetDes}}
-			tooltipContent: ["geneSet", "description", "R", "FDR", "pValue", "O"]
+			tooltipContent: ["geneSet", "description", "enrichmentRatio", "FDR", "pValue", "overlap"]
 			{{/hasGeneSetDes}}
 			{{^hasGeneSetDes}}
-			tooltipContent: ["geneSet", "R", "FDR", "pValue", "O"]
+			tooltipContent: ["geneSet", "enrichmentRatio", "FDR", "pValue", "overlap"]
 			{{/hasGeneSetDes}}
 		{{/methodIsGsea}}
 	},
 	bar: {
 		dimensions: { width: 960, height: 300 },
-		tooltipContent: ["geneSet", "description", "R", "FDR", "pValue", "O"],
+		tooltipContent: ["geneSet", "description", "enrichmentRatio", "FDR", "pValue", "overlap"],
 		{{#methodIsGsea}}
-		valueKey: "NES"
+		valueKey: "normalizedEnrichmentScore",
+		xLabel: "Normalized Enrichment Score"
 		{{/methodIsGsea}}
 		{{^methodIsGsea}}
-		valueKey: "R",
+		valueKey: "enrichmentRatio",
 		xLabel: "Enrichment ratio"
 		{{/methodIsGsea}}
 	}

@@ -4,8 +4,8 @@
 \alias{enrichResultSection}
 \title{enrichResultSection}
 \usage{
-enrichResultSection(enrichMethod, geneSetDes, geneSetDag, geneSetNet,
-  clusters)
+enrichResultSection(enrichMethod, enrichedSig, geneSet, geneSetDes,
+  geneSetDag, geneSetNet, clusters)
 }
 \description{
 Conditionally render template of main result section. Actual work is carried out in front end

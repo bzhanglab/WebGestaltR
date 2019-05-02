@@ -22,28 +22,64 @@
 	</p>
 	<b-tabs v-model="activeTab" type="is-toggle">
 		<b-tab-item label="Table">
+			{{#hasMultipleDatabases}}
+			<b-field>
+				<b-select v-model="activeDatabase">
+					{{! temp delimiter change to keep brackets for Vue}}
+					{{=<% %>=}}
+					<option value="all">All</option>
+					<option v-for="db in enrichDatabase"
+						:value="db"
+						:key="db"
+					>{{db}}</option>
+					<%={{ }}=%>
+				</b-select>
+			</b-field>
+			{{/hasMultipleDatabases}}
 			<wg-result-table
 				:data="enrichmentData"
 				:method="enrichMethod"
-			></wg-resutl-table>
+			></wg-result-table>
 		</b-tab-item>
 		<b-tab-item label="Bar chart">
+		{{#hasMultipleDatabases}}
+		<b-field>
+			<b-select v-model="activeDatabase">
+				{{! temp delimiter change to keep brackets for Vue}}
+				{{=<% %>=}}
+				<option value="all">All</option>
+				<option v-for="db in enrichDatabase"
+					:value="db"
+					:key="db"
+				>{{db}}</option>
+				<%={{ }}=%>
+			</b-select>
+		</b-field>
+		{{/hasMultipleDatabases}}
 		<div class="vertical-center-container">
 			<wg-bar-plot
 				:dimensions="bar.dimensions"
 				:data="enrichmentData"
 				:value-key="bar.valueKey"
-				{{#hasGeneSetDes}}
-				name-key="description"
-				{{/hasGeneSetDes}}
-				{{^hasGeneSetDes}}
-				name-key="geneSet"
-				{{/hasGeneSetDes}}
 				:x-label="bar.xLabel">
 			</wg-bar-plot>
 		</div>
 		</b-tab-item>
 		<b-tab-item label="Volcano plot">
+		{{#hasMultipleDatabases}}
+		<b-field>
+			<b-select v-model="activeDatabase">
+				{{! temp delimiter change to keep brackets for Vue}}
+				{{=<% %>=}}
+				<option value="all">All</option>
+				<option v-for="db in enrichDatabase"
+					:value="db"
+					:key="db"
+				>{{db}}</option>
+				<%={{ }}=%>
+			</b-select>
+		</b-field>
+		{{/hasMultipleDatabases}}
 		<div class="vertical-center-container">
 			<wg-volcano-plot
 				:data="volcanoData"
@@ -62,6 +98,17 @@
 		</b-tab-item>
 		{{#hasGeneSetDag}}
 		<b-tab-item label="DAG">
+			<b-field>
+				<b-select v-model="activeDagDatabase">
+					{{! temp delimiter change to keep brackets for Vue}}
+					{{=<% %>=}}
+					<option v-for="(value, key) in dag"
+						:value="key"
+						:key="key"
+					>{{key}}</option>
+					<%={{ }}=%>
+				</b-select>
+			</b-field>
 			<div style="width: 100%; height: 600px">
 			<wg-dag
 				container-id="wg_dag"
@@ -79,11 +126,8 @@
 		{{#methodIsOra}}
 		:mapped-input-size="mappedInputSize"
 		{{/methodIsOra}}
-		:enrich-database="enrichDatabase"
 		:organism="organism"
 		:host-name="hostName"
-		{{#hasGeneSetNet}}
-		:has-gene-net="true"
-		{{/hasGeneSetNet}}
+		:sets-with-net="{{setsWithNetJson}}"
 	></wg-gene-table>
 </section>

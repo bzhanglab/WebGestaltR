@@ -7,14 +7,19 @@
 #' @return A list of supported organisms.
 #'
 #' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
 #' @export
 #'
 listOrganism <- function(hostName="http://www.webgestalt.org/"){
-  cacheData <- cacheFile(hostName, c("summary", "idtype"))
-  if (! cacheData$Succeed) {
-    return(cacheData$ERROR)
-  }
-  jsonData <- cacheData$jsonData
+	if (startsWith(hostName, "file://")) {
+		jsonData <- fromJSON(file=removeFileProtocol(file.path(hostName, "idtypesummary.json")))
+	} else {
+		response <- cacheUrl(file.path(hostName, "api", "summary", "idtype"))
+		if (response$status_code != 200) {
+			return(webRequestError(response))
+		}
+		jsonData <- content(response)
+	}
 	organisms <- names(jsonData)
 	return(organisms)
 }

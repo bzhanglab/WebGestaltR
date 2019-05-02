@@ -7,6 +7,7 @@
 #'
 expandDag <- function(goTermList, dagEdgeList) {
 	colnames(dagEdgeList) <- c("source", "target")
+	goTermList <- goTermList[goTermList %in% unique(unlist(dagEdgeList, use.names=FALSE))]
 	queue <- as.list(goTermList)
 	## expand to include all linked nodes
 	edges <- list()
@@ -19,7 +20,9 @@ expandDag <- function(goTermList, dagEdgeList) {
 		}
 		inEdges <- filter(dagEdgeList, .data$target == goTerm)
 		if (nrow(inEdges) > 0) {
-			edges <- c(edges, lapply(split(inEdges, seq(nrow(inEdges))), function(x) list("data"=x)))
+			edges <- c(edges, unname(lapply(split(inEdges, seq(nrow(inEdges))), function(x) {
+				return(list(data=as.list(x)))
+			})))
 		}
 		for (parentNode in inEdges$source) {
 			if (!parentNode %in% goTermList) {
@@ -38,8 +41,12 @@ getDagNodes <- function(enrichedRes, allGoList, goIdName, enrichMethod, dagColor
 		colnames(goIdName) <- c("id", "name")
 	}
 	palette <- getColorPalette(enrichedRes, enrichMethod, dagColorSchema)
-	return(lapply(allGoList, function(x) {
-		goName <- ifelse(is.null(goIdName), "", filter(goIdName, .data$id == x)[[1, "name"]])
+	return(unname(lapply(allGoList, function(x) {
+		if (!is.null(goIdName) && x %in% goIdName$id) {
+			goName <- filter(goIdName, .data$id == x)[[1, "name"]]
+		} else {
+			goName <- ""
+		}
 		color <- palette(x)
 		return(list(
 			data=list(
@@ -48,7 +55,7 @@ getDagNodes <- function(enrichedRes, allGoList, goIdName, enrichMethod, dagColor
 				color=color
 			)
 		))
-	}))
+	})))
 }
 
 
@@ -65,7 +72,7 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 			})
 		} else if (enrichMethod == "GSEA") {
 			return(function(goTerm) {
-				nes <- filter(enrichedRes, .data$geneSet == goTerm)[["NES"]]
+				nes <- filter(enrichedRes, .data$geneSet == goTerm)[["normalizedEnrichmentScore"]]
 				if (length(nes) == 0) {
 					return(colorNeutral)
 				} else {
@@ -92,7 +99,7 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 		} else if (enrichMethod=="GSEA") {
 			fdr <- enrichedRes$FDR
 			fdr[fdr == 0] <- .Machine$double.eps
-			fdr <- sign(enrichedRes$NES) * (-log10(fdr))
+			fdr <- sign(enrichedRes$normalizedEnrichmentScore) * (-log10(fdr))
 			minFdrLog <- min(fdr)
 			maxFdrLog <- max(fdr)
 			tmp <- getPaletteForGsea(maxFdrLog, minFdrLog)
@@ -104,7 +111,7 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 					return(colorNeutral)
 				} else {
 					fdr <- row[["FDR"]]
-					nes <- row[["NES"]]
+					nes <- row[["normalizedEnrichmentScore"]]
 					fdrLog <- ifelse(fdr == 0, sign(nes) * (-log10(.Machine$double.eps)), sign(nes) * (-log10(fdr)))
 					return(colorPalette[max(which(myBreak <= fdrLog))])
 				}

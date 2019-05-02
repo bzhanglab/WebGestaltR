@@ -21,21 +21,21 @@
 	</div>
 	<div class="card-content content" v-show="summaryShown">
 		<ul id="summary-list"> {{! end of list in summaryOra or summaryGsea }}
-		<li><b>Enrich method:</b> {{enrichMethod}}</li>
+		<li><b>Enrichment method:</b> {{enrichMethod}}</li>
 		<li><b>Organism: </b>{{organism}}</li>
+		{{#enrichDatabaseInfo}}
 		<li>
-		{{^organismIsOthers}}
-			{{#enrichDatabaseIsOthers}}
-			<b>Enrichment Categories: </b>{{enrichDatabaseFile}} <b>ID Type: </b>{{enrichDatabaseType}}{{#hasEnrichDatabaseDescriptioFile}} <b>Description File: </b>{{enrichDatabaseDescriptionFile}}{{/hasEnrichDatabaseDescriptioFile}}
-			{{/enrichDatabaseIsOthers}}
-			{{^enrichDatabaseIsOthers}}
-			<b>Enrichment Categories: </b>{{enrichDatabase}}
-			<a class="has-text-info" href="{{hostName}}/api/geneset?organism={{organism}}&database={{enrichDatabase}}&fileType=gmt">
-				<b-icon icon="download" size="is-small"></b-icon>
-			</a>
-			{{/enrichDatabaseIsOthers}}
-		{{/organismIsOthers}}
+			{{#isBuiltIn}}
+				<b>Enrichment Categories: </b>{{enrichDatabase}}
+				<a class="has-text-info" href="{{hostName}}/api/geneset?organism={{organism}}&database={{enrichDatabase}}&fileType=gmt">
+					<b-icon icon="download" size="is-small"></b-icon>
+				</a>
+			{{/isBuiltIn}}
+			{{^isBuiltIn}}
+				<b>Enrichment Categories: </b>{{enrichDatabaseFile}} <b>ID Type: </b>{{enrichDatabaseType}}{{#hasEnrichDatabaseDescriptioFile}} <b>Description File: </b>{{enrichDatabaseDescriptionFile}}{{/hasEnrichDatabaseDescriptioFile}}
+			{{/isBuiltIn}}
 		</li>
+		{{/enrichDatabaseInfo}}
 
 		{{^organismIsOthers}}
 			{{#hasInterestGeneFile}}

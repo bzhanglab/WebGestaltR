@@ -1,6 +1,6 @@
 #' @importFrom dplyr select distinct filter arrange mutate left_join %>%
 #' @importFrom readr write_tsv
-gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE, nThreads=1) {
+gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, geneSetDes=NULL, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE, nThreads=1) {
 	projectFolder <- file.path(outputDirectory, paste("Project_", projectName, sep=""))
 	if (!dir.exists(projectFolder)) {
 		dir.create(projectFolder)
@@ -9,7 +9,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	colnames(geneRankList) <- c("gene", "score")
 	sortedScores <- sort(geneRankList$score, decreasing=TRUE)
 
-	geneSetName <- geneSet %>% select(geneSet, link=.data$description) %>% distinct()
+	geneSetName <- geneSet %>% select(.data$geneSet, link=.data$description) %>% distinct()
 	effectiveGeneSet <- geneSet %>% filter(.data$gene %in% geneRankList$gene)
 
 	geneSetNum <- tapply(effectiveGeneSet$gene, effectiveGeneSet$geneSet, length)
@@ -41,7 +41,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	)
 	enrichRes <- gseaRes$Enrichment_Results %>%
 		mutate(geneSet = rownames(gseaRes$Enrichment_Results)) %>%
-		select(.data$geneSet, .data$ES, .data$NES, pValue=.data$p_val, FDR=.data$fdr)
+		select(.data$geneSet, enrichmentScore=.data$ES, normalizedEnrichmentScore=.data$NES, pValue=.data$p_val, FDR=.data$fdr)
 	# TODO: handle errors
 
 	if (sigMethod == "fdr") {
@@ -55,9 +55,8 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	}
 	numSig = nrow(sig)
 	if (numSig == 0) {
-		error <- paste0("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
-		cat(error)
-		return(error)
+		warning("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
+		return(NULL)
 	}
 
 	if (!is.null(insig)) {
@@ -77,13 +76,13 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	}
 	sig <- sig %>% left_join(geneSetName, by="geneSet") %>%
 		mutate(size = unname(sapply(geneSet, function(x) nrow(gseaRes$Items_in_Set[[x]])))) %>%
-		mutate(plotPath = unname(sapply(geneSet, function(x) file.path(relativeF, paste0(x, ".png")))))
+		mutate(plotPath = unname(sapply(geneSet, function(x) file.path(relativeF, paste0(sanitizeFileName(x), ".png")))))
 
 	leadingGeneNum <- vector("integer", numSig)
 	leadingGenes <- vector("character", numSig)
 	for (i in 1:numSig) {
 		geneSet <- sig[[i, "geneSet"]]
-		es <- sig[[i, "ES"]]
+		es <- sig[[i, "enrichmentScore"]]
 		genes <- gseaRes$Items_in_Set[[geneSet]] # rowname is gene and one column called rank
 		rsum <- gseaRes$Running_Sums[, geneSet]
 		peakIndex <- match(ifelse(es > 0, max(rsum), min(rsum)), rsum)
@@ -97,17 +96,24 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 
 		if (isOutput) {
 			# Plot GSEA-like enrichment plot
-			png(file.path(outputF, paste0(geneSet, ".png")), bg="transparent", width=1000, height=1000)
+			if (!is.null(geneSetDes)) {
+				# same name of variable and column name, use quasiquotation !!
+				title <- as.character((geneSetDes %>% filter(.data$geneSet == !!geneSet))[1, "description"])
+			} else {
+				title <- geneSet
+			}
+			wrappedTitle <- strwrap(paste0("Enrichment plot: ", title), 60)
+			png(file.path(outputF, paste0(sanitizeFileName(geneSet), ".png")), bg="transparent", width=2000, height=2000)
 			plot.new()
-			par(fig=c(0, 1, 0.5, 1), mar=c(0, 5, 3, 2), cex.axis=1.8, cex.main=2.5, cex.lab=2.5, new=TRUE)
+			par(fig=c(0, 1, 0.5, 1), mar=c(0, 6, 6 * length(wrappedTitle), 2), cex.axis=2.5, cex.main=5, cex.lab=3.2, lwd=2, new=TRUE)
 			plot(1:length(gseaRes$Running_Sums[, geneSet]), gseaRes$Running_Sums[, geneSet],
-				type="l", main=paste0("Enrichment plot: ", geneSet),
-				xlab="", ylab="Enrichment Score", xaxt='n')
+				type="l", main=paste(wrappedTitle, collapse="\n"),
+				xlab="", ylab="Enrichment Score", xaxt='n', lwd=3)
 			abline(v=peakIndex, lty=3)
-			par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 5, 0, 2), new=TRUE)
+			par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 6, 0, 2), new=TRUE)
 			plot(genes$rank, rep(1, nrow(genes)), type="h",
 				xlim=c(1, length(sortedScores)), ylim=c(0, 1), axes=FALSE, ann=FALSE)
-			par(fig=c(0, 1, 0, 0.35), mar=c(4, 5, 0, 2), cex.axis=1.8, cex.lab=2.5, new=TRUE)
+			par(fig=c(0, 1, 0, 0.35), mar=c(6, 6, 0, 2), cex.axis=2.5, cex.lab=3.2, new=TRUE)
 			plot(1:length(sortedScores), sortedScores, type="h",
 				ylab="Ranked list metric", xlab="Rank in Ordered Dataset")
 			abline(v=peakIndex, lty=3)

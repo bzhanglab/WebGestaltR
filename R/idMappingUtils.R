@@ -4,7 +4,7 @@ idMappingInput <- function(dataType="list",inputGeneFile,inputGene){
 			inputGene <- readGmt(inputGeneFile)
 			return(inputGene)
 		}else{
-			return(gmtFormatError("empty"))
+			stop(gmtFormatError("empty"))
 		}
 	}else{
 		inputGene <- formatCheck(dataType=dataType,inputGeneFile=inputGeneFile,inputGene=inputGene)
@@ -13,17 +13,28 @@ idMappingInput <- function(dataType="list",inputGeneFile,inputGene){
 }
 
 #' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
 identifyStandardId <- function(hostName,idType,organism,type){
-	if(type=="interest"){
-		cacheData <- cacheFile(hostName, c("summary", "idtype"))
+	if (startsWith(hostName, "file://")) {
+		if (type=="interest") {
+			summaryPath <- removeFileProtocol(file.path(hostName, "idtypesummary.json"))
+		}
+		if (type=="reference") {
+			summaryPath <- removeFileProtocol(file.path(hostName, "referencesetsummary.json"))
+		}
+		jsonData <- fromJSON(file=summaryPath)
+	} else {
+		if (type=="interest") {
+			response <- cacheUrl(file.path(hostName, "api", "summary", "idtype"))
+		}
+		if (type=="reference") {
+			response <- cacheUrl(file.path(hostName, "api", "summary", "referenceset"))
+		}
+		if (response$status_code != 200) {
+			stop(webRequestError(response))
+		}
+		jsonData <- content(response)
 	}
-	if(type=="reference"){
-	  cacheData <- cacheFile(hostName, c("summary", "referenceset"))
-	}
-	if (! cacheData$Succeed) {
-		return(cacheData$ERROR)
-	}
-	jsonData <- cacheData$jsonData
 	idTypes <- jsonData[[organism]]
 	names <- unlist(lapply(idTypes, function(e) return(e$name)))
 	standardIds <- unlist(lapply(idTypes,function(e) return(e$type)))

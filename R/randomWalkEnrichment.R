@@ -4,19 +4,22 @@
 #' @importFrom igraph graph.edgelist V
 randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, highlightSeedNum, sigMethod, fdrThr, topThr, projectDir, projectName, hostName) {
 	fileName <- paste(projectName, network, method, sep=".")
-	
-	cacheData<-cacheFileTxt(hostName, "geneset", query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
-	if (! cacheData$Succeed) {
-	  return
+	if (startsWith(hostName, "file://")) {
+		net <- as.matrix(read_tsv(
+			removeFileProtocol(file.path(hostName, "geneset", paste(organism, network, "entrezgene.net", sep="_"))),
+			col_names=FALSE, col_types="cc"))
+		goAnn <- readGmt(removeFileProtocol(file.path(hostName, "geneset", paste(organism, "geneontology_Biological_Process", "genesymbol.gmt", sep="_"))))
+	} else {
+		geneSetUrl <- file.path(hostName, "api", "geneset")
+		# actually standard id is gene symbol for network
+		response <- GET(geneSetUrl, query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
+		net <- as.matrix(read_tsv(content(response), col_names=FALSE, col_types="cc"))
+		gmtUrl <- modify_url(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="genesymbol", fileType="gmt"))
+		goAnn <- readGmt(gmtUrl)
 	}
-
-	net <- as.matrix(read_tsv(cacheData$txtData, col_names=FALSE, col_types="cc"))
 	netGraph <- graph.edgelist(net, directed=FALSE)
 	netNode <- V(netGraph)$name
 
-	query=list(organism=organism, database="geneontology_Biological_Process", standardId="genesymbol", fileType="gmt")
-	gmtUrl <- modify_url(file.path(hostName, "api", "geneset"), query=query)
-	goAnn <- readGmt(gmtUrl, hostName, "geneset", query)
 
 	cat("Start Random Walk...\n")
 
@@ -55,8 +58,8 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	if (length(allN) != 0){
 		termInfo <- .enrichmentFunction(organism, netNode, allN, goAnn, seeds, sigMethod, fdrThr, topThr, hostName)
 	} else {
-		# should raise a error?
-		termInfo <- NULL
+		warning("Error: No sub-network is generated.")
+		return(NULL)
 	}
 
 	cat("Output\n")
@@ -88,6 +91,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	if (!is.null(termInfo)) {
 		write_tsv(termInfo, file.path(projectDir, paste0(fileName, "_enrichedResult.txt")))
 	}
+	return(termInfo)
 }
 
 #' @importFrom igraph get.adjacency
@@ -125,36 +129,43 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 
 	refTermCount <- tapply(annRef$gene, annRef$geneSet, length)
 
-	geneSetUrl <- file.path(hostName, "api", "geneset")
-	response <- POST(geneSetUrl, body=list(organism=organism, database="geneontology_Biological_Process",
-		fileType="des", ids=unique(annRef$geneSet)), encode="json")
-	refTermName <- read_tsv(content(response), col_names=c("id", "name"), col_types="cc") %>%
-		filter(.data$id %in% names(refTermCount))
+	if (startsWith(hostName, "file://")) {
+		refTermName <- read_tsv(
+			removeFileProtocol(file.path(hostName, "geneset", paste(organism, "geneontology_Biological_Process", "entrezgene.des", sep="_"))),
+			col_names=c("id", "description"), col_types="cc"
+		) %>% filter(.data$id %in% names(refTermCount))
+	} else {
+		geneSetUrl <- file.path(hostName, "api", "geneset")
+		response <- POST(geneSetUrl, body=list(organism=organism, database="geneontology_Biological_Process",
+			fileType="des", ids=unique(annRef$geneSet)), encode="json")
+		refTermName <- read_tsv(content(response), col_names=c("id", "description"), col_types="cc") %>%
+			filter(.data$id %in% names(refTermCount))
+	}
 
-	refTermCount <- data.frame(goId=names(refTermCount), refNum=refTermCount, stringsAsFactors=FALSE) %>%
+	refTermCount <- data.frame(goId=names(refTermCount), size=refTermCount, stringsAsFactors=FALSE) %>%
 		left_join(refTermName, by=c("goId"="id")) %>%
-		select(.data$goId, .data$name, .data$refNum) %>%
+		select(.data$goId, .data$description, .data$size) %>%
 		arrange(.data$goId)
 	interestTermCount <- tapply(annInterest$gene, annInterest$geneSet, length)
 
 	interestTermGene <- tapply(annInterest$gene, annInterest$geneSet, .getGenes, seeds)
 
 
-	interestTermCount <- data.frame(goId=names(interestTermCount), interestNum=interestTermCount, interestGene=interestTermGene, stringsAsFactors=FALSE) %>%
+	interestTermCount <- data.frame(goId=names(interestTermCount), overlap=interestTermCount, interestGene=interestTermGene, stringsAsFactors=FALSE) %>%
 		arrange(.data$goId)
 
 	refInterestTermCount <- refTermCount
 
-	refInterestTermCount$interestNum <- vector("numeric", nrow(refInterestTermCount))
-	refInterestTermCount[refInterestTermCount$goId %in% interestTermCount$goId, "interestNum"] <- interestTermCount$interestNum
+	refInterestTermCount$overlap <- vector("numeric", nrow(refInterestTermCount))
+	refInterestTermCount[refInterestTermCount$goId %in% interestTermCount$goId, "overlap"] <- interestTermCount$overlap
 
 	refInterestTermCount$interestGene <- vector("numeric", nrow(refInterestTermCount))
 	refInterestTermCount[refInterestTermCount$goId %in% interestTermCount$goId, "interestGene"] <- interestTermCount$interestGene
 
 	refInterestTermCount <- refInterestTermCount %>%
-		mutate(expect = (allInterestNum / allRefNum) * .data$refNum,
-			ratio = .data$interestNum / .data$expect,
-			pValue = 1 - phyper(.data$interestNum - 1, allInterestNum, allRefNum - allInterestNum, .data$refNum, lower.tail=TRUE, log.p=FALSE),
+		mutate(expect = (allInterestNum / allRefNum) * .data$size,
+			enrichmentRatio = .data$overlap / .data$expect,
+			pValue = 1 - phyper(.data$overlap - 1, allInterestNum, allRefNum - allInterestNum, .data$size, lower.tail=TRUE, log.p=FALSE),
 			FDR = p.adjust(.data$pValue, method="BH")
 		) %>%
 		arrange(.data$FDR, .data$pValue)
