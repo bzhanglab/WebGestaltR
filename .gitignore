@@ -3,3 +3,4 @@
 .DS_Store
 .Rhistory
 .Rbuildignore
+/.webgestalt_cache
