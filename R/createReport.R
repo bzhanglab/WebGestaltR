@@ -34,14 +34,19 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 			repAdded <- nrow(enrichedSig) > numRes
 		}
 
-		##### Summary Tab ########
-		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, geneSet, repAdded, hostName)
-
 		standardId <- interestingGeneMap$standardId
 		if (enrichMethod == 'ORA') {
 			interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
-			numAnnoRefUserId <- length(intersect(interestGeneList, intersect(referenceGeneList, geneSet$gene)))
+			geneSetNum <- tapply(geneSet$gene, geneSet$geneSet, length)
+			geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
+
+			numAnnoRefUserId <- length(intersect(interestGeneList,
+				intersect(referenceGeneList, geneSet[geneSet$geneSet %in% names(geneSetNum), "gene"])))
 		}
+
+		##### Summary Tab ########
+		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, geneSet, repAdded, numAnnoRefUserId, hostName)
+
 		########### GOSlim summary #########################
 		if(standardId=="entrezgene"){
 			bodyContent <- paste(bodyContent, goSlimReport(projectName), sep='\n')
@@ -73,7 +78,11 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		########### Organism is others. No mapping information #############
 		############# Summary for the analysis ###################
 		if (enrichMethod == 'ORA') {
-			numAnnoRefUserId <- length(intersect(interestingGeneMap, intersect(referenceGeneList, geneSet$gene)))
+			geneSetNum <- tapply(geneSet$gene, geneSet$geneSet, length)
+			geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
+
+			numAnnoRefUserId <- length(intersect(interestingGeneMap,
+				intersect(referenceGeneList, geneSet[geneSet$geneSet %in% names(geneSetNum), "gene"])))
 		}
 		if (!is.null(enrichedSig) && reportNum < nrow(enrichedSig)) {
 			if (enrichMethod == "ORA") {
@@ -88,7 +97,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 			repAdded <- nrow(enrichedSig) > numRes
 		}
 
-		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, geneSet, repAdded)
+		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, geneSet, repAdded, numAnnoRefUserId, hostName)
 
 		############## Enrich Result ################
 		if (!is.null(enrichedSig)) {

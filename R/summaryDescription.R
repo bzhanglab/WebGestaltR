@@ -5,9 +5,9 @@
 #' @importFrom whisker whisker.render
 #' @keywords internal
 #'
-summaryDescription <- function(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, perNum, geneSet, repAdded, hostName) {
+summaryDescription <- function(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, perNum, geneSet, repAdded, numAnnoRefUserId, hostName) {
 	if (enrichMethod == "ORA") {
-		methodSpecificContent <- specificParameterSummaryOra(organism, referenceGeneList, geneSet, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, repAdded, interestingGeneMap)
+		methodSpecificContent <- specificParameterSummaryOra(organism, referenceGeneList, geneSet, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, repAdded, numAnnoRefUserId, interestingGeneMap)
 	}
 
 	if (enrichMethod == "GSEA") {
@@ -60,16 +60,14 @@ summaryDescription <- function(projectName, organism, interestGeneFile, interest
 #'
 #' @keywords internal
 #'
-specificParameterSummaryOra <- function(organism, referenceGeneList, geneSet, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, repAdded, interestingGeneMap) {
+specificParameterSummaryOra <- function(organism, referenceGeneList, geneSet, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, repAdded, numAnnoRefUserId, interestingGeneMap) {
 	organismIsOthers <- organism == "others"
 	if (!organismIsOthers) {
 		standardId <- interestingGeneMap$standardId
 		interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
-		numAnnoRefUserId <- length(intersect(interestGeneList, intersect(referenceGeneList, geneSet$gene)))
 	} else {  ### for others
 		standardId <- NULL
 		interestGeneList <- unique(interestingGeneMap)
-		numAnnoRefUserId <- NULL
 	}
 	numAnnoRefId <- length(intersect(referenceGeneList, geneSet$gene))
 	hasEnrichedSig <- !is.null(enrichedSig)
