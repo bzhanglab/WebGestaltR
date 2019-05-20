@@ -6,14 +6,14 @@
 #'
 #' @return A list of reference sets.
 #'
-#' @importFrom httr GET content
+#' @importFrom httr content
 #' @export
 #'
-listReferenceSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/"){
+listReferenceSet <- function(organism="hsapiens", hostName="http://www.webgestalt.org/", cache=NULL) {
 	if (startsWith(hostName, "file://")) {
 		jsonData <- fromJSON(file=removeFileProtocol(file.path(hostName, "referencesetsummary.json")))
 	} else {
-		response <- GET(file.path(hostName, "api", "summary", "referenceset"))
+		response <- cacheUrl(file.path(hostName, "api", "summary", "referenceset"), cache)
 		if (response$status_code != 200) {
 			return(webRequestError(response))
 		}

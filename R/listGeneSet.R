@@ -6,15 +6,15 @@
 #'
 #' @return A data frame of available gene sets.
 #'
-#' @importFrom httr GET content
+#' @importFrom httr content
 #' @importFrom jsonlite fromJSON
 #' @export
 #'
-listGeneSet <- function(organism="hsapiens",hostName="http://www.webgestalt.org/"){
+listGeneSet <- function(organism="hsapiens", hostName="http://www.webgestalt.org/", cache=NULL) {
 	if (startsWith(hostName, "file://")) {
 		jsonData <- fromJSON(file=removeFileProtocol(file.path(hostName, "genesetsummary.json")))
 	} else {
-		response <- GET(file.path(hostName, "api", "summary", "geneset"))
+		response <- cacheUrl(file.path(hostName, "api", "summary", "geneset"), cache)
 		if (response$status_code != 200) {
 			return(webRequestError(response))
 		}

@@ -8,7 +8,7 @@
 #' @rdname idMapping
 idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
                        inputGene=NULL, sourceIdType="ensembl_gene_id", collapseMethod="mean",
-                       mappingOutput=FALSE, outputFileName=NULL,
+                       mappingOutput=FALSE, outputFileName=NULL, cache=NULL,
                        hostName="http://www.webgestalt.org/") {
 	# various error checking
 	errorTest <- .hostNameError(hostName)
@@ -29,7 +29,7 @@ idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
 	if(!is.null(errorTest)){
 		return(errorTest)
 	}
-	errorTest <- idTypeError(idType=sourceIdType,organism=organism,hostName=hostName)
+	errorTest <- idTypeError(idType=sourceIdType, organism=organism, hostName=hostName, cache=cache)
 	if(!is.null(errorTest)){
 		return(errorTest)
 	}

@@ -12,9 +12,9 @@ idMappingInput <- function(dataType="list",inputGeneFile,inputGene){
 	}
 }
 
-#' @importFrom httr GET content
+#' @importFrom httr content
 #' @importFrom jsonlite fromJSON
-identifyStandardId <- function(hostName,idType,organism,type){
+identifyStandardId <- function(hostName, idType, organism, type, cache) {
 	if (startsWith(hostName, "file://")) {
 		if (type=="interest") {
 			summaryPath <- removeFileProtocol(file.path(hostName, "idtypesummary.json"))
@@ -25,10 +25,10 @@ identifyStandardId <- function(hostName,idType,organism,type){
 		jsonData <- fromJSON(file=summaryPath)
 	} else {
 		if (type=="interest") {
-			response <- GET(file.path(hostName, "api", "summary", "idtype"))
+			response <- cacheUrl(file.path(hostName, "api", "summary", "idtype"), cache)
 		}
 		if (type=="reference") {
-			response <- GET(file.path(hostName, "api", "summary", "referenceset"))
+			response <- cacheUrl(file.path(hostName, "api", "summary", "referenceset"), cache)
 		}
 		if (response$status_code != 200) {
 			stop(webRequestError(response))

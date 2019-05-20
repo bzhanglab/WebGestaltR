@@ -1,7 +1,7 @@
-#' @importFrom httr GET POST content
+#' @importFrom httr POST content
 #' @importFrom readr read_tsv cols
 #' @importFrom jsonlite toJSON
-WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", method="Network_Retrieval_Prioritization", inputSeed, inputSeedFile, interestGeneType="genesymbol", neighborNum=10, highlightSeedNum=10, sigMethod="fdr", fdrThr=0.05, topThr=10, highlightType="Seeds", outputDirectory=getwd(), projectName=NULL, hostName="http://www.webgestalt.org/") {
+WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", method="Network_Retrieval_Prioritization", inputSeed, inputSeedFile, interestGeneType="genesymbol", neighborNum=10, highlightSeedNum=10, sigMethod="fdr", fdrThr=0.05, topThr=10, highlightType="Seeds", outputDirectory=getwd(), projectName=NULL, cache=NULL, hostName="http://www.webgestalt.org/") {
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 	dir.create(projectDir)
 
@@ -21,7 +21,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 		)
 	} else {
 		geneSetUrl <- file.path(hostName, "api", "geneset")
-		response <- GET(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="entrezgene", fileType="dag"))
+		response <- cacheUrl(geneSetUrl, cache=cache, query=list(organism=organism, database="geneontology_Biological_Process", standardId="entrezgene", fileType="dag"))
 		dagInfo <- read_tsv(content(response), col_names=c("source", "target"), col_types="cc")
 	}
 
@@ -30,7 +30,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	fileName <- paste(projectName, network, method, sep=".")
 	goEnrichRes <- randomWalkEnrichment(organism=organism, network=network, method=method, highlightSeedNum=highlightSeedNum, inputSeed=inputGene,
 						sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, projectDir=projectDir,
-						topRank=neighborNum, projectName=projectName, hostName=hostName)
+						topRank=neighborNum, projectName=projectName, cache=cache, hostName=hostName)
 	if (is.null(goEnrichRes)) {
 		return(NULL)
 	}

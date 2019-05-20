@@ -1,17 +1,18 @@
 #' Read GMT File
 #'
+#' @inheritParams WebGestaltR
 #' @param gmtFile The file path or URL of the GMT file.
 #'
 #' @return A data frame with columns of "geneSet", "description", "gene".
 #'
-#' @importFrom httr GET content
+#' @importFrom httr content
 #' @importFrom tools file_ext
 #' @export
 #'
-readGmt <- function(gmtFile){
+readGmt <- function(gmtFile, cache=NULL) {
 #####Change a gmt file to a three column matrix (gene set name, gene set description and genes)#######
 	if (startsWith(gmtFile, "http://") || startsWith(gmtFile, "https://")) {
-		response <- GET(gmtFile)
+		response <- cacheUrl(gmtFile, cache)
 		if (response$status_code == 200) {
 			data <- unlist(strsplit(content(response), "\n", fixed=TRUE))
 		} else {

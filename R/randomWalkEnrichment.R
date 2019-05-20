@@ -1,8 +1,8 @@
-#' @importFrom httr GET content modify_url
+#' @importFrom httr content modify_url
 #' @importFrom readr read_tsv
 #' @importFrom dplyr filter arrange %>% desc
 #' @importFrom igraph graph.edgelist V
-randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, highlightSeedNum, sigMethod, fdrThr, topThr, projectDir, projectName, hostName) {
+randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, highlightSeedNum, sigMethod, fdrThr, topThr, projectDir, projectName, cache, hostName) {
 	fileName <- paste(projectName, network, method, sep=".")
 	if (startsWith(hostName, "file://")) {
 		net <- as.matrix(read_tsv(
@@ -12,10 +12,10 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	} else {
 		geneSetUrl <- file.path(hostName, "api", "geneset")
 		# actually standard id is gene symbol for network
-		response <- GET(geneSetUrl, query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
+		response <- cacheUrl(geneSetUrl, cache=cache, query=list(organism=organism, database=network, standardId="entrezgene", fileType="net"))
 		net <- as.matrix(read_tsv(content(response), col_names=FALSE, col_types="cc"))
 		gmtUrl <- modify_url(geneSetUrl, query=list(organism=organism, database="geneontology_Biological_Process", standardId="genesymbol", fileType="gmt"))
-		goAnn <- readGmt(gmtUrl)
+		goAnn <- readGmt(gmtUrl, cache=cache)
 	}
 	netGraph <- graph.edgelist(net, directed=FALSE)
 	netNode <- V(netGraph)$name

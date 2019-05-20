@@ -17,30 +17,30 @@
 #' @export
 #' @aliases IDMapping
 #'
-idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, sourceIdType, targetIdType=NULL, collapseMethod="mean", mappingOutput=FALSE, outputFileName="", hostName="http://www.webgestalt.org/"){
+idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, sourceIdType, targetIdType=NULL, collapseMethod="mean", mappingOutput=FALSE, outputFileName="", cache=NULL, hostName="http://www.webgestalt.org/") {
 	#############Check general parameters########
-	errorTest <- parameterErrorMessage(organism=organism, dataType=dataType, collapseMethod=collapseMethod, hostName=hostName, mappingOutput=mappingOutput)
+	errorTest <- parameterErrorMessage(organism=organism, dataType=dataType, collapseMethod=collapseMethod, hostName=hostName, mappingOutput=mappingOutput, cache=cache)
 
 	if(!is.null(errorTest)){
 		stop(errorTest)
 	}
 
 	############Check source id type#########
-	errorTest <- idTypeError(idType=sourceIdType,organism=organism,hostName=hostName)
+	errorTest <- idTypeError(idType=sourceIdType, organism=organism, hostName=hostName, cache=cache)
 	if(!is.null(errorTest)){
 		stop(errorTest)
 	}
 
 	##########Identify the standardId for the input ID type###########
-	standardSource <- identifyStandardId(hostName=hostName,idType=sourceIdType,organism=organism,type="interest")
+	standardSource <- identifyStandardId(hostName=hostName, idType=sourceIdType, organism=organism, type="interest", cache=cache)
 
 	############Check target id type#########
 	if(!is.null(targetIdType)){
-		errorTest <- targetIdTypeError(idType=targetIdType,organism=organism,hostName=hostName)
+		errorTest <- targetIdTypeError(idType=targetIdType, organism=organism, hostName=hostName, cache=cache)
 		if(!is.null(errorTest)){
 			stop(errorTest)
 		}else{
-			standardTarget <- identifyStandardId(hostName=hostName,idType=targetIdType,organism=organism,type="interest")
+			standardTarget <- identifyStandardId(hostName=hostName, idType=targetIdType, organism=organism, type="interest", cache=cache)
 			errorTest <- stardardDiffError(standardSource=standardSource,standardTarget=standardTarget)
 			if(!is.null(errorTest)){
 				stop(errorTest)
