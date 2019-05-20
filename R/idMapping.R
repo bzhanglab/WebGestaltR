@@ -64,6 +64,6 @@ idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, 
 
 #' @export
 IDMapping <- function(...) {
-	cat("WARNING: Function IDMapping is deprecated and changed to idMapping!\n")
+	warning("Function IDMapping is deprecated and changed to idMapping!\n")
 	return(idMapping(...))
 }

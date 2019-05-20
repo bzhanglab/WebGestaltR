@@ -27,6 +27,6 @@ listIdType <- function(organism="hsapiens", hostName="http://www.webgestalt.org/
 
 #' @export
 listIDType <- function(...) {
-	cat("WARNING: Function listIDType is deprecated and changed to listIdType!\n")
+	warning("Function listIDType is deprecated and changed to listIdType!\n")
 	return(listIdType(...))
 }

@@ -17,6 +17,6 @@ listArchiveUrl <- function(){
 
 #' @export
 listArchiveURL <- function(...) {
-	cat("WARNING: Function listArchiveURL is deprecated and changed to listArchiveUrl!\n")
+	warning("Function listArchiveURL is deprecated and changed to listArchiveUrl!\n")
 	return(listArchiveUrl(...))
 }

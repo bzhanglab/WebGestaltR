@@ -79,6 +79,6 @@ prepareInputMatrixGsea <- function(rank, gmt) {
 }
 
 readGMT <- function(...) {
-	cat("WARNING: Function readGMT is deprecated and changed to readGmt!\n")
+	warning("Function readGMT is deprecated and changed to readGmt!\n")
 	return(readGmt(...))
 }

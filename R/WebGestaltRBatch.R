@@ -53,6 +53,6 @@ WebGestaltRBatch <- function(interestGeneFolder=NULL, enrichMethod="ORA", isPara
 
 #' @export
 WebGestaltR_batch <- function(is.output=TRUE, ...) {
-	cat("WARNING: Function WebGestaltR_batch is deprecated and changed to WebGestaltRBatch!\n")
+	warning("Function WebGestaltR_batch is deprecated and changed to WebGestaltRBatch!\n")
 	return(WebGestaltRBatch(isOutput=is.output, ...))
 }

@@ -185,21 +185,21 @@
 WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, sigMethod="fdr", fdrMethod="BH", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="continuous", setCoverNum=10, networkConstructionMethod=NULL, neighborNum=10, highlightType="Seeds", highlightSeedNum=10, nThreads=1, cache=NULL, hostName="http://www.webgestalt.org/", ...) {
 	extraArgs <- list(...)
 	if ('keepGSEAFolder' %in% names(extraArgs) | 'keepGseaFolder' %in% names(extraArgs)) {
-		cat("WARNING: Parameter keepGSEAFolder is obsolete.\n")
+		warning("Parameter keepGSEAFolder is obsolete.\n")
 	}
 	if ('is.output' %in% names(extraArgs)) {
 		isOutput <- extraArgs$is.output
-		cat("WARNING: Parameter is.output is deprecated and changed to isOutput!\n")
+		warning("Parameter is.output is deprecated and changed to isOutput!\n")
 		warning("Column names of the result data frame are modified.")
 	}
 	if ('methodType' %in% names(extraArgs)) {
-		cat("WARNING: Parameter methodType is obsolete.\n")
+		warning("Parameter methodType is obsolete.\n")
 	}
 	if ('lNum' %in% names(extraArgs)) {
 		warning("Parameter lNum is obsolete.\n")
 	}
 	if ('dNum' %in% names(extraArgs)) {
-		cat("WARNING: Parameter dNum is deprecated and changed to reportNum.\n")
+		warning("Parameter dNum is deprecated and changed to reportNum.\n")
 		reportNum <- extraArgs$dNum
 	}
 

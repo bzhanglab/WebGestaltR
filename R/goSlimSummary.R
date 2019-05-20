@@ -118,6 +118,6 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 
 #' @export
 GOSlimSummary <- function(...) {
-	warning("WARNING: Function GOSlimSummary is deprecated and changed to goSlimSummary!")
+	warning("Function GOSlimSummary is deprecated and changed to goSlimSummary!")
 	return(goSlimSummary(...))
 }
