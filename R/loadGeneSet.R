@@ -14,7 +14,7 @@
 #' @importFrom dplyr select distinct filter %>%
 #' @importFrom httr modify_url
 #' @export
-loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, hostName="http://www.webgestalt.org/") {
+loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, cache=NULL, hostName="http://www.webgestalt.org/") {
 	# TODO: multiple custom database ID types?
 	geneSet <- NULL    ##gene sets
 	geneSetDes <- NULL ##gene set description file
@@ -36,7 +36,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 		stop("The number of custom database and its description files should be equal. Use NULL for placeholder.")
 	}
 	if (organism != "others") {  # supported organism
-		geneSetInfo <- listGeneSet(organism=organism, hostName=hostName)
+		geneSetInfo <- listGeneSet(organism=organism, hostName=hostName, cache=cache)
 		#  load build-in databases
 		for (enrichDb in enrichDatabase) {
 			if (is.null(enrichDb) || enrichDb == "others") { next }  # just for backward compatibility
@@ -54,26 +54,26 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 			#########Read GMT file from the existing database###########
 			if (startsWith(hostName, "file://")) {
 				gmtPath <- removeFileProtocol(file.path(hostName, "geneset", paste0(paste(organism, enrichDb, standardId, sep="_"), ".gmt")))
-				thisGeneSet <-  readGmt(gmtPath)
+				thisGeneSet <- readGmt(gmtPath)
 				thisGeneSet$database <- enrichDb # add a column for database source
 				geneSet <- rbind(geneSet, thisGeneSet)
 			} else {
 				gmtUrl <- modify_url(file.path(hostName, "api", "geneset"), query=list(organism=organism, database=enrichDb, standardId=standardId, fileType="gmt"))
-				thisGeneSet <-  readGmt(gmtUrl)
+				thisGeneSet <-  readGmt(gmtUrl, cache=cache)
 				thisGeneSet$database <- enrichDb
 				geneSet <- rbind(geneSet, thisGeneSet)
 			}
 
 			#########Read the description file#############
-			geneSetDes <- rbind(geneSetDes, .loadGeneSetData(hostName, organism, enrichDb, standardId, "des"))
+			geneSetDes <- rbind(geneSetDes, .loadGeneSetData(hostName, organism, enrichDb, standardId, "des", cache))
 
 			###########Try to load the DAG file#################
 			# assignment considering possible return of NULL
 			# list[] <- NULL will delete the element
-			geneSetDag[enrichDb] <- list(.loadGeneSetData(hostName, organism, enrichDb, standardId, "dag"))
+			geneSetDag[enrichDb] <- list(.loadGeneSetData(hostName, organism, enrichDb, standardId, "dag", cache))
 
 			###########Try to load the network file if the gene sets are generated from the network##########
-			geneSetNet[enrichDb] <- list(.loadGeneSetData(hostName, organism, enrichDb, standardId, "net"))
+			geneSetNet[enrichDb] <- list(.loadGeneSetData(hostName, organism, enrichDb, standardId, "net", cache))
 		}
 
 		# load local database files
@@ -81,7 +81,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 			enrichDbFile <- enrichDatabaseFile[[i]]
 			if (is.null(enrichDbFile)) { next }
 
-			thisGeneSet <- idMapping(organism=organism, dataType="gmt", inputGeneFile=enrichDbFile, sourceIdType=enrichDatabaseType, targetIdType=NULL, mappingOutput=FALSE, hostName=hostName)
+			thisGeneSet <- idMapping(organism=organism, dataType="gmt", inputGeneFile=enrichDbFile, sourceIdType=enrichDatabaseType, targetIdType=NULL, mappingOutput=FALSE, cache=cache, hostName=hostName)
 			thisStandardId <- thisGeneSet$standardId  # should be just enrichDatabaseType here
 			if (!is.null(standardId) && standardId != thisStandardId) {
 				stop("Databases have inconsistent ID types. Mixed gene annotation databases with phosphosite databases?")
@@ -137,9 +137,9 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 	return(re)
 }
 
-#' @importFrom httr GET content
+#' @importFrom httr content
 #' @importFrom readr read_tsv
-.loadGeneSetData <- function(hostName, organism, database, standardId, fileType) {
+.loadGeneSetData <- function(hostName, organism, database, standardId, fileType, cache=NULL) {
 	# read gene set files from API or returns NULL
 	if (startsWith(hostName, "file://")) {
 		geneSetPath <- removeFileProtocol(file.path(hostName, "geneset", paste(paste(organism, database, standardId, sep="_"), fileType, sep=".")))
@@ -150,7 +150,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 		}
 	} else {
 		geneSetUrl <- file.path(hostName,"api","geneset")
-		response <- GET(geneSetUrl, query=list(organism=organism, database=database, standardId=standardId, fileType=fileType))
+		response <- cacheUrl(geneSetUrl, cache=cache, query=list(organism=organism, database=database, standardId=standardId, fileType=fileType))
 		if (response$status_code == 200) {
 			geneSetData <- read_tsv(content(response), col_names=FALSE, col_types="cc")
 		} else {

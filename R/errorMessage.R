@@ -1,4 +1,4 @@
-parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
+parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", cache=NULL, ...){
 	errorTest <- NULL
 	argList <- list(...)
 
@@ -14,7 +14,7 @@ parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 	}
 
 	if("organism" %in% argNames){
-		errorTest <- .organismError(organism=argList$organism, hostName=hostName)
+		errorTest <- .organismError(organism=argList$organism, hostName=hostName, cache=cache)
 		if(!is.null(errorTest)){
 			return(errorTest)
 		}
@@ -44,8 +44,8 @@ parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", ...){
 	}
 }
 
-.organismError <- function(organism,hostName){ ####Input organism error
-	organisms <- listOrganism(hostName=hostName)
+.organismError <- function(organism, hostName, cache) { ####Input organism error
+	organisms <- listOrganism(hostName=hostName, cache=cache)
 	organisms <- c(organisms, "others")
 	if(!(organism %in% organisms)){
 		error <- paste0("ERROR: The organism '",organism,"' is not supported.")
@@ -283,8 +283,8 @@ enrichDatabaseError <- function(type,enrichDatabase="",organism=""){
 }
 
 
-idTypeError <- function(idType,organism,hostName){
-		idTypes <- listIdType(organism=organism,hostName=hostName)
+idTypeError <- function(idType, organism, hostName, cache) {
+		idTypes <- listIdType(organism=organism, hostName=hostName, cache=cache)
 		if(!(idType %in% idTypes)){
 				error <- paste("ERROR: The ID type ",idType," can not be supported for organism ",organism,".",sep="")
 				cat(error)
@@ -294,8 +294,8 @@ idTypeError <- function(idType,organism,hostName){
 		}
 }
 
-targetIdTypeError <- function(idType,organism,hostName){
-		idTypes <- listIdType(organism=organism,hostName=hostName)
+targetIdTypeError <- function(idType, organism, hostName, cache) {
+		idTypes <- listIdType(organism=organism, hostName=hostName, cache=cache)
 		if(!(idType %in% idTypes)){
 				error <- paste("ERROR: The target ID type ",idType," can not be supported for organism ",organism,".",sep="")
 				cat(error)

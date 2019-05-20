@@ -1,6 +1,6 @@
 #' @importFrom readr write_tsv
 #' @importFrom dplyr left_join select arrange %>% desc mutate
-WebGestaltROra <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", nThreads=1, hostName="http://www.webgestalt.org/") {
+WebGestaltROra <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", nThreads=1, cache=NULL, hostName="http://www.webgestalt.org/") {
 	enrichMethod <- "ORA"
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
@@ -18,7 +18,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatab
 	referenceSet <- testNull(referenceSet)
 
 	################ Check parameter ################
-	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod, organism=organism, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, isOutput=isOutput, outputDirectory=outputDirectory, dagColor=dagColor, hostName=hostName)
+	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod, organism=organism, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, isOutput=isOutput, outputDirectory=outputDirectory, dagColor=dagColor, hostName=hostName, cache=cache)
 
 	if (!is.null(errorTest)) {
 		stop(errorTest)
@@ -26,7 +26,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatab
 
 	############# Check enriched database #############
 	cat("Loading the functional categories...\n")
-	enrichD <- loadGeneSet(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, hostName=hostName)
+	enrichD <- loadGeneSet(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, cache=cache, hostName=hostName)
 
 	geneSet <- enrichD$geneSet
 	geneSetDes <- enrichD$geneSetDes
@@ -37,7 +37,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatab
 
 	########### Check input interesting gene list ###############
 	cat("Loading the ID list...\n")
-	interestingGeneMap <- loadInterestGene(organism=organism, dataType="list", inputGeneFile=interestGeneFile, inputGene=interestGene, geneType=interestGeneType, collapseMethod=collapseMethod, hostName=hostName, geneSet=geneSet)
+	interestingGeneMap <- loadInterestGene(organism=organism, dataType="list", inputGeneFile=interestGeneFile, inputGene=interestGene, geneType=interestGeneType, collapseMethod=collapseMethod, cache=cache, hostName=hostName, geneSet=geneSet)
 
 	if (organism == "others") {
 		interestGeneList <- unique(interestingGeneMap)
@@ -48,7 +48,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatab
 
 	################### Load reference gene set ##############
 	cat("Loading the reference list...\n")
-	referenceGeneList <- loadReferenceGene(organism=organism, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, collapseMethod=collapseMethod, hostName=hostName, geneSet=geneSet, interestGeneList=interestGeneList)
+	referenceGeneList <- loadReferenceGene(organism=organism, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, collapseMethod=collapseMethod, hostName=hostName, geneSet=geneSet, interestGeneList=interestGeneList, cache=cache)
 
 	########## Create project folder ##############
 	if (isOutput) {
@@ -59,7 +59,7 @@ WebGestaltROra <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatab
 			if (databaseStandardId == "entrezgene") {
 				cat("Summarizing the input ID list by GO Slim data...\n")
 				goSlimOutput <- file.path(projectDir, paste0("goslim_summary_", projectName))
-				re <- goSlimSummary(organism=organism, geneList=interestGeneList, outputFile=goSlimOutput, outputType="png", isOutput=isOutput, hostName=hostName)
+				re <- goSlimSummary(organism=organism, geneList=interestGeneList, outputFile=goSlimOutput, outputType="png", isOutput=isOutput, cache=cache, hostName=hostName)
 			}
 			write_tsv(interestingGeneMap$mapped, file.path(projectDir, paste0("interestingID_mappingTable_", projectName , ".txt")))
 			write(interestingGeneMap$unmapped, file.path(projectDir, paste0("interestingID_unmappedList_", projectName, ".txt")))

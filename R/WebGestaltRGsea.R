@@ -1,6 +1,6 @@
 #' @importFrom dplyr select distinct left_join arrange %>% mutate
 #' @importFrom readr write_tsv
-WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", nThreads=1, hostName="http://www.webgestalt.org/") {
+WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", nThreads=1, cache=NULL, hostName="http://www.webgestalt.org/") {
 	enrichMethod <- "GSEA"
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
@@ -14,7 +14,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichData
 	interestGeneType <- testNull(interestGeneType)
 
 	################ Check parameter ################
-	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod, organism=organism, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, perNum=perNum, isOutput=isOutput, outputDirectory=outputDirectory, dagColor=dagColor, hostName=hostName)
+	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod, organism=organism, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, perNum=perNum, isOutput=isOutput, outputDirectory=outputDirectory, dagColor=dagColor, hostName=hostName, cache=cache)
 
 	if(!is.null(errorTest)){
 		stop(errorTest)
@@ -22,7 +22,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichData
 
 	############# Check enriched database #############
 	cat("Loading the functional categories...\n")
-	enrichD <- loadGeneSet(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, hostName=hostName)
+	enrichD <- loadGeneSet(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, cache=cache, hostName=hostName)
 
 	geneSet <- enrichD$geneSet
 	geneSetDes <- enrichD$geneSetDes
@@ -33,7 +33,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichData
 
 	########### Check input interesting gene list ###############
 	cat("Loading the ID list...\n")
-	interestingGeneMap <- loadInterestGene(organism=organism, dataType="rnk", inputGeneFile=interestGeneFile, inputGene=interestGene, geneType=interestGeneType, collapseMethod=collapseMethod, hostName=hostName, geneSet=geneSet)
+	interestingGeneMap <- loadInterestGene(organism=organism, dataType="rnk", inputGeneFile=interestGeneFile, inputGene=interestGene, geneType=interestGeneType, collapseMethod=collapseMethod, cache=cache, hostName=hostName, geneSet=geneSet)
 
 	if (organism == "others") {
 		interestGeneList <- unique(interestingGeneMap)
@@ -51,7 +51,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichData
 			if (databaseStandardId == "entrezgene") {
 				cat("Summarizing the uploaded ID list by GO Slim data...\n")
 				goSlimOutput <- file.path(projectDir, paste0("goslim_summary_", projectName))
-				re <- goSlimSummary(organism=organism, geneList=interestGeneList[[interestStandardId]], outputFile=goSlimOutput, outputType="png", isOutput=isOutput, hostName=hostName)
+				re <- goSlimSummary(organism=organism, geneList=interestGeneList[[interestStandardId]], outputFile=goSlimOutput, outputType="png", isOutput=isOutput, cache=cache, hostName=hostName)
 			}
 			write_tsv(interestingGeneMap$mapped, file.path(projectDir, paste0("interestingID_mappingTable_", projectName, ".txt")))
 			write(interestingGeneMap$unmapped, file.path(projectDir, paste0("interestingID_unmappedList_", projectName, ".txt")))
