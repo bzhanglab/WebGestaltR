@@ -22,7 +22,7 @@ WebGestaltR(enrichMethod = "ORA", organism = "hsapiens",
   dagColor = "continuous", setCoverNum = 10,
   networkConstructionMethod = NULL, neighborNum = 10,
   highlightType = "Seeds", highlightSeedNum = 10, nThreads = 1,
-  hostName = "http://www.webgestalt.org/", ...)
+  cache = NULL, hostName = "http://www.webgestalt.org/", ...)
 
 WebGestaltRBatch(interestGeneFolder = NULL, enrichMethod = "ORA",
   isParallel = FALSE, nThreads = 3, ...)
@@ -161,6 +161,8 @@ either \code{Seeds} or \code{Neighbors}.}
 & Prioritizaiton method.}
 
 \item{nThreads}{The number of cores to use for GSEA and set cover, and in batch function.}
+
+\item{cache}{A directory to save data cache for reuse. Defaults to \code{NULL} and disabled.}
 
 \item{hostName}{The server URL for accessing data. Mostly for development purposes.}
 

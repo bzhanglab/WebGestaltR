@@ -9,7 +9,8 @@ summaryDescription(projectName, organism, interestGeneFile, interestGene,
   enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap,
   referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType,
   referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod,
-  enrichedSig, reportNum, perNum, geneSet, repAdded, hostName)
+  enrichedSig, reportNum, perNum, geneSet, repAdded, numAnnoRefUserId,
+  hostName)
 }
 \description{
 Render job summary section

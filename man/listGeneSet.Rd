@@ -5,7 +5,7 @@
 \title{List Gene Sets}
 \usage{
 listGeneSet(organism = "hsapiens",
-  hostName = "http://www.webgestalt.org/")
+  hostName = "http://www.webgestalt.org/", cache = NULL)
 }
 \arguments{
 \item{organism}{Currently, WebGestaltR supports 12 organisms. Users can use the function
@@ -16,6 +16,8 @@ reference list (for ORA method). Because WebGestaltR does not perform the ID map
 the other organisms, the above data should have the same ID type.}
 
 \item{hostName}{The server URL for accessing data. Mostly for development purposes.}
+
+\item{cache}{A directory to save data cache for reuse. Defaults to \code{NULL} and disabled.}
 }
 \value{
 A data frame of available gene sets.

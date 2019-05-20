@@ -7,7 +7,7 @@
 specificParameterSummaryOra(organism, referenceGeneList, geneSet,
   referenceGeneFile, referenceGene, referenceGeneType, referenceSet,
   minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig,
-  reportNum, repAdded, interestingGeneMap)
+  reportNum, repAdded, numAnnoRefUserId, interestingGeneMap)
 }
 \description{
 Render job summary section of ORA specific parameters

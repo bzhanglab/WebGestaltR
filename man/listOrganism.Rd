@@ -4,10 +4,12 @@
 \alias{listOrganism}
 \title{List Organisms}
 \usage{
-listOrganism(hostName = "http://www.webgestalt.org/")
+listOrganism(hostName = "http://www.webgestalt.org/", cache = NULL)
 }
 \arguments{
 \item{hostName}{The server URL for accessing data. Mostly for development purposes.}
+
+\item{cache}{A directory to save data cache for reuse. Defaults to \code{NULL} and disabled.}
 }
 \value{
 A list of supported organisms.

@@ -6,7 +6,7 @@
 \title{GO Slim Summary}
 \usage{
 goSlimSummary(organism = "hsapiens", geneList, outputFile,
-  outputType = "pdf", isOutput = TRUE,
+  outputType = "pdf", isOutput = TRUE, cache = NULL,
   hostName = "http://www.webgestalt.org")
 }
 \arguments{
@@ -24,6 +24,8 @@ the other organisms, the above data should have the same ID type.}
 \item{outputType}{File format of the plot: \code{pdf}, \code{bmp} or \code{png}.}
 
 \item{isOutput}{Boolean if a plot is save to \code{outputFile}.}
+
+\item{cache}{A directory to save data cache for reuse. Defaults to \code{NULL} and disabled.}
 
 \item{hostName}{The server URL for accessing data. Mostly for development purposes.}
 }

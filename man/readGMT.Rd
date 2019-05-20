@@ -4,10 +4,12 @@
 \alias{readGmt}
 \title{Read GMT File}
 \usage{
-readGmt(gmtFile)
+readGmt(gmtFile, cache = NULL)
 }
 \arguments{
 \item{gmtFile}{The file path or URL of the GMT file.}
+
+\item{cache}{A directory to save data cache for reuse. Defaults to \code{NULL} and disabled.}
 }
 \value{
 A data frame with columns of "geneSet", "description", "gene".

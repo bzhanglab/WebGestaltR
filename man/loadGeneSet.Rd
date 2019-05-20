@@ -6,7 +6,7 @@
 \usage{
 loadGeneSet(organism = "hsapiens", enrichDatabase = NULL,
   enrichDatabaseFile = NULL, enrichDatabaseType = NULL,
-  enrichDatabaseDescriptionFile = NULL,
+  enrichDatabaseDescriptionFile = NULL, cache = NULL,
   hostName = "http://www.webgestalt.org/")
 }
 \arguments{
@@ -37,6 +37,8 @@ WebGestaltR for the selected organism can be found by the function \code{listIdT
 description file contains two columns: the first column is the category ID that should be
 exactly the same as the category ID in the custom \code{enrichDatabaseFile} and the second
 column is the description of the category. All columns are separated by tabs.}
+
+\item{cache}{A directory to save data cache for reuse. Defaults to \code{NULL} and disabled.}
 
 \item{hostName}{The server URL for accessing data. Mostly for development purposes.}
 }

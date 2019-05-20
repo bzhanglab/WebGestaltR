@@ -9,13 +9,13 @@
 idMapping(organism = "hsapiens", dataType = "list",
   inputGeneFile = NULL, inputGene = NULL, sourceIdType,
   targetIdType = NULL, collapseMethod = "mean",
-  mappingOutput = FALSE, outputFileName = "",
+  mappingOutput = FALSE, outputFileName = "", cache = NULL,
   hostName = "http://www.webgestalt.org/")
 
 idToSymbol(organism = "hsapiens", dataType = "list",
   inputGeneFile = NULL, inputGene = NULL,
   sourceIdType = "ensembl_gene_id", collapseMethod = "mean",
-  mappingOutput = FALSE, outputFileName = NULL,
+  mappingOutput = FALSE, outputFileName = NULL, cache = NULL,
   hostName = "http://www.webgestalt.org/")
 }
 \arguments{
@@ -45,6 +45,8 @@ of scores for the duplicate IDs.}
 \item{mappingOutput}{Boolean if the mapping output is written to file.}
 
 \item{outputFileName}{The output file name.}
+
+\item{cache}{A directory to save data cache for reuse. Defaults to \code{NULL} and disabled.}
 
 \item{hostName}{The server URL for accessing data. Mostly for development purposes.}
 }
