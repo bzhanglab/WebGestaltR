@@ -61,11 +61,19 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 				gmtUrl <- modify_url(file.path(hostName, "api", "geneset"), query=list(organism=organism, database=enrichDb, standardId=standardId, fileType="gmt"))
 				thisGeneSet <-  readGmt(gmtUrl, cache=cache)
 				thisGeneSet$database <- enrichDb
+				oriCnt <- nrow(thisGeneSet)
+				thisGeneSet <- thisGeneSet %>% filter(!(.data$geneSet %in% unique(!!geneSet$geneSet)))
+				if (nrow(thisGeneSet) < oriCnt) {
+				  warning(paste("Duplicate gene set names in", enrichDb, "have been ignored."))
+				}
 				geneSet <- rbind(geneSet, thisGeneSet)
 			}
 
 			#########Read the description file#############
-			geneSetDes <- rbind(geneSetDes, .loadGeneSetData(hostName, organism, enrichDb, standardId, "des", cache))
+			#geneSetDes <- rbind(geneSetDes, .loadGeneSetData(hostName, organism, enrichDb, standardId, "des", cache))
+			thisGeneSetDes <- .loadGeneSetData(hostName, organism, enrichDb, standardId, "des", cache)
+			thisGeneSetDes <- thisGeneSetDes %>% filter(!(.data$geneSet %in% unique(!!geneSetDes$geneSet)))
+			geneSetDes <- rbind(geneSetDes, thisGeneSetDes)
 
 			###########Try to load the DAG file#################
 			# assignment considering possible return of NULL
@@ -94,11 +102,17 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 			enrichDbDesFile <- enrichDatabaseDescriptionFile[[i]]
 			if (!is.null(enrichDbDesFile)) {
 				thisGeneSetDes <- .loadEnrichDatabaseDescriptionFile(thisGeneSet, enrichDbDesFile)
+				thisGeneSetDes <- thisGeneSetDes %>% filter(!(.data$geneSet %in% unique(!!geneSetDes$geneSet)))
 				geneSetDes <- rbind(geneSetDes, thisGeneSetDes)
 			}
 
 			fileName <- gsub(".gmt", "", basename(enrichDbFile), fixed=TRUE)
 			thisGeneSet$database <- fileName
+			oriCnt <- nrow(thisGeneSet)
+			thisGeneSet <- thisGeneSet %>% filter(!(.data$geneSet %in% unique(!!geneSet$geneSet)))
+			if (nrow(thisGeneSet) < oriCnt) {
+			  warning(paste("Duplicate gene set names in", fileName, "have been ignored."))
+			}
 			geneSet <- rbind(geneSet, thisGeneSet)
 
 			geneSetDag[fileName] <- list(NULL) # correct way to assign NULL to list element
@@ -113,10 +127,16 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 			enrichDbDesFile <- enrichDatabaseDescriptionFile[[i]]
 			if (!is.null(enrichDbDesFile)) {
 				thisGeneSetDes <- .loadEnrichDatabaseDescriptionFile(thisGeneSet, enrichDbDesFile)
+				thisGeneSetDes <- thisGeneSetDes %>% filter(!(.data$geneSet %in% unique(!!geneSetDes$geneSet)))
 				geneSetDes <- rbind(geneSetDes, thisGeneSetDes)
 			}
 			fileName <- gsub(".gmt", "", basename(enrichDbFile), fixed=TRUE)
 			thisGeneSet$database <- fileName
+			oriCnt <- nrow(thisGeneSet)
+			thisGeneSet <- thisGeneSet %>% filter(!(.data$geneSet %in% unique(!!geneSet$geneSet)))
+			if (nrow(thisGeneSet) < oriCnt) {
+			  warning(paste("Duplicate gene set names in", enrichDb, "have been ignored."))
+			}
 			geneSet <- rbind(geneSet, thisGeneSet)
 
 			geneSetDag[fileName] <- list(NULL)
