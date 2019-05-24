@@ -32,7 +32,7 @@ loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, refer
 				if (is.null(referenceGeneType)) {
 					stop(referenceGeneError(type="emptyType"))
 				} else {
-					mapRe <- .uploadGeneExistingOrganism(organism=organism, dataType="list", inputGeneFile=referenceGeneFile, inputGene=referenceGene, geneType=referenceGeneType, collapseMethod=collapseMethod, geneSet=geneSet, hostName=hostName)
+					mapRe <- .uploadGeneExistingOrganism(organism=organism, dataType="list", inputGeneFile=referenceGeneFile, inputGene=referenceGene, geneType=referenceGeneType, collapseMethod=collapseMethod, geneSet=geneSet, cache=cache, hostName=hostName)
 					geneStandardId <- identifyStandardId(hostName=hostName, idType=referenceGeneType, organism=organism, type="interest", cache=cache)
 					referenceGeneList <- mapRe$mapped[[geneStandardId]]
 				}
