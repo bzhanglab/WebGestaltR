@@ -72,7 +72,9 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 			#########Read the description file#############
 			#geneSetDes <- rbind(geneSetDes, .loadGeneSetData(hostName, organism, enrichDb, standardId, "des", cache))
 			thisGeneSetDes <- .loadGeneSetData(hostName, organism, enrichDb, standardId, "des", cache)
-			thisGeneSetDes <- thisGeneSetDes %>% filter(!(.data$geneSet %in% unique(!!geneSetDes$geneSet)))
+			if (!is.null(thisGeneSetDes) && !is.null(geneSetDes)) {
+			  thisGeneSetDes <- thisGeneSetDes %>% filter(!(.data$geneSet %in% unique(!!geneSetDes$geneSet)))
+			}
 			geneSetDes <- rbind(geneSetDes, thisGeneSetDes)
 
 			###########Try to load the DAG file#################
@@ -102,7 +104,9 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 			enrichDbDesFile <- enrichDatabaseDescriptionFile[[i]]
 			if (!is.null(enrichDbDesFile)) {
 				thisGeneSetDes <- .loadEnrichDatabaseDescriptionFile(thisGeneSet, enrichDbDesFile)
-				thisGeneSetDes <- thisGeneSetDes %>% filter(!(.data$geneSet %in% unique(!!geneSetDes$geneSet)))
+				if (!is.null(thisGeneSetDes) && !is.null(geneSetDes)) {
+				  thisGeneSetDes <- thisGeneSetDes %>% filter(!(.data$geneSet %in% unique(!!geneSetDes$geneSet)))
+				}
 				geneSetDes <- rbind(geneSetDes, thisGeneSetDes)
 			}
 
@@ -127,7 +131,9 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 			enrichDbDesFile <- enrichDatabaseDescriptionFile[[i]]
 			if (!is.null(enrichDbDesFile)) {
 				thisGeneSetDes <- .loadEnrichDatabaseDescriptionFile(thisGeneSet, enrichDbDesFile)
-				thisGeneSetDes <- thisGeneSetDes %>% filter(!(.data$geneSet %in% unique(!!geneSetDes$geneSet)))
+				if (!is.null(thisGeneSetDes) && !is.null(geneSetDes)) {
+				  thisGeneSetDes <- thisGeneSetDes %>% filter(!(.data$geneSet %in% unique(!!geneSetDes$geneSet)))
+				}
 				geneSetDes <- rbind(geneSetDes, thisGeneSetDes)
 			}
 			fileName <- gsub(".gmt", "", basename(enrichDbFile), fixed=TRUE)
