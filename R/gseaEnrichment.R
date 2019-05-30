@@ -15,9 +15,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	geneSetNum <- tapply(effectiveGeneSet$gene, effectiveGeneSet$geneSet, length)
 	geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
 	if (length(geneSetNum)==0) {
-		error <- paste("ERROR: The number of annotated IDs for all functional categories are not from ", minNum," to ", maxNum, " for the GSEA enrichment method.\n", sep="")
-		cat(error)
-		return(error)
+		stop("ERROR: The number of annotated IDs for all functional categories are not from ", minNum," to ", maxNum, " for the GSEA enrichment method.")
 	}
 
 	# collapse rank list
