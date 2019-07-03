@@ -2,7 +2,7 @@ Package: WebGestaltR
 Type: Package
 Title: Gene Set Analysis Toolkit WebGestaltR
 Version: 0.4.1
-Date: 2019-05-10
+Date: 2019-07-03
 Authors@R: c(
         person("Jing", "Wang", email = "jingwang.uestc@gmail.com", role = "aut"),
         person("Yuxing", "Liao", email = "yuxingliao@gmail.com", role = c("aut", "cre")),
