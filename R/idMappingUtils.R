@@ -61,3 +61,13 @@ idMappingOutput <- function(outputFileName, mappingList, unmappedList, dataType,
 		write_tsv(mappingList, fileName)
 	}
 }
+
+replace_null <- function(x) {
+	lapply(x, function(x) {
+		if (is.list(x)) {
+			replace_null(x)
+		} else {
+		if (is.null(x)) NA else(x)
+		}
+	})
+}

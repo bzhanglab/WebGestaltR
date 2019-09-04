@@ -58,7 +58,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 
 		if (length(mappedIds) == 0) { stop(idMappingError("empty")) }
 		names <- c("sourceId", "targetId")
-		mappedInputGene <- data.frame(matrix(unlist(lapply(mappedIds, FUN=function(x) { x[names] })), nrow=length(mappedIds), byrow=TRUE), stringsAsFactors=FALSE)
+		mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN=function(x) { x[names] })), nrow=length(mappedIds), byrow=TRUE), stringsAsFactors=FALSE)
 		colnames(mappedInputGene) <- c("userId", targetIdType)
 	}
 
@@ -93,7 +93,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 				if (length(uniMapRes$mapped) == 0) { return(idMappingError("empty")) }
 
 				names <- c("sourceId", "targetId")
-				uniMapRes <- data.frame(matrix(unlist(lapply(uniMapRes$mapped, FUN=function(x) { x[names] })), nrow=length(uniMapRes$mapped), byrow=TRUE), stringsAsFactors=FALSE)
+				uniMapRes <- data.frame(matrix(unlist(lapply(replace_null(uniMapRes$mapped), FUN=function(x) { x[names] })), nrow=length(uniMapRes$mapped), byrow=TRUE), stringsAsFactors=FALSE)
 				colnames(uniMapRes) <- c("phosphositeSeq", "phosphositeUniprot")
 			}
 

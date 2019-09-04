@@ -74,7 +74,7 @@ idMappingGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NU
 		if (length(mappedIds) == 0) { stop(idMappingError("empty")) }
 
 		names <- c("sourceId", "geneSymbol", "geneName", "targetId")
-		mappedInputGene <- data.frame(matrix(unlist(lapply(mappedIds, FUN=function(x) { x[names] })), nrow=length(mappedIds), byrow=TRUE), stringsAsFactors=FALSE)
+		mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN=function(x) { x[names] })), nrow=length(mappedIds), byrow=TRUE), stringsAsFactors=FALSE)
 		colnames(mappedInputGene) <- c("userId", "geneSymbol", "geneName", targetIdType)
 	}
 
