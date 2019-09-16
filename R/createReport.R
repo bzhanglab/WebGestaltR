@@ -126,7 +126,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	template <- readLines(system.file("templates/template.mustache", package="WebGestaltR"))
 	data <- list(hostName=hostName, bodyContent=bodyContent,
 				organism=organism, enrichDatabaseJson=toJSON(allDbNames, auto_unbox=TRUE),
-				sigJson=toJSON(enrichedSig, digit=16), insigJson=toJSON(background, digit=16),
+				sigJson=toJSON(enrichedSig, digits=16), insigJson=toJSON(background, digits=16),
 				dagJson=toJSON(dagJson, auto_unbox=TRUE), hasGeneSetDag=hasGeneSetDag, version=version,
 				clusterJson=toJSON(clusters), hasCytoscape=hasCytoscape,
 				geneTableJson=toJSON(geneTables), standardId=standardId, numAnnoRefUserId=numAnnoRefUserId,
