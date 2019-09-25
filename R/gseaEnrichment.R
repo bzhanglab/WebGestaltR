@@ -1,6 +1,6 @@
 #' @importFrom dplyr select distinct filter arrange mutate left_join %>%
 #' @importFrom readr write_tsv
-gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, geneSetDes=NULL, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE, nThreads=1) {
+gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, geneSetDes=NULL, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE, plotFormat="png", nThreads=1) {
 	projectFolder <- file.path(outputDirectory, paste("Project_", projectName, sep=""))
 	if (!dir.exists(projectFolder)) {
 		dir.create(projectFolder)
@@ -100,26 +100,43 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 			} else {
 				title <- geneSet
 			}
-			wrappedTitle <- strwrap(paste0("Enrichment plot: ", title), 60)
-			png(file.path(outputF, paste0(sanitizeFileName(geneSet), ".png")), bg="transparent", width=2000, height=2000)
-			plot.new()
-			par(fig=c(0, 1, 0.5, 1), mar=c(0, 6, 6 * length(wrappedTitle), 2), cex.axis=2.5, cex.main=5, cex.lab=3.2, lwd=2, new=TRUE)
-			plot(1:length(gseaRes$Running_Sums[, geneSet]), gseaRes$Running_Sums[, geneSet],
-				type="l", main=paste(wrappedTitle, collapse="\n"),
-				xlab="", ylab="Enrichment Score", xaxt='n', lwd=3)
-			abline(v=peakIndex, lty=3)
-			par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 6, 0, 2), new=TRUE)
-			plot(genes$rank, rep(1, nrow(genes)), type="h",
-				xlim=c(1, length(sortedScores)), ylim=c(0, 1), axes=FALSE, ann=FALSE)
-			par(fig=c(0, 1, 0, 0.35), mar=c(6, 6, 0, 2), cex.axis=2.5, cex.lab=3.2, new=TRUE)
-			plot(1:length(sortedScores), sortedScores, type="h",
-				ylab="Ranked list metric", xlab="Rank in Ordered Dataset")
-			abline(v=peakIndex, lty=3)
-			dev.off()
+			if (!is.vector(plotFormat)) {
+				plotEnrichmentPlot(title, outputF, geneSet, format=plotFormat, gseaRes$Running_Sums[, geneSet], genes$rank, sortedScores, peakIndex)
+			} else {
+				for (format in plotFormat) {
+					plotEnrichmentPlot(title, outputF, geneSet, format=format, gseaRes$Running_Sums[, geneSet], genes$rank, sortedScores, peakIndex)
+				}
+			}
 		}
 	}
 	sig$leadingEdgeNum <- leadingGeneNum
 	sig$leadingEdgeId <- leadingGenes
 
 	return(list(enriched=sig, background=insig))
+}
+
+#' @importFrom svglite svglite
+plotEnrichmentPlot <- function(title, outputDir, fileName, format="png", runningSums, ranks, scores, peakIndex) {
+	wrappedTitle <- strwrap(paste0("Enrichment plot: ", title), 60)
+	if (format == "png") {
+		png(file.path(outputDir, paste0(sanitizeFileName(fileName), ".png")), bg="transparent", width=2000, height=2000)
+		cex <- list(main=5, axis=2.5, lab=3.2)
+	} else if (format == "svg") {
+		svglite(file.path(outputDir, paste0(sanitizeFileName(fileName), ".svg")), bg="transparent", width=7, height=7)
+		cex <- list(main=1.5, axis=0.6, lab=0.8)
+	}
+	plot.new()
+	par(fig=c(0, 1, 0.5, 1), mar=c(0, 6, 6 * length(wrappedTitle), 2), cex.axis=cex$axis, cex.main=cex$main, cex.lab=cex$lab, lwd=2, new=TRUE)
+	plot(1:length(runningSums), runningSums,
+		type="l", main=paste(wrappedTitle, collapse="\n"),
+		xlab="", ylab="Enrichment Score", xaxt='n', lwd=3)
+	abline(v=peakIndex, lty=3)
+	par(fig=c(0, 1, 0.35, 0.5), mar=c(0, 6, 0, 2), new=TRUE)
+	plot(ranks, rep(1, length(ranks)), type="h",
+		xlim=c(1, length(scores)), ylim=c(0, 1), axes=FALSE, ann=FALSE)
+	par(fig=c(0, 1, 0, 0.35), mar=c(6, 6, 0, 2), cex.axis=cex$axis, cex.lab=cex$lab, new=TRUE)
+	plot(1:length(scores), scores, type="h",
+		ylab="Ranked list metric", xlab="Rank in Ordered Dataset")
+	abline(v=peakIndex, lty=3)
+	dev.off()
 }

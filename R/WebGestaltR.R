@@ -97,6 +97,8 @@
 #'   and dark orange (negative related) for GSEA method. If \code{dagColor} is \code{continous},
 #'   the significant terms in the DAG structure will be colored by the color gradient based on
 #'   corresponding FDRs.
+#' @param gseaPlotFormat The graphic format of GSEA enrichment plots. Either \code{svg},
+#'   \code{png}, or \code{c("png", "svg")} (default).
 #' @param setCoverNum The number of expected gene sets after set cover to reduce redundancy.
 #'   It could get fewer sets if the coverage reaches 100\%. The default is \code{10}.
 #' @param networkConstructionMethod Netowrk construction method for NTA. Either
@@ -182,7 +184,7 @@
 #'   networkConstructionMethod="Network_Retrieval_Prioritization")
 #' }
 #'
-WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, sigMethod="fdr", fdrMethod="BH", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="continuous", setCoverNum=10, networkConstructionMethod=NULL, neighborNum=10, highlightType="Seeds", highlightSeedNum=10, nThreads=1, cache=NULL, hostName="http://www.webgestalt.org/", ...) {
+WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, sigMethod="fdr", fdrMethod="BH", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="continuous", gseaPlotFormat=c("png", "svg"), setCoverNum=10, networkConstructionMethod=NULL, neighborNum=10, highlightType="Seeds", highlightSeedNum=10, nThreads=1, cache=NULL, hostName="http://www.webgestalt.org/", ...) {
 	extraArgs <- list(...)
 	if ('keepGSEAFolder' %in% names(extraArgs) | 'keepGseaFolder' %in% names(extraArgs)) {
 		warning("Parameter keepGSEAFolder is obsolete.\n")
@@ -220,7 +222,7 @@ WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase=
 	if (enrichMethod == "ORA") {
 		enrichR <- WebGestaltROra(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,  interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectName, dagColor=dagColor, nThreads=nThreads, cache=cache, hostName=hostName)
 	} else if (enrichMethod == "GSEA") {
-		enrichR <- WebGestaltRGsea(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,  interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, perNum=perNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectName, dagColor=dagColor, nThreads=nThreads, cache=cache, hostName=hostName)
+		enrichR <- WebGestaltRGsea(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,  interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, perNum=perNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectName, dagColor=dagColor, plotFormat=gseaPlotFormat, nThreads=nThreads, cache=cache, hostName=hostName)
 	} else if (enrichMethod == "NTA") {
 		enrichR <- WebGestaltRNta(organism=organism, network=enrichDatabase, method=networkConstructionMethod, neighborNum=neighborNum, highlightSeedNum=highlightSeedNum, inputSeed=interestGene, inputSeedFile=interestGeneFile, interestGeneType=interestGeneType, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, outputDirectory=outputDirectory, projectName=projectName, highlightType=highlightType, cache=cache, hostName=hostName)
 	}

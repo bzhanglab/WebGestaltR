@@ -19,10 +19,11 @@ WebGestaltR(enrichMethod = "ORA", organism = "hsapiens",
   maxNum = 500, sigMethod = "fdr", fdrMethod = "BH", fdrThr = 0.05,
   topThr = 10, reportNum = 20, perNum = 1000, isOutput = TRUE,
   outputDirectory = getwd(), projectName = NULL,
-  dagColor = "continuous", setCoverNum = 10,
-  networkConstructionMethod = NULL, neighborNum = 10,
-  highlightType = "Seeds", highlightSeedNum = 10, nThreads = 1,
-  cache = NULL, hostName = "http://www.webgestalt.org/", ...)
+  dagColor = "continuous", gseaPlotFormat = c("png", "svg"),
+  setCoverNum = 10, networkConstructionMethod = NULL,
+  neighborNum = 10, highlightType = "Seeds", highlightSeedNum = 10,
+  nThreads = 1, cache = NULL,
+  hostName = "http://www.webgestalt.org/", ...)
 
 WebGestaltRBatch(interestGeneFolder = NULL, enrichMethod = "ORA",
   isParallel = FALSE, nThreads = 3, ...)
@@ -137,6 +138,9 @@ structure will be colored by steel blue for ORA method or steel blue (positive r
 and dark orange (negative related) for GSEA method. If \code{dagColor} is \code{continous},
 the significant terms in the DAG structure will be colored by the color gradient based on
 corresponding FDRs.}
+
+\item{gseaPlotFormat}{The graphic format of GSEA enrichment plots. Either \code{svg},
+\code{png}, or \code{c("png", "svg")} (default).}
 
 \item{setCoverNum}{The number of expected gene sets after set cover to reduce redundancy.
 It could get fewer sets if the coverage reaches 100\%. The default is \code{10}.}
