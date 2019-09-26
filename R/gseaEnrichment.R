@@ -135,8 +135,10 @@ plotEnrichmentPlot <- function(title, outputDir, fileName, format="png", running
 	plot(ranks, rep(1, length(ranks)), type="h",
 		xlim=c(1, length(scores)), ylim=c(0, 1), axes=FALSE, ann=FALSE)
 	par(fig=c(0, 1, 0, 0.35), mar=c(6, 6, 0, 2), cex.axis=cex$axis, cex.lab=cex$lab, new=TRUE)
-	plot(1:length(scores), scores, type="h",
+	# use polygon to greatly reduce file size of SVG
+	plot(1:length(scores), scores, type="n",
 		ylab="Ranked list metric", xlab="Rank in Ordered Dataset")
+	polygon(c(1, 1:length(scores), length(scores)), c(0, scores, 0), col="black")
 	abline(v=peakIndex, lty=3)
 	dev.off()
 }
