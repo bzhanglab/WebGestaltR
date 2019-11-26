@@ -1,6 +1,6 @@
 #' @importFrom dplyr select distinct filter arrange mutate left_join %>%
 #' @importFrom readr write_tsv
-gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, geneSetDes=NULL, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE, plotFormat="png", nThreads=1) {
+gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList, geneSet, geneSetDes=NULL, collapseMethod="mean", minNum=10, maxNum=500, sigMethod="fdr", fdrThr=0.05, topThr=10, perNum=1000, isOutput=TRUE, saveRawGseaResult=FALSE, plotFormat="png", nThreads=1) {
 	projectFolder <- file.path(outputDirectory, paste("Project_", projectName, sep=""))
 	if (!dir.exists(projectFolder)) {
 		dir.create(projectFolder)
@@ -37,6 +37,10 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 		min_set_size=minNum, max_set_size=maxNum,
 		nThreads=nThreads, rng_seed=as.integer(format(Sys.time(), "%H%M%S"))
 	)
+	if (saveRawGseaResult) {
+		saveRDS(gseaRes, file=file.path(outputF, "rawGseaResult.rds"))
+	}
+
 	enrichRes <- gseaRes$Enrichment_Results %>%
 		mutate(geneSet = rownames(gseaRes$Enrichment_Results)) %>%
 		select(.data$geneSet, enrichmentScore=.data$ES, normalizedEnrichmentScore=.data$NES, pValue=.data$p_val, FDR=.data$fdr)
