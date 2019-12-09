@@ -5,13 +5,13 @@
 #' @importFrom whisker whisker.render
 #' @keywords internal
 #'
-summaryDescription <- function(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, perNum, geneSet, repAdded, numAnnoRefUserId, hostName) {
+summaryDescription <- function(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, perNum, p, geneSet, repAdded, numAnnoRefUserId, hostName) {
 	if (enrichMethod == "ORA") {
 		methodSpecificContent <- specificParameterSummaryOra(organism, referenceGeneList, geneSet, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, enrichedSig, reportNum, repAdded, numAnnoRefUserId, interestingGeneMap)
 	}
 
 	if (enrichMethod == "GSEA") {
-		methodSpecificContent <- specificParameterSummaryGsea(organism, interestingGeneMap, geneSet, minNum, maxNum, sigMethod, fdrThr, topThr, perNum, enrichedSig, reportNum, repAdded)
+		methodSpecificContent <- specificParameterSummaryGsea(organism, interestingGeneMap, geneSet, minNum, maxNum, sigMethod, fdrThr, topThr, perNum, p, enrichedSig, reportNum, repAdded)
 	}
 
 	template <- readLines(system.file("templates/summary.mustache", package="WebGestaltR"))
@@ -98,7 +98,7 @@ specificParameterSummaryOra <- function(organism, referenceGeneList, geneSet, re
 #'
 #' @keywords internal
 #'
-specificParameterSummaryGsea <- function(organism, interestingGeneMap, geneSet, minNum, maxNum, sigMethod, fdrThr, topThr, perNum, enrichedSig, reportNum, repAdded) {
+specificParameterSummaryGsea <- function(organism, interestingGeneMap, geneSet, minNum, maxNum, sigMethod, fdrThr, topThr, perNum, p, enrichedSig, reportNum, repAdded) {
 	organismIsOthers <- organism == "others"
 	if (!organismIsOthers) {
 		standardId <- interestingGeneMap$standardId
@@ -115,7 +115,7 @@ specificParameterSummaryGsea <- function(organism, interestingGeneMap, geneSet, 
 	hasEnrichedSig <- !is.null(enrichedSig)
 	data <- list(organismIsOthers=organismIsOthers, numUniqueUserId=numUniqueUserId, standardId=standardId, numAnnoUserId=numAnnoUserId,
 		minNum=minNum, maxNum=maxNum, methodIsFdr=sigMethod=="fdr", methodIsTop=sigMethod=="top", fdrThr=fdrThr, topThr=topThr,
-		perNum=perNum, reportNum=reportNum, hasRepAdded=repAdded, hasEnrichedSig=hasEnrichedSig
+		perNum=perNum, reportNum=reportNum, hasRepAdded=repAdded, hasEnrichedSig=hasEnrichedSig, p=p, isPShown=p!=1
 		)
 
 	if(hasEnrichedSig){

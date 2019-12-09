@@ -212,6 +212,9 @@ Also handles backward compatibility for some parameters in old versions.}
 \item{interestGeneFolder}{Run WebGestaltR for gene list files in the folder.}
 
 \item{isParallel}{If jobs are run parallelly in the batch.}
+
+\item{gseaP}{The exponential scaling factor of the phenotype score. The default is \code{1}.
+When p=0, ES reduces to standard K-S statistics (See original paper for more details).}
 }
 \value{
 The WebGestaltR function returns a data frame containing the enrichment analysis

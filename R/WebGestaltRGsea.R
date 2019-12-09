@@ -1,6 +1,6 @@
 #' @importFrom dplyr select distinct left_join arrange %>% mutate
 #' @importFrom readr write_tsv
-WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, perNum=1000, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", saveRawGseaResult=FALSE, plotFormat="png", nThreads=1, cache=NULL, hostName="http://www.webgestalt.org/") {
+WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, perNum=1000, p=1, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", saveRawGseaResult=FALSE, plotFormat="png", nThreads=1, cache=NULL, hostName="http://www.webgestalt.org/") {
 	enrichMethod <- "GSEA"
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
@@ -65,7 +65,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichData
 
 	gseaRes <- gseaEnrichment(hostName, outputDirectory, projectName, interestGeneList,
 		geneSet, geneSetDes=geneSetDes, minNum=minNum, maxNum=maxNum, sigMethod=sigMethod, fdrThr=fdrThr,
-		topThr=topThr, perNum=perNum, nThreads=nThreads, saveRawGseaResult=saveRawGseaResult, plotFormat=plotFormat, isOutput=isOutput
+		topThr=topThr, perNum=perNum, p=p, nThreads=nThreads, saveRawGseaResult=saveRawGseaResult, plotFormat=plotFormat, isOutput=isOutput
 	)
 	if (is.null(gseaRes)) {
 		return(NULL)
@@ -136,7 +136,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichData
 	if (isOutput) {
 		############## Create report ##################
 		cat("Generate the final report...\n")
-		createReport(hostName=hostName, outputDirectory=outputDirectory, organism=organism, projectName=projectName, enrichMethod=enrichMethod, geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet, interestingGeneMap=interestingGeneMap, enrichedSig=enrichedSig, background=insig, geneTables=geneTables, clusters=clusters, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, perNum=perNum, dagColor=dagColor)
+		createReport(hostName=hostName, outputDirectory=outputDirectory, organism=organism, projectName=projectName, enrichMethod=enrichMethod, geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet, interestingGeneMap=interestingGeneMap, enrichedSig=enrichedSig, background=insig, geneTables=geneTables, clusters=clusters, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile, interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, perNum=perNum, p=p, dagColor=dagColor)
 
 		cwd <- getwd()
 		setwd(projectDir)

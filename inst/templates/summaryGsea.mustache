@@ -16,6 +16,9 @@
 <li><b>Significance Level:</b> Top {{topThr}}</li>
 {{/methodIsTop}}
 <li><b>Number of permutation: </b>{{perNum}}</li>
+{{#isPShown}}
+<li><b>p: </b>{{p}}</li>
+{{/isPShown}}
 </ul>
 {{#hasEnrichedSig}}
 	<p>Based on the above parameters, <b>{{#isPosRel}}{{numPosRel}}{{/isPosRel}}{{^isPosRel}}No{{/isPosRel}} positive related </b>categories and <b>{{#isNegRel}}{{numNegRel}}{{/isNegRel}}{{^isNegRel}}no{{/isNegRel}} negative related </b>categories are identified as enriched categories
