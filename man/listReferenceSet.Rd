@@ -4,8 +4,11 @@
 \alias{listReferenceSet}
 \title{List Reference Sets}
 \usage{
-listReferenceSet(organism = "hsapiens",
-  hostName = "http://www.webgestalt.org/", cache = NULL)
+listReferenceSet(
+  organism = "hsapiens",
+  hostName = "http://www.webgestalt.org/",
+  cache = NULL
+)
 }
 \arguments{
 \item{organism}{Currently, WebGestaltR supports 12 organisms. Users can use the function

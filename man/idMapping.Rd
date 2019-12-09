@@ -6,17 +6,32 @@
 \alias{idToSymbol}
 \title{ID Mapping}
 \usage{
-idMapping(organism = "hsapiens", dataType = "list",
-  inputGeneFile = NULL, inputGene = NULL, sourceIdType,
-  targetIdType = NULL, collapseMethod = "mean",
-  mappingOutput = FALSE, outputFileName = "", cache = NULL,
-  hostName = "http://www.webgestalt.org/")
+idMapping(
+  organism = "hsapiens",
+  dataType = "list",
+  inputGeneFile = NULL,
+  inputGene = NULL,
+  sourceIdType,
+  targetIdType = NULL,
+  collapseMethod = "mean",
+  mappingOutput = FALSE,
+  outputFileName = "",
+  cache = NULL,
+  hostName = "http://www.webgestalt.org/"
+)
 
-idToSymbol(organism = "hsapiens", dataType = "list",
-  inputGeneFile = NULL, inputGene = NULL,
-  sourceIdType = "ensembl_gene_id", collapseMethod = "mean",
-  mappingOutput = FALSE, outputFileName = NULL, cache = NULL,
-  hostName = "http://www.webgestalt.org/")
+idToSymbol(
+  organism = "hsapiens",
+  dataType = "list",
+  inputGeneFile = NULL,
+  inputGene = NULL,
+  sourceIdType = "ensembl_gene_id",
+  collapseMethod = "mean",
+  mappingOutput = FALSE,
+  outputFileName = NULL,
+  cache = NULL,
+  hostName = "http://www.webgestalt.org/"
+)
 }
 \arguments{
 \item{organism}{Currently, WebGestaltR supports 12 organisms. Users can use the function

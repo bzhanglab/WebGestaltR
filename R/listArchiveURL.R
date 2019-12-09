@@ -2,7 +2,6 @@
 #'
 #' List available WebGestalt servers.
 #'
-#' @inheritParams WebGestaltR
 #'
 #' @return A data frame of available servers.
 #'

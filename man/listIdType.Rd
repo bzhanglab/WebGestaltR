@@ -5,8 +5,11 @@
 \alias{listIDType}
 \title{List ID Types}
 \usage{
-listIdType(organism = "hsapiens",
-  hostName = "http://www.webgestalt.org/", cache = NULL)
+listIdType(
+  organism = "hsapiens",
+  hostName = "http://www.webgestalt.org/",
+  cache = NULL
+)
 }
 \arguments{
 \item{organism}{Currently, WebGestaltR supports 12 organisms. Users can use the function

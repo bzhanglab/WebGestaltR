@@ -5,9 +5,15 @@
 \alias{GOSlimSummary}
 \title{GO Slim Summary}
 \usage{
-goSlimSummary(organism = "hsapiens", geneList, outputFile,
-  outputType = "pdf", isOutput = TRUE, cache = NULL,
-  hostName = "http://www.webgestalt.org")
+goSlimSummary(
+  organism = "hsapiens",
+  geneList,
+  outputFile,
+  outputType = "pdf",
+  isOutput = TRUE,
+  cache = NULL,
+  hostName = "http://www.webgestalt.org"
+)
 }
 \arguments{
 \item{organism}{Currently, WebGestaltR supports 12 organisms. Users can use the function

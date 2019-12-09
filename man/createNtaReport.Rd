@@ -4,8 +4,18 @@
 \alias{createNtaReport}
 \title{Create HTML Report for NTA}
 \usage{
-createNtaReport(networkName, method, sigMethod, fdrThr, topThr,
-  highlightType, outputDirectory, projectDir, projectName, hostName)
+createNtaReport(
+  networkName,
+  method,
+  sigMethod,
+  fdrThr,
+  topThr,
+  highlightType,
+  outputDirectory,
+  projectDir,
+  projectName,
+  hostName
+)
 }
 \description{
 Create HTML Report for NTA

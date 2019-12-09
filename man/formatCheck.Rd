@@ -4,8 +4,7 @@
 \alias{formatCheck}
 \title{Check Format and Read Data}
 \usage{
-formatCheck(dataType = "list", inputGeneFile = NULL,
-  inputGene = NULL)
+formatCheck(dataType = "list", inputGeneFile = NULL, inputGene = NULL)
 }
 \arguments{
 \item{dataType}{Type of data, either \code{list}, \code{rnk} or \code{gmt}.

@@ -97,6 +97,13 @@
 #'   and dark orange (negative related) for GSEA method. If \code{dagColor} is \code{continous},
 #'   the significant terms in the DAG structure will be colored by the color gradient based on
 #'   corresponding FDRs.
+#' @param saveRawGseaResult Whether the raw result from GSEA is saved as a RDS file, which can be
+#'   used for plotting. Defaults to \code{FALSE}. The list includes
+#'   \describe{
+#'     \item{Enrichment_Results}{A data frame of GSEA results with statistics}
+#'     \item{Running_Sums}{A matrix of running sum of scores for each gene set}
+#'     \item{Items_in_Set}{A list with ranks of genes for each gene set}
+#'  }
 #' @param gseaPlotFormat The graphic format of GSEA enrichment plots. Either \code{svg},
 #'   \code{png}, or \code{c("png", "svg")} (default).
 #' @param setCoverNum The number of expected gene sets after set cover to reduce redundancy.

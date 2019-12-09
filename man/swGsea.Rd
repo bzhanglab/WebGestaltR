@@ -4,11 +4,23 @@
 \alias{swGsea}
 \title{Site Weighted Gene Set Enrichment Analysis}
 \usage{
-swGsea(input_df, thresh_type = "percentile", thresh = 0.9,
-  thresh_action = "exclude", min_set_size = 10, max_set_size = 500,
-  max_score = "max", min_score = "min", psuedocount = 0.001,
-  perms = 1000, p = 1, q = 1, nThreads = 1, rng_seed = 1,
-  fork = FALSE)
+swGsea(
+  input_df,
+  thresh_type = "percentile",
+  thresh = 0.9,
+  thresh_action = "exclude",
+  min_set_size = 10,
+  max_set_size = 500,
+  max_score = "max",
+  min_score = "min",
+  psuedocount = 0.001,
+  perms = 1000,
+  p = 1,
+  q = 1,
+  nThreads = 1,
+  rng_seed = 1,
+  fork = FALSE
+)
 }
 \arguments{
 \item{input_df}{A data frame in which first column is name of item of interest

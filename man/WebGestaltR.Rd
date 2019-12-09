@@ -4,29 +4,57 @@
 \docType{package}
 \name{WebGestaltR}
 \alias{WebGestaltR}
-\alias{WebGestaltR-package}
 \alias{WebGestaltRBatch}
 \alias{WebGestaltR_batch}
 \title{WebGestaltR: The R interface for enrichment analysis with WebGestalt.}
 \usage{
-WebGestaltR(enrichMethod = "ORA", organism = "hsapiens",
-  enrichDatabase = NULL, enrichDatabaseFile = NULL,
-  enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL,
-  interestGeneFile = NULL, interestGene = NULL,
-  interestGeneType = NULL, collapseMethod = "mean",
-  referenceGeneFile = NULL, referenceGene = NULL,
-  referenceGeneType = NULL, referenceSet = NULL, minNum = 10,
-  maxNum = 500, sigMethod = "fdr", fdrMethod = "BH", fdrThr = 0.05,
-  topThr = 10, reportNum = 20, perNum = 1000, isOutput = TRUE,
-  outputDirectory = getwd(), projectName = NULL,
-  dagColor = "continuous", gseaPlotFormat = c("png", "svg"),
-  setCoverNum = 10, networkConstructionMethod = NULL,
-  neighborNum = 10, highlightType = "Seeds", highlightSeedNum = 10,
-  nThreads = 1, cache = NULL,
-  hostName = "http://www.webgestalt.org/", ...)
+WebGestaltR(
+  enrichMethod = "ORA",
+  organism = "hsapiens",
+  enrichDatabase = NULL,
+  enrichDatabaseFile = NULL,
+  enrichDatabaseType = NULL,
+  enrichDatabaseDescriptionFile = NULL,
+  interestGeneFile = NULL,
+  interestGene = NULL,
+  interestGeneType = NULL,
+  collapseMethod = "mean",
+  referenceGeneFile = NULL,
+  referenceGene = NULL,
+  referenceGeneType = NULL,
+  referenceSet = NULL,
+  minNum = 10,
+  maxNum = 500,
+  sigMethod = "fdr",
+  fdrMethod = "BH",
+  fdrThr = 0.05,
+  topThr = 10,
+  reportNum = 20,
+  perNum = 1000,
+  isOutput = TRUE,
+  outputDirectory = getwd(),
+  projectName = NULL,
+  dagColor = "continuous",
+  saveRawGseaResult = FALSE,
+  gseaPlotFormat = c("png", "svg"),
+  setCoverNum = 10,
+  networkConstructionMethod = NULL,
+  neighborNum = 10,
+  highlightType = "Seeds",
+  highlightSeedNum = 10,
+  nThreads = 1,
+  cache = NULL,
+  hostName = "http://www.webgestalt.org/",
+  ...
+)
 
-WebGestaltRBatch(interestGeneFolder = NULL, enrichMethod = "ORA",
-  isParallel = FALSE, nThreads = 3, ...)
+WebGestaltRBatch(
+  interestGeneFolder = NULL,
+  enrichMethod = "ORA",
+  isParallel = FALSE,
+  nThreads = 3,
+  ...
+)
 }
 \arguments{
 \item{enrichMethod}{Enrichment methods: \code{ORA}, \code{GSEA} or \code{NTA}.}
@@ -138,6 +166,14 @@ structure will be colored by steel blue for ORA method or steel blue (positive r
 and dark orange (negative related) for GSEA method. If \code{dagColor} is \code{continous},
 the significant terms in the DAG structure will be colored by the color gradient based on
 corresponding FDRs.}
+
+\item{saveRawGseaResult}{Whether the raw result from GSEA is saved as a RDS file, which can be
+ used for plotting. Defaults to \code{FALSE}. The list includes
+ \describe{
+   \item{Enrichment_Results}{A data frame of GSEA results with statistics}
+   \item{Running_Sums}{A matrix of running sum of scores for each gene set}
+   \item{Items_in_Set}{A list with ranks of genes for each gene set}
+}}
 
 \item{gseaPlotFormat}{The graphic format of GSEA enrichment plots. Either \code{svg},
 \code{png}, or \code{c("png", "svg")} (default).}

@@ -4,8 +4,11 @@
 \alias{listGeneSet}
 \title{List Gene Sets}
 \usage{
-listGeneSet(organism = "hsapiens",
-  hostName = "http://www.webgestalt.org/", cache = NULL)
+listGeneSet(
+  organism = "hsapiens",
+  hostName = "http://www.webgestalt.org/",
+  cache = NULL
+)
 }
 \arguments{
 \item{organism}{Currently, WebGestaltR supports 12 organisms. Users can use the function

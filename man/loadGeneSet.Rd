@@ -4,10 +4,15 @@
 \alias{loadGeneSet}
 \title{Load gene set data}
 \usage{
-loadGeneSet(organism = "hsapiens", enrichDatabase = NULL,
-  enrichDatabaseFile = NULL, enrichDatabaseType = NULL,
-  enrichDatabaseDescriptionFile = NULL, cache = NULL,
-  hostName = "http://www.webgestalt.org/")
+loadGeneSet(
+  organism = "hsapiens",
+  enrichDatabase = NULL,
+  enrichDatabaseFile = NULL,
+  enrichDatabaseType = NULL,
+  enrichDatabaseDescriptionFile = NULL,
+  cache = NULL,
+  hostName = "http://www.webgestalt.org/"
+)
 }
 \arguments{
 \item{organism}{Currently, WebGestaltR supports 12 organisms. Users can use the function

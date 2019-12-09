@@ -4,9 +4,20 @@
 \alias{specificParameterSummaryGsea}
 \title{specificParameterSummaryGsea}
 \usage{
-specificParameterSummaryGsea(organism, interestingGeneMap, geneSet, minNum,
-  maxNum, sigMethod, fdrThr, topThr, perNum, enrichedSig, reportNum,
-  repAdded)
+specificParameterSummaryGsea(
+  organism,
+  interestingGeneMap,
+  geneSet,
+  minNum,
+  maxNum,
+  sigMethod,
+  fdrThr,
+  topThr,
+  perNum,
+  enrichedSig,
+  reportNum,
+  repAdded
+)
 }
 \description{
 Render job summary section of GSEA specific parameters
