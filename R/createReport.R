@@ -33,7 +33,6 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 			enrichedSig <- keepRep(enrichedSig, allEnrichedSig, clusters$wsc$representatives)
 			repAdded <- nrow(enrichedSig) > numRes
 		}
-
 		standardId <- interestingGeneMap$standardId
 		if (enrichMethod == 'ORA') {
 			interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
@@ -78,6 +77,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		########### Organism is others. No mapping information #############
 		############# Summary for the analysis ###################
 		if (enrichMethod == 'ORA') {
+		  browser()
 			geneSetNum <- tapply(geneSet$gene, geneSet$geneSet, length)
 			geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
 
@@ -97,7 +97,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 			repAdded <- nrow(enrichedSig) > numRes
 		}
 
-		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, geneSet, repAdded, numAnnoRefUserId, hostName)
+		bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, p, geneSet, repAdded, numAnnoRefUserId, hostName)
 
 		############## Enrich Result ################
 		if (!is.null(enrichedSig)) {
