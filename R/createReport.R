@@ -77,7 +77,6 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		########### Organism is others. No mapping information #############
 		############# Summary for the analysis ###################
 		if (enrichMethod == 'ORA') {
-		  browser()
 			geneSetNum <- tapply(geneSet$gene, geneSet$geneSet, length)
 			geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
 
