@@ -141,7 +141,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 			oriCnt <- nrow(thisGeneSet)
 			thisGeneSet <- thisGeneSet %>% filter(!(.data$geneSet %in% unique(!!geneSet$geneSet)))
 			if (nrow(thisGeneSet) < oriCnt) {
-			  warning(paste("Duplicate gene set names in", enrichDb, "have been ignored."))
+				warning(paste("Duplicate gene set names in", enrichDb, "have been ignored."))
 			}
 			geneSet <- rbind(geneSet, thisGeneSet)
 
@@ -185,6 +185,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 	}
 	if (!is.null(geneSetData) && fileType == "des") {
 		colnames(geneSetData) <- c("geneSet", "description")
+		geneSetData <- geneSetData %>% distinct(geneSet, .keep_all=TRUE)
 	}
 	return(geneSetData)
 }
@@ -196,7 +197,8 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 		warning(descriptionFileError("format"))
 		return(NULL)
 	} else {
-		geneSetDes <- read_tsv(enrichDatabaseDescriptionFile, col_names=c("geneSet", "description"), col_types="cc")
+		geneSetDes <- read_tsv(enrichDatabaseDescriptionFile, col_names=c("geneSet", "description"), col_types="cc") %>%
+			distinct(geneSet, .keep_all=TRUE)
 		if (ncol(geneSetDes)!=2) {
 			warning(descriptionFileError("columnNum"))
 			return(NULL)
