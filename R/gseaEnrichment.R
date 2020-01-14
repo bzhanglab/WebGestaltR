@@ -104,6 +104,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 			} else {
 				title <- geneSet
 			}
+
 			if (!is.vector(plotFormat)) {
 				plotEnrichmentPlot(title, outputF, geneSet, format=plotFormat, gseaRes$Running_Sums[, geneSet], genes$rank, sortedScores, peakIndex)
 			} else {
@@ -121,14 +122,18 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 
 #' @importFrom svglite svglite
 plotEnrichmentPlot <- function(title, outputDir, fileName, format="png", runningSums, ranks, scores, peakIndex) {
-	wrappedTitle <- strwrap(paste0("Enrichment plot: ", title), 60)
 	if (format == "png") {
 		png(file.path(outputDir, paste0(sanitizeFileName(fileName), ".png")), bg="transparent", width=2000, height=2000)
 		cex <- list(main=5, axis=2.5, lab=3.2)
 	} else if (format == "svg") {
 		svglite(file.path(outputDir, paste0(sanitizeFileName(fileName), ".svg")), bg="transparent", width=7, height=7)
 		cex <- list(main=1.5, axis=0.6, lab=0.8)
+		# svg seems to have a problem with long title (figure margins too large)
+		if (nchar(title) > 80) {
+			title = paste0(substr(title, 1, 80), "...")
+		}
 	}
+	wrappedTitle <- strwrap(paste0("Enrichment plot: ", title), 60)
 	plot.new()
 	par(fig=c(0, 1, 0.5, 1), mar=c(0, 6, 6 * length(wrappedTitle), 2), cex.axis=cex$axis, cex.main=cex$main, cex.lab=cex$lab, lwd=2, new=TRUE)
 	plot(1:length(runningSums), runningSums,
