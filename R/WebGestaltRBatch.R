@@ -33,6 +33,7 @@ WebGestaltRBatch <- function(interestGeneFolder=NULL, enrichMethod="ORA", isPara
 		resultList <- foreach(i=1:length(interestGeneFiles), .packages="WebGestaltR") %dopar% {
 			args$interestGeneFile <- interestGeneFiles[i]
 			args$projectName <- projectNames[i]
+			args$enrichMethod <- enrichMethod
 			sig <- do.call(WebGestaltR, args)
 			re <- list(filename=interestGeneFiles[i], enrichResult=sig)
 			return(re)
@@ -43,6 +44,7 @@ WebGestaltRBatch <- function(interestGeneFolder=NULL, enrichMethod="ORA", isPara
 			cat("Process file: ",interestGeneFiles[i],"\n",sep="")
 			args$interestGeneFile <- interestGeneFiles[i]
 			args$projectName <- projectNames[i]
+			args$enrichMethod <- enrichMethod
 			sig <- do.call(WebGestaltR, args)
 			re <- list(filename=interestGeneFiles[i], enrichResult=sig)
 			resultList[[i]] <- re
