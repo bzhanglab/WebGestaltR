@@ -1,3 +1,5 @@
+#WebGestalt 0.4.3
+20200116 -- Bug fixes. Add a few advanced options for GSEA.
 #WebGestalt 0.4.2
 20190916 -- Bug fixes.
 #WebGestalt 0.4.1
