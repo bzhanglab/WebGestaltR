@@ -8,7 +8,11 @@
 	{{/hasRefGene}}
 	{{^hasRefGeneFile}}
 		{{^hasRefGene}}
-		<li><b>Reference list: </b> all mapped {{standardId}} IDs from the selected platform {{referenceSet}}</li>
+		<li><b>Reference list: </b> all mapped {{standardId}} IDs from the selected platform {{referenceSet}}
+			<a class="has-text-info" href="{{hostName}}/api/reference?organism={{organism}}&referenceSet={{referenceSet}}">
+				<b-icon icon="download" size="is-small"></b-icon>
+			</a>
+		</li>
 		{{/hasRefGene}}
 	{{/hasRefGeneFile}}
 	<li>The reference list can be mapped to <b>{{numRefGene}}</b> {{standardId}} IDs and <b> {{numAnnoRefId}}</b> IDs are annotated to the selected functional categories that are used as the reference for the enrichment analysis.</li>
