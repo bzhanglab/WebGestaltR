@@ -30,6 +30,7 @@ summaryDescription(
   enrichedSig,
   reportNum,
   perNum,
+  p,
   geneSet,
   repAdded,
   numAnnoRefUserId,

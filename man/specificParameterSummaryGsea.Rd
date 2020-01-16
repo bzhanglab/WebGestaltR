@@ -14,6 +14,7 @@ specificParameterSummaryGsea(
   fdrThr,
   topThr,
   perNum,
+  p,
   enrichedSig,
   reportNum,
   repAdded

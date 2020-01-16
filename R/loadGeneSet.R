@@ -185,7 +185,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 	}
 	if (!is.null(geneSetData) && fileType == "des") {
 		colnames(geneSetData) <- c("geneSet", "description")
-		geneSetData <- geneSetData %>% distinct(geneSet, .keep_all=TRUE)
+		geneSetData <- geneSetData %>% distinct(.data$geneSet, .keep_all=TRUE)
 	}
 	return(geneSetData)
 }

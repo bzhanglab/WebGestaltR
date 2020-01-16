@@ -40,6 +40,7 @@ createReport(
   topThr = 10,
   reportNum = 20,
   perNum = 1000,
+  p = 1,
   dagColor = "binary"
 )
 }

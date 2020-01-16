@@ -22,7 +22,8 @@ specificParameterSummaryOra(
   reportNum,
   repAdded,
   numAnnoRefUserId,
-  interestingGeneMap
+  interestingGeneMap,
+  hostName
 )
 }
 \description{
