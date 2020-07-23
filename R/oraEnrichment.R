@@ -24,14 +24,14 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum=10, maxNu
 
 	###############Enrichment analysis###################
 	ra <- length(interestGene) / length(referenceGene)
-	refG <- data.frame(geneSet=names(geneSetNum), size=unname(geneSetNum), stringsAsFactors=FALSE)
+	refG <- data.frame(geneSet=names(geneSetNum), size=as.numeric(geneSetNum), stringsAsFactors=FALSE)
 
 	intG <- filter(geneSet, .data$gene %in% interestGene)
 	intGNum <- tapply(intG$gene, intG$geneSet, length)
-	intGNum <- data.frame(geneSet=names(intGNum), overlap=unname(intGNum), stringsAsFactors=FALSE)
+	intGNum <- data.frame(geneSet=names(intGNum), overlap=as.numeric(intGNum), stringsAsFactors=FALSE)
 
 	intGId <- tapply(intG$gene, intG$geneSet, paste, collapse=";")
-	intGId <- data.frame(geneSet=names(intGId), overlapId=unname(intGId), stringsAsFactors=FALSE)
+	intGId <- data.frame(geneSet=names(intGId), overlapId=as.character(intGId), stringsAsFactors=FALSE)
 
 	enrichedResult <- geneSet %>% filter(!is.na(.data$geneSet)) %>%
 		select(.data$geneSet, link=.data$description) %>% distinct() %>%

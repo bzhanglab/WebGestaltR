@@ -19,7 +19,7 @@
 affinityPropagation <- function(idsInSet, score) {
 	cat("Begin affinity propagation...\n")
 	# compute the similiarity and input preference vector
-	ret <- jaccardSim(idsInSet, score)
+	ret <- jaccardSim(idsInSet, as.numeric(score))
 
 	sim.mat <- ret$sim.mat
 	ip.vec <- ret$ip.vec

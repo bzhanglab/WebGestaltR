@@ -20,7 +20,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 
 	# collapse rank list
 	a <- tapply(geneRankList$score, geneRankList$gene, collapseMethod, na.rm=TRUE)
-	geneRankList <- data.frame(gene=names(a), score=unname(a), stringsAsFactors=FALSE)
+	geneRankList <- data.frame(gene=names(a), score=as.numeric(a), stringsAsFactors=FALSE)
 
 	gseaRnk <- file.path(projectFolder, paste("Project_", projectName, "_GSEA.rnk", sep=""))
 	write_tsv(geneRankList, gseaRnk, col_names=FALSE)

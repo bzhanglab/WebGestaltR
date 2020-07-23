@@ -96,7 +96,7 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 	dataUnclassified <- setdiff(geneList, unique(goSlimData[["entrezgene"]]))
 
 	goTermCount <- tapply(goSlimData[["entrezgene"]], goSlimData[["accession"]], length)
-	goTermCount <- data.frame(accession=names(goTermCount), geneNum=unname(goTermCount), stringsAsFactors=FALSE)
+	goTermCount <- data.frame(accession=names(goTermCount), geneNum=as.numeric(goTermCount), stringsAsFactors=FALSE)
 	uniqueGoCounts <- goSlimData %>% select(.data$accession, .data$name) %>% distinct() %>%
 		inner_join(goTermCount, by="accession") %>%
 		arrange(desc(.data$geneNum))

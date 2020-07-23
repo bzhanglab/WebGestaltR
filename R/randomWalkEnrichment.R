@@ -142,7 +142,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 			filter(.data$id %in% names(refTermCount))
 	}
 
-	refTermCount <- data.frame(goId=names(refTermCount), size=refTermCount, stringsAsFactors=FALSE) %>%
+	refTermCount <- data.frame(goId=names(refTermCount), size=as.numeric(refTermCount), stringsAsFactors=FALSE) %>%
 		left_join(refTermName, by=c("goId"="id")) %>%
 		select(.data$goId, .data$description, .data$size) %>%
 		arrange(.data$goId)
@@ -151,7 +151,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 	interestTermGene <- tapply(annInterest$gene, annInterest$geneSet, .getGenes, seeds)
 
 
-	interestTermCount <- data.frame(goId=names(interestTermCount), overlap=interestTermCount, interestGene=interestTermGene, stringsAsFactors=FALSE) %>%
+	interestTermCount <- data.frame(goId=names(interestTermCount), overlap=as.numeric(interestTermCount), interestGene=interestTermGene, stringsAsFactors=FALSE) %>%
 		arrange(.data$goId)
 
 	refInterestTermCount <- refTermCount
