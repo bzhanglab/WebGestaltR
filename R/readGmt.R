@@ -14,7 +14,7 @@ readGmt <- function(gmtFile, cache=NULL) {
 	if (startsWith(gmtFile, "http://") || startsWith(gmtFile, "https://")) {
 		response <- cacheUrl(gmtFile, cache)
 		if (response$status_code == 200) {
-			data <- unlist(strsplit(content(response), "\n", fixed=TRUE))
+			data <- unlist(strsplit(content(response, "text"), "\n", fixed=TRUE))
 		} else {
 			stop(webRequestError(response))
 		}
