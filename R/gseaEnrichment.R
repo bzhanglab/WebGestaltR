@@ -55,7 +55,7 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 		sig <- tmpRes[[1]]
 		insig <-tmpRes[[2]]
 	}
-	numSig = nrow(sig)
+	numSig <- nrow(sig)
 	if (numSig == 0) {
 		warning("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
 		return(NULL)
@@ -76,9 +76,10 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 			return(leadingEdgeNum)
 		}))
 	}
+	plotSuffix <- ifelse("png" %in% plotFormat, "png", "svg")
 	sig <- sig %>% left_join(geneSetName, by="geneSet") %>%
 		mutate(size = unname(sapply(geneSet, function(x) nrow(gseaRes$Items_in_Set[[x]])))) %>%
-		mutate(plotPath = unname(sapply(geneSet, function(x) file.path(relativeF, paste0(sanitizeFileName(x), ".png")))))
+		mutate(plotPath = unname(sapply(geneSet, function(x) file.path(relativeF, paste0(sanitizeFileName(x), ".", plotSuffix)))))
 
 	leadingGeneNum <- vector("integer", numSig)
 	leadingGenes <- vector("character", numSig)
