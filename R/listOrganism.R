@@ -12,7 +12,7 @@
 #'
 listOrganism <- function(hostName="http://www.webgestalt.org/", cache=NULL) {
 	if (startsWith(hostName, "file://")) {
-		jsonData <- fromJSON(file=removeFileProtocol(file.path(hostName, "idtypesummary.json")))
+		jsonData <- fromJSON(removeFileProtocol(file.path(hostName, "idtypesummary.json")))
 	} else {
 		response <- cacheUrl(file.path(hostName, "api", "summary", "idtype"), cache)
 		if (response$status_code != 200) {

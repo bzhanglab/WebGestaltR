@@ -12,14 +12,29 @@
 #'
 listGeneSet <- function(organism="hsapiens", hostName="http://www.webgestalt.org/", cache=NULL) {
 	if (startsWith(hostName, "file://")) {
-		jsonData <- fromJSON(file=removeFileProtocol(file.path(hostName, "genesetsummary.json")))
+		jsonData <- fromJSON(removeFileProtocol(file.path(hostName, "genesetsummary.json")))
+		ids <- jsonData[[organism]]
+		name1 <- names(ids)
+		idList <- data.frame(name="",description="",idType="",stringsAsFactors=F)
+		di <- 1
+		for(i in c(1:length(name1))){
+			x <- ids[[i]]$name
+			if(!(is.null(x) || (is.list(x) && length(x)==0))){
+				y <- ids[[i]]$description
+				z <- ids[[i]]$idtype
+				x <- paste(name1[i],"_",x,sep="")
+				idList[di:(di+length(x)-1),1] <- x
+				idList[di:(di+length(x)-1),2] <- y
+				idList[di:(di+length(x)-1),3] <- z
+				di <- di+length(x)
+			}
+	}
 	} else {
 		response <- cacheUrl(file.path(hostName, "api", "summary", "geneset"), cache)
 		if (response$status_code != 200) {
 			return(webRequestError(response))
 		}
 		jsonData <- content(response)
-	}
 	ids <- jsonData[[organism]]
 	name1 <- names(ids)
 	idList <- data.frame(name="",description="",idType="",stringsAsFactors=F)
@@ -35,6 +50,7 @@ listGeneSet <- function(organism="hsapiens", hostName="http://www.webgestalt.org
 			idList[di:(di+length(x)-1),3] <- z
 			di <- di+length(x)
 		}
+	}
 	}
 	return(idList)
 }

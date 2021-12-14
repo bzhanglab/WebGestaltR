@@ -12,16 +12,18 @@
 #'
 listIdType <- function(organism="hsapiens", hostName="http://www.webgestalt.org/", cache=NULL) {
 	if (startsWith(hostName, "file://")) {
-		jsonData <- fromJSON(file=removeFileProtocol(file.path(hostName, "idtypesummary.json")))
+        jsonData <- fromJSON(removeFileProtocol(file.path(hostName, "idtypesummary.json")))
+		idType <- jsonData[[organism]]
+		idType <- idType$name
 	} else {
 		response <- cacheUrl(file.path(hostName, "api", "summary", "idtype"), cache)
 		if (response$status_code != 200) {
 			return(webRequestError(response))
 		}
 		jsonData <- content(response)
-	}
-	idType <- jsonData[[organism]]
-	idType <- sapply(idType,function(e){return(e$name)})
+        idType <- jsonData[[organism]]
+        idType <- sapply(idType,function(e){return(e$name)})
+    }
 	return(idType)
 }
 
