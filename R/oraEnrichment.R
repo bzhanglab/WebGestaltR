@@ -42,7 +42,7 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum=10, maxNu
 			   FDR=p.adjust(.data$pValue, method=fdrMethod)
 		) %>%
 		left_join(intGId, by="geneSet") %>%
-		arrange(.data$FDR, .data$pValue)
+		arrange(.data$FDR, .data$pValue, .data$enrichmentRatio)
 
 	if (sigMethod == "fdr") {
 		enrichedResultSig <- filter(enrichedResult, .data$FDR<fdrThr)
