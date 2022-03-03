@@ -69,9 +69,7 @@ specificParameterSummaryOra <- function(organism, referenceGeneList, geneSet, re
 		standardId <- NULL
 		interestGeneList <- unique(interestingGeneMap)
 	}
-	geneSetNum <- tapply(geneSet$gene, geneSet$geneSet, length)
-	geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
-	numAnnoRefId <- length(intersect(referenceGeneList, geneSet[geneSet$geneSet %in% names(geneSetNum), "gene"]))
+	numAnnoRefId <- length(intersect(referenceGeneList, geneSet$gene))
 	hasEnrichedSig <- !is.null(enrichedSig)
 	if (hasEnrichedSig) {
 		numEnrichedSig <- nrow(enrichedSig)
@@ -83,7 +81,7 @@ specificParameterSummaryOra <- function(organism, referenceGeneList, geneSet, re
 	data <- list(organismIsOthers=organismIsOthers, numUniqueUserId=length(interestGeneList), standardId=standardId,
 		numAnnoRefUserId=numAnnoRefUserId, hasRefGeneFile=!is.null(referenceGeneFile), referenceGeneFile=referenceGeneFile,
 		referenceGeneType=referenceGeneType, hasRefGene=!is.null(referenceGene), referenceSet=referenceSet,
-		numRefGene=length(referenceGeneList), numAnnoRefId=numAnnoRefId, minNum=minNum,
+		numRefGene=length(referenceGeneList), numAnnoRefId=length(intersect(referenceGeneList, geneSet$gene)), minNum=minNum,
 		maxNum=maxNum, fdrMethod=fdrMethod, methodIsFdr=sigMethod=="fdr", methodIsTop=sigMethod=="top", fdrThr=fdrThr,
 		topThr=topThr, hasEnrichedSig=hasEnrichedSig, showAll=showAll, reportNum=reportNum, hasRepAdded=repAdded, numEnrichedSig=numEnrichedSig, organism=organism, hostName=hostName
 		)
