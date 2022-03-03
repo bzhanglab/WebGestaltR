@@ -14,8 +14,6 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum=10, maxNu
 		stop("ERROR: The number of annotated genes for all functional categories are not from ", minNum, " to ", maxNum, " for the ORA enrichment method.")
 	}
 
-	geneSet <-filter(geneSet, .data$geneSet %in% names(geneSetNum))
-
 	interestGene <- intersect(interestGene, geneSet$gene)
 	interestGene <- intersect(interestGene, referenceGene)
 	if (length(interestGene) == 0) {
@@ -34,6 +32,7 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum=10, maxNu
 	intGId <- data.frame(geneSet=names(intGId), overlapId=as.character(intGId), stringsAsFactors=FALSE)
 
 	enrichedResult <- geneSet %>% filter(!is.na(.data$geneSet)) %>%
+		filter(.data$geneSet %in% names(geneSetNum)) %>%
 		select(.data$geneSet, link=.data$description) %>% distinct() %>%
 		left_join(refG, by="geneSet") %>%
 		left_join(intGNum, by="geneSet") %>% # this may just be inner_join. O is NA should not be meaningful anyway
