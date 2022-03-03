@@ -4,8 +4,6 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum=10, maxNu
 	#before running this code, the main code has checked the overlap among interestGene, referenceGene and geneSet.
 	#And this three sets should have overlapping genes.
 
-	referenceGene <- intersect(referenceGene, geneSet$gene)
-
 	geneSet <- filter(geneSet, .data$gene %in% referenceGene)
 
 	geneSetNum <- tapply(geneSet$gene, geneSet$geneSet,length)
@@ -15,7 +13,8 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum=10, maxNu
 	}
 
 	geneSet <-filter(geneSet, .data$geneSet %in% names(geneSetNum))
-
+	referenceGene <- intersect(referenceGene, geneSet$gene)
+	
 	interestGene <- intersect(interestGene, geneSet$gene)
 	interestGene <- intersect(interestGene, referenceGene)
 	if (length(interestGene) == 0) {
