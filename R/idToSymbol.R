@@ -1,4 +1,4 @@
-#' Wrapper for mapping ids to "genesymbol"
+#' Wrapper convenient utility for mapping ids to "genesymbol"
 #'
 #' @inheritParams idMapping
 #'

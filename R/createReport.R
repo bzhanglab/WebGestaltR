@@ -105,7 +105,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		background <- data.frame()
 	}
 	version <- packageVersion("WebGestaltR")
-	# use major and minor version numbers. If API changes, version should be bumped
+	# use major and minor version numbers for JS lib. If API changes, version should be bumped
 	# patch number should not matter
 	version <- paste(version[1, 1], version[1, 2], sep=".")
 	hasGeneSetDag = !is.null(geneSetDag)

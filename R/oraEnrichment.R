@@ -4,6 +4,10 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum=10, maxNu
 	#before running this code, the main code has checked the overlap among interestGene, referenceGene and geneSet.
 	#And this three sets should have overlapping genes.
 
+	# The calculation is based on the genes (input and reference)
+	# with annotations in GMT (i.e. effective genes shown in final HTML report)
+	# One common question is why input GMT affects results
+	# While GSEA does not have this
 	referenceGene <- intersect(referenceGene, geneSet$gene)
 
 	geneSet <- filter(geneSet, .data$gene %in% referenceGene)
@@ -21,16 +25,18 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum=10, maxNu
 	}
 
 	###############Enrichment analysis###################
-	ra <- length(interestGene) / length(referenceGene)
+	ra <- length(interestGene) / length(referenceGene) # ratio
 	refG <- data.frame(geneSet=names(geneSetNum), size=as.numeric(geneSetNum), stringsAsFactors=FALSE)
 
 	intG <- filter(geneSet, .data$gene %in% interestGene)
-	intGNum <- tapply(intG$gene, intG$geneSet, length)
+	intGNum <- tapply(intG$gene, intG$geneSet, length) # a vector of overlap with geneset as name
 	intGNum <- data.frame(geneSet=names(intGNum), overlap=as.numeric(intGNum), stringsAsFactors=FALSE)
 
 	intGId <- tapply(intG$gene, intG$geneSet, paste, collapse=";")
 	intGId <- data.frame(geneSet=names(intGId), overlapId=as.character(intGId), stringsAsFactors=FALSE)
 
+	# .data from rlang needed for package to pass R CMD check
+	# https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
 	enrichedResult <- geneSet %>% filter(!is.na(.data$geneSet)) %>%
 		filter(.data$geneSet %in% names(geneSetNum)) %>%
 		select(.data$geneSet, link=.data$description) %>% distinct() %>%
@@ -40,7 +46,7 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum=10, maxNu
 			   pValue=1-phyper(.data$overlap - 1, length(interestGene), length(referenceGene) - length(interestGene), .data$size, lower.tail=TRUE, log.p=FALSE),
 			   FDR=p.adjust(.data$pValue, method=fdrMethod)
 		) %>%
-		left_join(intGId, by="geneSet") %>%
+		left_join(intGId, by="geneSet") %>% # get overlapping gene IDs
 		arrange(.data$FDR, .data$pValue, .data$enrichmentRatio)
 
 	if (sigMethod == "fdr") {
