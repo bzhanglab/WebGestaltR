@@ -69,7 +69,7 @@ idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
 }
 
 .testMatrixFormat <- function(inputMat, collapseMethod="maxSD"){
-	if(class(inputMat)=="character"){
+	if(is.character(inputMat)){
 		if(file_ext(inputMat)!="cct" && file_ext(inputMat)!="cbt"){
 			stop("The extension of the input file should be 'cct' or 'cbt'. \n")
 		}else{
@@ -84,7 +84,7 @@ idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
 			}
 		}
 	}else{
-		if(class(inputMat) != "matrix" && class(inputMat) != "data.frame"){
+		if(!is.matrix(inputMat) && !is.data.frame(inputMat)){
 			stop("The type of input data should be a matrix or data.frame object. Other types of data are not supported by this package.!\n")
 		}else{
 			x <- apply(inputMat,2,function(e) return(class(e)=="numeric" || class(e)=="integer"))
