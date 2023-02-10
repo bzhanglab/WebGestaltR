@@ -36,11 +36,8 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		standardId <- interestingGeneMap$standardId
 		if (enrichMethod == 'ORA') {
 			interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
-			geneSetNum <- tapply(geneSet$gene, geneSet$geneSet, length)
-			geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
-
 			numAnnoRefUserId <- length(intersect(interestGeneList,
-				intersect(referenceGeneList, geneSet[geneSet$geneSet %in% names(geneSetNum), "gene"])))
+				intersect(referenceGeneList, geneSet$gene)))
 		}
 
 		##### Summary Tab ########
@@ -77,11 +74,8 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		########### Organism is others. No mapping information #############
 		############# Summary for the analysis ###################
 		if (enrichMethod == 'ORA') {
-			geneSetNum <- tapply(geneSet$gene, geneSet$geneSet, length)
-			geneSetNum <- geneSetNum[geneSetNum>=minNum & geneSetNum<=maxNum]
-
 			numAnnoRefUserId <- length(intersect(interestingGeneMap,
-				intersect(referenceGeneList, geneSet[geneSet$geneSet %in% names(geneSetNum), "gene"])))
+				intersect(referenceGeneList, geneSet$gene)))
 		}
 		if (!is.null(enrichedSig) && reportNum < nrow(enrichedSig)) {
 			if (enrichMethod == "ORA") {
@@ -111,7 +105,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 		background <- data.frame()
 	}
 	version <- packageVersion("WebGestaltR")
-	# use major and minor version numbers. If API changes, version should be bumped
+	# use major and minor version numbers for JS lib. If API changes, version should be bumped
 	# patch number should not matter
 	version <- paste(version[1, 1], version[1, 2], sep=".")
 	hasGeneSetDag = !is.null(geneSetDag)

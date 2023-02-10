@@ -170,7 +170,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 	if (startsWith(hostName, "file://")) {
 		geneSetPath <- removeFileProtocol(file.path(hostName, "geneset", paste(paste(organism, database, standardId, sep="_"), fileType, sep=".")))
 		if (file.exists(geneSetPath)) {
-			geneSetData <- read_tsv(geneSetPath, col_names=FALSE, col_types="cc")
+			geneSetData <- read_tsv(geneSetPath, col_names=FALSE, col_types="cc", quote="")
 		} else {
 			geneSetData <- NULL
 		}
@@ -178,7 +178,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 		geneSetUrl <- file.path(hostName,"api","geneset")
 		response <- cacheUrl(geneSetUrl, cache=cache, query=list(organism=organism, database=database, standardId=standardId, fileType=fileType))
 		if (response$status_code == 200) {
-			geneSetData <- read_tsv(content(response), col_names=FALSE, col_types="cc")
+			geneSetData <- read_tsv(content(response), col_names=FALSE, col_types="cc", quote="")
 		} else {
 			geneSetData <- NULL
 		}
@@ -197,7 +197,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 		warning(descriptionFileError("format"))
 		return(NULL)
 	} else {
-		geneSetDes <- read_tsv(enrichDatabaseDescriptionFile, col_names=c("geneSet", "description"), col_types="cc") %>%
+		geneSetDes <- read_tsv(enrichDatabaseDescriptionFile, col_names=c("geneSet", "description"), col_types="cc", quote="") %>%
 			distinct(geneSet, .keep_all=TRUE)
 		if (ncol(geneSetDes)!=2) {
 			warning(descriptionFileError("columnNum"))

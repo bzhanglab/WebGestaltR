@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // fillInputDataFrame
 DataFrame fillInputDataFrame(DataFrame gmt, CharacterVector genes, CharacterVector geneSets);
 RcppExport SEXP _WebGestaltR_fillInputDataFrame(SEXP gmtSEXP, SEXP genesSEXP, SEXP geneSetsSEXP) {

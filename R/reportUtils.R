@@ -87,7 +87,8 @@ getTopGseaResults <- function(results, topThr) {
 
 #' keepRep
 #'
-#' Add representatives to topResult if they are missing
+#' Add representatives of redundancy-reduced clusters to
+#' topResult if they are missing.
 #'
 #' @keywords internal
 #'

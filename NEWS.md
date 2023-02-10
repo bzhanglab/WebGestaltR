@@ -1,3 +1,5 @@
+#WebGestalt 0.4.5
+20230210 -- Updated URL to HTTPS and minor bug fixes.
 #WebGestalt 0.4.4
 20200723 -- Minor bug fix.
 #WebGestalt 0.4.3
