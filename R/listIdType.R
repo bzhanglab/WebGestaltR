@@ -10,7 +10,7 @@
 #' @export
 #' @aliases listIDType
 #'
-listIdType <- function(organism="hsapiens", hostName="http://www.webgestalt.org/", cache=NULL) {
+listIdType <- function(organism="hsapiens", hostName="https://www.webgestalt.org/", cache=NULL) {
 	if (startsWith(hostName, "file://")) {
         jsonData <- fromJSON(removeFileProtocol(file.path(hostName, "idtypesummary.json")))
 		idType <- jsonData[[organism]]

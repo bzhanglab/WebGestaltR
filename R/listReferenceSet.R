@@ -9,7 +9,7 @@
 #' @importFrom httr content
 #' @export
 #'
-listReferenceSet <- function(organism="hsapiens", hostName="http://www.webgestalt.org/", cache=NULL) {
+listReferenceSet <- function(organism="hsapiens", hostName="https://www.webgestalt.org/", cache=NULL) {
 	if (startsWith(hostName, "file://")) {
 		jsonData <- fromJSON(removeFileProtocol(file.path(hostName, "referencesetsummary.json")))
 		idType <- jsonData[[organism]]

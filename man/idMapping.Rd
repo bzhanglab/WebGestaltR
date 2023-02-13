@@ -17,7 +17,7 @@ idMapping(
   mappingOutput = FALSE,
   outputFileName = "",
   cache = NULL,
-  hostName = "http://www.webgestalt.org/"
+  hostName = "https://www.webgestalt.org/"
 )
 
 idToSymbol(
@@ -30,7 +30,7 @@ idToSymbol(
   mappingOutput = FALSE,
   outputFileName = NULL,
   cache = NULL,
-  hostName = "http://www.webgestalt.org/"
+  hostName = "https://www.webgestalt.org/"
 )
 }
 \arguments{

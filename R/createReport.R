@@ -13,7 +13,7 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	# if hostname starts with "file://", it is used as WebGestaltReporter
 	if (startsWith(hostName, "file://")) {
 		# change back hostName for web assets and browsers will cache it.
-		hostName <- "http://www.webgestalt.org"
+		hostName <- "https://www.webgestalt.org"
 	}
 
 	numAnnoRefUserId <- NULL

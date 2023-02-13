@@ -17,7 +17,7 @@
 #' @export
 #' @aliases IDMapping
 #'
-idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, sourceIdType, targetIdType=NULL, collapseMethod="mean", mappingOutput=FALSE, outputFileName="", cache=NULL, hostName="http://www.webgestalt.org/") {
+idMapping <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, sourceIdType, targetIdType=NULL, collapseMethod="mean", mappingOutput=FALSE, outputFileName="", cache=NULL, hostName="https://www.webgestalt.org/") {
 	#############Check general parameters########
 	errorTest <- parameterErrorMessage(organism=organism, dataType=dataType, collapseMethod=collapseMethod, hostName=hostName, mappingOutput=mappingOutput, cache=cache)
 

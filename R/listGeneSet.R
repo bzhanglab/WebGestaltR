@@ -10,7 +10,7 @@
 #' @importFrom jsonlite fromJSON
 #' @export
 #'
-listGeneSet <- function(organism="hsapiens", hostName="http://www.webgestalt.org/", cache=NULL) {
+listGeneSet <- function(organism="hsapiens", hostName="https://www.webgestalt.org/", cache=NULL) {
 	if (startsWith(hostName, "file://")) {
 		jsonData <- fromJSON(removeFileProtocol(file.path(hostName, "genesetsummary.json")))
 		ids <- jsonData[[organism]]

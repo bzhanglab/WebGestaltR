@@ -12,7 +12,7 @@
 #' @export
 #' @aliases GOSlimSummary
 #'
-goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType="pdf", isOutput=TRUE, cache=NULL, hostName="http://www.webgestalt.org") {
+goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType="pdf", isOutput=TRUE, cache=NULL, hostName="https://www.webgestalt.org") {
 	organisms <- listOrganism(hostName=hostName, cache=cache)
 	if (!organism %in% organisms) {
 		stop("ERROR: ", organism, " can not be supported.")
