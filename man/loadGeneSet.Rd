@@ -11,7 +11,7 @@ loadGeneSet(
   enrichDatabaseType = NULL,
   enrichDatabaseDescriptionFile = NULL,
   cache = NULL,
-  hostName = "http://www.webgestalt.org/"
+  hostName = "https://www.webgestalt.org/"
 )
 }
 \arguments{

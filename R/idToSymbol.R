@@ -9,7 +9,7 @@
 idToSymbol <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL,
                        inputGene=NULL, sourceIdType="ensembl_gene_id", collapseMethod="mean",
                        mappingOutput=FALSE, outputFileName=NULL, cache=NULL,
-                       hostName="http://www.webgestalt.org/") {
+                       hostName="https://www.webgestalt.org/") {
 	# various error checking
 	errorTest <- .hostNameError(hostName)
 	if(!is.null(errorTest)){

@@ -1,4 +1,4 @@
-loadInterestGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, geneType="entrezgene", collapseMethod="mean", cache=NULL, hostName="http://www.webgestalt.org/", geneSet) {
+loadInterestGene <- function(organism="hsapiens", dataType="list", inputGeneFile=NULL, inputGene=NULL, geneType="entrezgene", collapseMethod="mean", cache=NULL, hostName="https://www.webgestalt.org/", geneSet) {
 	if (is.null(inputGeneFile) && is.null(inputGene)) {
 		stop(interestGeneError(type="empty"))
 	} else {
@@ -20,7 +20,7 @@ loadInterestGene <- function(organism="hsapiens", dataType="list", inputGeneFile
 
 #' @importFrom httr content
 #' @importFrom readr read_tsv
-loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType="entrezgene", referenceSet=NULL, collapseMethod="mean", hostName="http://www.webgestalt.org/", geneSet, interestGeneList, cache=NULL) {
+loadReferenceGene <- function(organism="hsapiens", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType="entrezgene", referenceSet=NULL, collapseMethod="mean", hostName="https://www.webgestalt.org/", geneSet, interestGeneList, cache=NULL) {
 	referenceGeneList <- NULL
 	referenceGeneMap <- NULL
 

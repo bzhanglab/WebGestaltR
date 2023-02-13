@@ -10,7 +10,7 @@
 #' @importFrom jsonlite fromJSON
 #' @export
 #'
-listOrganism <- function(hostName="http://www.webgestalt.org/", cache=NULL) {
+listOrganism <- function(hostName="https://www.webgestalt.org/", cache=NULL) {
 	if (startsWith(hostName, "file://")) {
 		jsonData <- fromJSON(removeFileProtocol(file.path(hostName, "idtypesummary.json")))
 	} else {

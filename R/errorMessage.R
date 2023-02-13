@@ -1,4 +1,4 @@
-parameterErrorMessage <- function(hostName="http://www.webgestalt.org/", cache=NULL, ...){
+parameterErrorMessage <- function(hostName="https://www.webgestalt.org/", cache=NULL, ...){
 	errorTest <- NULL
 	argList <- list(...)
 
@@ -258,7 +258,7 @@ gmtFormatError <- function(type){
 		error <- "ERROR: Please upload a file with extension 'gmt'."
 	}
 	if(type=="incorrect"){
-		error <- "ERROR: Invalid GMT file format. Please check the format of the GMT file from http://www.webgestalt.org/WebGestalt_2017_Manual.pdf."
+		error <- "ERROR: Invalid GMT file format. Please check the format of the GMT file from https://www.webgestalt.org/WebGestalt_2019_Manual.pdf."
 	}
 	cat(error)
 	return(error)

@@ -14,7 +14,7 @@
 #' @importFrom dplyr select distinct filter %>%
 #' @importFrom httr modify_url
 #' @export
-loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, cache=NULL, hostName="http://www.webgestalt.org/") {
+loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, cache=NULL, hostName="https://www.webgestalt.org/") {
 	# TODO: multiple custom database ID types?
 	geneSet <- NULL    ##gene sets
 	geneSetDes <- NULL ##gene set description file

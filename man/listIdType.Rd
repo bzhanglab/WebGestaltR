@@ -7,7 +7,7 @@
 \usage{
 listIdType(
   organism = "hsapiens",
-  hostName = "http://www.webgestalt.org/",
+  hostName = "https://www.webgestalt.org/",
   cache = NULL
 )
 }

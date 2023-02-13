@@ -4,7 +4,7 @@
 \alias{listOrganism}
 \title{List Organisms}
 \usage{
-listOrganism(hostName = "http://www.webgestalt.org/", cache = NULL)
+listOrganism(hostName = "https://www.webgestalt.org/", cache = NULL)
 }
 \arguments{
 \item{hostName}{The server URL for accessing data. Mostly for development purposes.}

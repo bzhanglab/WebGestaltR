@@ -45,7 +45,7 @@ WebGestaltR(
   highlightSeedNum = 10,
   nThreads = 1,
   cache = NULL,
-  hostName = "http://www.webgestalt.org/",
+  hostName = "https://www.webgestalt.org/",
   ...
 )
 
