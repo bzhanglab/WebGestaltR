@@ -22,7 +22,10 @@ identifyStandardId <- function(hostName, idType, organism, type, cache) {
 		if (type=="reference") {
 			summaryPath <- removeFileProtocol(file.path(hostName, "referencesetsummary.json"))
 		}
-		jsonData <- fromJSON(file=summaryPath)
+		jsonData <- fromJSON(summaryPath)
+		idTypes <- jsonData[[organism]]
+		names <- idTypes$name
+		standardIds <- idTypes$type
 	} else {
 		if (type=="interest") {
 			response <- cacheUrl(file.path(hostName, "api", "summary", "idtype"), cache)
@@ -34,10 +37,10 @@ identifyStandardId <- function(hostName, idType, organism, type, cache) {
 			stop(webRequestError(response))
 		}
 		jsonData <- content(response)
+		idTypes <- jsonData[[organism]]
+		names <- unlist(lapply(idTypes, function(e) return(e$name)))
+		standardIds <- unlist(lapply(idTypes,function(e) return(e$type)))
 	}
-	idTypes <- jsonData[[organism]]
-	names <- unlist(lapply(idTypes, function(e) return(e$name)))
-	standardIds <- unlist(lapply(idTypes,function(e) return(e$type)))
 	idTypes <- data.frame(name=names, standardId=standardIds, stringsAsFactors=FALSE)
 	return(filter(idTypes, .data$name == idType)[[1, "standardId"]])
 }
