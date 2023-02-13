@@ -7,6 +7,7 @@
 keepRep(topResult, allResult, reps)
 }
 \description{
-Add representatives to topResult if they are missing
+Add representatives of redundancy-reduced clusters to
+topResult if they are missing.
 }
 \keyword{internal}

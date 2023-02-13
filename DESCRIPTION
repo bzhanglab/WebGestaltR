@@ -22,4 +22,4 @@ Imports: methods, dplyr, doRNG, readr, parallel (>= 3.3.2),
 NeedsCompilation: yes
 LinkingTo: Rcpp
 SystemRequirements: C++11
-RoxygenNote: 7.0.2
+RoxygenNote: 7.2.3
