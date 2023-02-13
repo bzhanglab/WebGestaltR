@@ -157,7 +157,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 
 	if (length(unique(geneSet$database)) == 1) {
 		# remove database column for single source
-		geneSet <- select(geneSet, -.data$database)
+		geneSet$database<- NULL
 	}
 	re <- list(geneSet=geneSet, geneSetDes=geneSetDes, geneSetDag=geneSetDag, geneSetNet=geneSetNet,standardId=standardId)
 	return(re)
