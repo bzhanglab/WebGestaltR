@@ -1,5 +1,3 @@
-#WebGestalt 0.4.6
-20230210 -- Fixes "Organism is missing" errors
 #WebGestalt 0.4.5
 20230210 -- Updated URL to HTTPS and minor bug fixes.
 #WebGestalt 0.4.4
