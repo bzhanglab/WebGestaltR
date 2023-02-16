@@ -21,5 +21,4 @@ Imports: methods, dplyr, doRNG, readr, parallel (>= 3.3.2),
         igraph, whisker, apcluster, Rcpp
 NeedsCompilation: yes
 LinkingTo: Rcpp
-SystemRequirements: C++11
 RoxygenNote: 7.2.3
