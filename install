@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+R -e "library(utils)
+library(devtools)
+remove.packages('WebGestaltR')
+install('~/Code/webgestaltr-metabolomics/')
+q()"
+echo "New version installed"
