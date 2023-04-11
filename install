@@ -2,6 +2,6 @@
 R -e "library(utils)
 library(devtools)
 remove.packages('WebGestaltR')
-install('~/Code/webgestaltr-metabolomics/')
+install('.')
 q()"
 echo "New version installed"

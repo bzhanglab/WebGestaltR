@@ -22,7 +22,7 @@ idMappingMetabolites <- function(organism="hsapiens", dataType="list", inputGene
 		colnames(inputGene) <- c("geneSet", "link", sourceIdType)
 		inputGeneL <- unique(inputGene$gene)
 	}
-
+	mappedInputGene <- NULL
 	if (startsWith(hostName, "file://")) {
 		sourceMap <- read_tsv(
 			removeFileProtocol(file.path(hostName, "xref", paste(organism, sourceIdType, paste0(standardId,".table"), sep="_"))),
@@ -60,7 +60,8 @@ idMappingMetabolites <- function(organism="hsapiens", dataType="list", inputGene
 		if (length(mappedIds) == 0) { stop(idMappingError("empty")) }
 		names <- c("sourceId", "targetId")
 		mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN=function(x) { x[names] })), nrow=length(mappedIds), byrow=TRUE), stringsAsFactors=FALSE)
-		colnames(mappedInputGene) <- c("userId", targetIdType)
+		
+		colnames(mappedInputGene) <- c("userId", "rampc")
 		unmappedIds <- append(unmappedIds, mappedInputGene[duplicated(mappedInputGene$rampc),]$userId)
 		mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$rampc),]
 		response <- POST(file.path(hostName, "api", "idmapping"), encode="json",
@@ -75,9 +76,6 @@ idMappingMetabolites <- function(organism="hsapiens", dataType="list", inputGene
 		meta_names <- data.frame(matrix(unlist(lapply(replace_null(newMapped), FUN=function(x) { x[names] })), nrow=length(newMapped), byrow=TRUE), stringsAsFactors=FALSE)
 		colnames(meta_names) <- c("id", "meta")
 	}
-
-	
-
     mappedInputGene$geneSymbol <- mappedInputGene$userId
     mappedInputGene$geneName <- meta_names$meta
     # mappedInputGene$gLink <- mappedInputGene$userId
@@ -96,26 +94,25 @@ idMappingMetabolites <- function(organism="hsapiens", dataType="list", inputGene
 	} else if (sourceIdType == "chemspider"){
 		mappedInputGene$gLink <- paste0("https://www.chemspider.com/Chemical-Structure.", replace_prefix(mappedInputGene$userId, "chemspider:"), ".html")
 	} else if (sourceIdType == "kegg") {
-	   mapppedInputGene$gLink <- paste0("https://www.genome.jp/entry/", replace_prefix(mappedInputGene$userId, "kegg:"))
+	   mappedInputGene$gLink <- paste0("https://www.genome.jp/entry/", replace_prefix(mappedInputGene$userId, "kegg:"))
 	} else if (sourceIdType == "kegg_glycan"){
-		mapppedInputGene$gLink <- paste0("https://www.genome.jp/entry/", replace_prefix(mappedInputGene$userId, "kegg_glycan:"))
+		mappedInputGene$gLink <- paste0("https://www.genome.jp/entry/", replace_prefix(mappedInputGene$userId, "kegg_glycan:"))
 	} else if (sourceIdType == "lipidbank"){
 		cuts <- replace_prefix(mappedInputGene$userId, "lipidbank:")
-		mapppedInputGene$gLink <- paste0("https://lipidbank.jp/", sapply(cuts, function(x) return(substring(x, 1, 3))))
+		mappedInputGene$gLink <- paste0("https://lipidbank.jp/", sapply(cuts, function(x) return(substring(x, 1, 3))))
 	} else if (sourceIdType == "lipidmaps"){
-		mapppedInputGene$gLink <- paste0("https://www.lipidmaps.org/databases/lmsd/", replace_prefix(mappedInputGene$userId, "lipidmaps:"))
+		mappedInputGene$gLink <- paste0("https://www.lipidmaps.org/databases/lmsd/", replace_prefix(mappedInputGene$userId, "lipidmaps:"))
 	} else if (sourceIdType == "plantfa"){
-		mapppedInputGene$gLink <- paste0("https://plantfadb.org/fatty_acids/", replace_prefix(mappedInputGene$userId, "plantfa:"))
+		mappedInputGene$gLink <- paste0("https://plantfadb.org/fatty_acids/", replace_prefix(mappedInputGene$userId, "plantfa:"))
 	} else if (sourceIdType == "pubchem"){
-		mapppedInputGene$gLink <- paste0("https://pubchem.ncbi.nlm.nih.gov/compound/", replace_prefix(mappedInputGene$userId, "pubchem:"))
+		mappedInputGene$gLink <- paste0("https://pubchem.ncbi.nlm.nih.gov/compound/", replace_prefix(mappedInputGene$userId, "pubchem:"))
 	} else if (sourceIdType == "swisslipids"){
-		mapppedInputGene$gLink <- paste0("http://www.swisslipids.org/#/entity/", replace_prefix(mappedInputGene$userId, "swisslipids:"), "/")
+		mappedInputGene$gLink <- paste0("http://www.swisslipids.org/#/entity/", replace_prefix(mappedInputGene$userId, "swisslipids:"), "/")
 	} else if (sourceIdType == "wikidata"){
-		mapppedInputGene$gLink <- paste0("https://www.wikidata.org/wiki/", replace_prefix(mappedInputGene$userId, "wikidata:"))
+		mappedInputGene$gLink <- paste0("https://www.wikidata.org/wiki/", replace_prefix(mappedInputGene$userId, "wikidata:"))
 	} else {
-		mapppedInputGene$gLink <- paste0("URL NOT FOUND FOR TYPE ", sourceIdType)
+		mappedInputGene$gLink <- paste0("URL NOT FOUND FOR TYPE ", sourceIdType)
 	}
-
 	inputGene <- mappedInputGene
 	# if(dataType=="list"){
 	# 	inputGene <- mappedInputGene
