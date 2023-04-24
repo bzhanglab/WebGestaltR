@@ -4,11 +4,11 @@
 		<b-tooltip label="Enriched analyte sets are post-processed by two methods to reduce redundancy." type="is-dark" animated multilined dashed>
 			Redundancy reduction:
 		</b-tooltip>
-		<b-radio v-model="redundancy" native-value="all">All</b-radio>
+		<b-radio v-model="redundancy" native-value="all">None</b-radio>
 		{{#hasAp}}
 		<b-radio v-model="redundancy" native-value="ap">
-			<b-tooltip label="R package apcluster is used to cluster analyte sets." type="is-dark" animated multilined dashed>
-				Affinity propagation
+			<b-tooltip label="R package cluster is used to cluster analyte sets." type="is-dark" animated multilined dashed>
+				<emph>k</emph>-Medoid
 			</b-tooltip>
 		</b-radio>
 		{{/hasAp}}

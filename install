@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 R -e "library(utils)
-library(devtools)
 remove.packages('WebGestaltR')
+q()"
+echo "Old version removed"
+R -e "library(devtools)
 install('.')
 q()"
 echo "New version installed"
