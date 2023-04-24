@@ -28,7 +28,7 @@ kMedoid <- function(idsInSet, score){
         }
     }
     # compute the k-medoid clustering
-    kmRes <- pam(sim.mat, 10, diss=TRUE) # TODO: Make parameter for number of clusters. Currently set to 10.
+    kmRes <- pam(sim.mat, 5, diss=TRUE) # TODO: Make parameter for number of clusters. Currently set to 5.
     
     #sort clusters to make exemplar the first member
     clusters <- vector(mode="list", length(kmRes$medoids))
