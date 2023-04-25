@@ -13,22 +13,32 @@ kMedoid <- function(idsInSet, score){
 
     for (i in 1:(num-1)) {
         for (j in (i+1):num) {
-            jaccardIndex <- sum(bitwAnd(overlap.mat[, i], overlap.mat[, j])) / sum(bitwOr(overlap.mat[, i], overlap.mat[, j]))
-            sim.mat[i, j] <- jaccardIndex
-            sim.mat[j, i] <- jaccardIndex
-        }
-    }
-    # if there is no overlap, set the similarity to -Inf
-    for (i in 1:(num-1)) {
-        for (j in (i+1):num) {
-            if (sum(bitwOr(overlap.mat[, i], overlap.mat[, j])) == 0) {
+            x <- sum(bitwOr(overlap.mat[, i], overlap.mat[, j]))
+            if (x == 0) { # if there is no overlap, set the similarity to -Inf
                 sim.mat[i, j] <- -Inf
                 sim.mat[j, i] <- -Inf
+            } else {
+                jaccardIndex <- sum(bitwAnd(overlap.mat[, i], overlap.mat[, j])) / x
+                sim.mat[i, j] <- jaccardIndex
+                sim.mat[j, i] <- jaccardIndex
             }
         }
     }
+
+
+    if (max(sim.mat) == min(sim.mat)) {
+		# this will generate error, so randomy add some noise to off diagonal elements
+		mat.siz <- dim(sim.mat)[1]
+		rand.m <- matrix(rnorm(mat.siz*mat.siz,0,0.01),mat.siz)
+		# make it symmetric
+		rand.m[lower.tri(rand.m)] = t(rand.m)[lower.tri(rand.m)]
+		sim.mat <- sim.mat + rand.m
+		# make diagonal all 1
+		diag(sim.mat) <- 1
+	}
+
     # compute the k-medoid clustering
-    kmRes <- pam(sim.mat, 5, diss=TRUE) # TODO: Make parameter for number of clusters. Currently set to 5.
+    kmRes <- pam(sim.mat, 5, diss=TRUE, variant = "faster") # TODO: Make parameter for number of clusters. Currently set to 5.
     
     #sort clusters to make exemplar the first member
     clusters <- vector(mode="list", length(kmRes$medoids))
