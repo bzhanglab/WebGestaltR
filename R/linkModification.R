@@ -3,46 +3,94 @@
 #' Currently, we only have wikipathway and kegg pathways that need to modify the link
 #'
 #' @keywords internal
-linkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap) {
-
-	if (grepl("www.kegg.jp", enrichPathwayLink, fixed=TRUE)) {
-		link <- keggLinkModification(enrichPathwayLink, geneList)
-		return(link)
-	}
-	if (grepl("www.wikipathways.org", enrichPathwayLink, fixed=TRUE)) {
-		link <- wikiLinkModification(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap)
-		return(link)
-	}
-	return(enrichPathwayLink)
+linkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName = "https://www.webgestalt.org/") {
+    print("link modification")
+    print(enrichPathwayLink)
+    print(interestingGeneMap$standardId)
+    if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE) && interestingGeneMap$standardId == "rampc") {
+        print("kegg metabolite link modified")
+        link <- keggMetaboliteLinkModification(enrichPathwayLink,  geneList, interestingGeneMap, hostName)
+        return(link)
+    } else if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
+        link <- keggLinkModification(enrichPathwayLink, geneList)
+        return(link)
+    } else if (grepl("www.wikipathways.org", enrichPathwayLink, fixed = TRUE)) {
+        link <- wikiLinkModification(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap)
+        return(link)
+    }
+    return(enrichPathwayLink)
 }
 
-keggLinkModification <- function(enrichPathwayLink,geneList){
-	geneList <- gsub(";","+",geneList)
-	enrichPathwayLink <- paste(enrichPathwayLink,"+",geneList,sep="")
-	return(enrichPathwayLink)
+keggLinkModification <- function(enrichPathwayLink, geneList) {
+    geneList <- gsub(";", "+", geneList)
+    enrichPathwayLink <- paste(enrichPathwayLink, "+", geneList, sep = "")
+    return(enrichPathwayLink)
+}
+
+keggMetaboliteLinkModification <- function(enrichPathwayLink, geneList, interestingGeneMap, hostName) {
+    print(geneList)
+	geneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "kegg", "rampc", hostName)
+    geneList <- sapply(geneList, function(x) x <- gsub("kegg:", "", x, ignore.case = TRUE))
+    print("==========")
+    geneList <- paste(geneList, collapse = "+")
+    print(geneList)
+   
+    enrichPathwayLink <- paste(enrichPathwayLink, "+", geneList, sep = "")
+    return(enrichPathwayLink)
 }
 
 wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap) {
-	geneMap <- interestingGeneMap$mapped
-	geneList <- unlist(strsplit(geneList,";"))
-	geneMap <- filter(geneMap, .data$entrezgene %in% geneList)
-	enrichPathwayLink <- paste0(enrichPathwayLink,
-		paste0(sapply(geneMap$geneSymbol, function(x) paste0("&label[]=", x)), collapse="")
-		#not many pathway have entrezgene xref. Using both also seem to interfere with coloring
-		#paste0(sapply(geneMap$entrezgene, function(x) paste0("&xref[]=", x, ",Entrez Gene")), collapse="")
-	)
-	if (enrichMethod == "ORA") {
-		enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
-	} else if (enrichMethod == "GSEA") {
-		scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
-		maxScore <- max(scores)
-		minScore <- min(scores)
-		tmp <- getPaletteForGsea(maxScore, minScore)
-		palette <- tmp[[1]]
-		breaks <- tmp[[2]]
-		colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
-		colorStr <- paste(gsub("#", "%23", colors, fixed=TRUE), collapse=",")
-		enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorStr)
-	}
-	return(enrichPathwayLink)
+    geneMap <- interestingGeneMap$mapped
+    geneList <- unlist(strsplit(geneList, ";"))
+    geneMap <- filter(geneMap, .data$entrezgene %in% geneList)
+    enrichPathwayLink <- paste0(
+        enrichPathwayLink,
+        paste0(sapply(geneMap$geneSymbol, function(x) paste0("&label[]=", x)), collapse = "")
+        # not many pathway have entrezgene xref. Using both also seem to interfere with coloring
+        # paste0(sapply(geneMap$entrezgene, function(x) paste0("&xref[]=", x, ",Entrez Gene")), collapse="")
+    )
+    if (enrichMethod == "ORA") {
+        enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
+    } else if (enrichMethod == "GSEA") {
+        scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
+        maxScore <- max(scores)
+        minScore <- min(scores)
+        tmp <- getPaletteForGsea(maxScore, minScore)
+        palette <- tmp[[1]]
+        breaks <- tmp[[2]]
+        colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
+        colorStr <- paste(gsub("#", "%23", colors, fixed = TRUE), collapse = ",")
+        enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorStr)
+    }
+    return(enrichPathwayLink)
+}
+
+
+simple_mapping <- function(id_list, organism, source_id, target_id, standard_id, hostName) {
+    response <- POST(file.path(hostName, "api", "idmapping"),
+        encode = "json",
+        body = list(
+            organism = organism, sourceType = source_id,
+            targetType = target_id, ids = id_list, standardId = standard_id
+        )
+    )
+    if (response$status_code != 200) {
+        stop(webRequestError(response))
+    }
+    mapRes <- content(response)
+    # if (mapRes$status == 1) {
+    #     stop(webApiError(mapRes))
+    # }
+    mappedIds <- mapRes$mapped
+    unmappedIds <- unlist(mapRes$unmapped)
+    # if (length(mappedIds) == 0) {
+    #     stop(idMappingError("empty"))
+    # }
+    names <- c("sourceId", "targetId")
+    mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
+        x[names]
+    })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)
+
+    colnames(mappedInputGene) <- c("sourceId", "targetId")
+    return(mappedInputGene$targetId)
 }
