@@ -11,7 +11,11 @@ linkModification <- function(enrichMethod, enrichPathwayLink, geneList, interest
         print("kegg metabolite link modified")
         link <- keggMetaboliteLinkModification(enrichPathwayLink,  geneList, interestingGeneMap, hostName)
         return(link)
-    } else if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
+    } else if (grepl("www.wikipathways.org", enrichPathwayLink, fixed = TRUE) && interestingGeneMap$standardId == "rampc") {
+        link <- wikiMetaboliteLinkModification(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName)
+        return(link)
+    } 
+    else if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
         link <- keggLinkModification(enrichPathwayLink, geneList)
         return(link)
     } else if (grepl("www.wikipathways.org", enrichPathwayLink, fixed = TRUE)) {
@@ -28,14 +32,37 @@ keggLinkModification <- function(enrichPathwayLink, geneList) {
 }
 
 keggMetaboliteLinkModification <- function(enrichPathwayLink, geneList, interestingGeneMap, hostName) {
-    print(geneList)
 	geneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "kegg", "rampc", hostName)
     geneList <- sapply(geneList, function(x) x <- gsub("kegg:", "", x, ignore.case = TRUE))
-    print("==========")
     geneList <- paste(geneList, collapse = "+")
-    print(geneList)
-   
     enrichPathwayLink <- paste(enrichPathwayLink, "+", geneList, sep = "")
+    return(enrichPathwayLink)
+}
+
+wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName) {
+    geneMap <- interestingGeneMap$mapped
+    hmdbGeneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
+    hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "", x, ignore.case = TRUE))
+    geneMap <- filter(geneMap, .data$rampc %in% geneList)
+    enrichPathwayLink <- paste0(
+        enrichPathwayLink,
+        paste0(sapply(hmdbGeneList, function(x) paste0("&xref[]=",x,",HMDB")), collapse = "")
+        # not many pathway have entrezgene xref. Using both also seem to interfere with coloring
+        # paste0(sapply(geneMap$entrezgene, function(x) paste0("&xref[]=", x, ",Entrez Gene")), collapse="")
+    )
+    if (enrichMethod == "ORA") {
+        enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
+    } else if (enrichMethod == "GSEA") {
+        scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
+        maxScore <- max(scores)
+        minScore <- min(scores)
+        tmp <- getPaletteForGsea(maxScore, minScore)
+        palette <- tmp[[1]]
+        breaks <- tmp[[2]]
+        colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
+        colorStr <- paste(gsub("#", "%23", colors, fixed = TRUE), collapse = ",")
+        enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorStr)
+    }
     return(enrichPathwayLink)
 }
 
@@ -66,7 +93,10 @@ wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
 }
 
 
-simple_mapping <- function(id_list, organism, source_id, target_id, standard_id, hostName) {
+simple_mapping <- function(id_list, organism, source_id, target_id, standard_id, hostName, no_dups = FALSE) {
+    if (source_id == target_id) {
+        return(id_list)
+    }
     response <- POST(file.path(hostName, "api", "idmapping"),
         encode = "json",
         body = list(
@@ -78,19 +108,16 @@ simple_mapping <- function(id_list, organism, source_id, target_id, standard_id,
         stop(webRequestError(response))
     }
     mapRes <- content(response)
-    # if (mapRes$status == 1) {
-    #     stop(webApiError(mapRes))
-    # }
     mappedIds <- mapRes$mapped
-    unmappedIds <- unlist(mapRes$unmapped)
-    # if (length(mappedIds) == 0) {
-    #     stop(idMappingError("empty"))
-    # }
     names <- c("sourceId", "targetId")
     mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
         x[names]
     })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)
 
     colnames(mappedInputGene) <- c("sourceId", "targetId")
+    if (no_dups) {
+        mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$sourceId), ]
+        mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$targetId), ]
+    }
     return(mappedInputGene$targetId)
 }
