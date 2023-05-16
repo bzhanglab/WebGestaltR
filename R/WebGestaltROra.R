@@ -1,6 +1,6 @@
 #' @importFrom readr write_tsv
 #' @importFrom dplyr left_join select arrange %>% desc mutate
-WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL, interestGeneFile = NULL, interestGene = NULL, interestGeneType = NULL, collapseMethod = "mean", referenceGeneFile = NULL, referenceGene = NULL, referenceGeneType = NULL, referenceSet = NULL, minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05, topThr = 10, reportNum = 20, setCoverNum = 10, isOutput = TRUE, outputDirectory = getwd(), projectName = NULL, dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/") {
+WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL, interestGeneFile = NULL, interestGene = NULL, interestGeneType = NULL, collapseMethod = "mean", referenceGeneFile = NULL, referenceGene = NULL, referenceGeneType = NULL, referenceSet = NULL, minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05, topThr = 10, reportNum = 20, setCoverNum = 10, isOutput = TRUE, outputDirectory = getwd(), projectName = NULL, dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE, usekMedoid = FALSE) {
     enrichMethod <- "ORA"
     projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
@@ -119,14 +119,30 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
             names(idsInSet) <- enrichedSig$geneSet
             minusLogP <- -log(enrichedSig$pValue)
             minusLogP[minusLogP == Inf] <- -log(.Machine$double.eps)
-            apRes <- kMedoid(idsInSet, minusLogP)
-            wscRes <- weightedSetCover(idsInSet, 1 / minusLogP, setCoverNum, nThreads)
+            apRes <- NULL
+            wscRes <- NULL
+            kRes <- NULL
+            if(useAffinityPropagation){
+              apRes <- affinityPropagation(idsInSet, minusLogP)
+            }
+            if(useWeightedSetCover){
+              wscRes <- weightedSetCover(idsInSet, 1 / minusLogP, setCoverNum, nThreads)
+            }
+            if(usekMedoid){
+              kRes <- kMedoid(idsInSet, minusLogP)
+            }
             if (!is.null(apRes)) {
-                writeLines(sapply(apRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
+              writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
             } else {
-                apRes <- NULL
+              apRes <- NULL
             }
             clusters$ap <- apRes
+            if (!is.null(kRes)) {
+              writeLines(sapply(kRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", projectName, ".txt")))
+            } else {
+              kRes <- NULL
+            }
+            clusters$km <- kRes
             if (!is.null(wscRes$topSets)) {
                 writeLines(c(paste0("# Coverage: ", wscRes$coverage), wscRes$topSets), file.path(projectDir, paste0("enriched_geneset_wsc_topsets_", projectName, ".txt")))
                 clusters$wsc <- list(representatives = wscRes$topSets, coverage = wscRes$coverage)

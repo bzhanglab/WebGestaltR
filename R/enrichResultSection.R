@@ -30,7 +30,8 @@ enrichResultSection <- function(enrichMethod, enrichedSig, geneSet, geneSetDes, 
     hasMultipleDatabases = hasMultipleDatabases,
     setsWithNetJson = setsWithNetJson,
     hasAp = !is.null(clusters$ap),
-    hasWsc = !is.null(clusters$wsc)
+    hasWsc = !is.null(clusters$wsc),
+    hasKmed = !is.null(clusters$km)
   )
   template <- readLines(system.file("templates/enrichResultSection.mustache", package = "WebGestaltR"))
   return(whisker.render(template, data))

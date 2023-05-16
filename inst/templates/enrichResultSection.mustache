@@ -8,10 +8,17 @@
 		{{#hasAp}}
 		<b-radio v-model="redundancy" native-value="ap">
 			<b-tooltip label="R package cluster is used to cluster analyte sets." type="is-dark" animated multilined dashed>
-				<emph>k</emph>-Medoid
+				<i>k</i>-Medoid
 			</b-tooltip>
 		</b-radio>
 		{{/hasAp}}
+		{{#hasKmed}}
+		<b-radio v-model="redundancy" native-value="km">
+			<b-tooltip label="R package cluster using k-medoid to cluster analyte sets." type="is-dark" animated multilined dashed>
+				<i>k</i>-Medoid
+			</b-tooltip>
+		</b-radio>
+		{{/hasKmed}}
 		{{#hasWsc}}
 		<b-radio v-model="redundancy" native-value="wsc">
 			<b-tooltip label="Find top analyte sets while maximizing analyte coverage." type="is-dark" animated multilined dashed>
