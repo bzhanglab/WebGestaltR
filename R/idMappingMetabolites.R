@@ -10,11 +10,12 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
   }
 
   if (dataType == "rnk") {
+
     ###### Collapse the gene ids with multiple scores##########
     x <- tapply(inputGene$score, inputGene$gene, collapseMethod)
     inputGene <- data.frame(gene = names(x), score = as.numeric(x), stringsAsFactors = FALSE)
     inputGeneL <- inputGene$gene
-    colnames(inputGene) <- c(sourceIdType, "score")
+    colnames(inputGene) <- c("userId", "score")
   }
 
   if (dataType == "gmt") {
@@ -126,14 +127,46 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
   } else {
     mappedInputGene$gLink <- paste0("URL NOT FOUND FOR TYPE ", sourceIdType)
   }
-  inputGene <- mappedInputGene
+  inputGene$userId <- add_prefix(inputGene$userId, old_id_type)
+  if(dataType=="list"){
+		inputGene <- select(mappedInputGene, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
+	}
 
+	if(dataType=="rnk"){
+		inputGene <- mappedInputGene %>% left_join(inputGene, by=c("userId"="userId")) %>%
+			select(.data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$score, .data$gLink)
+	}
+
+	if(dataType=="gmt"){
+		inputGene <- mappedInputGene %>% left_join(inputGene, by=c("userId"="userId")) %>%
+			select(.data$geneSet, .data$link, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
+	}
+  # inputGene <- mappedInputGene
   ############# Output#######################
   if (mappingOutput) {
     idMappingOutput(outputFileName, inputGene, unmappedIds, dataType, old_id_type, targetIdType = targetIdType)
   }
   r <- list(mapped = inputGene, unmapped = unmappedIds)
   return(r)
+}
+
+add_prefix <- function(x, sourceIdType) {
+  uppers <- c("LIPIDMAPS", "CAS")
+  if(toupper(sourceIdType) %in% uppers){
+    return(unlist(sapply(x, function(y) {
+      if (grepl(":", y)) {
+        return(y)
+      }
+      return(paste0(toupper(sourceIdType), ":", toupper(y)))
+    })))
+  } else {
+    return(unlist(sapply(x, function(y) {
+      if (grepl(":", y) && sourceIdType != "swisslipids") {
+        return(y)
+      }
+      return(paste0(sourceIdType, ":", y))
+    })))
+  }
 }
 
 replace_prefix <- function(x, prefix) {
