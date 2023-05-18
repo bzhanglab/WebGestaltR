@@ -127,17 +127,19 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
   } else {
     mappedInputGene$gLink <- paste0("URL NOT FOUND FOR TYPE ", sourceIdType)
   }
-  inputGene$userId <- add_prefix(inputGene$userId, old_id_type)
+  
   if(dataType=="list"){
 		inputGene <- select(mappedInputGene, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
 	}
 
 	if(dataType=="rnk"){
+    inputGene$userId <- add_prefix(inputGene$userId, old_id_type)
 		inputGene <- mappedInputGene %>% left_join(inputGene, by=c("userId"="userId")) %>%
 			select(.data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$score, .data$gLink)
 	}
 
 	if(dataType=="gmt"){
+    inputGene$userId <- add_prefix(inputGene$userId, old_id_type)
 		inputGene <- mappedInputGene %>% left_join(inputGene, by=c("userId"="userId")) %>%
 			select(.data$geneSet, .data$link, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
 	}
