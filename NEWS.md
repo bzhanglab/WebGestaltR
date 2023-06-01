@@ -1,3 +1,6 @@
+# WebGestalt 0.4.6 (2023-05-31)
+* Fixed a bug with R 4.3
+
 # WebGestalt 0.4.5 (2023-02-10)
 * Updated default URLs to HTTPS
 * Sort results by enrichment ratio for ties with FDR and P-value
