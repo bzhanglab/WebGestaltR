@@ -5,7 +5,6 @@ gseaEnrichment <- function (hostName, outputDirectory, projectName, geneRankList
 	if (!dir.exists(projectFolder)) {
 		dir.create(projectFolder)
 	}
-
 	colnames(geneRankList) <- c("gene", "score")
 	sortedScores <- sort(geneRankList$score, decreasing=TRUE)
 

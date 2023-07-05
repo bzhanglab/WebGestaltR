@@ -1,9 +1,12 @@
-kMedoid <- function(idsInSet, score){
+kMedoid <- function(idsInSet, score, maxK = 10){
     # first find out the union of sets, sorted
     all.genes <- sort(unique(unlist(idsInSet)))
     overlap.mat <- sapply(idsInSet, function(x) {as.integer(all.genes %in% x)})
 
     num <- length(idsInSet)
+    if (num <= maxK) {
+        maxK <- num - 1
+    }
     sim.mat <- matrix(1, num, num)
     colnames(sim.mat) <- colnames(overlap.mat)
 
@@ -38,7 +41,7 @@ kMedoid <- function(idsInSet, score){
 	}
 
     # compute the k-medoid clustering
-    kmRes <- pam(sim.mat, 5, diss=TRUE, variant = "faster") # TODO: Make parameter for number of clusters. Currently set to 5.
+    kmRes <- pam(sim.mat, maxK, diss=TRUE, variant = "faster") # TODO: Make parameter for number of clusters. Currently set to 5.
     
     #sort clusters to make exemplar the first member
     clusters <- vector(mode="list", length(kmRes$medoids))

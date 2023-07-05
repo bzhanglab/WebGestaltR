@@ -1,10 +1,22 @@
 mapUserId <- function(enrichedSig,geneColumn,interestingGeneMap){
 	####map entrez gene back to the original user id and add one more column to the enrichedSig
 	standardId <- interestingGeneMap$standardId
+	
 	mapgene <- interestingGeneMap$mapped[, c("userId", standardId)]
 	gene <- enrichedSig[[geneColumn]]
 	gene <- strsplit(gene,";")
 	gene <- unlist(lapply(gene,geneM,mapgene))
+	# print(gene)
+	# if (standardId == "rampc"){
+	# 	gene <- unlist(lapply(gene, function(x) {
+	# 		gene_array <- strsplit(x,";")
+	# 		if (is.na(x)) {
+	# 			return(NA);
+	# 		} else {
+	# 			return(paste(strsplit(x, ":")[-1], sep=":"))
+	# 		}
+	# 	}))
+	# }
 	enrichedSig <- data.frame(enrichedSig, userId=gene, stringsAsFactors=FALSE)
 	return(enrichedSig)
 }

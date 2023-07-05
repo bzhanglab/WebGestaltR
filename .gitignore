@@ -40,3 +40,4 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 .vscode
+.DS_Store

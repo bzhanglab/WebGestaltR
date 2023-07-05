@@ -1,6 +1,6 @@
 #' @importFrom readr write_tsv
 #' @importFrom dplyr left_join select arrange %>% desc mutate
-WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL, interestGeneFile = NULL, interestGene = NULL, interestGeneType = NULL, collapseMethod = "mean", referenceGeneFile = NULL, referenceGene = NULL, referenceGeneType = NULL, referenceSet = NULL, minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05, topThr = 10, reportNum = 20, setCoverNum = 10, isOutput = TRUE, outputDirectory = getwd(), projectName = NULL, dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE, usekMedoid = FALSE) {
+WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL, interestGeneFile = NULL, interestGene = NULL, interestGeneType = NULL, collapseMethod = "mean", referenceGeneFile = NULL, referenceGene = NULL, referenceGeneType = NULL, referenceSet = NULL, minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05, topThr = 10, reportNum = 20, setCoverNum = 10, isOutput = TRUE, outputDirectory = getwd(), projectName = NULL, dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10) {
     enrichMethod <- "ORA"
     projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
@@ -129,7 +129,7 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
               wscRes <- weightedSetCover(idsInSet, 1 / minusLogP, setCoverNum, nThreads)
             }
             if(usekMedoid){
-              kRes <- kMedoid(idsInSet, minusLogP)
+              kRes <- kMedoid(idsInSet, minusLogP, maxK = kMedoid_k)
             }
             if (!is.null(apRes)) {
               writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))

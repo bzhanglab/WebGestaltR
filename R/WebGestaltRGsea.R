@@ -1,6 +1,6 @@
 #' @importFrom dplyr select distinct left_join arrange %>% mutate
 #' @importFrom readr write_tsv
-WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, perNum=1000, p=1, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", saveRawGseaResult=FALSE, plotFormat="png", nThreads=1, cache=NULL, hostName="https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE, usekMedoid = FALSE) {
+WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,  interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", minNum=10, maxNum=500, fdrMethod="BH", sigMethod="fdr", fdrThr=0.05, topThr=10, reportNum=20, setCoverNum=10, perNum=1000, p=1, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="binary", saveRawGseaResult=FALSE, plotFormat="png", nThreads=1, cache=NULL, hostName="https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10) {
 	enrichMethod <- "GSEA"
 	projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
@@ -126,7 +126,7 @@ WebGestaltRGsea <- function(organism="hsapiens", enrichDatabase=NULL, enrichData
 				wscRes <- weightedSetCover(idsInSet, 1 / signedLogP, setCoverNum, nThreads)
 			}
 			if(usekMedoid){
-				kRes <- kMedoid(idsInSet, signedLogP)
+				kRes <- kMedoid(idsInSet, signedLogP, maxK = kMedoid_k)
 			}
 			if (!is.null(apRes)) {
 				writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))

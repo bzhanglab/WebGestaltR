@@ -12,7 +12,8 @@
 #' categories have DAG (directed acyclic graph) structure or genes in the functional
 #' categories have network structure, those relationship can also be visualized in the
 #' report.
-#'
+#' 
+#' @param omic_type The type of omics analysis: \code{single} or \code{multi}
 #' @param enrichMethod Enrichment methods: \code{ORA}, \code{GSEA} or \code{NTA}.
 #' @param organism Currently, WebGestaltR supports 12 organisms. Users can use the function
 #'   \code{listOrganism} to check available organisms. Users can also input \code{others} to
@@ -50,6 +51,7 @@
 #' @param interestGeneType The ID type of the interesting gene list. The supported ID types of
 #'   WebGestaltR for the selected organism can be found by the function \code{listIdType}. If
 #'   the \code{organism} is \code{others}, users do not need to set this parameter.
+#' @param interestGeneNames The names of the id lists for multiomics data.
 #' @param collapseMethod The method to collapse duplicate IDs with scores. \code{mean},
 #'   \code{median}, \code{min} and \code{max} represent the mean, median, minimum and maximum
 #'   of scores for the duplicate IDs.
@@ -193,7 +195,7 @@
 #'   networkConstructionMethod="Network_Retrieval_Prioritization")
 #' }
 #'
-WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, sigMethod="fdr", fdrMethod="BH", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, gseaP=1, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="continuous", saveRawGseaResult=FALSE, gseaPlotFormat=c("png", "svg"), setCoverNum=10, networkConstructionMethod=NULL, neighborNum=10, highlightType="Seeds", highlightSeedNum=10, nThreads=1, cache=NULL, hostName="https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE, usekMedoid = FALSE, ...) {
+WebGestaltR <- function(omic_type = "single", enrichMethod="ORA", organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, interestGeneNames=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, sigMethod="fdr", fdrMethod="BH", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, gseaP=1, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="continuous", saveRawGseaResult=FALSE, gseaPlotFormat=c("png", "svg"), setCoverNum=10, networkConstructionMethod=NULL, neighborNum=10, highlightType="Seeds", highlightSeedNum=10, nThreads=1, cache=NULL, hostName="https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10, ...) {
 	extraArgs <- list(...)
 	if ('keepGSEAFolder' %in% names(extraArgs) | 'keepGseaFolder' %in% names(extraArgs)) {
 		warning("Parameter keepGSEAFolder is obsolete.\n")
@@ -228,12 +230,17 @@ WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase=
 		projectName <- as.character(as.integer(Sys.time()))
 	}
 	projectName <- sanitizeFileName(projectName) # use for GOSlim summary file name, convert punct to _
-	if (enrichMethod == "ORA") {
-		enrichR <- WebGestaltROra(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,  interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectName, dagColor=dagColor, nThreads=nThreads, cache=cache, hostName=hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid)
-	} else if (enrichMethod == "GSEA") {
-		enrichR <- WebGestaltRGsea(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,  interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, perNum=perNum, p=gseaP, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectName, dagColor=dagColor, saveRawGseaResult=saveRawGseaResult, plotFormat=gseaPlotFormat, nThreads=nThreads, cache=cache, hostName=hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid)
-	} else if (enrichMethod == "NTA") {
-		enrichR <- WebGestaltRNta(organism=organism, network=enrichDatabase, method=networkConstructionMethod, neighborNum=neighborNum, highlightSeedNum=highlightSeedNum, inputSeed=interestGene, inputSeedFile=interestGeneFile, interestGeneType=interestGeneType, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, outputDirectory=outputDirectory, projectName=projectName, highlightType=highlightType, cache=cache, hostName=hostName)
+	if (omic_type == "single"){
+		if (enrichMethod == "ORA") {
+			enrichR <- WebGestaltROra(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,  interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectName, dagColor=dagColor, nThreads=nThreads, cache=cache, hostName=hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k)
+		} else if (enrichMethod == "GSEA") {
+			enrichR <- WebGestaltRGsea(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,  interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, perNum=perNum, p=gseaP, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectName, dagColor=dagColor, saveRawGseaResult=saveRawGseaResult, plotFormat=gseaPlotFormat, nThreads=nThreads, cache=cache, hostName=hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k)
+		} else if (enrichMethod == "NTA") {
+			enrichR <- WebGestaltRNta(organism=organism, network=enrichDatabase, method=networkConstructionMethod, neighborNum=neighborNum, highlightSeedNum=highlightSeedNum, inputSeed=interestGene, inputSeedFile=interestGeneFile, interestGeneType=interestGeneType, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, outputDirectory=outputDirectory, projectName=projectName, highlightType=highlightType, cache=cache, hostName=hostName)
+		}
+	}
+	else if (omic_type == "multi"){
+		enrichR <- WebGestaltRMultiOmics(enrichMethod = enrichMethod, organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,  interestGeneFiles=interestGeneFile, interestGenes =interestGene, interestGeneType=interestGeneType, interestGeneNames = interestGeneNames, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectName, dagColor=dagColor, nThreads=nThreads, cache=cache, hostName=hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k)
 	}
 
 	return(enrichR)
