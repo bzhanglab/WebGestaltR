@@ -37,9 +37,12 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP wrap__hello_world();
+
 static const R_CallMethodDef CallEntries[] = {
     {"_WebGestaltR_fillInputDataFrame", (DL_FUNC) &_WebGestaltR_fillInputDataFrame, 3},
     {"_WebGestaltR_gseaPermutation", (DL_FUNC) &_WebGestaltR_gseaPermutation, 3},
+    {"wrap__hello_world", (DL_FUNC) &wrap__hello_world, 0},
     {NULL, NULL, 0}
 };
 
