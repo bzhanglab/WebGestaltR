@@ -22,4 +22,5 @@ Imports: methods, dplyr, doRNG, readr, parallel (>= 3.3.2),
 NeedsCompilation: yes
 LinkingTo: Rcpp
 RoxygenNote: 7.2.3
+SystemRequirements: Cargo (Rust's package manager), rustc v1.66.0
 Config/rextendr/version: 0.3.1

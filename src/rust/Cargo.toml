@@ -8,5 +8,7 @@ crate-type = [ 'staticlib' ]
 name = 'WebGestaltR'
 
 [dependencies]
-extendr-api = '0.4.0'
+extendr-api = '0.6.0'
+ndarray = "0.15.6"
+rustc-hash = "1.1.0"
 webgestalt_lib = {git = "https://github.com/bzhanglab/webgestalt_rust.git"}
