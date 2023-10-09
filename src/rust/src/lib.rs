@@ -3,7 +3,7 @@ use std::vec;
 use extendr_api::prelude::*;
 use ndarray::Array2;
 use rustc_hash::FxHashMap;
-use webgestalt_lib::methods::*;
+use webgestalt_lib::methods::{gsea::GSEAConfig, *};
 /// Return string `"Hello world!"` to R.
 /// @export
 #[extendr]
@@ -15,8 +15,15 @@ fn rust_hello_world() -> &'static str {
 /// @return List of the results of GSEA
 /// @export
 #[extendr]
-fn gsea_rust() -> List {
+fn gsea_rust(min_overlap: Robj, max_overlap: Robj) -> List {
     // webgestalt_lib::methods::gsea::
+    //
+    let config = GSEAConfig {
+        min_overlap: min_overlap.as_integer().unwrap(),
+        max_overlap: max_overlap.as_integer().unwrap(),
+        ..Default::default()
+    };
+    let res = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config);
     list!(
         fdr = vec![0.01, 0.05, 0.1],
         leading_edge = vec![4, 6, 4],
