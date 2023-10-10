@@ -23,11 +23,29 @@ fn gsea_rust(min_overlap: Robj, max_overlap: Robj) -> List {
         max_overlap: max_overlap.as_integer().unwrap(),
         ..Default::default()
     };
-    let res = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config);
+    let res = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config); // TODO: Convert
+                                                                              // dataframe to GMT
+    let mut fdr: Vec<f64> = Vec::new();
+    let mut p: Vec<f64> = Vec::new();
+    let mut leading_edge: Vec<i32> = Vec::new();
+    let mut gene_sets: Vec<String> = Vec::new();
+    let mut es: Vec<f64> = Vec::new();
+    let mut nes: Vec<f64> = Vec::new();
+    for row in res {
+        fdr.push(row.fdr);
+        p.push(row.p);
+        leading_edge.push(row.leading_edge);
+        gene_sets.push(row.set);
+        es.push(row.es);
+        nes.push(row.nes);
+    }
     list!(
-        fdr = vec![0.01, 0.05, 0.1],
-        leading_edge = vec![4, 6, 4],
-        gene_sets = vec!["GO1", "GO2", "GO3"]
+        fdr = fdr,
+        p = p,
+        es = es,
+        nes = nes,
+        leading_edge = leading_edge,
+        gene_sets = gene_sets,
     )
 }
 
