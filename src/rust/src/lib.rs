@@ -17,7 +17,6 @@ fn rust_hello_world() -> &'static str {
 #[extendr]
 fn gsea_rust(min_overlap: Robj, max_overlap: Robj) -> List {
     // webgestalt_lib::methods::gsea::
-    //
     let config = GSEAConfig {
         min_overlap: min_overlap.as_integer().unwrap(),
         max_overlap: max_overlap.as_integer().unwrap(),
