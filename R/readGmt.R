@@ -66,9 +66,10 @@ prepareInputMatrixGsea <- function(rank, gmt) {
   gmt <- gmt %>% filter(.data$gene %in% genes)
   geneSets <- (gmt %>% select(.data$geneSet, .data$description) %>% distinct())$geneSet
   # 0 or 1 matrix indicating gene and gene set relationship
-  # C++ implementation
+  #  C++ implementation
   # rel <- fillInputDataFrame(gmt, genes, geneSets)
   rel <- as.data.frame(fill_input_data_frame(gmt, genes, geneSets))
+  rel$gene <- genes
   # R implementation
   # rel <- matrix(0, nrow=length(genes), ncol=length(geneSets), dimnames=list(genes, geneSets))
   #

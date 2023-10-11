@@ -3,7 +3,13 @@ use std::vec;
 use extendr_api::prelude::*;
 use ndarray::Array2;
 use rustc_hash::FxHashMap;
-use webgestalt_lib::methods::{gsea::GSEAConfig, *};
+use webgestalt_lib::{
+    methods::{
+        gsea::{GSEAConfig, RankListItem},
+        *,
+    },
+    readers::utils::Item,
+};
 /// Return string `"Hello world!"` to R.
 /// @export
 #[extendr]
@@ -15,13 +21,44 @@ fn rust_hello_world() -> &'static str {
 /// @return List of the results of GSEA
 /// @export
 #[extendr]
-fn gsea_rust(min_overlap: Robj, max_overlap: Robj) -> List {
+fn gsea_rust(
+    min_overlap: Robj,
+    max_overlap: Robj,
+    sets: Robj,
+    parts: Robj,
+    analytes: Robj,
+    ranks: Robj,
+) -> List {
     // webgestalt_lib::methods::gsea::
     let config = GSEAConfig {
-        min_overlap: min_overlap.as_integer().unwrap(),
-        max_overlap: max_overlap.as_integer().unwrap(),
+        min_overlap: 15,
+        max_overlap: 500,
         ..Default::default()
     };
+    let mut gmt: Vec<Item> = Vec::new();
+    let set_vec = sets.as_str_vector().unwrap();
+    let parts_vec: Vec<Vec<String>> = parts
+        .as_list()
+        .unwrap()
+        .iter()
+        .map(|(_, x)| x.as_string_vector().unwrap())
+        .collect();
+    for (i, set) in set_vec.iter().enumerate() {
+        gmt.push(Item {
+            id: set.to_string(),
+            url: String::default(),
+            parts: parts_vec[i].clone(),
+        })
+    }
+    let mut analyte_list: Vec<RankListItem> = Vec::new();
+    let analyte_vec: Vec<&str> = analytes.as_str_vector().unwrap();
+    let ranks_vec: Vec<f64> = ranks.as_real_vector().unwrap();
+    for (i, analyte) in analyte_vec.iter().enumerate() {
+        analyte_list.push(RankListItem {
+            analyte: analyte.to_string(),
+            rank: ranks_vec[i],
+        })
+    }
     let res = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config); // TODO: Convert
                                                                               // dataframe to GMT
     let mut fdr: Vec<f64> = Vec::new();
@@ -30,6 +67,7 @@ fn gsea_rust(min_overlap: Robj, max_overlap: Robj) -> List {
     let mut gene_sets: Vec<String> = Vec::new();
     let mut es: Vec<f64> = Vec::new();
     let mut nes: Vec<f64> = Vec::new();
+    let mut running_sum: Vec<Robj> = Vec::new();
     for row in res {
         fdr.push(row.fdr);
         p.push(row.p);
@@ -37,14 +75,16 @@ fn gsea_rust(min_overlap: Robj, max_overlap: Robj) -> List {
         gene_sets.push(row.set);
         es.push(row.es);
         nes.push(row.nes);
+        running_sum.push(Robj::from(row.running_sum));
     }
     list!(
         fdr = fdr,
-        p = p,
-        es = es,
-        nes = nes,
+        p_val = p,
+        ES = es,
+        NES = nes,
         leading_edge = leading_edge,
         gene_sets = gene_sets,
+        running_sum = running_sum,
     )
 }
 
@@ -76,7 +116,8 @@ fn gsea_rust(min_overlap: Robj, max_overlap: Robj) -> List {
 pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
     let genes_vec = genes.as_string_vector().unwrap();
     let gene_set_vec = gene_sets.as_string_vector().unwrap();
-    let mut value_array = Array2::zeros((genes.len(), gmt.len()));
+    println!("{:?}", gene_set_vec);
+    let mut value_array = Array2::zeros((genes_vec.len(), gene_set_vec.len()));
     let mut gene_index: FxHashMap<&String, usize> = FxHashMap::default();
     let mut set_index: FxHashMap<&String, usize> = FxHashMap::default();
     let gmt_set: Vec<String> = gmt.index("geneSet").unwrap().as_string_vector().unwrap();
@@ -87,12 +128,13 @@ pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
     for (i, val) in gene_set_vec.iter().enumerate() {
         set_index.insert(val, i);
     }
+    println!("HERE");
     for i in 0..gmt_set.len() {
         value_array[[gene_index[&gmt_gene[i]], set_index[&gmt_set[i]]]] = 1;
     }
     let mut gene_set_val: Vec<Vec<i32>> = Vec::new();
     // gene_set_val.push(genes_vec.into_iter().map(|x| SafeTypes::String(x)).collect());
-    for i in 0..gmt_set.len() {
+    for i in 0..value_array.len_of(ndarray::Axis(1)) {
         gene_set_val.push(value_array.column(i).to_vec())
     }
     // gene_set_vec.insert(0, String::from("gene"));
@@ -107,4 +149,6 @@ pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
 extendr_module! {
     mod WebGestaltR;
     fn rust_hello_world;
+    fn fill_input_data_frame;
+    fn gsea_rust;
 }

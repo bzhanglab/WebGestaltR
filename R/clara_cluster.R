@@ -5,7 +5,7 @@ clara_cluster <- function(idsInSet, score){
 
     #sort clusters to make exemplar the first member
     clusters <- vector(mode="list", length(kmRes$medoids))
-    print(kmRes$clusinfo)
+    # print(kmRes$clusinfo)
     if(length(kmRes$medoids) == 0){
         return(NULL)
     }

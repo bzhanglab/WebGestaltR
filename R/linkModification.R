@@ -4,9 +4,9 @@
 #'
 #' @keywords internal
 linkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName = "https://www.webgestalt.org/") {
-    print("link modification")
-    print(enrichPathwayLink)
-    print(interestingGeneMap$standardId)
+    # print("link modification")
+    # print(enrichPathwayLink)
+    # print(interestingGeneMap$standardId)
     if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE) && interestingGeneMap$standardId == "rampc") {
         print("kegg metabolite link modified")
         link <- keggMetaboliteLinkModification(enrichPathwayLink,  geneList, interestingGeneMap, hostName)
@@ -14,8 +14,7 @@ linkModification <- function(enrichMethod, enrichPathwayLink, geneList, interest
     } else if (grepl("www.wikipathways.org", enrichPathwayLink, fixed = TRUE) && interestingGeneMap$standardId == "rampc") {
         link <- wikiMetaboliteLinkModification(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName)
         return(link)
-    } 
-    else if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
+    } else if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
         link <- keggLinkModification(enrichPathwayLink, geneList)
         return(link)
     } else if (grepl("www.wikipathways.org", enrichPathwayLink, fixed = TRUE)) {

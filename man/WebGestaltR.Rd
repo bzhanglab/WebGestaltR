@@ -9,6 +9,7 @@
 \title{WebGestaltR: The R interface for enrichment analysis with WebGestalt.}
 \usage{
 WebGestaltR(
+  omic_type = "single",
   enrichMethod = "ORA",
   organism = "hsapiens",
   enrichDatabase = NULL,
@@ -18,6 +19,7 @@ WebGestaltR(
   interestGeneFile = NULL,
   interestGene = NULL,
   interestGeneType = NULL,
+  interestGeneNames = NULL,
   collapseMethod = "mean",
   referenceGeneFile = NULL,
   referenceGene = NULL,
@@ -46,6 +48,10 @@ WebGestaltR(
   nThreads = 1,
   cache = NULL,
   hostName = "https://www.webgestalt.org/",
+  useWeightedSetCover = TRUE,
+  useAffinityPropagation = FALSE,
+  usekMedoid = FALSE,
+  kMedoid_k = 10,
   ...
 )
 
@@ -58,6 +64,8 @@ WebGestaltRBatch(
 )
 }
 \arguments{
+\item{omic_type}{The type of omics analysis: \code{single} or \code{multi}}
+
 \item{enrichMethod}{Enrichment methods: \code{ORA}, \code{GSEA} or \code{NTA}.}
 
 \item{organism}{Currently, WebGestaltR supports 12 organisms. Users can use the function
@@ -103,6 +111,8 @@ gene list and the corresponding scores.}
 \item{interestGeneType}{The ID type of the interesting gene list. The supported ID types of
 WebGestaltR for the selected organism can be found by the function \code{listIdType}. If
 the \code{organism} is \code{others}, users do not need to set this parameter.}
+
+\item{interestGeneNames}{The names of the id lists for multiomics data.}
 
 \item{collapseMethod}{The method to collapse duplicate IDs with scores. \code{mean},
 \code{median}, \code{min} and \code{max} represent the mean, median, minimum and maximum
