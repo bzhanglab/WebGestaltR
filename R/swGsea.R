@@ -206,197 +206,29 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
     items_in_set <- list()
     rust_parts <- list()
     for (it in 1:ncol(inset_mat)) {
-        items_in_set[[colnames(inset_mat)[it]]] <- data.frame(which(inset_mat[, it] == 1), stringsAsFactors = F)
-        rust_parts[[it]] <- rownames(items_in_set[[colnames(inset_mat)[it]]])
-    colnames(items_in_set[[colnames(inset_mat)[it]]]) <- "rank"
+      items_in_set[[colnames(inset_mat)[it]]] <- data.frame(which(inset_mat[, it] == 1), stringsAsFactors = F)
+      rust_parts[[it]] <- rownames(items_in_set[[colnames(inset_mat)[it]]])
+      colnames(items_in_set[[colnames(inset_mat)[it]]]) <- "rank"
     }
     rust_analytes <- input_df[, 1]
     rust_ranks <- input_df[, 2]
     rust_sets <- colnames(inset_mat)
-    print(rust_parts)
-
     rust_result <- gsea_rust(15, 500, rust_sets, rust_parts, rust_analytes, rust_ranks)
-    # print(rust_result)
     output_df <- data.frame(fdr = rust_result$fdr, p_val = rust_result$p_val, ES = rust_result$ES, NES = rust_result$NES)
-    output_df$fdr[output_df$fdr > 1] <- 1
     rownames(output_df) <- rust_result$gene_sets
-    return(list(Enrichment_Results = output_df, Running_Sums = rust_result$running_Sum, Items_in_Set = items_in_set))
-
-
-    # adjust set scores to range from a minimum of 0+pc to a maximum of 1 (s=(Score-minScore+pc)/(maxScore-minScore+pc)); calculate s^q * |r|^p score for each item in each set; get sum of these scores for each set
-    # if (max_score == "max") {
-    #     max_scores <- vector(mode = "numeric", length = ncol(inset_mat))
-    # } else {
-    #     max_scores <- max_score
-    # }
-    # if (min_score == "min") {
-    #     min_scores <- vector(mode = "numeric", length = ncol(inset_mat))
-    # } else {
-    #     min_scores <- min_score
-    # }
-    # scaled_scores <- inset_mat
-    # set_scores <- inset_mat * input_df[, colnames(inset_mat)]
-    # set_tot <- vector(mode = "numeric", length = ncol(inset_mat))
-    # adj_expr_val <- (abs(input_df$expression_val))^p
-    # for (d in 1:ncol(set_scores)) {
-    #     if (max_score == "max") {
-    #         max_scores[d] <- max(set_scores[, d])
-    #     }
-    #     if (min_score == "min") {
-    #         min_scores[d] <- min(set_scores[set_scores[, d] > 0, d])
-    #     }
-    #     set_scores[set_scores[, d] > max_scores[d], d] <- max_scores[d]
-    #     set_scores[set_scores[, d] < min_scores[d], d] <- min_scores[d]
-
-    #     # if the max set score equals the minimum set score, all scores for items in set will be 1; therefore, let user know that this analysis now reverts to standard GSEA
-    #     # if(max_scores[d]==min_scores[d]){
-    #     # 	print(paste0("max score for set ", colnames(inset_mat)[d], " equals min score; results will be equivalent to standard GSEA"))
-    #     # }
-
-    #     # scales scores for sets
-    #     scaled_scores[, d] <- ((set_scores[, d] - min_scores[d] + pc) / (max_scores[d] - min_scores[d] + pc))^q
-    #     # multiple by inset_mat to set scores for items not in set to 0
-    #     scaled_scores[, d] <- scaled_scores[, d] * inset_mat[, d]
-    #     set_scores[, d] <- scaled_scores[, d] * adj_expr_val
-    #     if (sum(set_scores[, d]) == 0) {
-    #         set_scores[, d] <- scaled_scores[, d]
-    #     }
-    #     set_tot[d] <- sum(set_scores[, d])
-    # }
-
-    # # get set of items not in in_set
-    # outset_mat <- 1 - inset_mat
-
-    # # convert to vectors to matrices with same dimensions as inset_mat to use to calculate Running_Sum and for permutations below
-    # # expr_mat <- matrix(rep(input_df$expression_val, times = ncol(inset_mat)), nrow = nrow(input_df), dimnames = list(rownames(inset_mat), colnames(inset_mat)))
-    # set_tot <- t(matrix(rep(set_tot, times = nrow(inset_mat)), nrow = length(set_tot), dimnames = list(colnames(inset_mat), rownames(inset_mat))))
-    # outset_mat_sums <- t(matrix(rep(colSums(outset_mat), times = nrow(outset_mat)), nrow = ncol(outset_mat), dimnames = list(colnames(outset_mat), rownames(outset_mat))))
-    # outset_scores <- outset_mat / outset_mat_sums
-    # scores_mat <- (set_scores / set_tot) - outset_scores
-
-    # # walk through ranked list and tally running total; also keep track of maximum and minimum values
-    # Running_Sum <- matrix(0, ncol = ncol(scores_mat), nrow = nrow(scores_mat), dimnames = dimnames(scores_mat))
-    # running_max <- vector(mode = "numeric", length = ncol(scores_mat))
-    # running_min <- vector(mode = "numeric", length = ncol(scores_mat))
-    # for (e in 1:ncol(Running_Sum)) {
-    #     Running_Sum[, e] <- cumsum(scores_mat[, e])
-    #     running_max[e] <- max(Running_Sum[, e])
-    #     running_min[e] <- min(Running_Sum[, e])
-    # }
-
-    # # permute df 1000x and use to determine p-value of max/min score from previous section
-    # set.seed(rng_seed)
-    # # FORK is an option for Unix machines to reduce memory footprint
-    # if (fork == T) {
-    #     cl <- makeCluster(nThreads, type = "FORK")
-    # } else {
-    #     cl <- makeCluster(nThreads)
-    # }
-    # registerDoParallel(cl)
-    # # use dorng instead of dopar to properly pass rng seed to foreach loop
-    # rand_stats <- foreach(i = 1:perms, .combine = "rbind") %dorng% {
-    #     gseaPermutation(scaled_scores, outset_scores, adj_expr_val)
-
-    #     ## R implementation of permutations
-    #     #
-    #     # rand_df <- input_df[sample(nrow(input_df)), , drop = F]
-    #     # rand_df$expression_val <- input_df$expression_val
-    #     # rand_df <- rand_df[ , c("item","expression_val", colnames(inset_mat)), drop = F]
-    #     # rand_scaled_scores <- scaled_scores[rand_df$item, , drop=F]
-    #     # rand_outset_scores <- outset_scores[rand_df$item, , drop=F]
-    #     #
-    #     # rand_adj_scores <- rand_scaled_scores * (abs(expr_mat)^p)
-    #     #
-    #     # rand_set_tot <- colSums(rand_adj_scores)
-    #     # rand_set_tot <- t(matrix(rep(rand_set_tot, times = nrow(rand_adj_scores)), nrow = length(rand_set_tot), dimnames = list(colnames(rand_adj_scores), rownames(rand_adj_scores))))
-    #     # rand_scores <- (rand_adj_scores / (rand_set_tot + 0.000001)) - rand_outset_scores
-    #     #
-    #     # rand_tot <- matrix(0, nrow = nrow(rand_scores), ncol = ncol(rand_scores))
-    #     # rand_max <- numeric(ncol(inset_mat))
-    #     # rand_min <- numeric(ncol(inset_mat))
-    #     # rand_best <- numeric(ncol(inset_mat))
-    #     # for(j in 1:ncol(rand_tot)){
-    #     # 	rand_tot[ , j] <- cumsum(rand_scores[ , j])
-    #     # 	rand_max[j] <- max(rand_tot[ , j])
-    #     # 	rand_min[j] <- min(rand_tot[ , j])
-    #     # 	if(rand_max[j] >= abs(rand_min[j])){
-    #     # 		rand_best[j] <- rand_max[j]
-    #     # 	} else { rand_best[j] <- rand_min[j] }
-    #     # }
-    #     # c(rand_min, rand_max, rand_best)
-    # }
-    # stopCluster(cl)
-    # cat(paste0(perms, " permutations of ", expt, " complete...\n"))
-
-    # # split output from permutations into iteration by set dataframes for random running totals, random maxes, and random mins
-    # rand_mins <- rand_stats[, 1:ncol(inset_mat)]
-    # colnames(rand_mins) <- colnames(inset_mat)
-    # rand_maxes <- rand_stats[, (ncol(inset_mat) + 1):(2 * ncol(inset_mat))]
-    # colnames(rand_maxes) <- colnames(inset_mat)
-    # rand_best <- rand_stats[, (2 * ncol(inset_mat) + 1):ncol(rand_stats)]
-    # colnames(rand_best) <- colnames(inset_mat)
-
-    # # calculate max and min NES for each set
-    # NES_max <- running_max / (colSums((rand_best >= 0) * rand_best) / (colSums(rand_best >= 0) + 0.000001) + 0.000001)
-    # NES_min <- running_min / (colSums(abs(rand_best) * (rand_best <= 0)) / (colSums(rand_best <= 0) + 0.000001) + 0.000001)
-    # NES_max <- NES_max * (colSums(rand_best >= 0) > 0)
-    # NES_min <- NES_min * (colSums(rand_best <= 0) > 0)
-
-    # pval_max <- colSums(t(t(rand_best) >= running_max)) / (colSums(rand_best >= 0) + 0.000001)
-    # pval_min <- colSums(t(t(rand_best) <= running_min)) / (colSums(rand_best <= 0) + 0.000001)
-
-    # rand_mins_NES <- t((t(rand_mins) / (colSums(abs(rand_best) * (rand_best <= 0)) / (colSums(rand_best <= 0) + 0.000001) + 0.000001)) * (colSums(rand_best <= 0) > 0))
-    # rand_maxes_NES <- t((t(rand_maxes) / (colSums(rand_best * (rand_best >= 0)) / (colSums(rand_best >= 0) + 0.000001) + 0.000001)) * (colSums(rand_best >= 0) > 0))
-    # # rand_mins_NES <- rand_mins_NES * (colSums(rand_best>=0) > 0)
-    # # rand_maxes_NES <- rand_maxes_NES * (colSums(rand_best<=0) > 0)
-
-    # # calculate FDR for each NES
-    # n_all_rand_min <- sum(rand_best <= 0)
-    # if (n_all_rand_min == 0) {
-    #     n_all_rand_min <- 0.000001
-    # }
-    # n_all_rand_max <- sum(rand_best >= 0)
-    # if (n_all_rand_max == 0) {
-    #     n_all_rand_min <- 0.000001
-    # }
-
-    # # output_mat <- matrix(0, nrow = ncol(Running_Sum), ncol = 8, dimnames = list(colnames(Running_Sum), c("ES", "NES", "p_val", "fdr", "pos_ES", "neg_ES", "pos_NES", "neg_NES")))
-    # output_mat <- matrix(0, nrow = ncol(Running_Sum), ncol = 4, dimnames = list(colnames(Running_Sum), c("ES", "NES", "p_val", "fdr")))
-    # output_df <- data.frame(output_mat, stringsAsFactors = F)
-
-    # for (k in 1:length(NES_min)) {
-    #     # output_df$pos_ES[k] <- running_max[k]
-    #     # output_df$neg_ES[k] <- running_min[k]
-    #     # output_df$pos_NES[k] <- NES_max[k]
-    #     # output_df$neg_NES[k] <- NES_min[k]
-    #     if (abs(running_min[k]) < running_max[k]) {
-    #         output_df$ES[k] <- running_max[k]
-    #         output_df$NES[k] <- NES_max[k]
-    #         output_df$p_val[k] <- pval_max[k]
-    #         max_top <- sum(rowSums(rand_maxes_NES * (rand_best >= 0) >= NES_max[k])) / n_all_rand_max
-    #         max_bottom <- sum(NES_max[running_max >= abs(running_min)] >= NES_max[k]) / (sum(running_max >= abs(running_min)))
-    #         output_df$fdr[k] <- max_top / max_bottom
-    #     } else {
-    #         output_df$ES[k] <- running_min[k]
-    #         output_df$NES[k] <- NES_min[k]
-    #         output_df$p_val[k] <- pval_min[k]
-    #         min_top <- sum(rowSums(rand_mins_NES * (rand_best <= 0) <= NES_min[k])) / n_all_rand_min
-    #         min_bottom <- sum(NES_min[abs(running_min) > running_max] <= NES_min[k]) / sum(abs(running_min) > running_max)
-    #         output_df$fdr[k] <- min_top / min_bottom
-    #     }
-    # }
-    # if ((thresh_action == "include") & (length(skipped_sets) > 0)) {
-    #     new_row <- data.frame(matrix(0, nrow = 1, ncol = 4), stringsAsFactors = F)
-    #     colnames(new_row) <- colnames(output_df)
-    #     new_row$p_val <- 1
-    #     new_row$fdr <- 1
-    #     for (i in 1:length(skipped_sets)) {
-    #         rownames(new_row) <- skipped_sets[i]
-    #         output_df <- rbind(output_df, new_row)
-    #     }
-    # }
-    # output_df$fdr[output_df$fdr > 1] <- 1
-    # return(list(Enrichment_Results = output_df, Running_Sums = Running_Sum, Items_in_Set = items_in_set))
+    running_sum <- matrix(unlist(rust_result$running_sum), nrow = length(rownames(inset_mat)), ncol= length(colnames(inset_mat)), dimnames = list(rownames(inset_mat), colnames(inset_mat)))
+    if ((thresh_action == "include") & (length(skipped_sets) > 0)) {
+        new_row <- data.frame(matrix(0, nrow = 1, ncol = 4), stringsAsFactors = F)
+        colnames(new_row) <- colnames(output_df)
+        new_row$p_val <- 1
+        new_row$fdr <- 1
+        for (i in 1:length(skipped_sets)) {
+            rownames(new_row) <- skipped_sets[i]
+            output_df <- rbind(output_df, new_row)
+        }
+    }
+    output_df$fdr[output_df$fdr > 1] <- 1
+    return(list(Enrichment_Results = output_df, Running_Sums = running_sum, Items_in_Set = items_in_set))
 }
 
 

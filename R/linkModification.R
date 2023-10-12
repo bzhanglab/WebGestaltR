@@ -8,7 +8,6 @@ linkModification <- function(enrichMethod, enrichPathwayLink, geneList, interest
     # print(enrichPathwayLink)
     # print(interestingGeneMap$standardId)
     if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE) && interestingGeneMap$standardId == "rampc") {
-        print("kegg metabolite link modified")
         link <- keggMetaboliteLinkModification(enrichPathwayLink,  geneList, interestingGeneMap, hostName)
         return(link)
     } else if (grepl("www.wikipathways.org", enrichPathwayLink, fixed = TRUE) && interestingGeneMap$standardId == "rampc") {

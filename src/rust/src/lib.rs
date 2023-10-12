@@ -116,7 +116,6 @@ fn gsea_rust(
 pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
     let genes_vec = genes.as_string_vector().unwrap();
     let gene_set_vec = gene_sets.as_string_vector().unwrap();
-    println!("{:?}", gene_set_vec);
     let mut value_array = Array2::zeros((genes_vec.len(), gene_set_vec.len()));
     let mut gene_index: FxHashMap<&String, usize> = FxHashMap::default();
     let mut set_index: FxHashMap<&String, usize> = FxHashMap::default();
@@ -128,7 +127,6 @@ pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
     for (i, val) in gene_set_vec.iter().enumerate() {
         set_index.insert(val, i);
     }
-    println!("HERE");
     for i in 0..gmt_set.len() {
         value_array[[gene_index[&gmt_gene[i]], set_index[&gmt_set[i]]]] = 1;
     }
