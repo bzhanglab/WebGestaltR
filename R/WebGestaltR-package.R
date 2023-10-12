@@ -19,9 +19,9 @@ NULL
 ")
 	packageStartupMessage("*                                        *
 ")
-	packageStartupMessage("*        Welcome to WebGestaltR !        *
+	packageStartupMessage("*       Welcome to WebGestaltR-rust!     *
 ")
-	packageStartupMessage("*                                        *
+    packageStartupMessage("*               16:39:34.080109                    *
 ")
 	packageStartupMessage("*                                        *
 ")

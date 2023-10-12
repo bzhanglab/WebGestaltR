@@ -37,14 +37,21 @@ rust_hello_world <- function() .Call(wrap__rust_hello_world)
 #'
 #' @return A Data Frame with the first column of gene and 1 or 0 for other columns of gene sets.
 #' @author John Elizarraras
+#' @name fill_input_data_frame
 #' @keywords internal
 #' @export
 fill_input_data_frame <- function(gmt, genes, gene_sets) .Call(wrap__fill_input_data_frame, gmt, genes, gene_sets)
 
 #' Run GSEA using rust library
 #' @return List of the results of GSEA
+#' @name gsea_rust
 #' @export
-gsea_rust <- function(min_overlap, max_overlap, sets, parts, analytes, ranks) .Call(wrap__gsea_rust, min_overlap, max_overlap, sets, parts, analytes, ranks)
+gsea_rust <- function(min_overlap, max_overlap, permutations, sets, parts, analytes, ranks) .Call(wrap__gsea_rust, min_overlap, max_overlap, permutations, sets, parts, analytes, ranks)
+
+#' Run ORA using Rust library
+#' @name ora_rust
+#' @export
+ora_rust <- function(sets, parts, interest, reference) .Call(wrap__ora_rust, sets, parts, interest, reference)
 
 
 # nolint end

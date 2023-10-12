@@ -2,12 +2,10 @@ use std::vec;
 
 use extendr_api::prelude::*;
 use ndarray::Array2;
-use rustc_hash::FxHashMap;
+use rustc_hash::{FxHashMap, FxHashSet};
 use webgestalt_lib::{
-    methods::{
-        gsea::{GSEAConfig, RankListItem},
-        *,
-    },
+    methods::gsea::{GSEAConfig, RankListItem},
+    methods::ora::{get_ora, ORAConfig, ORAResult},
     readers::utils::Item,
 };
 /// Return string `"Hello world!"` to R.
@@ -17,13 +15,67 @@ fn rust_hello_world() -> &'static str {
     "Hello world!"
 }
 
+/// Run ORA using Rust library
+/// @name ora_rust
+/// @export
+#[extendr]
+fn ora_rust(sets: Robj, parts: Robj, interest: Robj, reference: Robj) -> List {
+    let config: ORAConfig = ORAConfig {
+        ..Default::default()
+    };
+    let mut gmt: Vec<Item> = Vec::new();
+    let set_vec = sets.as_str_vector().unwrap();
+    let parts_vec: Vec<Vec<String>> = parts
+        .as_list()
+        .unwrap()
+        .iter()
+        .map(|(_, x)| x.as_string_vector().unwrap())
+        .collect();
+    for (i, set) in set_vec.iter().enumerate() {
+        gmt.push(Item {
+            id: set.to_string(),
+            url: String::default(),
+            parts: parts_vec[i].clone(),
+        })
+    }
+    let interest_set: FxHashSet<String> =
+        FxHashSet::from_iter(interest.as_string_vector().unwrap());
+    let reference_set: FxHashSet<String> =
+        FxHashSet::from_iter(reference.as_string_vector().unwrap());
+    let res: Vec<ORAResult> = get_ora(&interest_set, &reference_set, gmt, config);
+    let mut p: Vec<f64> = Vec::new();
+    let mut fdr: Vec<f64> = Vec::new();
+    let mut expect: Vec<f64> = Vec::new();
+    let mut enrichment_ratio: Vec<f64> = Vec::new();
+    let mut overlap: Vec<i64> = Vec::new();
+    let mut gene_set: Vec<String> = Vec::new();
+    for row in res {
+        gene_set.push(row.set);
+        p.push(row.p);
+        fdr.push(row.fdr);
+        expect.push(row.expected);
+        overlap.push(row.overlap);
+        enrichment_ratio.push(row.enrichment_ratio);
+    }
+    list!(
+        p = p,
+        gene_set = gene_set,
+        fdr = fdr,
+        expect = expect,
+        overlap = overlap,
+        enrichment_ratio = enrichment_ratio
+    )
+}
+
 /// Run GSEA using rust library
 /// @return List of the results of GSEA
+/// @name gsea_rust
 /// @export
 #[extendr]
 fn gsea_rust(
     min_overlap: Robj,
     max_overlap: Robj,
+    permutations: Robj,
     sets: Robj,
     parts: Robj,
     analytes: Robj,
@@ -31,8 +83,9 @@ fn gsea_rust(
 ) -> List {
     // webgestalt_lib::methods::gsea::
     let config = GSEAConfig {
-        min_overlap: 15,
-        max_overlap: 500,
+        min_overlap: min_overlap.as_real().unwrap() as i32,
+        max_overlap: max_overlap.as_real().unwrap() as i32,
+        permutations: permutations.as_real().unwrap() as i32,
         ..Default::default()
     };
     let mut gmt: Vec<Item> = Vec::new();
@@ -110,6 +163,7 @@ fn gsea_rust(
 ///
 /// @return A Data Frame with the first column of gene and 1 or 0 for other columns of gene sets.
 /// @author John Elizarraras
+/// @name fill_input_data_frame
 /// @keywords internal
 /// @export
 #[extendr]
@@ -149,4 +203,5 @@ extendr_module! {
     fn rust_hello_world;
     fn fill_input_data_frame;
     fn gsea_rust;
+    fn ora_rust;
 }
