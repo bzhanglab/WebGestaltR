@@ -9,7 +9,7 @@ WebGestaltR function can perform popular enrichment analyses: ORA (Over-Represen
 
 ## New Changes
 
-> [!INFO]
+> [!NOTE]
 > Besides the change in installation, there should be no difference in how the R package performs for existing use-cases. If you experience any difference in results that are not due to the data-update, that is considered a bug. [Please report the changes you experience in a new issue](https://github.com/bzhanglab/WebGestaltR/issues/new/choose).
 
 WebGestaltR's core was re-written in Rust, which dramatically increased performance, with up to 15x the speed of previous versions.
