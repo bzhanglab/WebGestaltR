@@ -1,4 +1,7 @@
-# WebGestalt
+# WebGestaltR
+
+> [!IMPORTANT]
+> The new version of WebGesaltR requires Rust, which must be installed on your device prior to installing or updating the package from CRAN. See the installation section for more information.
 
 WebGestalt R package is the R version of our well-known web application tool WebGestalt (www.webgestalt.org) that has on average 27,000 users from 140 countries and territories per year and has also been cited 371 in 2016. The advantage of this R package is that it can be easily integrated to other pipelines or simultaneously analyze multiple gene lists.
 
@@ -6,4 +9,13 @@ WebGestaltR function can perform popular enrichment analyses: ORA (Over-Represen
 
 ## Installation
 
-Since WebGestaltR v2.0.0, Rust is used for core computations in the R package. Therefore, to install WebGestaltR, please download and install Rust from [https://www.rust-lang.org/learn/get-started](https://www.rust-lang.org/learn/get-started). For Mac, Linux, or Unix users, Rust can be installed from the command line, and Windows users can download a GUI installer.
+Since WebGestaltR v1.0.0, Rust is used for core computations in the R package. Therefore, to install WebGestaltR, please download and install Rust from [https://www.rust-lang.org/learn/get-started](https://www.rust-lang.org/learn/get-started). For Mac, Linux, or Unix users, Rust can be installed from the command line, and Windows users can download a GUI installer.
+
+After installing Rust, you can install WebGestaltR with the following command:
+
+```R
+# install.packages("devtools") # run if needed
+devtools::install_github("bzhanglab/WebGestaltR")
+```
+
+During installation, the Rust compiler will be called to build the computation library used by WebGestaltR. If you run into problems with installation of the new version, please [open a new issue](https://github.com/bzhanglab/WebGestaltR/issues/new/choose).
