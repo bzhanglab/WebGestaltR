@@ -112,7 +112,7 @@ fn gsea_rust(
             rank: ranks_vec[i],
         })
     }
-    let res = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config); // TODO: Convert
+    let res = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config, None); // TODO: Convert
                                                                               // dataframe to GMT
     let mut fdr: Vec<f64> = Vec::new();
     let mut p: Vec<f64> = Vec::new();

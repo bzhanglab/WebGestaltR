@@ -104,7 +104,7 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
     expt <- colnames(input_df)[2]
     enr_test <- colnames(input_df)[3:ncol(input_df)]
     colnames(input_df)[c(1, 2)] <- c("item", "expression_val")
-    # input_df <- arrange(input_df, desc(.data$expression_val))
+    input_df <- arrange(input_df, desc(.data$expression_val))
 
     # get and check size of set items; build in-set matrix of 1's for items in set and 0's for items not in set
     inset_mat <- matrix(0, nrow = length(input_df$item), ncol = length(enr_test))
@@ -213,10 +213,12 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
     rust_analytes <- input_df[, 1]
     rust_ranks <- input_df[, 2]
     rust_sets <- colnames(inset_mat)
-    rust_result <- gsea_rust(min_set_size, max_set_size, rust_sets, rust_parts, rust_analytes, rust_ranks)
+    rust_result <- gsea_rust(min_set_size, max_set_size, perms, rust_sets, rust_parts, rust_analytes, rust_ranks)
     output_df <- data.frame(fdr = rust_result$fdr, p_val = rust_result$p_val, ES = rust_result$ES, NES = rust_result$NES)
     rownames(output_df) <- rust_result$gene_sets
-    running_sum <- matrix(unlist(rust_result$running_sum), nrow = length(rownames(inset_mat)), ncol= length(colnames(inset_mat)), dimnames = list(rownames(inset_mat), colnames(inset_mat)))
+
+    running_sum <- matrix(unlist(unlist(rust_result$running_sum)), nrow = length(rust_result$running_sum[[1]]), ncol = length(rust_result$running_sum), dimnames = list(rust_analytes,rust_sets))
+    print(head(rust_result$running_sum))
     if ((thresh_action == "include") & (length(skipped_sets) > 0)) {
         new_row <- data.frame(matrix(0, nrow = 1, ncol = 4), stringsAsFactors = F)
         colnames(new_row) <- colnames(output_df)
