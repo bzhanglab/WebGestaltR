@@ -112,8 +112,7 @@ fn gsea_rust(
             rank: ranks_vec[i],
         })
     }
-    let res = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config, None); // TODO: Convert
-                                                                              // dataframe to GMT
+    let res = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config, None); // TODO: Convert dataframe to GMT
     let mut fdr: Vec<f64> = Vec::new();
     let mut p: Vec<f64> = Vec::new();
     let mut leading_edge: Vec<i32> = Vec::new();
@@ -136,8 +135,8 @@ fn gsea_rust(
         ES = es,
         NES = nes,
         leading_edge = leading_edge,
-        gene_sets = gene_sets,
-        running_sum = running_sum,
+        gene_sets = gene_sets.clone(),
+        running_sum = List::from_names_and_values(gene_sets, running_sum),
     )
 }
 
@@ -185,11 +184,9 @@ pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
         value_array[[gene_index[&gmt_gene[i]], set_index[&gmt_set[i]]]] = 1;
     }
     let mut gene_set_val: Vec<Vec<i32>> = Vec::new();
-    // gene_set_val.push(genes_vec.into_iter().map(|x| SafeTypes::String(x)).collect());
     for i in 0..value_array.len_of(ndarray::Axis(1)) {
         gene_set_val.push(value_array.column(i).to_vec())
     }
-    // gene_set_vec.insert(0, String::from("gene"));
     // Construct DataFrame in R. Create list for now.
     List::from_names_and_values(gene_set_vec, gene_set_val).unwrap()
     // data_frame!(x = 1)

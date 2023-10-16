@@ -1,4 +1,3 @@
-
 #' WebGestaltR: The R interface for enrichment analysis with WebGestalt.
 #'
 #' @docType package
@@ -15,16 +14,16 @@ NULL
 
 
 .onAttach <- function(lib, pkg) {
-	packageStartupMessage("******************************************
+  packageStartupMessage("******************************************
 ")
-	packageStartupMessage("*                                        *
+  packageStartupMessage("*                                        *
 ")
-	packageStartupMessage("*       Welcome to WebGestaltR-rust!     *
+  packageStartupMessage("*       Welcome to WebGestaltR-rust!     *
 ")
-    packageStartupMessage("*               14:19:24.134118                    *
+  packageStartupMessage("*                                        *
 ")
-	packageStartupMessage("*                                        *
+  packageStartupMessage("*                                        *
 ")
-	packageStartupMessage("******************************************
+  packageStartupMessage("******************************************
 ")
 }
