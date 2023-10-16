@@ -15,7 +15,7 @@ After installing Rust, you can install WebGestaltR by running the following comm
 
 ```R
 # install.packages("devtools") # run if devtools not already installed
-devtools::install_github("bzhanglab/WebGestaltR")
+devtools::install_github("iblacksand/WebGestaltR")
 ```
 
 During installation, the Rust compiler will be called to build the computation library used by WebGestaltR. If you run into problems with installation of the new version, please [open a new issue](https://github.com/bzhanglab/WebGestaltR/issues/new/choose).
