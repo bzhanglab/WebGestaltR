@@ -26,11 +26,11 @@ After installing Rust, you can install WebGestaltR by running the following comm
 devtools::install_github("iblacksand/WebGestaltR")
 ```
 
-During installation, the Rust compiler will be called to build the computation library used by WebGestaltR. If you run into problems with installation of the new version, please [open a new issue](https://github.com/bzhanglab/WebGestaltR/issues/new/choose).
+During installation, the Rust compiler will be called to build the computation library used by WebGestaltR. If you run into problems with installation of the new version, please [open a new issue](https://github.com/iblacksand/WebGestaltR/issues/new/choose).
 
 ## Changes
 
 > [!NOTE]
-> Besides the change in installation, there should be no difference in how the R package performs for existing use-cases. If you experience any difference in results that are not due to the data-update, that is considered a bug. [Please report the changes you experience in a new issue](https://github.com/bzhanglab/WebGestaltR/issues/new/choose).
+> Besides the change in installation, there should be no difference in how the R package performs for existing use-cases. If you experience any difference in results that are not due to the data-update, that is considered a bug. [Please report the changes you experience in a new issue](https://github.com/iblacksand/WebGestaltR/issues/new/choose).
 
 WebGestaltR's core was re-written in Rust, which dramatically increased performance, with up to 15x the speed of previous versions. The new version also supports metabolomics, with support for 15 different ID types.
