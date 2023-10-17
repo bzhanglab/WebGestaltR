@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # python3 build_hash.py
+cd src/rust
+cargo update
+cd ..
+cd ..
 R -e "library(utils)
 remove.packages('WebGestaltR')
 q()"

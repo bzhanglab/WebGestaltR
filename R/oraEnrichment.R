@@ -27,6 +27,12 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10, max
   intG <- filter(geneSet, .data$gene %in% interestGene)
   intGId <- tapply(intG$gene, intG$geneSet, paste, collapse = ";")
   intGId <- data.frame(geneSet = names(intGId), overlapId = as.character(intGId), stringsAsFactors = FALSE)
+  geneSetFilter <- geneSet %>%
+    filter(!is.na(.data$geneSet)) %>%
+    filter(.data$geneSet %in% names(geneSetNum)) %>%
+    select(.data$geneSet, link = .data$description) %>%
+    distinct()
+  geneSet <- geneSet[geneSet$geneSet %in% geneSetFilter$geneSet, ]
   genes <- tapply(geneSet$gene, geneSet$geneSet, rbind)
   rust_result <- ora_rust(names(genes), genes, interestGene, referenceGene)
   rust_result_df <- data.frame(
@@ -34,11 +40,7 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10, max
     enrichmentRatio = rust_result$enrichment_ratio, geneSet = rust_result$gene_set, overlap = rust_result$overlap
   )
 
-  enrichedResult <- geneSet %>%
-    filter(!is.na(.data$geneSet)) %>%
-    filter(.data$geneSet %in% names(geneSetNum)) %>%
-    select(.data$geneSet, link = .data$description) %>%
-    distinct() %>%
+  enrichedResult <- geneSetFilter %>%
     left_join(refG, by = "geneSet") %>%
     left_join(
       rust_result_df,

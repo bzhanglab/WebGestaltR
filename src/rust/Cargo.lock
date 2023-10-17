@@ -13,12 +13,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "adjustp"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "151571bfc58e15241979bf8efb3b25506a437483101149cdcbc2ff56276da850"
-
-[[package]]
 name = "approx"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -494,9 +488,8 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 [[package]]
 name = "webgestalt_lib"
 version = "0.1.0"
-source = "git+https://github.com/bzhanglab/webgestalt_rust.git#e6149cd7b3936251e994f527ae6729c7b8dfb27a"
+source = "git+https://github.com/bzhanglab/webgestalt_rust.git#18a01387157cfb4f1e41b0b86da3b36716b9ee8b"
 dependencies = [
- "adjustp",
  "csv",
  "rand",
  "rayon",
@@ -507,9 +500,9 @@ dependencies = [
 
 [[package]]
 name = "wide"
-version = "0.7.12"
+version = "0.7.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ebecebefc38ff1860b4bc47550bbfa63af5746061cf0d29fcd7fa63171602598"
+checksum = "c68938b57b33da363195412cfc5fc37c9ed49aa9cfe2156fde64b8d2c9498242"
 dependencies = [
  "bytemuck",
  "safe_arch",
