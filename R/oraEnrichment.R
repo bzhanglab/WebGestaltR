@@ -27,29 +27,12 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10, max
   intG <- filter(geneSet, .data$gene %in% interestGene)
   intGId <- tapply(intG$gene, intG$geneSet, paste, collapse = ";")
   intGId <- data.frame(geneSet = names(intGId), overlapId = as.character(intGId), stringsAsFactors = FALSE)
-  intGNum <- tapply(intG$gene, intG$geneSet, length) # a vector of overlap with geneset as name
-  intGNum <- data.frame(geneSet = names(intGNum), overlap = as.numeric(intGNum), stringsAsFactors = FALSE)
   genes <- tapply(geneSet$gene, geneSet$geneSet, rbind)
   rust_result <- ora_rust(names(genes), genes, interestGene, referenceGene)
   rust_result_df <- data.frame(
     FDR = rust_result$fdr, pValue = rust_result$p, expect = rust_result$expect,
-    enrichmentRatio = rust_result$enrichment_ratio, geneSet = rust_result$gene_set
+    enrichmentRatio = rust_result$enrichment_ratio, geneSet = rust_result$gene_set, overlap = rust_result$overlap
   )
-  # geneSet <- geneSet %>%
-  #   filter(!is.na(.data$geneSet)) %>%
-  #   filter(.data$geneSet %in% names(geneSetNum)) %>%
-  #   select(.data$geneSet, link = .data$description) %>%
-  #   distinct() %>%
-  #   left_join(refG, by = "geneSet") %>%
-  #   left_join(intGNum, by = "geneSet")
-  # rust_result <- filter(rust_result_df, .data$geneSet %in% as.data.frame(geneSet)$geneSet)
-  # print(rust_result)
-  # enrichedResult <- data.frame(
-  #   FDR = rust_result$fdr, pValue = rust_result$p, expect = rust_result$expect, overlap = rust_result$overlap,
-  #   enrichmentRato = rust_result$enrichment_ratio, geneSet = rust_result$gene_set
-  # ) %>%
-  #   left_join(intGId, by = "geneSet") %>% # get overlapping gene IDs
-  #   arrange(.data$FDR, .data$pValue, .data$enrichmentRatio)
 
   enrichedResult <- geneSet %>%
     filter(!is.na(.data$geneSet)) %>%
@@ -57,36 +40,12 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10, max
     select(.data$geneSet, link = .data$description) %>%
     distinct() %>%
     left_join(refG, by = "geneSet") %>%
-    left_join(intGNum, by = "geneSet") %>% # this may just be inner_join. O is NA should not be meaningful anyway
-    inner_join(
+    left_join(
       rust_result_df,
       by = "geneSet",
     ) %>%
     left_join(intGId, by = "geneSet") %>% # get overlapping gene IDs
     arrange(.data$FDR, .data$pValue, .data$enrichmentRatio)
-  ############### Enrichment analysis###################
-  # ra <- length(interestGene) / length(referenceGene) # ratio
-  # refG <- data.frame(geneSet=names(geneSetNum), size=as.numeric(geneSetNum), stringsAsFactors=FALSE)
-  # intGNum <- tapply(intG$gene, intG$geneSet, length) # a vector of overlap with geneset as name
-  # intGNum <- data.frame(geneSet=names(intGNum), overlap=as.numeric(intGNum), stringsAsFactors=FALSE)
-
-  # intGId <- tapply(intG$gene, intG$geneSet, paste, collapse=";")
-  # intGId <- data.frame(geneSet=names(intGId), overlapId=as.character(intGId), stringsAsFactors=FALSE)
-
-  # # .data from rlang needed for package to pass R CMD check
-  # # https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
-  # enrichedResult <- geneSet %>% filter(!is.na(.data$geneSet)) %>%
-  # 	filter(.data$geneSet %in% names(geneSetNum)) %>%
-  # 	select(.data$geneSet, link=.data$description) %>% distinct() %>%
-  # 	left_join(refG, by="geneSet") %>%
-  # 	left_join(intGNum, by="geneSet") %>% # this may just be inner_join. O is NA should not be meaningful anyway
-  # 	mutate(overlap=ifelse(is.na(.data$overlap), 0, .data$overlap), expect=.data$size * ra, enrichmentRatio=.data$overlap /.data$expect,
-  # 		   pValue=1-phyper(.data$overlap - 1, length(interestGene), length(referenceGene) - length(interestGene), .data$size, lower.tail=TRUE, log.p=FALSE),
-  # 		   FDR=p.adjust(.data$pValue, method=fdrMethod)
-  # 	) %>%
-  # 	left_join(intGId, by="geneSet") %>% # get overlapping gene IDs
-  # 	arrange(.data$FDR, .data$pValue, .data$enrichmentRatio)
-
   if (sigMethod == "fdr") {
     enrichedResultSig <- filter(enrichedResult, .data$FDR < fdrThr)
     if (nrow(enrichedResultSig) == 0) {

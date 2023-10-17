@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-python3 build_hash.py
+# python3 build_hash.py
 R -e "library(utils)
 remove.packages('WebGestaltR')
 q()"
