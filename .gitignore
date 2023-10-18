@@ -41,3 +41,5 @@ vignettes/*.pdf
 .Renviron
 .vscode
 .DS_Store
+_site
+index.md

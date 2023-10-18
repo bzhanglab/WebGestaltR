@@ -10,10 +10,11 @@ WebGestaltR function can perform popular enrichment analyses: ORA (Over-Represen
 ## Installation
 
 ---
+
 #### Requirements
 
 - R (>= 4.0.0)
-- Rust  (>= 1.54.0)
+- Rust (>= 1.63.0)
 
 ---
 
