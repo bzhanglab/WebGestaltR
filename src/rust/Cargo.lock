@@ -6,10 +6,22 @@ version = 3
 name = "WebGestaltR"
 version = "0.1.0"
 dependencies = [
+ "ahash",
  "extendr-api",
  "ndarray",
- "rustc-hash",
  "webgestalt_lib",
+]
+
+[[package]]
+name = "ahash"
+version = "0.8.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2c99f64d1e06488f620f932677e24bc6e2897582980441ae90a671415bd7ec2f"
+dependencies = [
+ "cfg-if",
+ "getrandom",
+ "once_cell",
+ "version_check",
 ]
 
 [[package]]
@@ -480,6 +492,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3354b9ac3fae1ff6755cb6db53683adb661634f67557942dea4facebec0fee4b"
 
 [[package]]
+name = "version_check"
+version = "0.9.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
+
+[[package]]
 name = "wasi"
 version = "0.11.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -488,8 +506,9 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 [[package]]
 name = "webgestalt_lib"
 version = "0.1.0"
-source = "git+https://github.com/bzhanglab/webgestalt_rust.git#18a01387157cfb4f1e41b0b86da3b36716b9ee8b"
+source = "git+https://github.com/bzhanglab/webgestalt_rust.git?branch=dev#b5869bef34715dab8bd57e6482844548fd5ad829"
 dependencies = [
+ "ahash",
  "csv",
  "rand",
  "rayon",

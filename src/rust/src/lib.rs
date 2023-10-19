@@ -1,8 +1,8 @@
 use std::vec;
 
+use ahash::{AHashMap, AHashSet};
 use extendr_api::prelude::*;
 use ndarray::Array2;
-use rustc_hash::{FxHashMap, FxHashSet};
 use webgestalt_lib::{
     methods::gsea::{GSEAConfig, RankListItem},
     methods::ora::{get_ora, ORAConfig, ORAResult},
@@ -38,10 +38,9 @@ fn ora_rust(sets: Robj, parts: Robj, interest: Robj, reference: Robj) -> List {
             parts: parts_vec[i].clone(),
         })
     }
-    let interest_set: FxHashSet<String> =
-        FxHashSet::from_iter(interest.as_string_vector().unwrap());
-    let reference_set: FxHashSet<String> =
-        FxHashSet::from_iter(reference.as_string_vector().unwrap());
+    let interest_set: AHashSet<String> = AHashSet::from_iter(interest.as_string_vector().unwrap());
+    let reference_set: AHashSet<String> =
+        AHashSet::from_iter(reference.as_string_vector().unwrap());
     let res: Vec<ORAResult> = get_ora(&interest_set, &reference_set, gmt, config);
     let mut p: Vec<f64> = Vec::new();
     let mut fdr: Vec<f64> = Vec::new();
@@ -170,8 +169,8 @@ pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
     let genes_vec = genes.as_string_vector().unwrap();
     let gene_set_vec = gene_sets.as_string_vector().unwrap();
     let mut value_array = Array2::zeros((genes_vec.len(), gene_set_vec.len()));
-    let mut gene_index: FxHashMap<&String, usize> = FxHashMap::default();
-    let mut set_index: FxHashMap<&String, usize> = FxHashMap::default();
+    let mut gene_index: AHashMap<&String, usize> = AHashMap::default();
+    let mut set_index: AHashMap<&String, usize> = AHashMap::default();
     let gmt_set: Vec<String> = gmt.index("geneSet").unwrap().as_string_vector().unwrap();
     let gmt_gene: Vec<String> = gmt.index("gene").unwrap().as_string_vector().unwrap();
     for (i, val) in genes_vec.iter().enumerate() {

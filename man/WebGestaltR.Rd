@@ -48,10 +48,10 @@ WebGestaltR(
   nThreads = 1,
   cache = NULL,
   hostName = "https://www.webgestalt.org/",
-  useWeightedSetCover = TRUE,
+  useWeightedSetCover = FALSE,
   useAffinityPropagation = FALSE,
-  usekMedoid = FALSE,
-  kMedoid_k = 10,
+  usekMedoid = TRUE,
+  kMedoid_k = 25,
   ...
 )
 

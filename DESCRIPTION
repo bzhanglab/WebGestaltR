@@ -5,8 +5,8 @@ Version: 0.4.6
 Date: 2023-05-31
 Authors@R: c(
         person("Jing", "Wang", email = "jingwang.uestc@gmail.com", role = "aut"),
-        person("John", "Elizarraras", email = "john.elizarraras@bcm.edu", role = c("aut","cre")),
-        person("Yuxing", "Liao", email = "yuxingliao@gmail.com", role = c("aut", "cre")),
+        person("John", "Elizarraras", email = "john.elizarraras@bcm.edu", role = c("aut", "cre")),
+        person("Yuxing", "Liao", email = "yuxingliao@gmail.com", role = c("aut")),
         person("Eric", "Jaehnig", email = "Eric.Jaehnig@bcm.edu", role = c("ctb")),
         person("Zhiao", "Shi", email = "Zhiao.Shi@bcm.edu", role = c("ctb")),
         person("Quanhu", "Sheng", email = "shengqh@gmail.com", role = c("ctb"))

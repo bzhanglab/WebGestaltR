@@ -3,6 +3,9 @@
 \name{ora_rust}
 \alias{ora_rust}
 \title{Run ORA using Rust library}
+\usage{
+ora_rust(sets, parts, interest, reference)
+}
 \description{
 Run ORA using Rust library
 }

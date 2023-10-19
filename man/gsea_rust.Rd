@@ -3,6 +3,9 @@
 \name{gsea_rust}
 \alias{gsea_rust}
 \title{Run GSEA using rust library}
+\usage{
+gsea_rust(min_overlap, max_overlap, permutations, sets, parts, analytes, ranks)
+}
 \value{
 List of the results of GSEA
 }

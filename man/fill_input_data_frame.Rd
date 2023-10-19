@@ -3,6 +3,9 @@
 \name{fill_input_data_frame}
 \alias{fill_input_data_frame}
 \title{Fill relation data frame for GSEA input}
+\usage{
+fill_input_data_frame(gmt, genes, gene_sets)
+}
 \arguments{
 \item{gmt}{A Data Frame with geneSet and gene columns from the GMT file}
 
