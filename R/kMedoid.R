@@ -49,7 +49,7 @@ kMedoid <- function(idsInSet, score, maxK = 10) {
   }
 
   # compute the k-medoid clustering
-  kmRes <- pam(sim.mat, maxK, diss = TRUE, variant = "faster") # TODO: Make parameter for number of clusters. Currently set to 5.
+  kmRes <- pam(sim.mat, maxK, diss = TRUE, variant = "faster", medoids = 1:maxK) # TODO: Make parameter for number of clusters. Currently set to 5.
 
   # sort clusters to make exemplar the first member
   clusters <- vector(mode = "list", length(kmRes$id.med))
