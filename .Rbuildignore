@@ -1,3 +1,5 @@
 ^src/\.cargo$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.github$
+^\.lintr$

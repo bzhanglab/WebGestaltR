@@ -11,4 +11,4 @@ name = 'WebGestaltR'
 ahash = "0.8.3"
 extendr-api = { version = '0.6.0' }
 ndarray = "0.15.6"
-webgestalt_lib = { git = "https://github.com/bzhanglab/webgestalt_rust.git", branch = "dev" }
+webgestalt_lib = { git = "https://github.com/bzhanglab/webgestalt_rust.git" }

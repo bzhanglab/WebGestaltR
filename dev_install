@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+cd src/rust
+cargo update
+cd ..
+cd ..
 R -e "library(utils)
 remove.packages('WebGestaltR')
 q()"

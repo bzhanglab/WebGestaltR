@@ -52,13 +52,14 @@ kMedoid <- function(idsInSet, score, maxK = 10) {
   kmRes <- pam(sim.mat, maxK, diss = TRUE, variant = "faster") # TODO: Make parameter for number of clusters. Currently set to 5.
 
   # sort clusters to make exemplar the first member
-  clusters <- vector(mode = "list", length(kmRes$medoids))
-  if (length(kmRes$medoids) == 0) {
+  clusters <- vector(mode = "list", length(kmRes$id.med))
+  if (length(kmRes$id.med) == 0) {
     return(NULL)
   }
-  for (i in 1:length(clusters)) {
-    clusters[[i]] <- kmRes$clustering[[i]][order(kmRes$clustering[[i]] == i, decreasing = TRUE)]
+  cluster_info <- kmRes$silinfo[["widths"]][, 1]
+  for (i in seq_along(kmRes$id.med)) {
+    clusters[[i]] <- names(cluster_info[cluster_info == i])
   }
   # print(kmRes$medoids)
-  return(list(clusters = sapply(clusters, names), representatives = kmRes$medoids))
+  return(list(clusters = clusters, representatives = kmRes$medoids))
 }
