@@ -36,7 +36,7 @@ oraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10, max
   genes <- tapply(geneSet$gene, geneSet$geneSet, rbind)
   rust_result <- ora_rust(names(genes), genes, interestGene, referenceGene)
   rust_result_df <- data.frame(
-    FDR = rust_result$fdr, pValue = rust_result$p, expect = rust_result$expect,
+    FDR = p.adjust(rust_result$p, method = fdrMethod), pValue = rust_result$p, expect = rust_result$expect,
     enrichmentRatio = rust_result$enrichment_ratio, geneSet = rust_result$gene_set, overlap = rust_result$overlap
   )
 

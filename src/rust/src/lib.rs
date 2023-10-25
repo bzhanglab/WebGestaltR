@@ -22,6 +22,7 @@ fn rust_hello_world() -> &'static str {
 #[extendr]
 fn ora_rust(sets: Robj, parts: Robj, interest: Robj, reference: Robj) -> List {
     let config: ORAConfig = ORAConfig {
+        fdr_method: webgestalt_lib::stat::AdjustmentMethod::None,
         ..Default::default()
     };
     let mut gmt: Vec<Item> = Vec::new();
