@@ -129,9 +129,11 @@ plotEnrichmentPlot <- function(title, outputDir, fileName, format="png", running
 		svglite(file.path(outputDir, paste0(sanitizeFileName(fileName), ".svg")), bg="transparent", width=7, height=7)
 		cex <- list(main=1.5, axis=0.6, lab=0.8)
 		# svg seems to have a problem with long title (figure margins too large)
-		if (nchar(title) > 80) {
+		if (!is.na(nchar(title))) {
+    if (nchar(title) > 80) {
 			title = paste0(substr(title, 1, 80), "...")
 		}
+    }
 	}
 	wrappedTitle <- strwrap(paste0("Enrichment plot: ", title), 60)
 	plot.new()

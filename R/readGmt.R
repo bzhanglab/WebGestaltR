@@ -69,6 +69,7 @@ prepareInputMatrixGsea <- function(rank, gmt) {
   #  C++ implementation
   # rel <- fillInputDataFrame(gmt, genes, geneSets)
   rel <- as.data.frame(fill_input_data_frame(gmt, genes, geneSets))
+  colnames(rel) <- geneSets
   rel$gene <- genes
   # R implementation
   # rel <- matrix(0, nrow=length(genes), ncol=length(geneSets), dimnames=list(genes, geneSets))
