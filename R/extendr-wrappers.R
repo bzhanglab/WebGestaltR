@@ -11,10 +11,6 @@
 #' @useDynLib WebGestaltR, .registration = TRUE
 NULL
 
-#' Return string `"Hello world!"` to R.
-#' @export
-rust_hello_world <- function() .Call(wrap__rust_hello_world)
-
 #' Fill relation data frame for GSEA input
 #'
 #' Fill 1 for gene in gene set

@@ -5,16 +5,12 @@ use extendr_api::prelude::*;
 use ndarray::Array2;
 use webgestalt_lib::{
     methods::gsea::{GSEAConfig, RankListItem},
-    methods::ora::{get_ora, ORAConfig, ORAResult},
+    methods::{
+        multiomics::{multiomic_ora, ORAJob},
+        ora::{get_ora, ORAConfig, ORAResult},
+    },
     readers::utils::Item,
 };
-
-/// Return string `"Hello world!"` to R.
-/// @export
-#[extendr]
-fn rust_hello_world() -> &'static str {
-    "Hello world!"
-}
 
 /// Run ORA using Rust library
 /// @name ora_rust
@@ -113,7 +109,7 @@ fn gsea_rust(
             rank: ranks_vec[i],
         })
     }
-    let res = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config, None); // TODO: Convert dataframe to GMT
+    let res = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config, None);
     let mut fdr: Vec<f64> = Vec::new();
     let mut p: Vec<f64> = Vec::new();
     let mut leading_edge: Vec<i32> = Vec::new();
@@ -190,7 +186,85 @@ pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
     }
     // Construct DataFrame in R. Create list for now.
     List::from_names_and_values(gene_set_vec, gene_set_val).unwrap()
-    // data_frame!(x = 1)
+}
+
+#[extendr]
+pub fn rust_multiomics_ora(
+    sets: Robj,
+    parts: Robj,
+    interest: Robj,
+    reference: Robj,
+    method: Robj,
+) -> List {
+    let config: ORAConfig = ORAConfig {
+        fdr_method: webgestalt_lib::stat::AdjustmentMethod::None,
+        ..Default::default()
+    };
+    let reference_list = reference.as_list().unwrap();
+    let method = match method.as_str().unwrap() {
+        "fisher" => webgestalt_lib::methods::multiomics::MultiOmicsMethod::Meta(
+            webgestalt_lib::methods::multiomics::MetaAnalysisMethod::Fisher,
+        ),
+        _ => webgestalt_lib::methods::multiomics::MultiOmicsMethod::Meta(
+            webgestalt_lib::methods::multiomics::MetaAnalysisMethod::Stouffer,
+        ),
+    };
+    let mut gmt: Vec<Item> = Vec::new();
+    let set_vec = sets.as_str_vector().unwrap();
+    let parts_vec: Vec<Vec<String>> = parts
+        .as_list()
+        .unwrap()
+        .iter()
+        .map(|(_, x)| x.as_string_vector().unwrap())
+        .collect();
+    for (i, set) in set_vec.iter().enumerate() {
+        gmt.push(Item {
+            id: set.to_string(),
+            url: String::default(),
+            parts: parts_vec[i].clone(),
+        })
+    }
+    let mut jobs: Vec<ORAJob> = Vec::new();
+    for (i, (_, list)) in interest.as_list().unwrap().into_iter().enumerate() {
+        let interest_set: AHashSet<String> = AHashSet::from_iter(list.as_string_vector().unwrap());
+        let reference_set: AHashSet<String> =
+            AHashSet::from_iter(reference_list[i].as_string_vector().unwrap());
+        let job = ORAJob {
+            gmt: gmt.clone(),
+            interest_list: interest_set.clone(),
+            reference_list: reference_set.clone(),
+            config: config.clone(),
+        };
+        jobs.push(job)
+    }
+
+    let res: Vec<Vec<ORAResult>> = multiomic_ora(jobs, method);
+    let mut all_res: Vec<List> = Vec::new();
+    for analysis in res {
+        let mut p: Vec<f64> = Vec::new();
+        let mut fdr: Vec<f64> = Vec::new();
+        let mut expect: Vec<f64> = Vec::new();
+        let mut enrichment_ratio: Vec<f64> = Vec::new();
+        let mut overlap: Vec<i64> = Vec::new();
+        let mut gene_set: Vec<String> = Vec::new();
+        for row in analysis {
+            gene_set.push(row.set);
+            p.push(row.p);
+            fdr.push(row.fdr);
+            expect.push(row.expected);
+            overlap.push(row.overlap);
+            enrichment_ratio.push(row.enrichment_ratio);
+        }
+        all_res.push(list!(
+            p = p,
+            gene_set = gene_set,
+            fdr = fdr,
+            expect = expect,
+            overlap = overlap,
+            enrichment_ratio = enrichment_ratio
+        ));
+    }
+    List::from_values(all_res)
 }
 
 // Macro to generate exports.
@@ -198,8 +272,8 @@ pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
 // See corresponding C code in `entrypoint.c`.
 extendr_module! {
     mod WebGestaltR;
-    fn rust_hello_world;
     fn fill_input_data_frame;
     fn gsea_rust;
     fn ora_rust;
+    fn rust_multiomics_ora;
 }
