@@ -6,7 +6,7 @@ use ndarray::Array2;
 use webgestalt_lib::{
     methods::gsea::{GSEAConfig, RankListItem},
     methods::{
-        gsea::FullGSEAResult,
+        gsea::GSEAResult,
         multiomics::{multiomic_gsea, multiomic_ora, GSEAJob, ORAJob},
         ora::{get_ora, ORAConfig, ORAResult},
     },
@@ -240,7 +240,7 @@ fn gsea_rust(
             rank: ranks_vec[i],
         })
     }
-    let res = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config, None);
+    let res: Vec<GSEAResult> = webgestalt_lib::methods::gsea::gsea(analyte_list, gmt, config, None);
     let mut fdr: Vec<f64> = Vec::new();
     let mut p: Vec<f64> = Vec::new();
     let mut leading_edge: Vec<i32> = Vec::new();
@@ -342,7 +342,7 @@ pub fn rust_multiomics_gsea(
         };
         jobs.push(job);
     }
-    let res: Vec<Vec<FullGSEAResult>> = multiomic_gsea(jobs, method);
+    let res: Vec<Vec<GSEAResult>> = multiomic_gsea(jobs, method);
     let mut all_res: Vec<List> = Vec::new();
     for analysis in res {
         let mut fdr: Vec<f64> = Vec::new();
