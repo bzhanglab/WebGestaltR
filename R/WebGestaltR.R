@@ -12,8 +12,7 @@
 #' categories have DAG (directed acyclic graph) structure or genes in the functional
 #' categories have network structure, those relationship can also be visualized in the
 #' report.
-#' 
-#' @param omic_type The type of omics analysis: \code{single} or \code{multi}
+#'
 #' @param enrichMethod Enrichment methods: \code{ORA}, \code{GSEA} or \code{NTA}.
 #' @param organism Currently, WebGestaltR supports 12 organisms. Users can use the function
 #'   \code{listOrganism} to check available organisms. Users can also input \code{others} to
