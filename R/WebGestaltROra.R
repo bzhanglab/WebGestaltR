@@ -1,6 +1,12 @@
 #' @importFrom readr write_tsv
 #' @importFrom dplyr left_join select arrange %>% desc mutate
-WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL, interestGeneFile = NULL, interestGene = NULL, interestGeneType = NULL, collapseMethod = "mean", referenceGeneFile = NULL, referenceGene = NULL, referenceGeneType = NULL, referenceSet = NULL, minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05, topThr = 10, reportNum = 20, setCoverNum = 10, isOutput = TRUE, outputDirectory = getwd(), projectName = NULL, dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10) {
+WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL,
+                           enrichDatabaseDescriptionFile = NULL, interestGeneFile = NULL, interestGene = NULL, interestGeneType = NULL,
+                           collapseMethod = "mean", referenceGeneFile = NULL, referenceGene = NULL, referenceGeneType = NULL,
+                           referenceSet = NULL, minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05,
+                           topThr = 10, reportNum = 20, setCoverNum = 10, isOutput = TRUE, outputDirectory = getwd(), projectName = NULL,
+                           dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE,
+                           useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10) {
     enrichMethod <- "ORA"
     projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
@@ -19,7 +25,14 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
 
     ################ Check parameter ################
     errorTest <- parameterErrorMessage(enrichMethod = enrichMethod, organism = organism, collapseMethod = collapseMethod, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, isOutput = isOutput, outputDirectory = outputDirectory, dagColor = dagColor, hostName = hostName, cache = cache)
-
+    if(!is.null(enrichDatabase)){
+      if(enrichDatabase == "all") {
+        all_sets <- listGeneSet(organism = organism, hostName = hostName, cache = cache)
+        all_sets <- all_sets[all_sets$idType == "entrezgene",]
+        enrichDatabase <- all_sets$name
+        enrichDatabaseType <- all_sets$idType
+      }
+    }
     if (!is.null(errorTest)) {
         stop(errorTest)
     }

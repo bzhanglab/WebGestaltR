@@ -1,5 +1,17 @@
+#' @title WebGestaltRMultiOmics
+#' @description Perform multi-omics analysis using WebGestaltR
+#' @param analyteLists A list of analyte lists
+#' @param analyteListFiles A list of analyte list files
+#' @param analyteTypes A list of analyte types
+#' @param enrichMethod Enrichment method, either \code{ORA} or \code{GSEA}
+#' @param organism The organism to use
+#' @param enrichDatabase The database to use
+#' @param enrichDatabaseFile The database file to use
+#' @param enrichDatabaseType The database type to use
+#' @param enrichDatabaseDescriptionFile The database description file to use
+#' @export
 WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, analyteTypes = NULL, enrichMethod = "ORA", organism = "hsapiens", enrichDatabase = NULL,
-                                  enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL, interestGeneFile = NULL,
+                                  enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL,
                                   collapseMethod = "mean", minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05,
                                   topThr = 10, reportNum = 20, setCoverNum = 10, perNum = 1000, p = 1, isOutput = TRUE, outputDirectory = getwd(),
                                   projectName = NULL, dagColor = "binary", saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1, cache = NULL,
@@ -14,14 +26,14 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   analyteLists <- testNull(analyteLists)
   analyteListFiles <- testNull(analyteListFiles)
   analyteTypes <- testNull(analyteTypes)
+  referenceLists <- testNull(referenceLists)
+  referenceTypes <- testNull(referenceTypes)
   enrichMethod <- testNull(enrichMethod)
   organism <- testNull(organism)
   enrichDatabase <- testNull(enrichDatabase)
   enrichDatabaseFile <- testNull(enrichDatabaseFile)
   enrichDatabaseType <- testNull(enrichDatabaseType)
   enrichDatabaseDescriptionFile <- testNull(enrichDatabaseDescriptionFile)
-  referenceLists <- testNull(referenceLists)
-  referenceTypes <- testNull(referenceTypes)
   error_msg <- parameterErrorMessage(
     enrichMethod = enrichMethod, organism = organism, collapseMethod = collapseMethod, minNum = minNum, maxNum = maxNum,
     fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, isOutput = isOutput,
@@ -56,22 +68,52 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
 
   if (enrichMethod == "ORA") {
     cat("Performing multi-omics ORA\nLoading the functional categories...\n")
-    enrichD <- loadGeneSet(
-      organism = organism, enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
+    databases <- c()
+    if (!is.null(enrichDatabase)) { # Need to get correct name for metabolite databases
+      if (length(unique(analyteTypes)) == 1) {
+        databases <- enrichDatabase
+      } else {
+        types_processed <- c()
+        for (i in seq_along(analyteTypes)) {
+          if (analyteTypes[i] %in% types_processed) {
+            next
+          }
+          databases <- c(databases, get_gmt_file(hostName, analyteTypes[i], enrichDatabase[i], organism, cache))
+          types_processed <- c(types_processed, analyteTypes[i])
+        }
+        databases <- unique(databases)
+      }
+    } else {
+      databases <- NULL
+    }
+    all_sets <- loadGeneSet(
+      organism = organism, enrichDatabase = databases, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
       enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName
     )
+    if (length(all_sets) > 1) {
+      geneSet <- all_sets[[1]]$geneSet
+      geneSetDes <- all_sets[[1]]$geneSetDes
+      geneSetNet <- all_sets[[1]]$geneSetNet
+      for (i in 2:length(all_sets)) {
+        geneSet <- rbind(geneSet, all_sets[[i]]$geneSet)
+        geneSetDes <- rbind(geneSetDes, all_sets[[i]]$geneSetDes)
+        geneSetDag <- rbind(geneSetDag, all_sets[[i]]$geneSetDag)
+        geneSetNet <- rbind(geneSetNet, all_sets[[i]]$geneSetNet)
+        databaseStandardId <- "multiomics"
+      }
+    } else {
+      geneSet <- all_sets$geneSet
+      geneSetDag <- all_sets$geneSetDag
+      geneSetNet <- all_sets$geneSetNet
+      databaseStandardId <- all_sets$standardId
+    }
 
-    geneSet <- enrichD$geneSet
-    geneSetDes <- enrichD$geneSetDes
-    geneSetDag <- enrichD$geneSetDag
-    geneSetNet <- enrichD$geneSetNet
-    databaseStandardId <- enrichD$standardId
-    rm(enrichD)
+    rm(all_sets)
 
     cat("Loading the ID lists...\n")
     interest_lists <- list()
     if (is.null(analyteLists)) {
-      for (i in analyteLists) {
+      for (i in seq_along(analyteListFiles)) {
         interestingGeneMap <- loadInterestGene(
           organism = organism, dataType = "list", inputGeneFile = analyteListFiles[i], inputGene = NULL,
           geneType = analyteTypes[i], collapseMethod = collapseMethod, cache = cache,
@@ -86,7 +128,26 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
           interest_lists[[i]] <- interestGeneList
         }
       }
+    } else {
+      for (i in seq_along(analyteLists)) {
+        interestingGeneMap <- loadInterestGene(
+          organism = organism, dataType = "list", inputGeneFile = analyteLists[i], inputGene = NULL,
+          geneType = analyteTypes[i], collapseMethod = collapseMethod, cache = cache,
+          hostName = hostName, geneSet = geneSet
+        )
+        if (organism == "others") {
+          interestGeneList <- unique(interestingGeneMap)
+          interest_lists[[i]] <- interestGeneList
+        } else {
+          interestStandardId <- interestingGeneMap$standardId
+          interestGeneList <- unique(interestingGeneMap$mapped[[interestStandardId]])
+          interest_lists[[i]] <- interestGeneList
+        }
+      }
     }
+
+    # Load Gene Sets
+    cat("Loading the reference lists...\n")
 
     ## Meta-analysis
   }
