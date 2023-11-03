@@ -33,7 +33,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --target=${{ matrix.target }}-pc-windows-msv --manifest-path=src/rust/Cargo.toml
+          args: --release --target=${{ matrix.target }}-pc-windows-msvc --manifest-path=src/rust/Cargo.toml
 
       - name: List files
         run: ls ./src/rust/target/${{ matrix.target }}-pc-windows-msvc/release/
