@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - 'windows*'
+      - "windows*"
 
 name: Build Windows
 
@@ -56,6 +56,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./src/rust/target/${{ matrix.target }}-pc-windows-msvc/release/libWebGestatltR.lib
-          asset_name: libWebGestaltR.lib
+          asset_path: ./src/rust/target/${{ matrix.target }}-pc-windows-msvc/release/WebGestaltR.lib
+          asset_name: WebGestaltR.lib
           asset_content_type: application/octet-stream
