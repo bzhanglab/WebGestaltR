@@ -501,7 +501,7 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 [[package]]
 name = "webgestalt_lib"
 version = "0.1.0"
-source = "git+https://github.com/bzhanglab/webgestalt_rust.git#76c87be4ff7c39c863f6707bf5aeef8f80e56570"
+source = "git+https://github.com/bzhanglab/webgestalt_rust.git#c439dde641285355f1023797fd439ce3bad98cad"
 dependencies = [
  "ahash",
  "csv",
@@ -523,18 +523,18 @@ dependencies = [
 
 [[package]]
 name = "zerocopy"
-version = "0.7.23"
+version = "0.7.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e50cbb27c30666a6108abd6bc7577556265b44f243e2be89a8bc4e07a528c107"
+checksum = "092cd76b01a033a9965b9097da258689d9e17c69ded5dcf41bca001dd20ebc6d"
 dependencies = [
  "zerocopy-derive",
 ]
 
 [[package]]
 name = "zerocopy-derive"
-version = "0.7.23"
+version = "0.7.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a25f293fe55f0a48e7010d65552bb63704f6ceb55a1a385da10d41d8f78e4a3d"
+checksum = "a13a20a7c6a90e2034bcc65495799da92efcec6a8dd4f3fcb6f7a48988637ead"
 dependencies = [
  "proc-macro2",
  "quote",
