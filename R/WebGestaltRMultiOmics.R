@@ -118,7 +118,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
                                   projectName = NULL, dagColor = "binary", saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1, cache = NULL,
                                   hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE,
                                   usekMedoid = FALSE, kMedoid_k = 10, isMetaAnalysis = TRUE, mergeMethod = "mean", normalizationMethod = "rank",
-                                  referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL) {
+                                  referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, referenceSet) {
   VALID_MERGE_METHODS <- c("mean", "max")
   VALID_NORM_METHODS <- c("rank", "median", "mean")
   VALID_ENRICH_METHODS <- c("ORA", "GSEA")
@@ -170,22 +170,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
 
   if (enrichMethod == "ORA") {
     cat("Performing multi-omics ORA\nLoading the functional categories...\n")
-    databases <- c()
-    if (!is.null(enrichDatabase)) { # Need to get correct name for metabolite databases
-      if (length(unique(analyteTypes)) == 1) {
-        databases <- enrichDatabase
-      } else {
-        for (i in seq_along(analyteTypes)) {
-          databases <- c(databases, get_gmt_file(hostName, analyteTypes[i], enrichDatabase[i], organism, cache))
-        }
-      }
-    } else {
-      databases <- NULL
-    }
-    all_sets <- loadGeneSet(
-      organism = organism, enrichDatabase = databases, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
-      enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName
-    )
+    all_sets <- .load_meta_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
     if (length(all_sets) > 1) {
       geneSet <- all_sets[[1]]$geneSet
       geneSetDes <- all_sets[[1]]$geneSetDes
@@ -203,7 +188,6 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
       geneSetNet <- all_sets$geneSetNet
       databaseStandardId <- all_sets$standardId
     }
-
     rm(all_sets)
 
     cat("Loading the ID lists...\n")
@@ -245,14 +229,48 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
     # Load Gene Sets
     cat("Loading the reference lists...\n")
 
-    referenceGeneList <- loadReferenceGene(organism = organism, referenceGeneFile = referenceGeneFile, referenceGene = referenceGene, referenceGeneType = referenceGeneType, referenceSet = referenceSet, collapseMethod = collapseMethod, hostName = hostName, geneSet = geneSet, interestGeneList = interestGeneList, cache = cache)
+    referenceGeneList <- loadReferenceGene(
+      organism = organism, referenceGeneFile = referenceListFiles,
+      referenceGene = referenceListFiles, referenceGeneType = referenceTypes,
+      referenceSet = referenceSet, collapseMethod = collapseMethod,
+      hostName = hostName, geneSet = geneSet, interestGeneList = interestGeneList,
+      cache = cache
+    )
+
+    oraRes <- multiOraEnrichment(interestGeneList, referenceGeneList, geneSet, minNum = minNum,
+                            maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod,
+                            fdrThr = fdrThr, topThr = topThr)
+
 
     ## Meta-analysis
+  } else if (enrichMethod == "GSEA") {
+    if (isMetaAnalysis) {
+
+    } else {
+      all_sets <- .load_combined_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
+      if (length(all_sets) > 1) {
+        geneSet <- all_sets[[1]]$geneSet
+        geneSetDes <- all_sets[[1]]$geneSetDes
+        geneSetNet <- all_sets[[1]]$geneSetNet
+        for (i in 2:length(all_sets)) {
+          geneSet <- rbind(geneSet, all_sets[[i]]$geneSet)
+          geneSetDes <- rbind(geneSetDes, all_sets[[i]]$geneSetDes)
+          geneSetDag <- rbind(geneSetDag, all_sets[[i]]$geneSetDag)
+          geneSetNet <- rbind(geneSetNet, all_sets[[i]]$geneSetNet)
+          databaseStandardId <- "multiomics"
+        }
+      } else {
+        geneSet <- all_sets$geneSet
+        geneSetDag <- all_sets$geneSetDag
+        geneSetNet <- all_sets$geneSetNet
+        databaseStandardId <- all_sets$standardId
+      }
+    }
   }
 }
 
 
-load_combined_gmt <- function(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName) {
+.load_combined_gmt <- function(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName) {
   databases <- c()
   if (!is.null(enrichDatabase)) { # Need to get correct name for metabolite databases
     if (length(unique(analyteTypes)) == 1) {
@@ -267,6 +285,26 @@ load_combined_gmt <- function(enrichDatabase, enrichDatabaseFile, enrichDatabase
         types_processed <- c(types_processed, analyteTypes[i])
       }
       databases <- unique(databases)
+    }
+  } else {
+    databases <- NULL
+  }
+  all_sets <- loadGeneSet(
+    organism = organism, enrichDatabase = databases, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
+    enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName
+  )
+  return(all_sets)
+}
+
+.load_meta_gmt <- function(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName) {
+  databases <- c()
+  if (!is.null(enrichDatabase)) { # Need to get correct name for metabolite databases
+    if (length(unique(analyteTypes)) == 1) {
+      databases <- enrichDatabase
+    } else {
+      for (i in seq_along(analyteTypes)) {
+        databases <- c(databases, get_gmt_file(hostName, analyteTypes[i], enrichDatabase[i], organism, cache))
+      }
     }
   } else {
     databases <- NULL
