@@ -1,9 +1,9 @@
 TARGET = $(subst 64,x86_64,$(subst 32,i686,$(WIN)))-pc-windows-gnu
 CRATE = WebGestaltR
-BASE_TAG = windowsv0.0.1d
+BASE_TAG = windowsv0.0.1e
 TARGET_DIR = ./rust/target
 LIBDIR = $(TARGET_DIR)/$(TARGET)/release
-STATLIB = $(LIBDIR)/lib$(CRATE).a
+STATLIB = $(LIBDIR)/$(CRATE).lib
 PKG_LIBS = -L$(LIBDIR) -l$(CRATE) -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll
 
 all: C_clean
@@ -15,7 +15,7 @@ CARGOTMP = $(CURDIR)/.cargo
 # See https://yutani.rbind.io/post/some-more-notes-about-using-rust-code-in-r-packages/#precompiled-binary-for-windows
 $(STATLIB):
 	mkdir -p $(TARGET_DIR)/libgcc_mock
-  curl -L -o $(STATLIB) https://github.com/iblacksand/$(CRATE)/releases/download/$(BASE_TAG)-$(TARGET)/lib$(CRATE).a
+  curl -L -o $(STATLIB) https://github.com/iblacksand/$(CRATE)/releases/download/$(BASE_TAG)-$(TARGET)/$(CRATE).lib
 	# `rustc` adds `-lgcc_eh` flags to the compiler, but Rtools' GCC doesn't have
 	# `libgcc_eh` due to the compilation settings. So, in order to please the
 	# compiler, we need to add empty `libgcc_eh` to the library search paths.
