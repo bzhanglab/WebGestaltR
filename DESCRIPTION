@@ -15,7 +15,7 @@ Description: The web version WebGestalt <https://www.webgestalt.org> supports 12
 License: LGPL
 URL: https://github.com/bzhanglab/WebGestaltR
 LazyLoad: yes
-Depends: R (>= 3.3)
+Depends: R (>= 4.0)
 Imports: methods, dplyr, doRNG, readr, parallel (>= 3.3.2),
         doParallel (>= 1.0.10), foreach (>= 1.4.0),
         jsonlite, httr, rlang, svglite,
