@@ -13,5 +13,15 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
 
   for (i in seq_along(interestGene)) {
     interestGene[[i]] <- intersect(referenceGene[[i]], intersect(interestGene[[i]], geneSet[[i]]$gene))
+    if (length(interestGene[[i]]) == 0) {
+      stop(paste0("ERROR: No genes in the interesting list at index ", i, " can annote to any functional category."))
+    }
+  }
+
+  refG <- list()
+  intG <- list()
+  for (i in seq_along(geneSetNum)) {
+    refG[[i]] <- data.frame(geneSet = names(geneSetNum[[i]]), size = as.numeric(geneSetNum[[i]]), stringsAsFactors = FALSE)
+    intG[[i]] <- filter(geneSet[[i]], .data$gene %in% interestGene)
   }
 }

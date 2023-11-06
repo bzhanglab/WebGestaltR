@@ -15,7 +15,7 @@ CARGOTMP = $(CURDIR)/.cargo
 # See https://yutani.rbind.io/post/some-more-notes-about-using-rust-code-in-r-packages/#precompiled-binary-for-windows
 $(STATLIB):
 	mkdir -p $(TARGET_DIR)/libgcc_mock
-  curl -L -o $(STATLIB) https://github.com/iblacksand/$(CRATE)/releases/latest/download/latest/$(CRATE).lib
+  curl -L -o $(STATLIB) https://github.com/iblacksand/WebGestaltR/releases/download/windowsv0.0.1a-x86_64/WebGestaltR.lib
 	# `rustc` adds `-lgcc_eh` flags to the compiler, but Rtools' GCC doesn't have
 	# `libgcc_eh` due to the compilation settings. So, in order to please the
 	# compiler, we need to add empty `libgcc_eh` to the library search paths.
