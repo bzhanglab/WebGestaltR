@@ -64,8 +64,6 @@ WebGestaltRBatch(
 )
 }
 \arguments{
-\item{omic_type}{The type of omics analysis: \code{single} or \code{multi}}
-
 \item{enrichMethod}{Enrichment methods: \code{ORA}, \code{GSEA} or \code{NTA}.}
 
 \item{organism}{Currently, WebGestaltR supports 12 organisms. Users can use the function
