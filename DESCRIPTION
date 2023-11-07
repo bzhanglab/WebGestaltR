@@ -27,3 +27,7 @@ RoxygenNote: 7.2.3
 SystemRequirements: Cargo (Rust's package manager), rustc v1.63.0+
 Config/rextendr/version: 0.3.1
 Encoding: UTF-8
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

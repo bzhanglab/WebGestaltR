@@ -44,3 +44,4 @@ vignettes/*.pdf
 _site
 index.md
 docs
+inst/doc
