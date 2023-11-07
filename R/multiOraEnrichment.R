@@ -1,4 +1,6 @@
-multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05, topThr = 10) {
+multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10,
+                               maxNum = 500, fdrMethod = "BH", sigMethod = "fdr",
+                               fdrThr = 0.05, topThr = 10) {
   for (i in seq_along(referenceGene)) {
     referenceGene[[i]] <- intersect(referenceGene[[i]], geneSet[[i]]$gene)
     geneSet[[i]] <- filter(geneSet[[i]], .data$gene %in% referenceGene[[i]])
@@ -24,4 +26,25 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
     refG[[i]] <- data.frame(geneSet = names(geneSetNum[[i]]), size = as.numeric(geneSetNum[[i]]), stringsAsFactors = FALSE)
     intG[[i]] <- filter(geneSet[[i]], .data$gene %in% interestGene)
   }
+  intGId <- lapply(intG, function(x) {
+    tapply(x$gene, x$geneSet, paste, collapse = ";")
+  })
+  intGId <- lapply(intGId, function(x) {
+    data.frame(geneSet = names(x), overlapId = as.character(x), stringsAsFactors = FALSE)
+  })
+  geneSetFilter <- lapply(geneSet, function(x) {
+    x %>%
+      filter(!is.na(.data$geneSet)) %>%
+      filter(.data$geneSet %in% names(geneSetNum[[i]])) %>%
+      select(.data$geneSet, link = .data$description) %>%
+      distinct()
+  })
+  geneSet <- lapply(geneSet, function(x) {
+    x[x$geneSet %in% geneSetFilter[[i]]$geneSet, ]
+  })
+  genes <- lapply(geneSet, function(x) {
+    tapply(x$gene, x$geneSet, rbind)
+  })
+  rust_result <- rust_multiomics_ora(geneSet, genes, interestGene, referenceGene)
+  disp(head(rust_result))
 }
