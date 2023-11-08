@@ -6,3 +6,5 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^logo\.svg$
+$build_hash\.py$

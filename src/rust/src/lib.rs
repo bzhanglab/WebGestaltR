@@ -37,7 +37,6 @@ use webgestalt_lib::{
 /// @author John Elizarraras
 /// @name fill_input_data_frame
 /// @keywords internal
-/// @export
 #[extendr]
 pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
     let genes_vec = genes.as_string_vector().unwrap();
@@ -66,7 +65,6 @@ pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
 
 /// Run ORA using Rust library
 /// @name ora_rust
-/// @export
 #[extendr]
 fn ora_rust(sets: Robj, parts: Robj, interest: Robj, reference: Robj) -> List {
     let config: ORAConfig = ORAConfig {
