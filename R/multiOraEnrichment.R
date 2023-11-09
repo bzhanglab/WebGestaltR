@@ -46,5 +46,5 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
     tapply(x$gene, x$geneSet, rbind)
   })
   rust_result <- rust_multiomics_ora(geneSet, genes, interestGene, referenceGene)
-  disp(head(rust_result))
+  print(head(rust_result))
 }

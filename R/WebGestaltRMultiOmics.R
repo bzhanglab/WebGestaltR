@@ -34,6 +34,7 @@
 #'   containing the interesting analyte lists. If \code{enrichMethod} is \code{GSEA},
 #'   \code{analyteLists} should be an \code{vector} of R \code{data.frame} objects containing two columns: the
 #'   gene list and the corresponding scores.
+#' @param analyteTypes a vector containing the ID types of the analyte lists.
 #' @param analyteLists \code{vector} of the ID type of the corresponding interesting analyte list. The supported ID types of
 #'   WebGestaltR for the selected organism can be found by the function \code{listIdType}. If
 #'   the \code{organism} is \code{others}, users do not need to set this parameter. The length of \code{analyteLists} should be
@@ -98,16 +99,20 @@
 #' @param useWeightedSetCover Use weighted set cover for ORA. Defaults to \code{TRUE}.
 #' @param useAffinityPropagation Use affinity propagation for ORA. Defaults to \code{FALSE}.
 #' @param usekMedoid Use k-medoid for ORA. Defaults to \code{TRUE}.
+#' @param isMetaAnalysis whether to perform meta-analysis. Defaults to \code{TRUE}.
+#' @param mergeMethod The method to merge the results from multiple omics (options: \code{mean}, \code{max}). Only used if \code{isMetaAnalysis = FALSE}. Defaults to \code{mean}.
+#' @param normalizationMethod The method to normalize the results from multiple omics (options: \code{rank}, \code{median}, \code{mean}). Only used if \code{isMetaAnalysis = FALSE}.
 #' @param kMedoid_k The number of clusters for k-medoid. Defaults to \code{25}.
+#'
 #' @export
 WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, analyteTypes = NULL, enrichMethod = "ORA", organism = "hsapiens",
                                   enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL,
                                   collapseMethod = "mean", minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05,
-                                  topThr = 10, reportNum = 20, setCoverNum = 10, perNum = 1000, gseaP = 1, isOutput = TRUE, outputDirectory = getwd(),
+                                  topThr = 10, reportNum = 100, setCoverNum = 10, perNum = 1000, gseaP = 1, isOutput = TRUE, outputDirectory = getwd(),
                                   projectName = NULL, dagColor = "binary", saveRawGseaResult = FALSE, gseaPlotFormat = "png", nThreads = 1, cache = NULL,
                                   hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE,
-                                  usekMedoid = FALSE, kMedoid_k = 10, isMetaAnalysis = TRUE, mergeMethod = "mean", normalizationMethod = "rank",
-                                  referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, referenceSet) {
+                                  usekMedoid = FALSE, kMedoid_k = 25, isMetaAnalysis = TRUE, mergeMethod = "mean", normalizationMethod = "rank",
+                                  referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL) {
   VALID_MERGE_METHODS <- c("mean", "max")
   VALID_NORM_METHODS <- c("rank", "median", "mean")
   VALID_ENRICH_METHODS <- c("ORA", "GSEA")
