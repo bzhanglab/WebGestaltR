@@ -65,6 +65,13 @@ pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
 
 /// Run ORA using Rust library
 /// @name ora_rust
+/// @param sets A vector of analyte set names
+/// @param parts A list of the analyte in the analyte sets
+/// @param interest A vector of analytes of interest
+/// @param reference A vector of analytes in the reference set
+/// @returns A list of the results of ORA
+/// @author John Elizarraras
+/// @keywords internal
 #[extendr]
 fn ora_rust(sets: Robj, parts: Robj, interest: Robj, reference: Robj) -> List {
     let config: ORAConfig = ORAConfig {
@@ -114,6 +121,15 @@ fn ora_rust(sets: Robj, parts: Robj, interest: Robj, reference: Robj) -> List {
     )
 }
 
+/// Run multiomics ORA using Rust library
+/// @param sets list of  the names of the analyte sets
+/// @param parts list of the analyte in the analyte sets
+/// @param interest list of analytes of interest
+/// @param reference list of analytes in the reference set
+/// @param method meta-analysis method to get meta-p values
+/// @returns A list of vectors containing the results of ORA, with each list corresponding to each input list
+/// @author John Elizarraras
+/// @keywords internal
 #[extendr]
 pub fn rust_multiomics_ora(
     sets: Robj,
@@ -194,9 +210,17 @@ pub fn rust_multiomics_ora(
 }
 
 /// Run GSEA using rust library
+/// @param min_overlap the minimum overlap between analyte set and analyte list
+/// @param max_overlap the maximum overlap between analyte set and analyte list
+/// @param permutations the number of permutations to run
+/// @param sets A vector of analyte set names
+/// @param parts A list of the analytse in the analyte sets
+/// @param analytes A vector of analytes names in the GSEA list
+/// @param ranks A vector of ranks for the analytes in the GSEA list
 /// @return List of the results of GSEA
+/// @author John Elizarraras
+/// @keywords internal
 /// @name gsea_rust
-/// @export
 #[extendr]
 fn gsea_rust(
     min_overlap: Robj,
@@ -266,6 +290,21 @@ fn gsea_rust(
     )
 }
 
+/// Run multiomics GSEA using rust library
+/// @param min_overlap the minimum overlap between analyte set and analyte list
+/// @param max_overlap the maximum overlap between analyte set and analyte list
+/// @param permutations the number of permutations to run
+/// @param sets A vector of analyte set names
+/// @param parts A list of the analytse in the analyte sets
+/// @param analytes A vector of analytes names in the GSEA list
+/// @param ranks A vector of ranks for the analytes in the GSEA list
+/// @param method_modifier method modifier for the multiomics method ("fisher" or "stouffer" if
+/// meta-analysis, "mean", "max", or "rank" if other combination method)
+/// @param combo_method method for combining analyte sets (meta, mean, or max)
+/// @return List of lists of the results of GSEA
+/// @author John Elizarraras
+/// @keywords internal
+/// @name gsea_rust
 #[extendr]
 pub fn rust_multiomics_gsea(
     min_overlap: Robj,

@@ -35,19 +35,43 @@ NULL
 #' @author John Elizarraras
 #' @name fill_input_data_frame
 #' @keywords internal
-#' @export
 fill_input_data_frame <- function(gmt, genes, gene_sets) .Call(wrap__fill_input_data_frame, gmt, genes, gene_sets)
 
 #' Run GSEA using rust library
+#' @param min_overlap the minimum overlap between analyte set and analyte list
+#' @param max_overlap the maximum overlap between analyte set and analyte list
+#' @param permutations the number of permutations to run
+#' @param sets A vector of analyte set names
+#' @param parts A list of the analytse in the analyte sets
+#' @param analytes A vector of analytes names in the GSEA list
+#' @param ranks A vector of ranks for the analytes in the GSEA list
 #' @return List of the results of GSEA
+#' @author John Elizarraras
+#' @keywords internal
 #' @name gsea_rust
-#' @export
 gsea_rust <- function(min_overlap, max_overlap, permutations, sets, parts, analytes, ranks) .Call(wrap__gsea_rust, min_overlap, max_overlap, permutations, sets, parts, analytes, ranks)
 
 #' Run ORA using Rust library
 #' @name ora_rust
-#' @export
+#' @param sets A vector of analyte set names
+#' @param parts A list of the analyte in the analyte sets
+#' @param interest A vector of analytes of interest
+#' @param reference A vector of analytes in the reference set
+#' @returns A list of the results of ORA
+#' @author John Elizarraras
+#' @keywords internal
 ora_rust <- function(sets, parts, interest, reference) .Call(wrap__ora_rust, sets, parts, interest, reference)
+
+#' Run multiomics ORA using Rust library
+#' @param sets list of  the names of the analyte sets
+#' @param parts list of the analyte in the analyte sets
+#' @param interest list of analytes of interest
+#' @param reference list of analytes in the reference set
+#' @param method meta-analysis method to get meta-p values
+#' @returns A list of vectors containing the results of ORA, with each list corresponding to each input list
+#' @author John Elizarraras
+#' @keywords internal
+rust_multiomics_ora <- function(sets, parts, interest, reference, method) .Call(wrap__rust_multiomics_ora, sets, parts, interest, reference, method)
 
 
 # nolint end

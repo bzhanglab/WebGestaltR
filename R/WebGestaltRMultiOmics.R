@@ -47,7 +47,7 @@
 #' @param referenceLists For the ORA method, users can also use an R object as the reference
 #'   gene list. \code{referenceLists} should be an R \code{vector} object containing the
 #'   reference gene list.
-#' @param referenceGeneType The ID type of the reference gene list. The supported ID types
+#' @param referenceTypes Vector of the ID types of the reference lists. The supported ID types
 #'   of WebGestaltR for the selected organism can be found by the function \code{listIdType}.
 #'   If the \code{organism} is \code{others}, users do not need to set this parameter.
 #' @param minNum WebGestaltR will exclude the categories with the number of annotated genes
@@ -92,30 +92,19 @@
 #'   \code{png}, or \code{c("png", "svg")} (default).
 #' @param setCoverNum The number of expected gene sets after set cover to reduce redundancy.
 #'   It could get fewer sets if the coverage reaches 100\%. The default is \code{10}.
-#' @param networkConstructionMethod Netowrk construction method for NTA. Either
-#'   \code{Network_Retrieval_Prioritization} or \code{Network_Expansion}. Network Retrieval &
-#'   Prioritization first uses random walk analysis to calculate random walk probabilities
-#'   for the input seeds, then identifies the relationships among the seeds in the selected
-#'   network and returns a retrieval sub-network. The seeds with the top random walk
-#'   probabilities are highlighted in the sub-network. Network Expansion first uses random
-#'   walk analysis to rank all genes in the selected network based on their network
-#'   proximity to the input seeds and then return an expanded sub-network in which nodes
-#'   are the input seeds and their top ranking neighbors and edges represent their
-#'   relationships.
-#' @param neighborNum The number of neighbors to include in NTA Network Expansion method.
-#' @param highlightType The type of nodes to highlight in the NTA Network Expansion method,
-#'   either \code{Seeds} or \code{Neighbors}.
-#' @param highlightSeedNum The number of top input seeds to highlight in NTA Network Retrieval
-#'   & Prioritizaiton method.
 #' @param nThreads The number of cores to use for GSEA and set cover, and in batch function.
 #' @param cache A directory to save data cache for reuse. Defaults to \code{NULL} and disabled.
 #' @param hostName The server URL for accessing data. Mostly for development purposes.
+#' @param useWeightedSetCover Use weighted set cover for ORA. Defaults to \code{TRUE}.
+#' @param useAffinityPropagation Use affinity propagation for ORA. Defaults to \code{FALSE}.
+#' @param usekMedoid Use k-medoid for ORA. Defaults to \code{TRUE}.
+#' @param kMedoid_k The number of clusters for k-medoid. Defaults to \code{25}.
 #' @export
 WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, analyteTypes = NULL, enrichMethod = "ORA", organism = "hsapiens",
                                   enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL,
                                   collapseMethod = "mean", minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05,
-                                  topThr = 10, reportNum = 20, setCoverNum = 10, perNum = 1000, p = 1, isOutput = TRUE, outputDirectory = getwd(),
-                                  projectName = NULL, dagColor = "binary", saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1, cache = NULL,
+                                  topThr = 10, reportNum = 20, setCoverNum = 10, perNum = 1000, gseaP = 1, isOutput = TRUE, outputDirectory = getwd(),
+                                  projectName = NULL, dagColor = "binary", saveRawGseaResult = FALSE, gseaPlotFormat = "png", nThreads = 1, cache = NULL,
                                   hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE,
                                   usekMedoid = FALSE, kMedoid_k = 10, isMetaAnalysis = TRUE, mergeMethod = "mean", normalizationMethod = "rank",
                                   referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, referenceSet) {

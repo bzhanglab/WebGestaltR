@@ -24,13 +24,13 @@ WebGestaltRMultiOmics(
   reportNum = 20,
   setCoverNum = 10,
   perNum = 1000,
-  p = 1,
+  gseaP = 1,
   isOutput = TRUE,
   outputDirectory = getwd(),
   projectName = NULL,
   dagColor = "binary",
   saveRawGseaResult = FALSE,
-  plotFormat = "png",
+  gseaPlotFormat = "png",
   nThreads = 1,
   cache = NULL,
   hostName = "https://www.webgestalt.org/",
@@ -120,6 +120,9 @@ It could get fewer sets if the coverage reaches 100\%. The default is \code{10}.
 
 \item{perNum}{The number of permutations for the GSEA method. The default is \code{1000}.}
 
+\item{gseaP}{The exponential scaling factor of the phenotype score. The default is \code{1}.
+When p=0, ES reduces to standard K-S statistics (See original paper for more details).}
+
 \item{isOutput}{If \code{isOutput} is TRUE, WebGestaltR will create a folder named by
 the \code{projectName} and save the results in the folder. Otherwise, WebGestaltR will
 only return an R \code{data.frame} object containing the enrichment results. If
@@ -145,11 +148,22 @@ corresponding FDRs.}
    \item{Items_in_Set}{A list with ranks of genes for each gene set}
 }}
 
+\item{gseaPlotFormat}{The graphic format of GSEA enrichment plots. Either \code{svg},
+\code{png}, or \code{c("png", "svg")} (default).}
+
 \item{nThreads}{The number of cores to use for GSEA and set cover, and in batch function.}
 
 \item{cache}{A directory to save data cache for reuse. Defaults to \code{NULL} and disabled.}
 
 \item{hostName}{The server URL for accessing data. Mostly for development purposes.}
+
+\item{useWeightedSetCover}{Use weighted set cover for ORA. Defaults to \code{TRUE}.}
+
+\item{useAffinityPropagation}{Use affinity propagation for ORA. Defaults to \code{FALSE}.}
+
+\item{usekMedoid}{Use k-medoid for ORA. Defaults to \code{TRUE}.}
+
+\item{kMedoid_k}{The number of clusters for k-medoid. Defaults to \code{25}.}
 
 \item{referenceLists}{For the ORA method, users can also use an R object as the reference
 gene list. \code{referenceLists} should be an R \code{vector} object containing the
@@ -159,34 +173,9 @@ reference gene list.}
 list. The extension of the \code{referenceListFile} should be \code{txt} and the file can
 only contain one column: the reference gene list.}
 
-\item{referenceGeneType}{The ID type of the reference gene list. The supported ID types
+\item{referenceTypes}{Vector of the ID types of the reference lists. The supported ID types
 of WebGestaltR for the selected organism can be found by the function \code{listIdType}.
 If the \code{organism} is \code{others}, users do not need to set this parameter.}
-
-\item{gseaP}{The exponential scaling factor of the phenotype score. The default is \code{1}.
-When p=0, ES reduces to standard K-S statistics (See original paper for more details).}
-
-\item{gseaPlotFormat}{The graphic format of GSEA enrichment plots. Either \code{svg},
-\code{png}, or \code{c("png", "svg")} (default).}
-
-\item{networkConstructionMethod}{Netowrk construction method for NTA. Either
-\code{Network_Retrieval_Prioritization} or \code{Network_Expansion}. Network Retrieval &
-Prioritization first uses random walk analysis to calculate random walk probabilities
-for the input seeds, then identifies the relationships among the seeds in the selected
-network and returns a retrieval sub-network. The seeds with the top random walk
-probabilities are highlighted in the sub-network. Network Expansion first uses random
-walk analysis to rank all genes in the selected network based on their network
-proximity to the input seeds and then return an expanded sub-network in which nodes
-are the input seeds and their top ranking neighbors and edges represent their
-relationships.}
-
-\item{neighborNum}{The number of neighbors to include in NTA Network Expansion method.}
-
-\item{highlightType}{The type of nodes to highlight in the NTA Network Expansion method,
-either \code{Seeds} or \code{Neighbors}.}
-
-\item{highlightSeedNum}{The number of top input seeds to highlight in NTA Network Retrieval
-& Prioritizaiton method.}
 }
 \description{
 Perform multi-omics analysis using WebGestaltR

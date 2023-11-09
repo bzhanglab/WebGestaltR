@@ -6,6 +6,22 @@
 \usage{
 ora_rust(sets, parts, interest, reference)
 }
+\arguments{
+\item{sets}{A vector of analyte set names}
+
+\item{parts}{A list of the analyte in the analyte sets}
+
+\item{interest}{A vector of analytes of interest}
+
+\item{reference}{A vector of analytes in the reference set}
+}
+\value{
+A list of the results of ORA
+}
 \description{
 Run ORA using Rust library
 }
+\author{
+John Elizarraras
+}
+\keyword{internal}
