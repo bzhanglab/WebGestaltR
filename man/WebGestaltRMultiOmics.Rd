@@ -21,7 +21,7 @@ WebGestaltRMultiOmics(
   sigMethod = "fdr",
   fdrThr = 0.05,
   topThr = 10,
-  reportNum = 20,
+  reportNum = 100,
   setCoverNum = 10,
   perNum = 1000,
   gseaP = 1,
@@ -37,14 +37,13 @@ WebGestaltRMultiOmics(
   useWeightedSetCover = TRUE,
   useAffinityPropagation = FALSE,
   usekMedoid = FALSE,
-  kMedoid_k = 10,
+  kMedoid_k = 25,
   isMetaAnalysis = TRUE,
   mergeMethod = "mean",
   normalizationMethod = "rank",
   referenceLists = NULL,
   referenceListFiles = NULL,
-  referenceTypes = NULL,
-  referenceSet
+  referenceTypes = NULL
 )
 }
 \arguments{
@@ -58,6 +57,8 @@ the \code{analyteListFiles} should be \code{txt} and each file can only contain 
 the interesting analyte list. If \code{enrichMethod} is \code{GSEA}, the extension of the
 \code{analyteListFiles} should be \code{rnk} and the files should contain two columns
 separated by tab: the analyte list and the corresponding scores.}
+
+\item{analyteTypes}{a vector containing the ID types of the analyte lists.}
 
 \item{enrichMethod}{Enrichment methods: \code{ORA}or \code{GSEA}.}
 
@@ -164,6 +165,12 @@ corresponding FDRs.}
 \item{usekMedoid}{Use k-medoid for ORA. Defaults to \code{TRUE}.}
 
 \item{kMedoid_k}{The number of clusters for k-medoid. Defaults to \code{25}.}
+
+\item{isMetaAnalysis}{whether to perform meta-analysis. Defaults to \code{TRUE}.}
+
+\item{mergeMethod}{The method to merge the results from multiple omics (options: \code{mean}, \code{max}). Only used if \code{isMetaAnalysis = FALSE}. Defaults to \code{mean}.}
+
+\item{normalizationMethod}{The method to normalize the results from multiple omics (options: \code{rank}, \code{median}, \code{mean}). Only used if \code{isMetaAnalysis = FALSE}.}
 
 \item{referenceLists}{For the ORA method, users can also use an R object as the reference
 gene list. \code{referenceLists} should be an R \code{vector} object containing the
