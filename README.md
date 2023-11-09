@@ -1,5 +1,7 @@
 # WebGestaltR
 
+[![R-CMD-check](https://github.com/iblacksand/WebGestaltR/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/iblacksand/WebGestaltR/actions/workflows/check-standard.yaml)
+
 > [!IMPORTANT]
 > The new version of WebGesaltR requires Rust, which must be installed on your device prior to installing or updating the package from CRAN. See the installation section for more information.
 

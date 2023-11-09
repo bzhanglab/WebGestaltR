@@ -1,7 +1,7 @@
 #' Load gene set data
 #'
 #' @inheritParams WebGestaltR
-#'
+#' @param isMultiOmics Boolean if loading gene sets for multiomics. Defaults to \code{FALSE}.
 #' @return A list of \code{geneSet}, \code{geneSetDes}, \code{geneSetDag}, \code{geneSetNet}, \code{standardId}.
 #' \describe{
 #'  \item{geneSet}{Gene set: A data frame with columns of "geneSet", "description", "genes"}
@@ -14,7 +14,8 @@
 #' @importFrom dplyr select distinct filter %>%
 #' @importFrom httr modify_url
 #' @export
-loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, cache=NULL, hostName="https://www.webgestalt.org/") {
+loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL,
+                        cache=NULL, hostName="https://www.webgestalt.org/", isMultiOmics = FALSE) {
 	# TODO: multiple custom database ID types?
 	geneSet <- NULL    ##gene sets
 	geneSetDes <- NULL ##gene set description file
@@ -32,9 +33,9 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 	if (!is.vector(enrichDatabaseDescriptionFile)) {
 		enrichDatabaseDescriptionFile = list(enrichDatabaseDescriptionFile)
 	}
-	if (length(enrichDatabaseFile) != length(enrichDatabaseDescriptionFile)) {
-		stop("The number of custom database and its description files should be equal. Use NULL for placeholder.")
-	}
+  if (length(enrichDatabaseFile) != length(enrichDatabaseDescriptionFile)) {
+    stop("The number of custom database and its description files should be equal. Use NULL for placeholder.")
+  }
 	if (organism != "others") {  # supported organism
 		geneSetInfo <- listGeneSet(organism=organism, hostName=hostName, cache=cache)
 		#  load build-in databases
@@ -46,7 +47,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 			}
 			# get the ID type of the enriched database, such as entrezgene or phosphsiteSeq
 			thisStandardId <- filter(geneSetInfo, .data$name==enrichDb)[[1, "idType"]]
-			if (!is.null(standardId) && standardId != thisStandardId) {
+			if (!is.null(standardId) && standardId != thisStandardId && !isMultiOmics) {
 				stop("Databases have inconsistent ID types. Mixed gene annotation databases with phosphosite databases?")
 			}
 			standardId <- thisStandardId
@@ -93,7 +94,7 @@ loadGeneSet <- function(organism="hsapiens", enrichDatabase=NULL, enrichDatabase
 
 			thisGeneSet <- idMapping(organism=organism, dataType="gmt", inputGeneFile=enrichDbFile, sourceIdType=enrichDatabaseType, targetIdType=NULL, mappingOutput=FALSE, cache=cache, hostName=hostName)
 			thisStandardId <- thisGeneSet$standardId  # should be just enrichDatabaseType here
-			if (!is.null(standardId) && standardId != thisStandardId) {
+			if (!is.null(standardId) && standardId != thisStandardId && !isMultiOmics) {
 				stop("Databases have inconsistent ID types. Mixed gene annotation databases with phosphosite databases?")
 			}
 			standardId <- thisStandardId

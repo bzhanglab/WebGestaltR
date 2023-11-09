@@ -264,7 +264,8 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
 }
 
 
-.load_combined_gmt <- function(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName) {
+.load_combined_gmt <- function(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType,
+                               analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName) {
   databases <- c()
   if (!is.null(enrichDatabase)) { # Need to get correct name for metabolite databases
     if (length(unique(analyteTypes)) == 1) {
@@ -285,19 +286,20 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   }
   all_sets <- loadGeneSet(
     organism = organism, enrichDatabase = databases, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
-    enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName
+    enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = TRUE
   )
   return(all_sets)
 }
 
-.load_meta_gmt <- function(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName) {
+.load_meta_gmt <- function(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType,
+                           analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName) {
   databases <- c()
   if (!is.null(enrichDatabase)) { # Need to get correct name for metabolite databases
     if (length(unique(analyteTypes)) == 1) {
       databases <- enrichDatabase
     } else {
       for (i in seq_along(analyteTypes)) {
-        databases <- c(databases, get_gmt_file(hostName, analyteTypes[i], enrichDatabase[i], organism, cache))
+        databases <- c(databases, get_gmt_file(hostName, analyteTypes[i], enrichDatabase, organism, cache))
       }
     }
   } else {
@@ -305,7 +307,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   }
   all_sets <- loadGeneSet(
     organism = organism, enrichDatabase = databases, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
-    enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName
+    enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = TRUE
   )
   return(all_sets)
 }
