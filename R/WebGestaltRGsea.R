@@ -135,13 +135,21 @@ WebGestaltRGsea <- function(organism = "hsapiens", enrichDatabase = NULL, enrich
 				kRes <- kMedoid(idsInSet, signedLogP, maxK = kMedoid_k)
 			}
 			if (!is.null(apRes)) {
-				writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
+        tryCatch({
+            writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
+          }, 
+          error = function(e){
+            cat("Error in writing ap clusters.\n")
+        })
 			} else {
 				apRes <- NULL
 			}
 			clusters$ap <- apRes
 			if (!is.null(kRes)) {
-				writeLines(sapply(kRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", projectName, ".txt")))
+        tryCatch({
+          writeLines(sapply(kRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", projectName, ".txt")))
+          }, error = function(e) {cat("Error in writing kmedoid clusters.\n")})
+				
 			} else {
 				kRes <- NULL
 			}

@@ -42,7 +42,8 @@ gseaEnrichment <- function(hostName, outputDirectory, projectName, geneRankList,
 
 	enrichRes <- gseaRes$Enrichment_Results %>%
 		mutate(geneSet = rownames(gseaRes$Enrichment_Results)) %>%
-		select(.data$geneSet, enrichmentScore=.data$ES, normalizedEnrichmentScore=.data$NES, pValue=.data$p_val, FDR=.data$fdr)
+		select(.data$geneSet, enrichmentScore=.data$ES, normalizedEnrichmentScore=.data$NES, pValue=.data$p_val, FDR=.data$fdr, 
+           leadingEdgeNum = .data$leading_edge)
 	# TODO: handle errors
 
 	if (sigMethod == "fdr") {
@@ -61,19 +62,19 @@ gseaEnrichment <- function(hostName, outputDirectory, projectName, geneRankList,
 	}
 
 	if (!is.null(insig)) {
-		insig$leadingEdgeNum <- unname(sapply(insig$geneSet, function(geneSet) {
-			rsum <- gseaRes$Running_Sums[, geneSet] # Running sum is a matrix of gene by gene set
-			maxPeak <- max(rsum)
-			minPeak <- min(rsum)
-			if (abs(maxPeak) >= abs(minPeak)) {
-				peakIndex <- match(max(rsum), rsum)
-				leadingEdgeNum <- sum(gseaRes$Items_in_Set[[geneSet]]$rank <= peakIndex)
-			} else {
-				peakIndex <- match(min(rsum), rsum)
-				leadingEdgeNum <- sum(gseaRes$Items_in_Set[[geneSet]]$rank >= peakIndex)
-			}
-			return(leadingEdgeNum)
-		}))
+		# insig$leadingEdgeNum <- unname(sapply(insig$geneSet, function(geneSet) {
+		# 	rsum <- gseaRes$Running_Sums[, geneSet] # Running sum is a matrix of gene by gene set
+		# 	maxPeak <- max(rsum)
+		# 	minPeak <- min(rsum)
+		# 	if (abs(maxPeak) >= abs(minPeak)) {
+		# 		peakIndex <- match(max(rsum), rsum)
+		# 		leadingEdgeNum <- sum(gseaRes$Items_in_Set[[geneSet]]$rank <= peakIndex)
+		# 	} else {
+		# 		peakIndex <- match(min(rsum), rsum)
+		# 		leadingEdgeNum <- sum(gseaRes$Items_in_Set[[geneSet]]$rank >= peakIndex)
+		# 	}
+		# 	return(leadingEdgeNum)
+		# }))
 	}
 	plotSuffix <- ifelse("png" %in% plotFormat, "png", "svg")
 	sig <- sig %>% left_join(geneSetName, by="geneSet") %>%

@@ -161,6 +161,9 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   if (length(enrichDatabase) > 1 || length(enrichDatabaseFile) > 1) {
     stop("Only one enrichDatabase or enrichDatabaseFile can be specified for multiomics.")
   }
+  if (length(analyteTypes) == 1) {
+    stop("Performing multiomics analysis requires multiple analyte types. If you only have one analyte type, use the WebGestaltR(...)  function instead.")
+  }
 
   if (enrichMethod == "ORA") {
     cat("Performing multi-omics ORA\nLoading the functional categories...\n")
@@ -169,6 +172,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
       geneSet <- all_sets[[1]]$geneSet
       geneSetDes <- all_sets[[1]]$geneSetDes
       geneSetNet <- all_sets[[1]]$geneSetNet
+      geneSetDag <- all_sets[[1]]$geneSetDag
       for (i in 2:length(all_sets)) {
         geneSet <- rbind(geneSet, all_sets[[i]]$geneSet)
         geneSetDes <- rbind(geneSetDes, all_sets[[i]]$geneSetDes)
@@ -226,7 +230,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
     referenceGeneList <- loadReferenceGene(
       organism = organism, referenceGeneFile = referenceListFiles,
       referenceGene = referenceListFiles, referenceGeneType = referenceTypes,
-      referenceSet = referenceSet, collapseMethod = collapseMethod,
+      referenceSet = referenceLists, collapseMethod = collapseMethod,
       hostName = hostName, geneSet = geneSet, interestGeneList = interestGeneList,
       cache = cache
     )
@@ -246,6 +250,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
         geneSet <- all_sets[[1]]$geneSet
         geneSetDes <- all_sets[[1]]$geneSetDes
         geneSetNet <- all_sets[[1]]$geneSetNet
+        geneSetDag <- all_sets[[1]]$geneSetDag
         for (i in 2:length(all_sets)) {
           geneSet <- rbind(geneSet, all_sets[[i]]$geneSet)
           geneSetDes <- rbind(geneSetDes, all_sets[[i]]$geneSetDes)
@@ -293,21 +298,24 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
 
 .load_meta_gmt <- function(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType,
                            analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName) {
-  databases <- c()
+  all_sets <- list(geneSet = list(), geneSetDes = list(), geneSetDag = list(), geneSetNet = list(), standardId = list())
   if (!is.null(enrichDatabase)) { # Need to get correct name for metabolite databases
     if (length(unique(analyteTypes)) == 1) {
-      databases <- enrichDatabase
     } else {
       for (i in seq_along(analyteTypes)) {
-        databases <- c(databases, get_gmt_file(hostName, analyteTypes[i], enrichDatabase, organism, cache))
+        db <- get_gmt_file(hostName, analyteTypes[i], enrichDatabase, organism, cache)
+        res <- loadGeneSet(
+          organism = organism, enrichDatabase = db, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
+          enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = TRUE
+        )
+        elements <- names(res)
+        for (j in seq_along(elements)) {
+          all_sets[[elements[j]]][[i]] <- res[[elements[j]]]
+        }
       }
     }
   } else {
     databases <- NULL
   }
-  all_sets <- loadGeneSet(
-    organism = organism, enrichDatabase = databases, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
-    enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = TRUE
-  )
   return(all_sets)
 }

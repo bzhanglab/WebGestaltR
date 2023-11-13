@@ -86,12 +86,12 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
         stop("please set 'min_set_size' to 3 or greater (default is 5)")
     }
     if (max_score != "max") {
-        if (length(max_score) != (ncol(input_df) - 2) | (!is.numeric(max_score))) {
+        if (length(max_score) != (ncol(input_df) - 2) || (!is.numeric(max_score))) {
             stop("max_score needs to be set to max or contain a numeric vector of maximum scores for each set")
         }
     }
     if (min_score != "min") {
-        if (length(min_score) == (ncol(input_df) - 2) | (!is.numeric(min_score))) {
+        if (length(min_score) == (ncol(input_df) - 2) || (!is.numeric(min_score))) {
             stop("min_score needs to be set to min or contain a numeric vector of minimum scores for each set")
         }
     }
@@ -126,12 +126,12 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
         }
         # if numeric threshold provided, set inset_mat to 1 for items that meet threshold or 0 for those that don't
     } else if (is.numeric(thresh)) {
-        if (thresh_type == "values" & length(thresh) == length(enr_test)) {
+        if (thresh_type == "values" && length(thresh) == length(enr_test)) {
             for (a in 1:length(thresh)) {
                 items_in_set <- input_df$item[input_df[, enr_test[a]] >= thresh[a]]
                 inset_mat[items_in_set, enr_test[a]] <- 1
             }
-        } else if (thresh_type == "percentile" & thresh > 0 & thresh < 1) {
+        } else if (thresh_type == "percentile" && thresh > 0 & thresh < 1) {
             thresh1 <- vector(mode = "numeric", length = length(enr_test))
             for (a in 1:length(enr_test)) {
                 thresh1[a] <- quantile(input_df[, enr_test[a]], probs = thresh)
@@ -214,7 +214,7 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
     rust_ranks <- input_df[, 2]
     rust_sets <- colnames(inset_mat)
     rust_result <- gsea_rust(min_set_size, max_set_size, perms, rust_sets, rust_parts, rust_analytes, rust_ranks)
-    output_df <- data.frame(fdr = rust_result$fdr, p_val = rust_result$p_val, ES = rust_result$ES, NES = rust_result$NES)
+    output_df <- data.frame(fdr = rust_result$fdr, p_val = rust_result$p_val, ES = rust_result$ES, NES = rust_result$NES, leading_edge = rust_result$leading_edge)
     rownames(output_df) <- rust_result$gene_sets
     running_sum <- do.call('cbind', rust_result$running_sum)
     dimnames(running_sum) <- list(rust_analytes, names(rust_result$running_sum))
