@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+#![allow(clippy::too_many_arguments)]
 use std::vec;
 
 use ahash::{AHashMap, AHashSet};

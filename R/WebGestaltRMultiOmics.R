@@ -181,12 +181,12 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
         databaseStandardId <- "multiomics"
       }
     } else {
+      databases <- all_sets$databases
       geneSet <- all_sets$geneSet
       geneSetDag <- all_sets$geneSetDag
       geneSetNet <- all_sets$geneSetNet
       databaseStandardId <- all_sets$standardId
     }
-    rm(all_sets)
 
     cat("Loading the ID lists...\n")
     interest_lists <- list()
@@ -195,7 +195,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
         interestingGeneMap <- loadInterestGene(
           organism = organism, dataType = "list", inputGeneFile = analyteListFiles[i], inputGene = NULL,
           geneType = analyteTypes[i], collapseMethod = collapseMethod, cache = cache,
-          hostName = hostName, geneSet = geneSet
+          hostName = hostName, geneSet = all_sets$geneSet[[i]]
         )
         if (organism == "others") {
           interestGeneList <- unique(interestingGeneMap)
@@ -211,7 +211,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
         interestingGeneMap <- loadInterestGene(
           organism = organism, dataType = "list", inputGeneFile = NULL, inputGene = analyteLists[i],
           geneType = analyteTypes[i], collapseMethod = collapseMethod, cache = cache,
-          hostName = hostName, geneSet = geneSet
+          hostName = hostName, geneSet = all_sets$geneSet[[i]]
         )
         if (organism == "others") {
           interestGeneList <- unique(interestingGeneMap)
@@ -226,16 +226,34 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
 
     # Load Gene Sets
     cat("Loading the reference lists...\n")
+    reference_lists <- list()
+    if (is.null(referenceLists)) {
+      for (i in seq_along(referenceListFiles)) {
+        referenceGeneList <- loadReferenceGene(
+          organism = organism, referenceGeneFile = referenceListFiles[i],
+          referenceGene = NULL, referenceGeneType = referenceTypes[i],
+          referenceSet = NULL, collapseMethod = collapseMethod,
+          hostName = hostName, geneSet = all_sets$geneSet[[i]],
+          interestGeneList = interest_lists[[i]],
+          cache = cache
+        )
+        reference_lists[[i]] <- referenceGeneList
+      }
+    } else {
+      for (i in seq_along(analyteLists)) {
+        referenceGeneList <- loadReferenceGene(
+          organism = organism, referenceGeneFile = NULL,
+          referenceGene = referenceLists[i], referenceGeneType = NULL,
+          referenceSet = NULL, collapseMethod = collapseMethod,
+          hostName = hostName, geneSet = all_sets$geneSet[[i]],
+          interestGeneList = interest_lists[[i]],
+          cache = cache
+        )
+        reference_lists[[i]] <- referenceGeneList
+      }
+    }
 
-    referenceGeneList <- loadReferenceGene(
-      organism = organism, referenceGeneFile = referenceListFiles,
-      referenceGene = referenceListFiles, referenceGeneType = referenceTypes,
-      referenceSet = referenceLists, collapseMethod = collapseMethod,
-      hostName = hostName, geneSet = geneSet, interestGeneList = interestGeneList,
-      cache = cache
-    )
-
-    oraRes <- multiOraEnrichment(interestGeneList, referenceGeneList, geneSet, minNum = minNum,
+    oraRes <- multiOraEnrichment(interest_lists, reference_lists, geneSet, minNum = minNum,
                             maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod,
                             fdrThr = fdrThr, topThr = topThr)
 
@@ -298,7 +316,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
 
 .load_meta_gmt <- function(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType,
                            analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName) {
-  all_sets <- list(geneSet = list(), geneSetDes = list(), geneSetDag = list(), geneSetNet = list(), standardId = list())
+  all_sets <- list(geneSet = list(), geneSetDes = list(), geneSetDag = list(), geneSetNet = list(), standardId = list(), databases = list())
   if (!is.null(enrichDatabase)) { # Need to get correct name for metabolite databases
     if (length(unique(analyteTypes)) == 1) {
     } else {
@@ -312,6 +330,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
         for (j in seq_along(elements)) {
           all_sets[[elements[j]]][[i]] <- res[[elements[j]]]
         }
+        all_sets$databases[[i]] <- db
       }
     }
   } else {

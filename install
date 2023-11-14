@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+echo "Removing old version"
 R -e "library(utils)
 remove.packages('WebGestaltR')
 q()"
-echo "Old version removed"
+printf "Old version removed\nInstalling new version."
 R -e "library(devtools)
 rextendr::document()
 install('.')

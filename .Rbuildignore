@@ -7,4 +7,5 @@
 ^docs$
 ^pkgdown$
 ^logo\.svg$
-$build_hash\.py$
+^build_hash\.py$
+^\.cargo$

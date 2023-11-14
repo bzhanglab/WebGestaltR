@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-cd src/rust
-cargo update
-cd ..
-cd ..
+echo "Updating rust dependencies"
+(
+	cd src/rust || exit
+	cargo update
+)
+echo "Removing old version"
 R -e "library(utils)
 remove.packages('WebGestaltR')
 q()"
