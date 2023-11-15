@@ -125,7 +125,7 @@ fn ora_rust(sets: Robj, parts: Robj, interest: Robj, reference: Robj) -> List {
 
 /// Run multiomics ORA using Rust library
 /// @param sets list of  the names of the analyte sets
-/// @param parts list of the analyte in the analyte sets
+/// @param big_part_vec list of the analyte in the analyte sets
 /// @param interest list of analytes of interest
 /// @param reference list of analytes in the reference set
 /// @param method meta-analysis method to get meta-p values
@@ -135,7 +135,7 @@ fn ora_rust(sets: Robj, parts: Robj, interest: Robj, reference: Robj) -> List {
 #[extendr]
 pub fn rust_multiomics_ora(
     sets: Robj,
-    parts: Robj,
+    big_part_vec: Robj,
     interest: Robj,
     reference: Robj,
     method: Robj,
@@ -144,7 +144,8 @@ pub fn rust_multiomics_ora(
         fdr_method: webgestalt_lib::stat::AdjustmentMethod::None,
         ..Default::default()
     };
-    let reference_list = reference.as_list().unwrap();
+    let parts = big_part_vec.as_list().unwrap();
+    let reference_lists = reference.as_list().unwrap();
     let method = match method.as_str().unwrap() {
         "fisher" => webgestalt_lib::methods::multiomics::MultiOmicsMethod::Meta(
             webgestalt_lib::methods::multiomics::MetaAnalysisMethod::Fisher,
@@ -153,26 +154,29 @@ pub fn rust_multiomics_ora(
             webgestalt_lib::methods::multiomics::MetaAnalysisMethod::Stouffer,
         ),
     };
-    let mut gmt: Vec<Item> = Vec::new();
-    let set_vec = sets.as_str_vector().unwrap();
-    let parts_vec: Vec<Vec<String>> = parts
-        .as_list()
-        .unwrap()
-        .iter()
-        .map(|(_, x)| x.as_string_vector().unwrap())
-        .collect();
-    for (i, set) in set_vec.iter().enumerate() {
-        gmt.push(Item {
-            id: set.to_string(),
-            url: String::default(),
-            parts: parts_vec[i].clone(),
-        })
-    }
+    let interest_vec = interest.as_list().unwrap();
+    let big_set_vec = sets.as_list().unwrap();
     let mut jobs: Vec<ORAJob> = Vec::new();
-    for (i, (_, list)) in interest.as_list().unwrap().into_iter().enumerate() {
-        let interest_set: AHashSet<String> = AHashSet::from_iter(list.as_string_vector().unwrap());
+    for (i, (_, big_set)) in big_set_vec.into_iter().enumerate() {
+        let mut gmt: Vec<Item> = Vec::new();
+        let set_vec = big_set.as_str_vector().unwrap();
+        let parts_vec: Vec<Vec<String>> = parts[i]
+            .as_list()
+            .unwrap()
+            .iter()
+            .map(|(_, x)| x.as_string_vector().unwrap())
+            .collect();
+        for (i, set) in set_vec.iter().enumerate() {
+            gmt.push(Item {
+                id: set.to_string(),
+                url: String::default(),
+                parts: parts_vec[i].clone(),
+            })
+        }
+        let interest_set: AHashSet<String> =
+            AHashSet::from_iter(interest_vec[i].as_string_vector().unwrap());
         let reference_set: AHashSet<String> =
-            AHashSet::from_iter(reference_list[i].as_string_vector().unwrap());
+            AHashSet::from_iter(reference_lists[i].as_string_vector().unwrap());
         let job = ORAJob {
             gmt: gmt.clone(),
             interest_list: interest_set.clone(),
@@ -181,7 +185,6 @@ pub fn rust_multiomics_ora(
         };
         jobs.push(job)
     }
-
     let res: Vec<Vec<ORAResult>> = multiomic_ora(jobs, method);
     let mut all_res: Vec<List> = Vec::new();
     for analysis in res {

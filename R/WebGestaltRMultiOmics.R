@@ -168,25 +168,25 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   if (enrichMethod == "ORA") {
     cat("Performing multi-omics ORA\nLoading the functional categories...\n")
     all_sets <- .load_meta_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
-    if (length(all_sets) > 1) {
-      geneSet <- all_sets[[1]]$geneSet
-      geneSetDes <- all_sets[[1]]$geneSetDes
-      geneSetNet <- all_sets[[1]]$geneSetNet
-      geneSetDag <- all_sets[[1]]$geneSetDag
-      for (i in 2:length(all_sets)) {
-        geneSet <- rbind(geneSet, all_sets[[i]]$geneSet)
-        geneSetDes <- rbind(geneSetDes, all_sets[[i]]$geneSetDes)
-        geneSetDag <- rbind(geneSetDag, all_sets[[i]]$geneSetDag)
-        geneSetNet <- rbind(geneSetNet, all_sets[[i]]$geneSetNet)
-        databaseStandardId <- "multiomics"
-      }
-    } else {
-      databases <- all_sets$databases
-      geneSet <- all_sets$geneSet
-      geneSetDag <- all_sets$geneSetDag
-      geneSetNet <- all_sets$geneSetNet
-      databaseStandardId <- all_sets$standardId
-    }
+    # if (length(all_sets) > 1) {
+    #   geneSet <- all_sets[[1]]$geneSet
+    #   geneSetDes <- all_sets[[1]]$geneSetDes
+    #   geneSetNet <- all_sets[[1]]$geneSetNet
+    #   geneSetDag <- all_sets[[1]]$geneSetDag
+    #   for (i in 2:length(all_sets)) {
+    #     geneSet <- rbind(geneSet, all_sets[[i]]$geneSet)
+    #     geneSetDes <- rbind(geneSetDes, all_sets[[i]]$geneSetDes)
+    #     geneSetDag <- rbind(geneSetDag, all_sets[[i]]$geneSetDag)
+    #     geneSetNet <- rbind(geneSetNet, all_sets[[i]]$geneSetNet)
+    #     databaseStandardId <- "multiomics"
+    #   }
+    # } else {
+    #   databases <- all_sets$databases
+    #   geneSet <- all_sets$geneSet
+    #   geneSetDag <- all_sets$geneSetDag
+    #   geneSetNet <- all_sets$geneSetNet
+    #   databaseStandardId <- all_sets$standardId
+    # }
 
     cat("Loading the ID lists...\n")
     interest_lists <- list()
@@ -195,7 +195,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
         interestingGeneMap <- loadInterestGene(
           organism = organism, dataType = "list", inputGeneFile = analyteListFiles[i], inputGene = NULL,
           geneType = analyteTypes[i], collapseMethod = collapseMethod, cache = cache,
-          hostName = hostName, geneSet = all_sets$geneSet[[i]]
+          hostName = hostName, geneSet = all_sets[["geneSet"]][[i]]
         )
         if (organism == "others") {
           interestGeneList <- unique(interestingGeneMap)
@@ -211,7 +211,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
         interestingGeneMap <- loadInterestGene(
           organism = organism, dataType = "list", inputGeneFile = NULL, inputGene = analyteLists[i],
           geneType = analyteTypes[i], collapseMethod = collapseMethod, cache = cache,
-          hostName = hostName, geneSet = all_sets$geneSet[[i]]
+          hostName = hostName, geneSet = all_sets[["geneSet"]][[i]]
         )
         if (organism == "others") {
           interestGeneList <- unique(interestingGeneMap)
@@ -233,7 +233,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
           organism = organism, referenceGeneFile = referenceListFiles[i],
           referenceGene = NULL, referenceGeneType = referenceTypes[i],
           referenceSet = NULL, collapseMethod = collapseMethod,
-          hostName = hostName, geneSet = all_sets$geneSet[[i]],
+          hostName = hostName, geneSet = all_sets[["geneSet"]][[i]],
           interestGeneList = interest_lists[[i]],
           cache = cache
         )
@@ -245,7 +245,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
           organism = organism, referenceGeneFile = NULL,
           referenceGene = referenceLists[i], referenceGeneType = NULL,
           referenceSet = NULL, collapseMethod = collapseMethod,
-          hostName = hostName, geneSet = all_sets$geneSet[[i]],
+          hostName = hostName, geneSet = all_sets[["geneSet"]][[i]],
           interestGeneList = interest_lists[[i]],
           cache = cache
         )
@@ -253,7 +253,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
       }
     }
 
-    oraRes <- multiOraEnrichment(interest_lists, reference_lists, geneSet, minNum = minNum,
+    oraRes <- multiOraEnrichment(interest_lists, reference_lists, all_sets[["geneSet"]], minNum = minNum,
                             maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod,
                             fdrThr = fdrThr, topThr = topThr)
 

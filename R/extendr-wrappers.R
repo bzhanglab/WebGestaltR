@@ -71,7 +71,7 @@ ora_rust <- function(sets, parts, interest, reference) .Call(wrap__ora_rust, set
 #' @returns A list of vectors containing the results of ORA, with each list corresponding to each input list
 #' @author John Elizarraras
 #' @keywords internal
-rust_multiomics_ora <- function(sets, parts, interest, reference, method) .Call(wrap__rust_multiomics_ora, sets, parts, interest, reference, method)
+rust_multiomics_ora <- function(sets, big_part_vec, interest, reference, method) .Call(wrap__rust_multiomics_ora, sets, big_part_vec, interest, reference, method)
 
 
 # nolint end

@@ -45,6 +45,8 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
   genes <- lapply(geneSet, function(x) {
     tapply(x$gene, x$geneSet, rbind)
   })
-  rust_result <- rust_multiomics_ora(geneSet, genes, interestGene, referenceGene)
-  print(head(rust_result))
+  modified_geneset <- lapply(genes, function(x) {
+    names(x)
+  })
+  rust_result <- rust_multiomics_ora(modified_geneset, genes, interestGene, referenceGene, "fisher")
 }
