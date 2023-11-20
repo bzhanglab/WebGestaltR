@@ -64,7 +64,7 @@ ora_rust <- function(sets, parts, interest, reference) .Call(wrap__ora_rust, set
 
 #' Run multiomics ORA using Rust library
 #' @param sets list of  the names of the analyte sets
-#' @param parts list of the analyte in the analyte sets
+#' @param big_part_vec list of the analyte in the analyte sets
 #' @param interest list of analytes of interest
 #' @param reference list of analytes in the reference set
 #' @param method meta-analysis method to get meta-p values

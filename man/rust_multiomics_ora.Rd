@@ -9,13 +9,13 @@ rust_multiomics_ora(sets, big_part_vec, interest, reference, method)
 \arguments{
 \item{sets}{list of  the names of the analyte sets}
 
+\item{big_part_vec}{list of the analyte in the analyte sets}
+
 \item{interest}{list of analytes of interest}
 
 \item{reference}{list of analytes in the reference set}
 
 \item{method}{meta-analysis method to get meta-p values}
-
-\item{parts}{list of the analyte in the analyte sets}
 }
 \value{
 A list of vectors containing the results of ORA, with each list corresponding to each input list

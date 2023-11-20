@@ -4,8 +4,8 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
                            enrichDatabaseDescriptionFile = NULL, interestGeneFile = NULL, interestGene = NULL, interestGeneType = NULL,
                            collapseMethod = "mean", referenceGeneFile = NULL, referenceGene = NULL, referenceGeneType = NULL,
                            referenceSet = NULL, minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05,
-                           topThr = 10, reportNum = 20, setCoverNum = 10, isOutput = TRUE, outputDirectory = getwd(), projectName = NULL, 
-                           dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, 
+                           topThr = 10, reportNum = 20, setCoverNum = 10, isOutput = TRUE, outputDirectory = getwd(), projectName = NULL,
+                           dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE,
                            useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10) {
     enrichMethod <- "ORA"
     projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
@@ -22,16 +22,15 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
     referenceGene <- testNull(referenceGene)
     referenceGeneType <- testNull(referenceGeneType)
     referenceSet <- testNull(referenceSet)
-
     ################ Check parameter ################
     errorTest <- parameterErrorMessage(enrichMethod = enrichMethod, organism = organism, collapseMethod = collapseMethod, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, isOutput = isOutput, outputDirectory = outputDirectory, dagColor = dagColor, hostName = hostName, cache = cache)
-    if(!is.null(enrichDatabase)) {
-      if(enrichDatabase == "all") {
-        all_sets <- listGeneSet(organism = organism, hostName = hostName, cache = cache)
-        all_sets <- all_sets[all_sets$idType == "entrezgene",]
-        enrichDatabase <- all_sets$name
-        enrichDatabaseType <- all_sets$idType
-      }
+    if (!is.null(enrichDatabase)) {
+        if (enrichDatabase == "all") {
+            all_sets <- listGeneSet(organism = organism, hostName = hostName, cache = cache)
+            all_sets <- all_sets[all_sets$idType == "entrezgene", ]
+            enrichDatabase <- all_sets$name
+            enrichDatabaseType <- all_sets$idType
+        }
     }
     if (!is.null(errorTest)) {
         stop(errorTest)
@@ -61,10 +60,12 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
 
     ################### Load reference gene set ##############
     cat("Loading the reference list...\n")
-    referenceGeneList <- loadReferenceGene(organism = organism, referenceGeneFile = referenceGeneFile,
-                                           referenceGene = referenceGene, referenceGeneType = referenceGeneType,
-                                           referenceSet = referenceSet, collapseMethod = collapseMethod, hostName = hostName,
-                                           geneSet = geneSet, interestGeneList = interestGeneList, cache = cache)
+    referenceGeneList <- loadReferenceGene(
+        organism = organism, referenceGeneFile = referenceGeneFile,
+        referenceGene = referenceGene, referenceGeneType = referenceGeneType,
+        referenceSet = referenceSet, collapseMethod = collapseMethod, hostName = hostName,
+        geneSet = geneSet, interestGeneList = interestGeneList, cache = cache
+    )
 
     ########## Create project folder ##############
     if (isOutput) {
@@ -138,25 +139,25 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
             apRes <- NULL
             wscRes <- NULL
             kRes <- NULL
-            if(useAffinityPropagation) {
-              apRes <- affinityPropagation(idsInSet, minusLogP)
+            if (useAffinityPropagation) {
+                apRes <- affinityPropagation(idsInSet, minusLogP)
             }
-            if(useWeightedSetCover) {
-              wscRes <- weightedSetCover(idsInSet, 1 / minusLogP, setCoverNum, nThreads)
+            if (useWeightedSetCover) {
+                wscRes <- weightedSetCover(idsInSet, 1 / minusLogP, setCoverNum, nThreads)
             }
-            if(usekMedoid) {
-              kRes <- kMedoid(idsInSet, minusLogP, maxK = kMedoid_k)
+            if (usekMedoid) {
+                kRes <- kMedoid(idsInSet, minusLogP, maxK = kMedoid_k)
             }
             if (!is.null(apRes)) {
-              writeLines(sapply(apRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
+                writeLines(sapply(apRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, ".txt")))
             } else {
-              apRes <- NULL
+                apRes <- NULL
             }
             clusters$ap <- apRes
             if (!is.null(kRes)) {
-              writeLines(sapply(kRes$clusters, paste, collapse="\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", projectName, ".txt")))
+                writeLines(sapply(kRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", projectName, ".txt")))
             } else {
-              kRes <- NULL
+                kRes <- NULL
             }
             clusters$km <- kRes
             if (!is.null(wscRes$topSets)) {
@@ -171,20 +172,22 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
     if (isOutput) {
         ############## Create report ##################
         cat("Generate the final report...\n")
-        createReport(hostName = hostName, outputDirectory = outputDirectory, organism = organism,
-                     projectName = projectName, enrichMethod = enrichMethod, geneSet = geneSet,
-                     geneSetDes = geneSetDes, geneSetDag = geneSetDag, geneSetNet = geneSetNet,
-                     interestingGeneMap = interestingGeneMap, referenceGeneList = referenceGeneList,
-                     enrichedSig = enrichedSig, background = insig, geneTables = geneTables,
-                     clusters = clusters, enrichDatabase = enrichDatabase,
-                     enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
-                     enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile,
-                     interestGeneFile = interestGeneFile, interestGene = interestGene,
-                     interestGeneType = interestGeneType, collapseMethod = collapseMethod,
-                     referenceGeneFile = referenceGeneFile, referenceGene = referenceGene,
-                     referenceGeneType = referenceGeneType, referenceSet = referenceSet, minNum = minNum,
-                     maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr,
-                    topThr = topThr, reportNum = reportNum, dagColor = dagColor)
+        createReport(
+            hostName = hostName, outputDirectory = outputDirectory, organism = organism,
+            projectName = projectName, enrichMethod = enrichMethod, geneSet = geneSet,
+            geneSetDes = geneSetDes, geneSetDag = geneSetDag, geneSetNet = geneSetNet,
+            interestingGeneMap = interestingGeneMap, referenceGeneList = referenceGeneList,
+            enrichedSig = enrichedSig, background = insig, geneTables = geneTables,
+            clusters = clusters, enrichDatabase = enrichDatabase,
+            enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
+            enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile,
+            interestGeneFile = interestGeneFile, interestGene = interestGene,
+            interestGeneType = interestGeneType, collapseMethod = collapseMethod,
+            referenceGeneFile = referenceGeneFile, referenceGene = referenceGene,
+            referenceGeneType = referenceGeneType, referenceSet = referenceSet, minNum = minNum,
+            maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr,
+            topThr = topThr, reportNum = reportNum, dagColor = dagColor
+        )
 
         cwd <- getwd()
         setwd(projectDir)
@@ -193,6 +196,5 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
 
         cat("Results can be found in the ", projectDir, "!\n", sep = "")
     }
-
     return(outputEnrichedSig)
 }
