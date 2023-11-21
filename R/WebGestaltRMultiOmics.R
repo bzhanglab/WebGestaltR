@@ -103,7 +103,6 @@
 #' @param mergeMethod The method to merge the results from multiple omics (options: \code{mean}, \code{max}). Only used if \code{isMetaAnalysis = FALSE}. Defaults to \code{mean}.
 #' @param normalizationMethod The method to normalize the results from multiple omics (options: \code{rank}, \code{median}, \code{mean}). Only used if \code{isMetaAnalysis = FALSE}.
 #' @param kMedoid_k The number of clusters for k-medoid. Defaults to \code{25}.
-#'
 #' @export
 WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, analyteTypes = NULL, enrichMethod = "ORA", organism = "hsapiens",
                                   enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL,
@@ -138,6 +137,10 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   if (!is.null(error_msg)) {
     stop(error_msg)
   }
+  if (is.null(projectName)) {
+    projectName <- as.character(as.integer(Sys.time()))
+  }
+  projectName <- sanitizeFileName(projectName) # use for GOSlim summary file name, convert punct to _
 
   # Verify parameters
   mergeMethod <- tolower(mergeMethod)
@@ -166,98 +169,14 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   }
 
   if (enrichMethod == "ORA") {
-    cat("Performing multi-omics ORA\nLoading the functional categories...\n")
-    all_sets <- .load_meta_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
-    # if (length(all_sets) > 1) {
-    #   geneSet <- all_sets[[1]]$geneSet
-    #   geneSetDes <- all_sets[[1]]$geneSetDes
-    #   geneSetNet <- all_sets[[1]]$geneSetNet
-    #   geneSetDag <- all_sets[[1]]$geneSetDag
-    #   for (i in 2:length(all_sets)) {
-    #     geneSet <- rbind(geneSet, all_sets[[i]]$geneSet)
-    #     geneSetDes <- rbind(geneSetDes, all_sets[[i]]$geneSetDes)
-    #     geneSetDag <- rbind(geneSetDag, all_sets[[i]]$geneSetDag)
-    #     geneSetNet <- rbind(geneSetNet, all_sets[[i]]$geneSetNet)
-    #     databaseStandardId <- "multiomics"
-    #   }
-    # } else {
-    #   databases <- all_sets$databases
-    #   geneSet <- all_sets$geneSet
-    #   geneSetDag <- all_sets$geneSetDag
-    #   geneSetNet <- all_sets$geneSetNet
-    #   databaseStandardId <- all_sets$standardId
-    # }
-
-    cat("Loading the ID lists...\n")
-    interest_lists <- list()
-    if (is.null(analyteLists)) {
-      for (i in seq_along(analyteListFiles)) {
-        interestingGeneMap <- loadInterestGene(
-          organism = organism, dataType = "list", inputGeneFile = analyteListFiles[i], inputGene = NULL,
-          geneType = analyteTypes[i], collapseMethod = collapseMethod, cache = cache,
-          hostName = hostName, geneSet = all_sets[["geneSet"]][[i]]
-        )
-        if (organism == "others") {
-          interestGeneList <- unique(interestingGeneMap)
-          interest_lists[[i]] <- interestGeneList
-        } else {
-          interestStandardId <- interestingGeneMap$standardId
-          interestGeneList <- unique(interestingGeneMap$mapped[[interestStandardId]])
-          interest_lists[[i]] <- interestGeneList
-        }
-      }
-    } else {
-      for (i in seq_along(analyteLists)) {
-        interestingGeneMap <- loadInterestGene(
-          organism = organism, dataType = "list", inputGeneFile = NULL, inputGene = analyteLists[i],
-          geneType = analyteTypes[i], collapseMethod = collapseMethod, cache = cache,
-          hostName = hostName, geneSet = all_sets[["geneSet"]][[i]]
-        )
-        if (organism == "others") {
-          interestGeneList <- unique(interestingGeneMap)
-          interest_lists[[i]] <- interestGeneList
-        } else {
-          interestStandardId <- interestingGeneMap$standardId
-          interestGeneList <- unique(interestingGeneMap$mapped[[interestStandardId]])
-          interest_lists[[i]] <- interestGeneList
-        }
-      }
-    }
-
-    # Load Gene Sets
-    cat("Loading the reference lists...\n")
-    reference_lists <- list()
-    if (is.null(referenceLists)) {
-      for (i in seq_along(referenceListFiles)) {
-        referenceGeneList <- loadReferenceGene(
-          organism = organism, referenceGeneFile = referenceListFiles[i],
-          referenceGene = NULL, referenceGeneType = referenceTypes[i],
-          referenceSet = NULL, collapseMethod = collapseMethod,
-          hostName = hostName, geneSet = all_sets[["geneSet"]][[i]],
-          interestGeneList = interest_lists[[i]],
-          cache = cache
-        )
-        reference_lists[[i]] <- referenceGeneList
-      }
-    } else {
-      for (i in seq_along(analyteLists)) {
-        referenceGeneList <- loadReferenceGene(
-          organism = organism, referenceGeneFile = NULL,
-          referenceGene = referenceLists[i], referenceGeneType = NULL,
-          referenceSet = NULL, collapseMethod = collapseMethod,
-          hostName = hostName, geneSet = all_sets[["geneSet"]][[i]],
-          interestGeneList = interest_lists[[i]],
-          cache = cache
-        )
-        reference_lists[[i]] <- referenceGeneList
-      }
-    }
-
-    oraRes <- multiOraEnrichment(interest_lists, reference_lists, all_sets[["geneSet"]], minNum = minNum,
-                            maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod,
-                            fdrThr = fdrThr, topThr = topThr)
-
-
+    WebGestaltRMultiOmicsOra(analyteLists = analyteLists, analyteListFiles = analyteListFiles, analyteTypes = analyteTypes, organism = organism,
+                          enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
+                          enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, collapseMethod = collapseMethod, minNum = minNum,
+                          maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum,
+                          setCoverNum = setCoverNum, perNum = perNum, isOutput = isOutput, outputDirectory = outputDirectory, projectName = projectName,
+                          dagColor = dagColor, nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover,
+                          useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, referenceLists = referenceLists,
+                          referenceListFiles = referenceListFiles, referenceTypes = referenceTypes)
     ## Meta-analysis
   } else if (enrichMethod == "GSEA") {
     if (isMetaAnalysis) {

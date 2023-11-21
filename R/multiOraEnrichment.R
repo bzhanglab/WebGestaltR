@@ -3,6 +3,8 @@
 multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10,
                                maxNum = 500, fdrMethod = "BH", sigMethod = "fdr",
                                fdrThr = 0.05, topThr = 10) {
+  # INFO: Code is almost identical to oraEnrichment.R, but modified to work with lists.
+  #       Additionally, have to get a special intG for the meta-analysis, since it is a merge of the other intG's.
   for (i in seq_along(referenceGene)) {
     referenceGene[[i]] <- intersect(referenceGene[[i]], geneSet[[i]]$gene)
     geneSet[[i]] <- filter(geneSet[[i]], .data$gene %in% referenceGene[[i]])
@@ -71,8 +73,8 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
   for (i in seq_along(rust_result_df)) {
     if (i == 1) { # Meta-analysis
       enrichedResult <- rust_result_df[[i]] %>%
-          left_join(met_intG, by = "geneSet") %>% # get overlapping gene IDs
-          arrange(.data$FDR, .data$pValue, .data$enrichmentRatio)
+        left_join(met_intG, by = "geneSet") %>% # get overlapping gene IDs
+        arrange(.data$FDR, .data$pValue, .data$enrichmentRatio)
       enrichedResult$overlap <- sapply(enrichedResult$overlapId, function(x) {
         length(unlist(strsplit(x, ";")))
       })
