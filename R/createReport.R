@@ -14,6 +14,9 @@ createReport <- function(hostName, outputDirectory, organism="hsapiens", project
 	if (startsWith(hostName, "file://")) {
 		# change back hostName for web assets and browsers will cache it.
 		hostName <- "https://www.webgestalt.org"
+	} else if (grepl("^https?://localhost", hostName)) {
+		# Used when server is deployed locally
+		hostName <- "../.."
 	}
 
 	numAnnoRefUserId <- NULL

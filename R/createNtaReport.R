@@ -18,6 +18,9 @@ createNtaReport <- function(networkName, method, sigMethod, fdrThr, topThr, high
 	if (startsWith(hostName, "file://")) {
 		# change back hostName for web assets and browsers will cache it.
 		hostName <- "https://www.webgestalt.org"
+	} else if (grepl("^https?://localhost", hostName)) {
+		# Used when server is deployed locally
+		hostName <- "../.."
 	}
 
 	if (method == "Network_Retrieval_Prioritization") {
