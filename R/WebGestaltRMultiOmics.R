@@ -169,13 +169,15 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
     stop("Performing multiomics analysis requires multiple analyte types. If you only have one analyte type, use the WebGestaltR(...)  function instead.")
   }
   if (is.null(listNames)) {
-    max_num <- max(length(analyteLists), length(analyteListFiles))
-    listNames <- paste0("List", 1:max_num, collapse = "")
+    max_num <- length(analyteTypes)
+    listNames <- paste0("List", 1:max_num)
   } else if (length(listNames) != length(analyteTypes)) {
     warning("listNames must be the same length as analyteTypes. Defaulting to List1, List2, etc.")
-    max_num <- max(length(analyteLists), length(analyteListFiles))
+    max_num <- length(analyteTypes)
     listNames <- paste0("List", 1:max_num)
   }
+
+  listNames <- sapply(listNames, sanitizeFileName)
 
   if (enrichMethod == "ORA") {
     WebGestaltRMultiOmicsOra(analyteLists = analyteLists, analyteListFiles = analyteListFiles, analyteTypes = analyteTypes, organism = organism,
