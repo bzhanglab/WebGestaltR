@@ -6,7 +6,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
                                      topThr = 10, reportNum = 100, setCoverNum = 10, perNum = 1000, gseaP = 1, isOutput = TRUE, outputDirectory = getwd(),
                                      projectName = NULL, dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/",
                                      useWeightedSetCover = TRUE, useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 25,
-                                     referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL) {
+                                     referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, listNames = null) {
   projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
   cat("Performing multi-omics ORA\nLoading the functional categories...\n")
   all_sets <- .load_meta_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
@@ -130,7 +130,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       }
 
       if (isOutput) {
-        write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, "_list", i - 1, ".txt")))
+        write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, "_", listNames[i - 1], ".txt")))
         idsInSet <- sapply(enrichedSig$overlapId, strsplit, split = ";")
         names(idsInSet) <- enrichedSig$geneSet
         minusLogP <- -log(enrichedSig$pValue)
@@ -148,19 +148,19 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           kRes <- kMedoid(idsInSet, minusLogP, maxK = kMedoid_k)
         }
         if (!is.null(apRes)) {
-          writeLines(sapply(apRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, "_list", i - 1, ".txt")))
+          writeLines(sapply(apRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, "_", listNames[i - 1], ".txt")))
         } else {
           apRes <- NULL
         }
         clusters$ap <- apRes
         if (!is.null(kRes)) {
-          writeLines(sapply(kRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", projectName, "_list", i - 1, ".txt")))
+          writeLines(sapply(kRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", projectName, "_", listNames[i - 1], ".txt")))
         } else {
           kRes <- NULL
         }
         clusters$km <- kRes
         if (!is.null(wscRes$topSets)) {
-          writeLines(c(paste0("# Coverage: ", wscRes$coverage), wscRes$topSets), file.path(projectDir, paste0("enriched_geneset_wsc_topsets_", projectName, "_list", i - 1, ".txt")))
+          writeLines(c(paste0("# Coverage: ", wscRes$coverage), wscRes$topSets), file.path(projectDir, paste0("enriched_geneset_wsc_topsets_", projectName, "_", listNames[i - 1], ".txt")))
           clusters$wsc <- list(representatives = wscRes$topSets, coverage = wscRes$coverage)
         } else {
           clusters$wsc <- NULL

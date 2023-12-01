@@ -43,7 +43,8 @@ WebGestaltRMultiOmics(
   normalizationMethod = "rank",
   referenceLists = NULL,
   referenceListFiles = NULL,
-  referenceTypes = NULL
+  referenceTypes = NULL,
+  listNames = NULL
 )
 }
 \arguments{
@@ -183,6 +184,8 @@ only contain one column: the reference gene list.}
 \item{referenceTypes}{Vector of the ID types of the reference lists. The supported ID types
 of WebGestaltR for the selected organism can be found by the function \code{listIdType}.
 If the \code{organism} is \code{others}, users do not need to set this parameter.}
+
+\item{listNames}{The names of the analyte lists.}
 }
 \description{
 Perform multi-omics analysis using WebGestaltR

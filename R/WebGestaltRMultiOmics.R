@@ -103,6 +103,7 @@
 #' @param mergeMethod The method to merge the results from multiple omics (options: \code{mean}, \code{max}). Only used if \code{isMetaAnalysis = FALSE}. Defaults to \code{mean}.
 #' @param normalizationMethod The method to normalize the results from multiple omics (options: \code{rank}, \code{median}, \code{mean}). Only used if \code{isMetaAnalysis = FALSE}.
 #' @param kMedoid_k The number of clusters for k-medoid. Defaults to \code{25}.
+#' @param listNames The names of the analyte lists.
 #' @export
 WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, analyteTypes = NULL, enrichMethod = "ORA", organism = "hsapiens",
                                   enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL,
@@ -111,7 +112,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
                                   projectName = NULL, dagColor = "binary", saveRawGseaResult = FALSE, gseaPlotFormat = "png", nThreads = 1, cache = NULL,
                                   hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE,
                                   usekMedoid = FALSE, kMedoid_k = 25, isMetaAnalysis = TRUE, mergeMethod = "mean", normalizationMethod = "rank",
-                                  referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL) {
+                                  referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, listNames = NULL) {
   VALID_MERGE_METHODS <- c("mean", "max")
   VALID_NORM_METHODS <- c("rank", "median", "mean")
   VALID_ENRICH_METHODS <- c("ORA", "GSEA")
@@ -167,6 +168,14 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   if (length(analyteTypes) == 1) {
     stop("Performing multiomics analysis requires multiple analyte types. If you only have one analyte type, use the WebGestaltR(...)  function instead.")
   }
+  if (is.null(listNames)) {
+    max_num <- max(length(analyteLists), length(analyteListFiles))
+    listNames <- paste0("List", 1:max_num, collapse = "")
+  } else if (length(listNames) != length(analyteTypes)) {
+    warning("listNames must be the same length as analyteTypes. Defaulting to List1, List2, etc.")
+    max_num <- max(length(analyteLists), length(analyteListFiles))
+    listNames <- paste0("List", 1:max_num)
+  }
 
   if (enrichMethod == "ORA") {
     WebGestaltRMultiOmicsOra(analyteLists = analyteLists, analyteListFiles = analyteListFiles, analyteTypes = analyteTypes, organism = organism,
@@ -176,7 +185,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
                           setCoverNum = setCoverNum, perNum = perNum, isOutput = isOutput, outputDirectory = outputDirectory, projectName = projectName,
                           dagColor = dagColor, nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover,
                           useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, referenceLists = referenceLists,
-                          referenceListFiles = referenceListFiles, referenceTypes = referenceTypes)
+                          referenceListFiles = referenceListFiles, referenceTypes = referenceTypes, listNames = listNames)
     ## Meta-analysis
   } else if (enrichMethod == "GSEA") {
     if (isMetaAnalysis) {
