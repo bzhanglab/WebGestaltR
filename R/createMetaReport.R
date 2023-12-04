@@ -15,7 +15,10 @@ createMetaReport <- function(hostName, outputDirectory, organism = "hsapiens", p
                              referenceGeneType_list = NULL, referenceSet_list = NULL, minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05,
                              topThr = 10, reportNum = 20, perNum = 1000, p = 1, dagColor = "binary", listNames = NULL) {
     outputHtmlFile <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, ".html"))
-
+    version <- packageVersion("WebGestaltR")
+    # use major and minor version numbers for JS lib. If API changes, version should be bumped
+    # patch number should not matter
+    version <- paste(version[1, 1], version[1, 2], sep = ".")
     # if hostname starts with "file://", it is used as WebGestaltReporter
     if (startsWith(hostName, "file://")) {
         # change back hostName for web assets and browsers will cache it.
@@ -78,112 +81,31 @@ createMetaReport <- function(hostName, outputDirectory, organism = "hsapiens", p
             referenceSet <- referenceSet_list[[i]]
             numAnnoRefUserId <- NULL
             dagJson <- list()
-            allEnrichedSig <- enrichedSig
-            repAdded <- FALSE
-            if (organism != "others") {
-                if (!is.null(enrichedSig) && reportNum < nrow(enrichedSig)) {
-                    if (enrichMethod == "ORA") {
-                        enrichedSig <- enrichedSig[1:reportNum, ]
-                    } else if (enrichMethod == "GSEA") {
-                        enrichedSig <- getTopGseaResults(enrichedSig, reportNum / 2)[[1]]
-                    }
-                    # Add representatives if they are not in top ReportNum. So could be more if ReportNum.is small and high redundancy in top
-                    numRes <- nrow(enrichedSig)
-                    enrichedSig <- keepRep(enrichedSig, allEnrichedSig, clusters$ap$representatives)
-                    enrichedSig <- keepRep(enrichedSig, allEnrichedSig, clusters$wsc$representatives)
-                    repAdded <- nrow(enrichedSig) > numRes
-                }
-                standardId <- interestingGeneMap$standardId
-                if (enrichMethod == "ORA") {
-                    interestGeneList <- unique(interestingGeneMap$mapped[[standardId]])
-                    numAnnoRefUserId <- length(intersect(
-                        interestGeneList,
-                        intersect(referenceGeneList, geneSet$gene)
-                    ))
-                }
-
-                ##### Summary Tab ########
-                bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, p, geneSet, repAdded, numAnnoRefUserId, hostName)
-
-                ########### GOSlim summary #########################
-                if (standardId == "entrezgene") {
-                    bodyContent <- paste(bodyContent, goSlimReport(projectName), sep = "\n")
-                }
-
-                ############ Enrichment result ##################
-                if (!is.null(enrichedSig)) {
-                    bodyContent <- paste(bodyContent, metaEnrichResultSection(enrichMethod, enrichedSig, geneSet, geneSetDes, geneSetDag, geneSetNet, clusters, i), seq = "\n")
-                    if (!is.null(geneSetDag)) {
-                        if (!is.vector(geneSetDag)) {
-                            # for backward compatibility, it is unlisted for single dataset
-                            geneSetDag <- list(geneSetDag)
-                            names(geneSetDag) <- ifelse(is.character(enrichDatabase), enrichDatabase, gsub(".gmt", "", basename(enrichDatabaseFile), fixed = TRUE))
-                        }
-                        for (name in names(geneSetDag)) {
-                            dag <- geneSetDag[[name]]
-                            if (is.null(dag)) {
-                                # dagJson[[name]] <- list(NULL)
-                                next
-                            }
-                            dagRes <- expandDag(enrichedSig$geneSet, dag)
-                            dagEdges <- dagRes$edges
-                            dagNodes <- getDagNodes(enrichedSig, dagRes$allNodes, geneSetDes, enrichMethod, dagColor)
-                            dagJson[[name]] <- c(dagEdges, dagNodes)
-                        }
-                    }
-                }
-            } else {
-                ########### Organism is others. No mapping information #############
-                ############# Summary for the analysis ###################
-                if (enrichMethod == "ORA") {
-                    numAnnoRefUserId <- length(intersect(
-                        interestingGeneMap,
-                        intersect(referenceGeneList, geneSet$gene)
-                    ))
-                }
-                if (!is.null(enrichedSig) && reportNum < nrow(enrichedSig)) {
-                    if (enrichMethod == "ORA") {
-                        enrichedSig <- enrichedSig[1:reportNum, ]
-                    } else if (enrichMethod == "GSEA") {
-                        enrichedSig <- getTopGseaResults(enrichedSig, reportNum / 2)[[1]]
-                    }
-                    # Add representatives if they are not in top ReportNum. So could be more if ReportNum.is small and high redundancy in top
-                    numRes <- nrow(enrichedSig)
-                    enrichedSig <- keepRep(enrichedSig, allEnrichedSig, clusters$ap$representatives)
-                    enrichedSig <- keepRep(enrichedSig, allEnrichedSig, clusters$wsc$representatives)
-                    repAdded <- nrow(enrichedSig) > numRes
-                }
-
-                bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, p, geneSet, repAdded, numAnnoRefUserId, hostName)
-
-                ############## Enrich Result ################
-                if (!is.null(enrichedSig)) {
-                    bodyContent <- paste(bodyContent, metaEnrichResultSection(enrichMethod, enrichedSig, geneSet, geneSetDes, geneSetDag, geneSetNet, clusters, i), seq = "\n")
-                }
-                standardId <- NULL
-            }
-            if (is.null(enrichedSig)) {
-                enrichedSig <- data.frame()
-            }
-            if (is.null(background)) {
-                background <- data.frame()
-            }
-            version <- packageVersion("WebGestaltR")
-            # use major and minor version numbers for JS lib. If API changes, version should be bumped
-            # patch number should not matter
-            version <- paste(version[1, 1], version[1, 2], sep = ".")
-            hasGeneSetDag <- !is.null(geneSetDag)
-            hasCytoscape <- hasGeneSetDag || !is.null(geneSetNet) # DAG or network needs cytoscape
-            allDbNames <- unlist(c(enrichDatabase, unname(sapply(enrichDatabaseFile, function(x) {
-                gsub(".gmt", "", basename(x), fixed = TRUE)
-            })))) # sapply on NULL will return a list
-            tabs[[i]] <- list(title = listNames[i], bodyContent = bodyContent)
+            relative_path <- paste0("./Report_", projectName, "_", i, ".html")
+            partial_output <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, "_", i, ".html"))
+            createReport(
+                hostName = hostName, outputDirectory = outputDirectory, organism = organism,
+                projectName = projectName, enrichMethod = enrichMethod, geneSet = geneSet,
+                geneSetDes = geneSetDes, geneSetDag = geneSetDag, geneSetNet = geneSetNet,
+                interestingGeneMap = interestingGeneMap, referenceGeneList = referenceGeneList,
+                enrichedSig = enrichedSig, background = background, geneTables = geneTables,
+                clusters = clusters, enrichDatabase = enrichDatabase,
+                enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
+                enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile,
+                interestGeneFile = interestGeneFile, interestGene = interestGene,
+                interestGeneType = interestGeneType, collapseMethod = collapseMethod,
+                referenceGeneFile = referenceGeneFile, referenceGene = referenceGene,
+                referenceGeneType = referenceGeneType, referenceSet = referenceSet, minNum = minNum,
+                maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr,
+                topThr = topThr, reportNum = reportNum, dagColor = dagColor, outputHtmlFile = partial_output, is_meta = TRUE
+            )
+            tabs[[i]] <- list(title = listNames[[i]], path = relative_path)
         }
     }
 
     allContent <- "<b-tabs>\n"
     for (i in seq_along(tabs)) {
-      allContent <- paste(allContent, "<b-tab-item label=\"", tabs[[i]]$title, "\" active>", tabs[[i]]$bodyContent, "</b-tab-item>\n", sep = "")
+        allContent <- paste(allContent, "<b-tab-item label=\"", tabs[[i]]$title, "\"><iframe style=\"width: 100%\" src=\"", tabs[[i]]$path, "\"></iframe></b-tab-item>\n", sep = "")
     }
     allContent <- paste(allContent, "</b-tabs>\n", sep = "")
     # tabs <- list(tabs = tabs)
@@ -192,13 +114,7 @@ createMetaReport <- function(hostName, outputDirectory, organism = "hsapiens", p
     footer <- readLines(system.file("templates/footer.mustache", package = "WebGestaltR"))
     template <- readLines(system.file("templates/meta_template.mustache", package = "WebGestaltR"))
     data <- list(
-        hostName = hostName, allContent = allContent,
-        organism = organism, enrichDatabaseJson = toJSON(allDbNames, auto_unbox = TRUE),
-        sigJson = toJSON(enrichedSig, digits = 16), insigJson = toJSON(background, digits = 16),
-        dagJson = toJSON(dagJson, auto_unbox = TRUE), hasGeneSetDag = hasGeneSetDag, version = version,
-        clusterJson = toJSON(clusters), hasCytoscape = hasCytoscape,
-        geneTableJson = toJSON(geneTables), standardId = standardId, numAnnoRefUserId = numAnnoRefUserId,
-        methodIsGsea = enrichMethod == "GSEA", hasGeneSetDes = !is.null(geneSetDes)
+        hostName = hostName, allContent = allContent, version = version
     )
     cat(whisker.render(template, data, partials = list(header = header, footer = footer)), file = outputHtmlFile)
 }

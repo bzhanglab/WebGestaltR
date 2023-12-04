@@ -11,8 +11,7 @@ metaEnrichResultSection(
   geneSetDes,
   geneSetDag,
   geneSetNet,
-  clusters,
-  meta_id
+  clusters
 )
 }
 \description{

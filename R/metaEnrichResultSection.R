@@ -7,7 +7,7 @@
 #' @importFrom jsonlite toJSON
 #' @keywords internal
 #'
-metaEnrichResultSection <- function(enrichMethod, enrichedSig, geneSet, geneSetDes, geneSetDag, geneSetNet, clusters, meta_id) {
+metaEnrichResultSection <- function(enrichMethod, enrichedSig, geneSet, geneSetDes, geneSetDag, geneSetNet, clusters) {
   if ("database" %in% colnames(geneSet)) {
     # multiple databases
     netDatabases <- names(geneSetNet[!sapply(geneSetNet, is.null)])
@@ -32,7 +32,6 @@ metaEnrichResultSection <- function(enrichMethod, enrichedSig, geneSet, geneSetD
     hasAp = !is.null(clusters$ap),
     hasWsc = !is.null(clusters$wsc),
     hasKmed = !is.null(clusters$km),
-    meta_id = meta_id
   )
   template <- readLines(system.file("templates/enrichResultSection.mustache", package = "WebGestaltR"))
   return(whisker.render(template, data))
