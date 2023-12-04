@@ -26,7 +26,7 @@ createMetaReport <- function(hostName, outputDirectory, organism = "hsapiens", p
         if (i == 0) {
 
         } else {
-          print(paste("Processing dataset", i, "of", length(interestingGeneMap_list)))
+            print(paste("Processing dataset", i, "of", length(interestingGeneMap_list)))
             enrichedSig <- enrichedSig_list[[i + 1]]
             geneSet <- geneSet_list[[i]]
             if (!is.null(geneSetDes_list) && length(geneSetDes_list) > 0) {
@@ -112,7 +112,7 @@ createMetaReport <- function(hostName, outputDirectory, organism = "hsapiens", p
 
                 ############ Enrichment result ##################
                 if (!is.null(enrichedSig)) {
-                    bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, enrichedSig, geneSet, geneSetDes, geneSetDag, geneSetNet, clusters), seq = "\n")
+                    bodyContent <- paste(bodyContent, metaEnrichResultSection(enrichMethod, enrichedSig, geneSet, geneSetDes, geneSetDag, geneSetNet, clusters, i), seq = "\n")
                     if (!is.null(geneSetDag)) {
                         if (!is.vector(geneSetDag)) {
                             # for backward compatibility, it is unlisted for single dataset
@@ -158,7 +158,7 @@ createMetaReport <- function(hostName, outputDirectory, organism = "hsapiens", p
 
                 ############## Enrich Result ################
                 if (!is.null(enrichedSig)) {
-                    bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, enrichedSig, geneSet, geneSetDes, geneSetDag, geneSetNet, clusters), seq = "\n")
+                    bodyContent <- paste(bodyContent, metaEnrichResultSection(enrichMethod, enrichedSig, geneSet, geneSetDes, geneSetDag, geneSetNet, clusters, i), seq = "\n")
                 }
                 standardId <- NULL
             }
@@ -183,7 +183,7 @@ createMetaReport <- function(hostName, outputDirectory, organism = "hsapiens", p
 
     allContent <- "<b-tabs>\n"
     for (i in seq_along(tabs)) {
-      allContent <- paste(allContent, "<b-tab title=\"", tabs[[i]]$title, "\" active>", tabs[[i]]$bodyContent, "</b-tab>\n", sep = "")
+      allContent <- paste(allContent, "<b-tab-item label=\"", tabs[[i]]$title, "\" active>", tabs[[i]]$bodyContent, "</b-tab-item>\n", sep = "")
     }
     allContent <- paste(allContent, "</b-tabs>\n", sep = "")
     # tabs <- list(tabs = tabs)

@@ -1,0 +1,128 @@
+<h4 class="title is-4 has-text-primary">Enrichment Results</h4>
+<section id="enrich-result">
+	<p class="select-redundancy">
+		<b-tooltip label="Enriched analyte sets are post-processed by two methods to reduce redundancy." type="is-dark" animated multilined dashed>
+			Redundancy reduction:
+		</b-tooltip>
+    <b-radio v-model="redundancy_{{{meta_id}}}" native-value="all">None</b-radio>
+		{{#hasAp}}
+		<b-radio v-model="redundancy_{{{meta_id}}}" native-value="ap">
+			<b-tooltip label="R package cluster is used to cluster analyte sets." type="is-dark" animated multilined dashed>
+				Affinity Propagation
+			</b-tooltip>
+		</b-radio>
+		{{/hasAp}}
+		{{#hasKmed}}
+		<b-radio v-model="redundancy_{{{meta_id}}}" native-value="km">
+			<b-tooltip label="R package cluster using k-medoid to cluster analyte sets." type="is-dark" animated multilined dashed>
+				<i>k</i>-Medoid
+			</b-tooltip>
+		</b-radio>
+		{{/hasKmed}}
+		{{#hasWsc}}
+		<b-radio v-model="redundancy_{{{meta_id}}}" native-value="wsc">
+			<b-tooltip label="Find top analyte sets while maximizing analyte coverage." type="is-dark" animated multilined dashed>
+				Weighted set cover
+			</b-tooltip>
+		</b-radio>
+		{{/hasWsc}}
+	</p>
+	<b-tabs v-model="activeTab_{{{meta_id}}}" type="is-toggle">
+		<b-tab-item label="Table">
+			<wg-result-table
+				:data="enrichmentData_{{{meta_id}}}"
+				:method="enrichMethod"
+			></wg-result-table>
+		</b-tab-item>
+		<b-tab-item label="Bar chart">
+		{{#hasMultipleDatabases}}
+		<b-field>
+			<b-select v-model="activeDatabase_{{{meta_id}}}">
+				{{! temp delimiter change to keep brackets for Vue}}
+				{{=<% %>=}}
+				<option value="all">All</option>
+				<option v-for="db in enrichDatabase_{{{meta_id}}}"
+					:value="db"
+					:key="db"
+				>{{db}}</option>
+				<%={{ }}=%>
+			</b-select>
+		</b-field>
+		{{/hasMultipleDatabases}}
+		<div class="vertical-center-container">
+			<wg-bar-plot
+				:dimensions="bar.dimensions"
+				:label-width="bar.labelWidth"
+				:data="enrichmentData"
+				:value-key="bar.valueKey"
+				:x-label="bar.xLabel">
+			</wg-bar-plot>
+		</div>
+		</b-tab-item>
+		<b-tab-item label="Volcano plot">
+		{{#hasMultipleDatabases}}
+		<b-field>
+			<b-select v-model="activeDatabase_{{{meta_id}}}">
+				{{! temp delimiter change to keep brackets for Vue}}
+				{{=<% %>=}}
+				<option value="all">All</option>
+				<option v-for="db in enrichDatabase_{{{meta_id}}}"
+					:value="db"
+					:key="db"
+				>{{db}}</option>
+				<%={{ }}=%>
+			</b-select>
+		</b-field>
+		{{/hasMultipleDatabases}}
+		<div class="vertical-center-container">
+			<wg-volcano-plot
+				:data="volcanoData_{{{meta_id}}}"
+				:x="volcano.x"
+				:y="volcano.y"
+				:dimensions="volcano.dimensions"
+				:x-label="volcano.xLabel"
+				:label-types="volcano.labelTypes"
+				:x-transform="volcano.xTransform"
+				:radius="volcano.radius"
+				:color="volcano.color"
+				:tooltip-content="volcano.tooltipContent"
+				:show-all-labels="false"
+				:auto-place-labels="true"
+			></wg-volcano-plot>
+		</div>
+		</b-tab-item>
+		{{#hasGeneSetDag}}
+		<b-tab-item label="DAG">
+			<b-field>
+				<b-select v-model="activeDagDatabase_{{{meta_id}}}">
+					{{! temp delimiter change to keep brackets for Vue}}
+					{{=<% %>=}}
+					<option v-for="(value, key) in dag_{{{meta_id}}}"
+						:value="key"
+						:key="key"
+					>{{key}}</option>
+					<%={{ }}=%>
+				</b-select>
+			</b-field>
+			<div style="width: 100%; height: 600px">
+			<wg-dag
+				container-id="wg_dag"
+				:data="dagData_{{{meta_id}}}"
+			></wg-dag>
+			</div>
+		</b-tab-item>
+		{{/hasGeneSetDag}}
+	</b-tabs>
+	<wg-gene-table
+		:data="geneTables_{{{meta_id}}}"
+		:info="enrichment"
+		:standard-id="standardId_{{{meta_id}}}"
+		:method="enrichMethod"
+		{{#methodIsOra}}
+		:mapped-input-size="mappedInputSize_{{{meta_id}}}"
+		{{/methodIsOra}}
+		:organism="organism"
+		:host-name="hostName"
+		:sets-with-net="{{setsWithNetJson}}"
+	></wg-gene-table>
+</section>
