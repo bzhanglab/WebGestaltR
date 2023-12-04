@@ -12,7 +12,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
   all_sets <- .load_meta_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
   cat("Loading the ID lists...\n")
   interest_lists <- list()
-  interestGeneMaps  <- list()
+  interestGeneMaps <- list()
   if (is.null(analyteLists)) {
     for (i in seq_along(analyteListFiles)) {
       interestingGeneMap <- loadInterestGene(
@@ -86,6 +86,11 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
     return(NULL)
   }
   cat("Generating the report...\n")
+  geneSetDags <- all_sets[["geneSetDag"]]
+  geneSetNets <- all_sets[["geneSetNet"]]
+  enrichSigs <- list()
+  enrichSigs[[1]] <- NULL
+  clusters_list <- list()
   dir.create(projectDir, showWarnings = FALSE)
   for (i in 2:length(oraRes$enriched)) {
     interestingGeneMap <- interestGeneMaps[[i - 1]]
@@ -165,7 +170,37 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         } else {
           clusters$wsc <- NULL
         }
+        clusters_list[[i]] <- clusters
       }
     }
+    enrichSigs[[i]] <- enrichedSig
   }
+  if (isOutput) {
+    ############## Create report ##################
+    cat("Generate the final report...\n")
+    createMetaReport(
+      hostName = hostName, outputDirectory = outputDirectory, organism = organism,
+      projectName = projectName, enrichMethod = enrichMethod, geneSet_list = all_sets[["geneSet"]],
+      geneSetDes_list = geneSetDes, geneSetDag_list = geneSetDags, geneSetNet_list = geneSetNets,
+      interestingGeneMap_list = interestGeneMaps, referenceGeneList_list = reference_lists,
+      enrichedSig_list = enrichSigs, background_list = insig, geneTables_list = geneTables,
+      clusters_list = clusters_list, enrichDatabase_list = enrichDatabase,
+      enrichDatabaseFile_list = enrichDatabaseFile, enrichDatabaseType_list = enrichDatabaseType,
+      enrichDatabaseDescriptionFile_list = enrichDatabaseDescriptionFile,
+      interestGeneFile_list = analyteListFiles, interestGene_list = interest_lists,
+      interestGeneType_list = analyteTypes, collapseMethod = collapseMethod,
+      referenceGeneFile_list = referenceListFiles, referenceGene_list = referenceLists,
+      referenceGeneType_list = referenceTypes, referenceSet_list = referenceLists, minNum = minNum,
+      maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr,
+      topThr = topThr, reportNum = reportNum, dagColor = dagColor, listNames = listNames
+    )
+
+    cwd <- getwd()
+    setwd(projectDir)
+    zip(paste0("Project_", projectName, ".zip"), ".", flags = "-rq")
+    setwd(cwd)
+
+    cat("Results can be found in the ", projectDir, "!\n", sep = "")
+  }
+  return(outputEnrichedSig)
 }
