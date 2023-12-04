@@ -108,7 +108,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
       enrichedResult <- geneSetFilter[[i - 1]] %>%
         left_join(refG[[i - 1]], by = "geneSet") %>%
         left_join(
-          rust_result_df[[i - 1]],
+          rust_result_df[[i]],
           by = "geneSet",
         ) %>%
         left_join(intGId[[i - 1]], by = "geneSet") %>% # get overlapping gene IDs

@@ -79,8 +79,8 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
   }
   cat("Running multi-omics ORA...\n")
   oraRes <- multiOraEnrichment(interest_lists, reference_lists, all_sets[["geneSet"]],
-    minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod,
-    fdrThr = fdrThr, topThr = topThr
+                               minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod,
+                               sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr
   )
   if (is.null(oraRes)) {
     return(NULL)
@@ -92,15 +92,19 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
   enrichSigs[[1]] <- NULL
   clusters_list <- list()
   dir.create(projectDir, showWarnings = FALSE)
+  insig_lists <- list()
+  insig_lists[[1]] <- NULL
+  geneTables_list <- list()
+  geneTables_list[[i]] <- NULL
   for (i in 2:length(oraRes$enriched)) {
     interestingGeneMap <- interestGeneMaps[[i - 1]]
     enrichedSig <- oraRes$enriched[[i]]
     insig <- oraRes$background[[i]]
+    insig_lists[[i]] <- insig
     # geneSetDag <- all_sets[["geneSetDag"]][[i - 1]]
     geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
     geneSet <- all_sets[["geneSet"]][[i - 1]]
     clusters <- list()
-    geneTables <- list()
 
     if (!is.null(enrichedSig)) {
       if (!is.null(geneSetDes)) { ####### Add extra description information ###########
@@ -116,6 +120,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       }
 
       geneTables <- getGeneTables(organism, enrichedSig, "overlapId", interestingGeneMap)
+      geneTables_list[[i]] <- geneTables
       if (organism != "others") {
         enrichedSig$link <- mapply(
           function(link, geneList) linkModification("ORA", link, geneList, interestingGeneMap, hostName),
@@ -183,7 +188,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       projectName = projectName, enrichMethod = enrichMethod, geneSet_list = all_sets[["geneSet"]],
       geneSetDes_list = geneSetDes, geneSetDag_list = geneSetDags, geneSetNet_list = geneSetNets,
       interestingGeneMap_list = interestGeneMaps, referenceGeneList_list = reference_lists,
-      enrichedSig_list = enrichSigs, background_list = insig, geneTables_list = geneTables,
+      enrichedSig_list = enrichSigs, background_list = insig_lists, geneTables_list = geneTables_list,
       clusters_list = clusters_list, enrichDatabase_list = enrichDatabase,
       enrichDatabaseFile_list = enrichDatabaseFile, enrichDatabaseType_list = enrichDatabaseType,
       enrichDatabaseDescriptionFile_list = enrichDatabaseDescriptionFile,
