@@ -1,5 +1,7 @@
 #' @title Multi-omics ORA
 #' @inheritParams WebGestaltRMultiOmics
+#' importFrom dplyr bind_rows left_join arrange select desc %>% mutate
+#' importFrom readr write_tsv
 WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NULL, analyteTypes = NULL, enrichMethod = "ORA", organism = "hsapiens",
                                      enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL,
                                      collapseMethod = "mean", minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05,
@@ -48,7 +50,6 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       }
     }
   }
-
   # Load Gene Sets
   cat("Loading the reference lists...\n")
   reference_lists <- list()
@@ -79,8 +80,8 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
   }
   cat("Running multi-omics ORA...\n")
   oraRes <- multiOraEnrichment(interest_lists, reference_lists, all_sets[["geneSet"]],
-                               minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod,
-                               sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr
+    minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod,
+    sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr
   )
   if (is.null(oraRes)) {
     return(NULL)
@@ -96,14 +97,47 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
   insig_lists[[1]] <- NULL
   geneTables_list <- list()
   geneTables_list[[i]] <- NULL
-  for (i in 2:length(oraRes$enriched)) {
-    interestingGeneMap <- interestGeneMaps[[i - 1]]
+
+  ## Meta-analysis
+
+  for (i in 1:length(oraRes$enriched)) {
+    print(i)
     enrichedSig <- oraRes$enriched[[i]]
+    if (i == 1) {
+      interestingGeneMap <- list(mapped = interestGeneMaps[[1]]$mapped, unmapped = interestGeneMaps[[1]]$unmapped, standardId = interestGeneMaps[[1]]$standardId)
+      for (j in seq_along(interestGeneMaps)) {
+        if (j == 1) {
+          next
+        }
+        old_names <- names(interestGeneMaps[[j]][["mapped"]])
+        names(interestGeneMaps[[j]][["mapped"]]) <- names(interestGeneMaps[[1]][["mapped"]])
+        interestingGeneMap[["mapped"]] <- rbind(interestingGeneMap[["mapped"]], interestGeneMaps[[j]][["mapped"]])
+        interestingGeneMap[["unmapped"]] <- append(interestingGeneMap[["unmapped"]], interestGeneMaps[[j]][["unmapped"]])
+        names(interestGeneMaps[[j]][["mapped"]]) <- old_names
+      }
+
+      geneSetDes <- all_sets[["geneSetDes"]][[1]]
+      geneSet <- all_sets[["geneSet"]][[1]]
+      # geneSetDag <- all_sets[["geneSetDag"]][[1]]
+      for (j in seq_along(all_sets[["geneSet"]])) {
+        if (j == 1) {
+          next
+        }
+        geneSet <- rbind(geneSet, all_sets[["geneSet"]][[j]])
+        geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
+      }
+      enrichedSig <- enrichedSig %>%
+        left_join(geneSet[, c("geneSet", "description")], by = "geneSet")
+      names(enrichedSig)[names(enrichedSig) == "description"] <- "link"
+    } else {
+      interestingGeneMap <- interestGeneMaps[[i - 1]]
+      # geneSetDag <- all_sets[["geneSetDag"]][[i - 1]]
+      geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
+      geneSet <- all_sets[["geneSet"]][[i - 1]]
+    }
     insig <- oraRes$background[[i]]
     insig_lists[[i]] <- insig
-    # geneSetDag <- all_sets[["geneSetDag"]][[i - 1]]
-    geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
-    geneSet <- all_sets[["geneSet"]][[i - 1]]
+
     clusters <- list()
 
     if (!is.null(enrichedSig)) {
@@ -112,11 +146,13 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           left_join(geneSetDes, by = "geneSet") %>%
           select(.data$geneSet, .data$description, .data$link, .data$size, .data$overlap, .data$expect, .data$enrichmentRatio, .data$pValue, .data$FDR, .data$overlapId) %>%
           arrange(.data$FDR, .data$pValue, desc(.data$size)) %>%
-          mutate(description = ifelse(is.na(.data$description), "", .data$description)) # now des could be mixture
+          mutate(description = ifelse(is.na(.data$description), "", .data$description)) %>%
+          distinct(.data$geneSet, .keep_all = TRUE)
       } else {
         enrichedSig <- enrichedSig %>%
           select(.data$geneSet, .data$link, .data$size, .data$overlap, .data$expect, .data$enrichmentRatio, .data$pValue, .data$FDR, .data$overlapId) %>%
-          arrange(.data$FDR, .data$pValue, desc(.data$size))
+          arrange(.data$FDR, .data$pValue, desc(.data$size)) %>%
+          distinct(.data$geneSet, .keep_all = TRUE)
       }
 
       geneTables <- getGeneTables(organism, enrichedSig, "overlapId", interestingGeneMap)
@@ -133,14 +169,21 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         # Add source database for multiple databases
         enrichedSig <- enrichedSig %>% left_join(unique(geneSet[, c("geneSet", "database")]), by = "geneSet")
       }
-      if (organism != "others" && analyteTypes[[i - 1]] != interestStandardId) {
+      if (i == 1) {
+        outputEnrichedSig <- enrichedSig
+      } else if (organism != "others" && analyteTypes[[i - 1]] != interestStandardId) {
         outputEnrichedSig <- mapUserId(enrichedSig, "overlapId", interestingGeneMap)
       } else {
         outputEnrichedSig <- enrichedSig
       }
 
+
       if (isOutput) {
-        write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, "_", listNames[i - 1], ".txt")))
+        if (i == 1) {
+          write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
+        } else {
+          write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, "_", listNames[i - 1], ".txt")))
+        }
         idsInSet <- sapply(enrichedSig$overlapId, strsplit, split = ";")
         names(idsInSet) <- enrichedSig$geneSet
         minusLogP <- -log(enrichedSig$pValue)
@@ -148,6 +191,11 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         apRes <- NULL
         wscRes <- NULL
         kRes <- NULL
+        if (i == 1) {
+          name_ending <- projectName
+        } else {
+          name_ending <- paste0(projectName, "_", listNames[i - 1])
+        }
         if (useAffinityPropagation) {
           apRes <- affinityPropagation(idsInSet, minusLogP)
         }
@@ -158,25 +206,28 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           kRes <- kMedoid(idsInSet, minusLogP, maxK = kMedoid_k)
         }
         if (!is.null(apRes)) {
-          writeLines(sapply(apRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", projectName, "_", listNames[i - 1], ".txt")))
+          writeLines(sapply(apRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_ap_clusters_", name_ending, ".txt")))
         } else {
           apRes <- NULL
         }
         clusters$ap <- apRes
         if (!is.null(kRes)) {
-          writeLines(sapply(kRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", projectName, "_", listNames[i - 1], ".txt")))
+          writeLines(sapply(kRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", name_ending, ".txt")))
         } else {
           kRes <- NULL
         }
         clusters$km <- kRes
         if (!is.null(wscRes$topSets)) {
-          writeLines(c(paste0("# Coverage: ", wscRes$coverage), wscRes$topSets), file.path(projectDir, paste0("enriched_geneset_wsc_topsets_", projectName, "_", listNames[i - 1], ".txt")))
+          writeLines(c(paste0("# Coverage: ", wscRes$coverage), wscRes$topSets), file.path(projectDir, paste0("enriched_geneset_wsc_topsets_", name_ending, ".txt")))
           clusters$wsc <- list(representatives = wscRes$topSets, coverage = wscRes$coverage)
         } else {
           clusters$wsc <- NULL
         }
         clusters_list[[i]] <- clusters
       }
+    }
+    if (i == 1) {
+      enrichedSig <- enrichedSig %>% distinct(.data$geneSet, .keep_all = TRUE)
     }
     enrichSigs[[i]] <- enrichedSig
   }

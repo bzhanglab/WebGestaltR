@@ -51,7 +51,7 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
         bodyContent <- summaryDescription(projectName, organism, interestGeneFile, interestGene, interestGeneType, enrichMethod, enrichDatabase, enrichDatabaseFile, enrichDatabaseType, enrichDatabaseDescriptionFile, interestingGeneMap, referenceGeneList, referenceGeneFile, referenceGene, referenceGeneType, referenceSet, minNum, maxNum, sigMethod, fdrThr, topThr, fdrMethod, allEnrichedSig, reportNum, perNum, p, geneSet, repAdded, numAnnoRefUserId, hostName)
 
         ########### GOSlim summary #########################
-        if (standardId == "entrezgene") {
+        if (standardId == "entrezgene" && !is_meta) {
             bodyContent <- paste(bodyContent, goSlimReport(projectName), sep = "\n")
         }
 

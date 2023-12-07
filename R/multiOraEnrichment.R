@@ -61,6 +61,24 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
   modified_geneset <- lapply(genes, function(x) {
     names(x)
   })
+  all_genesets <- unique(unlist(modified_geneset))
+  combined_size <- list(geneSet = c(), size = c())
+  for (i in seq_along(all_genesets)) {
+    geneset_of_interest <- all_genesets[[i]]
+    genes_in_list <- NULL
+    for (j in seq_along(genes)) {
+      if (geneset_of_interest %in% names(genes[[j]])) {
+        if (is.null(genes_in_list)) {
+          genes_in_list <- unlist(genes[[j]][[geneset_of_interest]])
+        } else {
+          genes_in_list <- c(genes_in_list, unlist(genes[[j]][[geneset_of_interest]]))
+        }
+      }
+    }
+    combined_size[["geneSet"]][[i]] <- geneset_of_interest
+    combined_size[["size"]][[i]] <- length(unique(genes_in_list))
+  }
+  combined_size <- data.frame(geneSet = unlist(combined_size[["geneSet"]]), size = unlist(combined_size[["size"]]), stringsAsFactors = FALSE)
   rust_result <- rust_multiomics_ora(modified_geneset, genes, interestGene, referenceGene, "fisher")
   rust_result_df <- lapply(rust_result, function(x) {
     data.frame(
@@ -74,7 +92,9 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
     if (i == 1) { # Meta-analysis
       enrichedResult <- rust_result_df[[i]] %>%
         left_join(met_intG, by = "geneSet") %>% # get overlapping gene IDs
-        arrange(.data$FDR, .data$pValue, .data$enrichmentRatio)
+        left_join(combined_size, by = "geneSet") %>%
+        arrange(.data$FDR, .data$pValue, .data$enrichmentRatio) %>%
+        distinct(.data$geneSet, .keep_all = TRUE)
       enrichedResult$overlap <- sapply(enrichedResult$overlapId, function(x) {
         length(unlist(strsplit(x, ";")))
       })
@@ -93,7 +113,8 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
         }
       } else {
         # for the top method, we only select the terms with at least one annotated interesting gene
-        enrichedResult <- enrichedResult %>% filter(.data$overlap != 0)
+        enrichedResult <- enrichedResult %>%
+          filter(.data$overlap != 0)
         if (nrow(enrichedResult) > topThr) {
           enrichedResultSig <- enrichedResult[1:topThr, ]
           enrichedResultInsig <- enrichedResult[(topThr + 1):nrow(enrichedResult), c("geneSet", "enrichmentRatio", "FDR", "overlap")]
@@ -141,5 +162,6 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
       }
     }
   }
+  print("finsihed this stuff")
   return(list(enriched = enrichedResultList, background = backgroundList))
 }
