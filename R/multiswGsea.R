@@ -108,8 +108,13 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
 
 
     output_df_list <- list()
+    running_sum_list <- list()
+    items_in_set_list <- list()
     output_df_list[[1]] <- NULL # Set null for now. Will be filled later.
-    for (i in seq_along(input_df_list)) {
+    running_sum_list[[1]] <- NULL
+    items_in_set_list[[1]] <- NULL
+    for (j in seq_along(input_df_list)) {
+        i
         input_df <- input_df_list[[i]]
         # re-order by log ratios (rank order from highest to lowest)
         expt <- colnames(input_df)[2]
@@ -241,6 +246,8 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
         }
         output_df$fdr[output_df$fdr > 1] <- 1
         output_df_list[[i + 1]] <- output_df
+        running_sum_list[[i + 1]] <- running_sum
+        items_in_set_list[[i + 1]] <- items_in_set
     }
     all_gene_sets <- unique(unlist(lapply(output_df_list, rownames)))
     meta_ps <- list()
@@ -265,7 +272,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
     )
     rownames(meta_output_df) <- all_gene_sets
     output_df_list[[1]] <- meta_output_df
-    return(list(Enrichment_Results = output_df, Running_Sums = running_sum, Items_in_Set = items_in_set))
+    return(list(Enrichment_Results = output_df_list, Running_Sums = running_sum_list, Items_in_Set = items_in_set_list))
 }
 
 

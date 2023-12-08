@@ -53,4 +53,10 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
     }
 
     cat("Running multi-omics GSEA...\n")
+
+    multiswGsea(input_df_list,
+        thresh_type = thresh_type, thresh = thresh, thresh_action = thresh_action, min_set_size = minNum,
+        max_set_size = maxNum, max_score = max_score, min_score = "min", psuedocount = 0.001, perms = 1000, p = 1,
+        q = 1, nThreads = 1, rng_seed = 1, fork = FALS, fdrMethod = "BH"
+    )
 }
