@@ -9,3 +9,7 @@
 ^logo\.svg$
 ^build_hash\.py$
 ^\.cargo$
+^\.vscode$
+^\.ruff_cache$
+^install$
+^dev_install$

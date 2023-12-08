@@ -39,6 +39,9 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+# Miscellaneous
+
 .vscode
 .DS_Store
 _site

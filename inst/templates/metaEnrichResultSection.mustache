@@ -29,109 +29,19 @@
 	</p>
 	<b-tabs v-model="activeTab" type="is-toggle">
 		<b-tab-item label="Table">
-			{{#hasMultipleDatabases}}
-			<b-field>
-				<b-select v-model="activeDatabase">
-					{{! temp delimiter change to keep brackets for Vue}}
-					{{=<% %>=}}
-					<option value="all">All</option>
-					<option v-for="db in enrichDatabase"
-						:value="db"
-						:key="db"
-					>{{db}}</option>
-					<%={{ }}=%>
-				</b-select>
-			</b-field>
-			{{/hasMultipleDatabases}}
 			<wg-result-table
 				:data="enrichmentData"
 				:method="enrichMethod"
+				:is_meta="true"
 			></wg-result-table>
 		</b-tab-item>
-		<b-tab-item label="Bar chart">
-		{{#hasMultipleDatabases}}
-		<b-field>
-			<b-select v-model="activeDatabase">
-				{{! temp delimiter change to keep brackets for Vue}}
-				{{=<% %>=}}
-				<option value="all">All</option>
-				<option v-for="db in enrichDatabase"
-					:value="db"
-					:key="db"
-				>{{db}}</option>
-				<%={{ }}=%>
-			</b-select>
-		</b-field>
-		{{/hasMultipleDatabases}}
-		<div class="vertical-center-container">
-			<wg-bar-plot
-				:dimensions="bar.dimensions"
-				:label-width="bar.labelWidth"
-				:data="enrichmentData"
-				:value-key="bar.valueKey"
-				:x-label="bar.xLabel">
-			</wg-bar-plot>
-		</div>
-		</b-tab-item>
-		<b-tab-item label="Volcano plot">
-		{{#hasMultipleDatabases}}
-		<b-field>
-			<b-select v-model="activeDatabase">
-				{{! temp delimiter change to keep brackets for Vue}}
-				{{=<% %>=}}
-				<option value="all">All</option>
-				<option v-for="db in enrichDatabase"
-					:value="db"
-					:key="db"
-				>{{db}}</option>
-				<%={{ }}=%>
-			</b-select>
-		</b-field>
-		{{/hasMultipleDatabases}}
-		<div class="vertical-center-container">
-			<wg-volcano-plot
-				:data="volcanoData"
-				:x="volcano.x"
-				:y="volcano.y"
-				:dimensions="volcano.dimensions"
-				:x-label="volcano.xLabel"
-				:label-types="volcano.labelTypes"
-				:x-transform="volcano.xTransform"
-				:radius="volcano.radius"
-				:color="volcano.color"
-				:tooltip-content="volcano.tooltipContent"
-				:show-all-labels="false"
-				:auto-place-labels="true"
-			></wg-volcano-plot>
-		</div>
-		</b-tab-item>
-		{{#hasGeneSetDag}}
-		<b-tab-item label="DAG">
-			<b-field>
-				<b-select v-model="activeDagDatabase">
-					{{! temp delimiter change to keep brackets for Vue}}
-					{{=<% %>=}}
-					<option v-for="(value, key) in dag"
-						:value="key"
-						:key="key"
-					>{{key}}</option>
-					<%={{ }}=%>
-				</b-select>
-			</b-field>
-			<div style="width: 100%; height: 600px">
-			<wg-dag
-				container-id="wg_dag"
-				:data="dagData"
-			></wg-dag>
-			</div>
-		</b-tab-item>
-		{{/hasGeneSetDag}}
 	</b-tabs>
 	<wg-gene-table
 		:data="geneTables"
 		:info="enrichment"
 		:standard-id="standardId"
 		:method="enrichMethod"
+		:is_meta="true"
 		{{#methodIsOra}}
 		:mapped-input-size="mappedInputSize"
 		{{/methodIsOra}}

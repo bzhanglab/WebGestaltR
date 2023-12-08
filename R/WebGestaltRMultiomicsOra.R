@@ -1,7 +1,7 @@
 #' @title Multi-omics ORA
-#' @inheritParams WebGestaltRMultiOmics
-#' importFrom dplyr bind_rows left_join arrange select desc %>% mutate
+#' importFrom dplyr bind_rows left_join arrange select desc %>% mutate distinct
 #' importFrom readr write_tsv
+#' @inheritParams WebGestaltRMultiOmics
 WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NULL, analyteTypes = NULL, enrichMethod = "ORA", organism = "hsapiens",
                                      enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL,
                                      collapseMethod = "mean", minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05,
@@ -100,8 +100,10 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
 
   ## Meta-analysis
 
-  for (i in 1:length(oraRes$enriched)) {
-    print(i)
+  for (i in 2:(length(oraRes$enriched) + 1)) {
+    if (i == (length(oraRes$enriched) + 1)) {
+      i <- 1
+    }
     enrichedSig <- oraRes$enriched[[i]]
     if (i == 1) {
       interestingGeneMap <- list(mapped = interestGeneMaps[[1]]$mapped, unmapped = interestGeneMaps[[1]]$unmapped, standardId = interestGeneMaps[[1]]$standardId)
@@ -154,7 +156,6 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           arrange(.data$FDR, .data$pValue, desc(.data$size)) %>%
           distinct(.data$geneSet, .keep_all = TRUE)
       }
-
       geneTables <- getGeneTables(organism, enrichedSig, "overlapId", interestingGeneMap)
       geneTables_list[[i]] <- geneTables
       if (organism != "others") {
@@ -230,6 +231,9 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       enrichedSig <- enrichedSig %>% distinct(.data$geneSet, .keep_all = TRUE)
     }
     enrichSigs[[i]] <- enrichedSig
+    if (i == 1) {
+      break
+    }
   }
   if (isOutput) {
     ############## Create report ##################
