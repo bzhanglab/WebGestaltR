@@ -50,7 +50,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       }
     }
   }
-  # Load Gene Sets
+
   cat("Loading the reference lists...\n")
   reference_lists <- list()
   if (is.null(referenceLists)) {

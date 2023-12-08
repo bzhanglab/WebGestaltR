@@ -180,18 +180,29 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   listNames <- sapply(listNames, sanitizeFileName)
 
   if (enrichMethod == "ORA") {
-    WebGestaltRMultiOmicsOra(analyteLists = analyteLists, analyteListFiles = analyteListFiles, analyteTypes = analyteTypes, organism = organism,
-                          enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
-                          enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, collapseMethod = collapseMethod, minNum = minNum,
-                          maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum,
-                          setCoverNum = setCoverNum, perNum = perNum, isOutput = isOutput, outputDirectory = outputDirectory, projectName = projectName,
-                          dagColor = dagColor, nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover,
-                          useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, referenceLists = referenceLists,
-                          referenceListFiles = referenceListFiles, referenceTypes = referenceTypes, listNames = listNames)
+    WebGestaltRMultiOmicsOra(
+      analyteLists = analyteLists, analyteListFiles = analyteListFiles, analyteTypes = analyteTypes, organism = organism,
+      enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
+      enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, collapseMethod = collapseMethod, minNum = minNum,
+      maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum,
+      setCoverNum = setCoverNum, perNum = perNum, isOutput = isOutput, outputDirectory = outputDirectory, projectName = projectName,
+      dagColor = dagColor, nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover,
+      useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, referenceLists = referenceLists,
+      referenceListFiles = referenceListFiles, referenceTypes = referenceTypes, listNames = listNames
+    )
     ## Meta-analysis
   } else if (enrichMethod == "GSEA") {
     if (isMetaAnalysis) {
-
+      WebGestaltRMultiOmicsGSEA(
+        analyteLists = analyteLists, analyteListFiles = analyteListFiles, analyteTypes = analyteTypes, organism = organism,
+        enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
+        enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, collapseMethod = collapseMethod, minNum = minNum,
+        maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum,
+        setCoverNum = setCoverNum, perNum = perNum, gseaP = gseaP, isOutput = isOutput, outputDirectory = outputDirectory,
+        projectName = projectName, dagColor = dagColor, saveRawGseaResult = saveRawGseaResult, gseaPlotFormat = gseaPlotFormat,
+        nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation,
+        usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, listNames = listNames
+      )
     } else {
       all_sets <- .load_combined_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
       if (length(all_sets) > 1) {
