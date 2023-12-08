@@ -121,10 +121,12 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   analyteLists <- testNull(analyteLists)
   analyteListFiles <- testNull(analyteListFiles)
   analyteTypes <- testNull(analyteTypes)
-  referenceLists <- testNull(referenceLists)
-  referenceTypes <- testNull(referenceTypes)
-  referenceListFiles <- testNull(referenceListFiles)
   enrichMethod <- testNull(enrichMethod)
+  if (testNull(enrichMethod) == "ORA") {
+    referenceLists <- testNull(referenceLists)
+    referenceListFiles <- testNull(referenceListFiles)
+    referenceTypes <- testNull(referenceTypes)
+  }
   organism <- testNull(organism)
   enrichDatabase <- testNull(enrichDatabase)
   enrichDatabaseFile <- testNull(enrichDatabaseFile)

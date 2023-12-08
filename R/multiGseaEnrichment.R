@@ -1,10 +1,12 @@
 #' @importFrom dplyr select distinct filter arrange mutate left_join %>%
 #' @importFrom readr write_tsv
-gseaEnrichment <- function(hostName, outputDirectory, projectName, geneRankList_list, geneSet_list, geneSetDes = NULL, collapseMethod = "mean",
-                           minNum = 10, maxNum = 500, sigMethod = "fdr", fdrThr = 0.05, topThr = 10, perNum = 1000, p = 1, isOutput = TRUE,
-                           saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1, listNames = NULL) {
+multiGseaEnrichment <- function(hostName, outputDirectory, projectName, geneRankList_list, geneSet_list, geneSetDes_list = NULL, collapseMethod = "mean",
+                                minNum = 10, maxNum = 500, sigMethod = "fdr", fdrThr = 0.05, topThr = 10, perNum = 1000, p = 1, isOutput = TRUE,
+                                saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1, listNames = NULL) {
     inputDf_list <- list()
+    old_project_name <- projectName
     for (i in seq_along(geneRankList_list)) {
+        projectName <- paste0(old_project_name, "_", listNames[i])
         geneRankList <- geneRankList_list[[i]]
         geneSet <- geneSet_list[[i]]
         projectFolder <- file.path(outputDirectory, paste("Project_", projectName, sep = ""))
@@ -48,8 +50,8 @@ gseaEnrichment <- function(hostName, outputDirectory, projectName, geneRankList_
     )
     for (i in seq_along(gseaRes_list[["Enrichment_Results"]])) {
         gseaRes <- gseaRes_list[["Enrichment_Results"]][[i]]
-		runningSums <- gseaRes_list[["Running_Sums"]][[i]]
-		Items_in_Set <- gseaRes_list[["Items_in_Set"]][[i]]
+        runningSums <- gseaRes_list[["Running_Sums"]][[i]]
+        Items_in_Set <- gseaRes_list[["Items_in_Set"]][[i]]
 
         if (saveRawGseaResult) {
             saveRDS(gseaRes, file = file.path(outputF, "rawGseaResult.rds"))

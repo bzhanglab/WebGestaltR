@@ -8,7 +8,7 @@
 #' \deqn{\frac{s_{j}^{q}|r_{j}|^{p}}{\sum s^{q}|r|^{p}}}{(s_j^q * abs(r_j)^p) / (\sum s^q * abs(r)^p)}
 #' Where r is log ratio score, s is likelihood score, j is the index of the gene.
 #'
-#' @param input_df A data frame in which first column is name of item of interest
+#' @param input_df_list A data frame in which first column is name of item of interest
 #' (gene, protein, phosphosite, etc.), the second is the correlation of that item
 #' of interest with the phenotype (typically log ratio of expression for phenotype
 #' vs. normal), and the remaining columns are the scores for the likelihood that

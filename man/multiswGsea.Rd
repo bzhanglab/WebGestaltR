@@ -24,6 +24,12 @@ multiswGsea(
 )
 }
 \arguments{
+\item{input_df_list}{A data frame in which first column is name of item of interest
+(gene, protein, phosphosite, etc.), the second is the correlation of that item
+of interest with the phenotype (typically log ratio of expression for phenotype
+vs. normal), and the remaining columns are the scores for the likelihood that
+the item belongs in each set (one column per set).}
+
 \item{thresh_type}{The type of \code{thresh}. Use 'percentile' to include all
 scores over that percentile given in \code{thresh} (i.e., 0.9 would be all items
 in 90th percentile, or top 10 percent); 'list' to include a list of set lists
@@ -80,12 +86,6 @@ larger than 0.}
 \item{fdrMethod}{For the ORA method, WebGestaltR supports five FDR methods: \code{holm},
 \code{hochberg}, \code{hommel}, \code{bonferroni}, \code{BH} and \code{BY}. The default
 is \code{BH}.}
-
-\item{input_df}{A data frame in which first column is name of item of interest
-(gene, protein, phosphosite, etc.), the second is the correlation of that item
-of interest with the phenotype (typically log ratio of expression for phenotype
-vs. normal), and the remaining columns are the scores for the likelihood that
-the item belongs in each set (one column per set).}
 }
 \value{
 A list of \code{Enrichment_Results}, \code{Items_in_Set} and \code{Running_Sums}.

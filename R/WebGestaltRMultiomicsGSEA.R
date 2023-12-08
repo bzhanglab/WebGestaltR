@@ -19,9 +19,8 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
     if (is.null(analyteLists)) {
         for (i in seq_along(analyteListFiles)) {
             interestingGeneMap <- loadInterestGene(
-                organism = organism, dataType = "list", inputGeneFile = analyteListFiles[i], inputGene = NULL,
-                geneType = analyteTypes[i], collapseMethod = collapseMethod, cache = cache,
-                hostName = hostName, geneSet = all_sets[["geneSet"]][[i]]
+                organism = organism, dataType = "rnk", inputGeneFile = analyteListFiles[[i]], inputGene = NULL, geneType = analyteTypes[[i]],
+                collapseMethod = collapseMethod, cache = cache, hostName = hostName, geneSet = all_sets[["geneSet"]][[i]]
             )
             interestGeneMaps[[i]] <- interestingGeneMap
             if (organism == "others") {
@@ -36,9 +35,8 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
     } else {
         for (i in seq_along(analyteLists)) {
             interestingGeneMap <- loadInterestGene(
-                organism = organism, dataType = "list", inputGeneFile = NULL, inputGene = analyteLists[i],
-                geneType = analyteTypes[i], collapseMethod = collapseMethod, cache = cache,
-                hostName = hostName, geneSet = all_sets[["geneSet"]][[i]]
+                organism = organism, dataType = "rnk", inputGeneFile = NULL, inputGene = analyteLists[[i]], geneType = analyteTypes[[i]],
+                collapseMethod = collapseMethod, cache = cache, hostName = hostName, geneSet = all_sets[["geneSet"]][[i]]
             )
             interestGeneMaps[[i]] <- interestingGeneMap
             if (organism == "others") {
@@ -54,9 +52,11 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
 
     cat("Running multi-omics GSEA...\n")
 
-    multiswGsea(input_df_list,
-        thresh_type = thresh_type, thresh = thresh, thresh_action = thresh_action, min_set_size = minNum,
-        max_set_size = maxNum, max_score = max_score, min_score = "min", psuedocount = 0.001, perms = 1000, p = 1,
-        q = 1, nThreads = 1, rng_seed = 1, fork = FALS, fdrMethod = "BH"
+    multiGseaEnrichment(hostName, outputDirectory, projectName, interest_lists, all_sets[["geneSet"]], all_sets[["geneSetDes"]],
+        collapseMethod = "mean",
+        minNum = 10, maxNum = 500, sigMethod = "fdr", fdrThr = 0.05, topThr = 10, perNum = 1000, p = 1, isOutput = TRUE,
+        saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1, listNames = NULL
     )
+
+    print("Ran successfully!")
 }
