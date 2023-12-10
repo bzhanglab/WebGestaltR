@@ -25,12 +25,11 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             interestGeneMaps[[i]] <- interestingGeneMap
             if (organism == "others") {
                 interestGeneList <- unique(interestingGeneMap)
-                interest_lists[[i]] <- interestGeneList
             } else {
                 interestStandardId <- interestingGeneMap$standardId
-                interestGeneList <- unique(interestingGeneMap$mapped[[interestStandardId]])
-                interest_lists[[i]] <- interestGeneList
+                interestGeneList <- interestingGeneMap$mapped %>% select(interestStandardId, .data$score) %>% distinct()
             }
+            interest_lists[[i]] <- interestGeneList
         }
     } else {
         for (i in seq_along(analyteLists)) {
@@ -41,21 +40,19 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             interestGeneMaps[[i]] <- interestingGeneMap
             if (organism == "others") {
                 interestGeneList <- unique(interestingGeneMap)
-                interest_lists[[i]] <- interestGeneList
             } else {
                 interestStandardId <- interestingGeneMap$standardId
-                interestGeneList <- unique(interestingGeneMap$mapped[[interestStandardId]])
-                interest_lists[[i]] <- interestGeneList
+                interestGeneList <- interestingGeneMap$mapped %>% select(interestStandardId, .data$score) %>% distinct()
             }
+            interest_lists[[i]] <- interestGeneList
         }
     }
 
     cat("Running multi-omics GSEA...\n")
 
     multiGseaEnrichment(hostName, outputDirectory, projectName, interest_lists, all_sets[["geneSet"]], all_sets[["geneSetDes"]],
-        collapseMethod = "mean",
-        minNum = 10, maxNum = 500, sigMethod = "fdr", fdrThr = 0.05, topThr = 10, perNum = 1000, p = 1, isOutput = TRUE,
-        saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1, listNames = NULL
+                        collapseMethod = "mean", minNum = 10, maxNum = 500, sigMethod = "fdr", fdrThr = 0.05, topThr = 10, perNum = 1000, p = 1,
+                        isOutput = TRUE, saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1, listNames = NULL
     )
 
     print("Ran successfully!")
