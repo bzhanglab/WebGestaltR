@@ -15,7 +15,7 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
     x <- tapply(inputGene$score, inputGene$gene, collapseMethod)
     inputGene <- data.frame(gene = names(x), score = as.numeric(x), stringsAsFactors = FALSE)
     inputGeneL <- inputGene$gene
-    colnames(inputGene) <- c("userId", "score")
+    colnames(inputGene) <-c(sourceIdType,"score")
   }
 
   if (dataType == "gmt") {
@@ -124,7 +124,10 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
     mappedInputGene$gLink <- paste0("http://www.swisslipids.org/#/entity/", replace_prefix(mappedInputGene$userId, "swisslipids:"), "/")
   } else if (sourceIdType == "wikidata") {
     mappedInputGene$gLink <- paste0("https://www.wikidata.org/wiki/", replace_prefix(mappedInputGene$userId, "wikidata:"))
-  } else {
+  } else if (sourceIdType == "rampc") {
+    mappedInputGene$gLink <- replicate(length(mappedInputGene$userId), "https://rampdb.nih.gov") # No links for rampc. Links to home page
+  }
+   else {
     mappedInputGene$gLink <- paste0("URL NOT FOUND FOR TYPE ", sourceIdType)
   }
   
@@ -134,13 +137,14 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
 
 	if(dataType=="rnk"){
     inputGene$userId <- add_prefix(inputGene$userId, old_id_type)
-		inputGene <- mappedInputGene %>% left_join(inputGene, by=c("userId"="userId")) %>%
-			select(.data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$score, .data$gLink)
+		inputGene <- mappedInputGene %>% inner_join(inputGene, by=c("userId"=sourceIdType))
+    # %>%
+		#	select(.data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$score, .data$gLink)
 	}
 
 	if(dataType=="gmt"){
     inputGene$userId <- add_prefix(inputGene$userId, old_id_type)
-		inputGene <- mappedInputGene %>% left_join(inputGene, by=c("userId"="userId")) %>%
+		inputGene <- mappedInputGene %>% inner_join(inputGene, by=c("userId"=sourceIdType)) %>%
 			select(.data$geneSet, .data$link, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
 	}
   # inputGene <- mappedInputGene
