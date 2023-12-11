@@ -121,13 +121,26 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         leadingGeneNum <- vector("integer", numSig)
         leadingGenes <- vector("character", numSig)
         if (j == 1) {
-            sig$leadingEdgeNum <- numeric(length(sig$geneSet))
-            sig$leadingEdgeId <- character(length(sig$geneSet))
-        } else {
             for (i in 1:numSig) {
                 geneSet <- sig[[i, "geneSet"]]
                 es <- sig[[i, "enrichmentScore"]]
-                genes <- gseaRes$Items_in_Set[[geneSet]] # rowname is gene and one column called rank
+                genes <- gseaRes$Items_in_Set[[geneSet]] # row name is gene and one column called rank
+                leadingGeneNum[[i]] <- 0
+                leadingGenes[[i]] <- paste(rownames(genes, collapse = ";"))
+            }
+            sig$leadingEdgeNum <- leadingGeneNum
+            sig$leadingEdgeId <- leadingGenes
+        } else {
+            geneSetDes <- geneSetDes_list[[j - 1]]
+            projectName <- paste0(old_project_name, "_", listNames[j - 1])
+            outputF <- file.path(outputDirectory, paste("Project_", old_project_name, "/", projectName, "/plots", sep = ""))
+            if (!dir.exists(outputF)) {
+                dir.create(outputF)
+            }
+            for (i in 1:numSig) {
+                geneSet <- sig[[i, "geneSet"]]
+                es <- sig[[i, "enrichmentScore"]]
+                genes <- gseaRes$Items_in_Set[[geneSet]] # row name is gene and one column called rank
                 rsum <- gseaRes$Running_Sums[, geneSet]
                 peakIndex <- match(ifelse(es > 0, max(rsum), min(rsum)), rsum)
                 if (es > 0) {
@@ -141,7 +154,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
                 if (isOutput) {
                     # Plot GSEA-like enrichment plot
                     if (!is.null(geneSetDes)) {
-                        # same name of variable and column name, use quasiquotation !!
+                        # same name of variable and column name, use quasi-quotation !!
                         title <- as.character((geneSetDes %>% filter(.data$geneSet == !!geneSet))[1, "description"])
                     } else {
                         title <- geneSet
@@ -163,7 +176,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         insig_list[[i]] <- insig
     }
 
-    return(list(enriched_list = sig_list, background_list = insig_list))
+    return(list(enriched = sig_list, background = insig_list))
 }
 
 #' @importFrom svglite svglite

@@ -130,6 +130,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
     all_gene_sets <- unique(unlist(lapply(output_df_list, rownames)))
     meta_ps <- list()
     biggest_p <- 1 - .Machine$double.eps
+    meta_items_in_sets <- list()
     for (i in seq_along(all_gene_sets)) {
         gene_set <- all_gene_sets[[i]]
         p_vals <- c()
@@ -142,6 +143,12 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                     list_p <- biggest_p
                 }
                 p_vals <- append(p_vals, list_p)
+                relevant_items <- gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]]
+                if (length(meta_items_in_sets) < i) {
+                    meta_items_in_sets[[i]] <- relevant_items
+                } else {
+                    meta_items_in_sets[[i]] <- rbind(meta_items_in_sets[[i]], relevant_items)
+                }
             }
         }
         if (length(p_vals) < 2) {
@@ -160,7 +167,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
         leading_edge = numeric(length(all_gene_sets)), stringsAsFactors = FALSE
     )
     rownames(meta_output_df) <- all_gene_sets
-    gseaRes_list[[1]] <- list(Enrichment_Results = meta_output_df, Running_Sums = NULL, Items_in_Set = NULL)
+    gseaRes_list[[1]] <- list(Enrichment_Results = meta_output_df, Running_Sums = numeric(nrow(meta_output_df)), Items_in_Set = meta_items_in_sets)
 
     return(gseaRes_list)
 }
