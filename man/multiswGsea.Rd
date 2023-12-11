@@ -19,7 +19,7 @@ multiswGsea(
   q = 1,
   nThreads = 1,
   rng_seed = 1,
-  fork = FALS,
+  fork = FALSE,
   fdrMethod = "BH"
 )
 }

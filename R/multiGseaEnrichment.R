@@ -1,19 +1,21 @@
 #' @importFrom dplyr select distinct filter arrange mutate left_join %>%
 #' @importFrom readr write_tsv
-multiGseaEnrichment <- function(hostName, outputDirectory, projectName, geneRankList_list, geneSet_list, geneSetDes_list = NULL, collapseMethod = "mean",
-                                minNum = 10, maxNum = 500, sigMethod = "fdr", fdrThr = 0.05, topThr = 10, perNum = 1000, p = 1, isOutput = TRUE,
-                                saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1, listNames = NULL) {
+multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, projectName = NULL, geneRankList_list = NULL, geneSet_list = NULL, geneSetDes_list = NULL,
+                                collapseMethod = "mean", minNum = 10, maxNum = 500, sigMethod = "fdr", fdrThr = 0.05, topThr = 10,
+                                perNum = 1000, p = 1, isOutput = TRUE, saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1,
+                                listNames = NULL) {
     inputDf_list <- list()
     old_project_name <- projectName
     old_projectFolder <- file.path(outputDirectory, paste("Project_", old_project_name, sep = ""))
     if (!dir.exists(old_projectFolder)) {
-            dir.create(old_projectFolder)
-        }
+        dir.create(old_projectFolder)
+    }
     for (i in seq_along(geneRankList_list)) {
         projectName <- paste0(old_project_name, "_", listNames[i])
         geneRankList <- geneRankList_list[[i]]
         geneSet <- geneSet_list[[i]]
-        projectFolder <- file.path(outputDirectory, paste("Project_",old_project_name, "/", projectName, sep = ""))
+        geneSetDes <- geneSetDes_list[[i]]
+        projectFolder <- file.path(outputDirectory, paste("Project_", old_project_name, "/", projectName, sep = ""))
         if (!dir.exists(projectFolder)) {
             dir.create(projectFolder)
         }
