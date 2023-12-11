@@ -126,7 +126,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
                 es <- sig[[i, "enrichmentScore"]]
                 genes <- gseaRes$Items_in_Set[[geneSet]] # row name is gene and one column called rank
                 leadingGeneNum[[i]] <- 0
-                leadingGenes[[i]] <- paste(rownames(genes, collapse = ";"))
+                leadingGenes[[i]] <- paste(rownames(genes), collapse = ";")
             }
             sig$leadingEdgeNum <- leadingGeneNum
             sig$leadingEdgeId <- leadingGenes
@@ -149,7 +149,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
                     indexes <- genes$rank >= peakIndex
                 }
                 leadingGeneNum[[i]] <- sum(indexes)
-                leadingGenes[[i]] <- paste(rownames(genes)[indexes], collapse = ";")
+                leadingGenes[[i]] <- paste(rownames(genes[indexes]), collapse = ";")
 
                 if (isOutput) {
                     # Plot GSEA-like enrichment plot
