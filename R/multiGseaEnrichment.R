@@ -5,11 +5,15 @@ multiGseaEnrichment <- function(hostName, outputDirectory, projectName, geneRank
                                 saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1, listNames = NULL) {
     inputDf_list <- list()
     old_project_name <- projectName
+    old_projectFolder <- file.path(outputDirectory, paste("Project_", old_project_name, sep = ""))
+    if (!dir.exists(old_projectFolder)) {
+            dir.create(old_projectFolder)
+        }
     for (i in seq_along(geneRankList_list)) {
         projectName <- paste0(old_project_name, "_", listNames[i])
         geneRankList <- geneRankList_list[[i]]
         geneSet <- geneSet_list[[i]]
-        projectFolder <- file.path(outputDirectory, paste("Project_", projectName, sep = ""))
+        projectFolder <- file.path(outputDirectory, paste("Project_",old_project_name, "/", projectName, sep = ""))
         if (!dir.exists(projectFolder)) {
             dir.create(projectFolder)
         }
@@ -48,10 +52,10 @@ multiGseaEnrichment <- function(hostName, outputDirectory, projectName, geneRank
         min_set_size = minNum, max_set_size = maxNum, p = p,
         nThreads = nThreads, rng_seed = as.integer(format(Sys.time(), "%H%M%S"))
     )
-    for (i in seq_along(gseaRes_list[["Enrichment_Results"]])) {
-        gseaRes <- gseaRes_list[["Enrichment_Results"]][[i]]
-        runningSums <- gseaRes_list[["Running_Sums"]][[i]]
-        Items_in_Set <- gseaRes_list[["Items_in_Set"]][[i]]
+    for (j in seq_along(gseaRes_list[["Enrichment_Results"]])) {
+        gseaRes <- gseaRes_list[["Enrichment_Results"]][[j]]
+        runningSums <- gseaRes_list[["Running_Sums"]][[j]]
+        Items_in_Set <- gseaRes_list[["Items_in_Set"]][[j]]
 
         if (saveRawGseaResult) {
             saveRDS(gseaRes, file = file.path(outputF, "rawGseaResult.rds"))

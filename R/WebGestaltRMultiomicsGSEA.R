@@ -12,7 +12,8 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                                       listNames = NULL) {
     projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
     cat("Performing multi-omics GSEA\nLoading the functional categories...\n")
-    all_sets <- .load_meta_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
+    all_sets <- .load_meta_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes,
+                               organism, cache, hostName)
     cat("Loading the ID lists...\n")
     interest_lists <- list()
     interestGeneMaps <- list()
@@ -51,8 +52,8 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
     cat("Running multi-omics GSEA...\n")
 
     multiGseaEnrichment(hostName, outputDirectory, projectName, interest_lists, all_sets[["geneSet"]], all_sets[["geneSetDes"]],
-                        collapseMethod = "mean", minNum = 10, maxNum = 500, sigMethod = "fdr", fdrThr = 0.05, topThr = 10, perNum = 1000, p = 1,
-                        isOutput = TRUE, saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1, listNames = NULL
+                        collapseMethod = "mean", minNum = minNum, maxNum = maxNum, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, perNum = perNum, p = p,
+                        isOutput = isOutput, saveRawGseaResult = saveRawGseaResult, plotFormat = gseaPlotFormat, nThreads = nThreads, listNames = listNames
     )
 
     print("Ran successfully!")

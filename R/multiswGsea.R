@@ -114,7 +114,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
     running_sum_list[[1]] <- NULL
     items_in_set_list[[1]] <- NULL
     for (j in seq_along(input_df_list)) {
-        i
+        i <- j
         input_df <- input_df_list[[i]]
         # re-order by log ratios (rank order from highest to lowest)
         expt <- colnames(input_df)[2]
@@ -147,7 +147,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                     items_in_set <- input_df$item[input_df[, enr_test[a]] >= thresh[a]]
                     inset_mat[items_in_set, enr_test[a]] <- 1
                 }
-            } else if (thresh_type == "percentile" && thresh > 0 & thresh < 1) {
+            } else if (thresh_type == "percentile" && thresh > 0 && thresh < 1) {
                 thresh1 <- vector(mode = "numeric", length = length(enr_test))
                 for (a in 1:length(enr_test)) {
                     thresh1[a] <- quantile(input_df[, enr_test[a]], probs = thresh)
@@ -221,6 +221,9 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
         # generate list containing names of items in each set and ranks of those items
         items_in_set <- list()
         rust_parts <- list()
+        print("Number of columns in inset_mat")
+        print(ncol(inset_mat))
+        print("....")
         for (it in 1:ncol(inset_mat)) {
             items_in_set[[colnames(inset_mat)[it]]] <- data.frame(which(inset_mat[, it] == 1), stringsAsFactors = F)
             rust_parts[[it]] <- rownames(items_in_set[[colnames(inset_mat)[it]]])

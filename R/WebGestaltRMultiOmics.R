@@ -206,6 +206,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
         usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, listNames = listNames
       )
     } else {
+      stop("isMetaAnalysis = FALSE Not Implemented Yet")
       all_sets <- .load_combined_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
       if (length(all_sets) > 1) {
         geneSet <- all_sets[[1]]$geneSet
