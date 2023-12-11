@@ -12,8 +12,10 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                                       listNames = NULL) {
     projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
     cat("Performing multi-omics GSEA\nLoading the functional categories...\n")
-    all_sets <- .load_meta_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes,
-                               organism, cache, hostName)
+    all_sets <- .load_meta_gmt(
+        enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes,
+        organism, cache, hostName
+    )
     cat("Loading the ID lists...\n")
     interest_lists <- list()
     interestGeneMaps <- list()
@@ -28,7 +30,9 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                 interestGeneList <- unique(interestingGeneMap)
             } else {
                 interestStandardId <- interestingGeneMap$standardId
-                interestGeneList <- interestingGeneMap$mapped %>% select(interestStandardId, .data$score) %>% distinct()
+                interestGeneList <- interestingGeneMap$mapped %>%
+                    select(interestStandardId, .data$score) %>%
+                    distinct()
             }
             interest_lists[[i]] <- interestGeneList
         }
@@ -43,7 +47,9 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                 interestGeneList <- unique(interestingGeneMap)
             } else {
                 interestStandardId <- interestingGeneMap$standardId
-                interestGeneList <- interestingGeneMap$mapped %>% select(interestStandardId, .data$score) %>% distinct()
+                interestGeneList <- interestingGeneMap$mapped %>%
+                    select(interestStandardId, .data$score) %>%
+                    distinct()
             }
             interest_lists[[i]] <- interestGeneList
         }
@@ -51,9 +57,10 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
 
     cat("Running multi-omics GSEA...\n")
 
-    multiGseaEnrichment(hostName = hostName, outputDirectory = outputDirectory, projectName = projectName, geneRankList_list = interest_lists, geneSet_list = all_sets[["geneSet"]], geneSetDes_list = all_sets[["geneSetDes"]],
-                        collapseMethod = "mean", minNum = minNum, maxNum = maxNum, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, perNum = perNum, p = p,
-                        isOutput = isOutput, saveRawGseaResult = saveRawGseaResult, plotFormat = gseaPlotFormat, nThreads = nThreads, listNames = listNames
+    multiGseaEnrichment(
+        hostName = hostName, outputDirectory = outputDirectory, projectName = projectName, geneRankList_list = interest_lists, geneSet_list = all_sets[["geneSet"]], geneSetDes_list = all_sets[["geneSetDes"]],
+        collapseMethod = "mean", minNum = minNum, maxNum = maxNum, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, perNum = perNum, p = gseaP,
+        isOutput = isOutput, saveRawGseaResult = saveRawGseaResult, plotFormat = gseaPlotFormat, nThreads = nThreads, listNames = listNames
     )
 
     print("Ran successfully!")

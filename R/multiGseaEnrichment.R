@@ -54,10 +54,11 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         min_set_size = minNum, max_set_size = maxNum, p = p,
         nThreads = nThreads, rng_seed = as.integer(format(Sys.time(), "%H%M%S"))
     )
-    for (j in seq_along(gseaRes_list[["Enrichment_Results"]])) {
-        gseaRes <- gseaRes_list[["Enrichment_Results"]][[j]]
-        runningSums <- gseaRes_list[["Running_Sums"]][[j]]
-        Items_in_Set <- gseaRes_list[["Items_in_Set"]][[j]]
+    insig_list <- list()
+    sig_list <- list()
+    for (j in seq_along(gseaRes_list)) {
+        print(paste0("Processing ", j, " ..."))
+        gseaRes <- gseaRes_list[[j]]
 
         if (saveRawGseaResult) {
             saveRDS(gseaRes, file = file.path(outputF, "rawGseaResult.rds"))
@@ -72,9 +73,17 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         # TODO: handle errors
 
         if (sigMethod == "fdr") {
+            print("fdr")
             sig <- filter(enrichRes, .data$FDR < fdrThr)
             insig <- filter(enrichRes, .data$FDR >= fdrThr)
         } else if (sigMethod == "top") {
+            print("top")
+            enrichRes <- arrange(enrichRes, .data$FDR, .data$pValue)
+            tmpRes <- getTopGseaResults(enrichRes, topThr)
+            sig <- tmpRes[[1]]
+            insig <- tmpRes[[2]]
+        } else {
+            warning("WARNING: Invalid significance method ", sigMethod, "!\nDefaulting to top.\n")
             enrichRes <- arrange(enrichRes, .data$FDR, .data$pValue)
             tmpRes <- getTopGseaResults(enrichRes, topThr)
             sig <- tmpRes[[1]]
@@ -83,7 +92,9 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         numSig <- nrow(sig)
         if (numSig == 0) {
             warning("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
-            return(NULL)
+            sig_list[[i]] <- NULL
+            insig_list[[i]] <- NULL
+            next
         }
 
         if (!is.null(insig)) {
@@ -109,43 +120,50 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
 
         leadingGeneNum <- vector("integer", numSig)
         leadingGenes <- vector("character", numSig)
-        for (i in 1:numSig) {
-            geneSet <- sig[[i, "geneSet"]]
-            es <- sig[[i, "enrichmentScore"]]
-            genes <- gseaRes$Items_in_Set[[geneSet]] # rowname is gene and one column called rank
-            rsum <- gseaRes$Running_Sums[, geneSet]
-            peakIndex <- match(ifelse(es > 0, max(rsum), min(rsum)), rsum)
-            if (es > 0) {
-                indexes <- genes$rank <= peakIndex
-            } else {
-                indexes <- genes$rank >= peakIndex
-            }
-            leadingGeneNum[[i]] <- sum(indexes)
-            leadingGenes[[i]] <- paste(rownames(genes)[indexes], collapse = ";")
-
-            if (isOutput) {
-                # Plot GSEA-like enrichment plot
-                if (!is.null(geneSetDes)) {
-                    # same name of variable and column name, use quasiquotation !!
-                    title <- as.character((geneSetDes %>% filter(.data$geneSet == !!geneSet))[1, "description"])
+        if (j == 1) {
+            sig$leadingEdgeNum <- numeric(length(sig$geneSet))
+            sig$leadingEdgeId <- character(length(sig$geneSet))
+        } else {
+            for (i in 1:numSig) {
+                geneSet <- sig[[i, "geneSet"]]
+                es <- sig[[i, "enrichmentScore"]]
+                genes <- gseaRes$Items_in_Set[[geneSet]] # rowname is gene and one column called rank
+                rsum <- gseaRes$Running_Sums[, geneSet]
+                peakIndex <- match(ifelse(es > 0, max(rsum), min(rsum)), rsum)
+                if (es > 0) {
+                    indexes <- genes$rank <= peakIndex
                 } else {
-                    title <- geneSet
+                    indexes <- genes$rank >= peakIndex
                 }
+                leadingGeneNum[[i]] <- sum(indexes)
+                leadingGenes[[i]] <- paste(rownames(genes)[indexes], collapse = ";")
 
-                if (!is.vector(plotFormat)) {
-                    plotEnrichmentPlot(title, outputF, geneSet, format = plotFormat, gseaRes$Running_Sums[, geneSet], genes$rank, sortedScores, peakIndex)
-                } else {
-                    for (format in plotFormat) {
-                        plotEnrichmentPlot(title, outputF, geneSet, format = format, gseaRes$Running_Sums[, geneSet], genes$rank, sortedScores, peakIndex)
+                if (isOutput) {
+                    # Plot GSEA-like enrichment plot
+                    if (!is.null(geneSetDes)) {
+                        # same name of variable and column name, use quasiquotation !!
+                        title <- as.character((geneSetDes %>% filter(.data$geneSet == !!geneSet))[1, "description"])
+                    } else {
+                        title <- geneSet
+                    }
+
+                    if (!is.vector(plotFormat)) {
+                        plotEnrichmentPlot(title, outputF, geneSet, format = plotFormat, gseaRes$Running_Sums[, geneSet], genes$rank, sortedScores, peakIndex)
+                    } else {
+                        for (format in plotFormat) {
+                            plotEnrichmentPlot(title, outputF, geneSet, format = format, gseaRes$Running_Sums[, geneSet], genes$rank, sortedScores, peakIndex)
+                        }
                     }
                 }
             }
+            sig$leadingEdgeNum <- leadingGeneNum
+            sig$leadingEdgeId <- leadingGenes
         }
-        sig$leadingEdgeNum <- leadingGeneNum
-        sig$leadingEdgeId <- leadingGenes
+        sig_list[[i]] <- sig
+        insig_list[[i]] <- insig
     }
 
-    return(list(enriched = sig, background = insig))
+    return(list(enriched_list = sig_list, background_list = insig_list))
 }
 
 #' @importFrom svglite svglite
