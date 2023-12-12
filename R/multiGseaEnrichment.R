@@ -113,9 +113,8 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         plotSuffix <- ifelse("png" %in% plotFormat, "png", "svg")
         sig <- sig %>%
             left_join(geneSetName, by = "geneSet") %>%
-            mutate(size = unname(sapply(geneSet, function(x) nrow(gseaRes$Items_in_Set[[x]])))) %>%
-            mutate(plotPath = unname(sapply(geneSet, function(x) file.path(relativeF, paste0(sanitizeFileName(x), ".", plotSuffix)))))
-
+            mutate(size = unname(sapply(geneSet, function(x) nrow(gseaRes$Items_in_Set[[x]]))))
+        plot_paths <- list()
         leadingGeneNum <- vector("integer", numSig)
         leadingGenes <- vector("character", numSig)
         if (j == 1) {
@@ -128,6 +127,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
             }
             sig$leadingEdgeNum <- leadingGeneNum
             sig$leadingEdgeId <- leadingGenes
+            sig$plotPath <- rep("", numSig)
         } else {
             geneSetDes <- geneSetDes_list[[j - 1]]
             projectName <- paste0(old_project_name, "_", listNames[j - 1])
@@ -159,14 +159,15 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
                     }
 
                     if (!is.vector(plotFormat)) {
-                        plotEnrichmentPlot(title, outputF, geneSet, format = plotFormat, gseaRes$Running_Sums[, geneSet], genes$rank, sortedScores, peakIndex)
+                        plot_paths[[i]] <- plotEnrichmentPlot(title, outputF, geneSet, format = plotFormat, gseaRes$Running_Sums[, geneSet], genes$rank, sortedScores, peakIndex)
                     } else {
                         for (format in plotFormat) {
-                            plotEnrichmentPlot(title, outputF, geneSet, format = format, gseaRes$Running_Sums[, geneSet], genes$rank, sortedScores, peakIndex)
+                            plot_paths[[i]] <- plotEnrichmentPlot(title, outputF, geneSet, format = format, gseaRes$Running_Sums[, geneSet], genes$rank, sortedScores, peakIndex)
                         }
                     }
                 }
             }
+            sig$plotPath <- unlist(plot_paths)
             sig$leadingEdgeNum <- leadingGeneNum
             sig$leadingEdgeId <- leadingGenes
         }
@@ -180,10 +181,12 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
 #' @importFrom svglite svglite
 plotEnrichmentPlot <- function(title, outputDir, fileName, format = "png", runningSums, ranks, scores, peakIndex) {
     if (format == "png") {
-        png(file.path(outputDir, paste0(sanitizeFileName(fileName), ".png")), bg = "transparent", width = 2000, height = 2000)
+        output_file <- file.path(outputDir, paste0(sanitizeFileName(fileName), ".png"))
+        png(output_file, bg = "transparent", width = 2000, height = 2000)
         cex <- list(main = 5, axis = 2.5, lab = 3.2)
     } else if (format == "svg") {
-        svglite(file.path(outputDir, paste0(sanitizeFileName(fileName), ".svg")), bg = "transparent", width = 7, height = 7)
+        output_file <- file.path(outputDir, paste0(sanitizeFileName(fileName), ".svg"))
+        svglite(output_file, bg = "transparent", width = 7, height = 7)
         cex <- list(main = 1.5, axis = 0.6, lab = 0.8)
         # svg seems to have a problem with long title (figure margins too large)
         if (!is.na(nchar(title))) {
@@ -214,4 +217,5 @@ plotEnrichmentPlot <- function(title, outputDir, fileName, format = "png", runni
     polygon(c(1, 1:length(scores), length(scores)), c(0, scores, 0), col = "black")
     abline(v = peakIndex, lty = 3)
     dev.off()
+    return(output_file)
 }

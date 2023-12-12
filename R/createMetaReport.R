@@ -8,7 +8,7 @@
 #' @keywords internal
 #'
 createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism = "hsapiens", projectName = NULL, enrichMethod = NULL, geneSet_list = NULL, geneSetDes_list = NULL,
-                             geneSetDag_list = NULL, geneSetNet_list = NULL, interestingGeneMap_list = NULL, referenceGeneList_list = NULL, enrichedSig_list = NULL, geneTables_list, clusters_list,
+                             geneSetDag_list = NULL, geneSetNet_list = NULL, interestingGeneMap_list = NULL, referenceGeneList_list = NULL, enrichedSig_list = NULL, geneTables_list = NULL, clusters_list = NULL,
                              background_list, enrichDatabase_list = NULL, enrichDatabaseFile_list = NULL, enrichDatabaseType_list = NULL,
                              enrichDatabaseDescriptionFile_list = NULL, interestGeneFile_list = NULL, interestGene_list = NULL,
                              interestGeneType_list = NULL, collapseMethod = "mean", referenceGeneFile_list = NULL, referenceGene_list = NULL,
