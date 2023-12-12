@@ -54,7 +54,6 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             interest_lists[[i]] <- interestGeneList
         }
     }
-    print(interestGeneMaps)
     cat("Running multi-omics GSEA...\n")
 
     gseaRes <- multiGseaEnrichment(
@@ -78,7 +77,10 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
     ## Meta-analysis
 
     for (i in 2:(length(gseaRes$enriched) + 1)) {
+        print(paste0("Processing ", i, "th list..."))
+        print((length(gseaRes$enriched) + 1))
         if (i == (length(gseaRes$enriched) + 1)) {
+            print("Meta-analysis")
             i <- 1
         }
         enrichedSig <- gseaRes$enriched[[i]]
@@ -98,7 +100,6 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
 
             geneSetDes <- all_sets[["geneSetDes"]][[1]]
             geneSet <- all_sets[["geneSet"]][[1]]
-            # geneSetDag <- all_sets[["geneSetDag"]][[1]]
             for (j in seq_along(all_sets[["geneSet"]])) {
                 if (j == 1) {
                     next
@@ -106,9 +107,11 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                 geneSet <- rbind(geneSet, all_sets[["geneSet"]][[j]])
                 geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
             }
-            enrichedSig <- enrichedSig %>%
-                left_join(geneSet[, c("geneSet", "description")], by = "geneSet")
-            names(enrichedSig)[names(enrichedSig) == "description"] <- "link"
+            # print(colnames(enrichedSig))
+            # geneSet <- geneSet %>% distinct(.data$geneSet, .keep_all = TRUE)
+            # enrichedSig <- enrichedSig %>%
+            #     left_join(geneSet[, c("geneSet", "description")], by = "geneSet")
+            # names(enrichedSig)[names(enrichedSig) == "description"] <- "link"
         } else {
             interestingGeneMap <- interestGeneMaps[[i - 1]]
             # geneSetDag <- all_sets[["geneSetDag"]][[i - 1]]
@@ -133,6 +136,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             }
 
             geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
+            geneTables_list[[i]] <- geneTables
             if (organism != "others") {
                 enrichedSig$link <- mapply(
                     function(link, geneList) linkModification("GSEA", link, geneList, interestingGeneMap),
@@ -149,7 +153,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             if (i == 1) {
                 outputEnrichedSig <- enrichedSig
             } else if (organism != "others" && analyteTypes[[i - 1]] != interestStandardId) {
-                outputEnrichedSig <- mapUserId(enrichedSig, "overlapId", interestingGeneMap)
+                outputEnrichedSig <- mapUserId(enrichedSig, "leadingEdgeId", interestingGeneMap)
             } else {
                 outputEnrichedSig <- enrichedSig
             }

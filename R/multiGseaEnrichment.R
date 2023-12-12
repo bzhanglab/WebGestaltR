@@ -73,11 +73,9 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         # TODO: handle errors
 
         if (sigMethod == "fdr") {
-            print("fdr")
             sig <- filter(enrichRes, .data$FDR < fdrThr)
             insig <- filter(enrichRes, .data$FDR >= fdrThr)
         } else if (sigMethod == "top") {
-            print("top")
             enrichRes <- arrange(enrichRes, .data$FDR, .data$pValue)
             tmpRes <- getTopGseaResults(enrichRes, topThr)
             sig <- tmpRes[[1]]
@@ -92,8 +90,8 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         numSig <- nrow(sig)
         if (numSig == 0) {
             warning("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
-            sig_list[[i]] <- NULL
-            insig_list[[i]] <- NULL
+            sig_list[[j]] <- NULL
+            insig_list[[j]] <- NULL
             next
         }
 
@@ -149,7 +147,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
                     indexes <- genes$rank >= peakIndex
                 }
                 leadingGeneNum[[i]] <- sum(indexes)
-                leadingGenes[[i]] <- paste(rownames(genes[indexes]), collapse = ";")
+                leadingGenes[[i]] <- paste(rownames(genes)[indexes], collapse = ";")
 
                 if (isOutput) {
                     # Plot GSEA-like enrichment plot
@@ -172,8 +170,8 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
             sig$leadingEdgeNum <- leadingGeneNum
             sig$leadingEdgeId <- leadingGenes
         }
-        sig_list[[i]] <- sig
-        insig_list[[i]] <- insig
+        sig_list[[j]] <- sig
+        insig_list[[j]] <- insig
     }
 
     return(list(enriched = sig_list, background = insig_list))
