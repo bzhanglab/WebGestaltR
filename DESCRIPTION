@@ -20,7 +20,7 @@ Depends: R (>= 4.0)
 Imports: methods, dplyr, doRNG, readr, parallel (>= 3.3.2),
         doParallel (>= 1.0.10), foreach (>= 1.4.0),
         jsonlite, httr, rlang, svglite,
-        igraph, whisker, apcluster, Rcpp, cluster, rextendr, metap
+        igraph, whisker, apcluster, Rcpp, cluster, rextendr, poolr
 NeedsCompilation: yes
 LinkingTo: Rcpp
 RoxygenNote: 7.2.3

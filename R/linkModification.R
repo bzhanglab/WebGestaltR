@@ -8,7 +8,7 @@ linkModification <- function(enrichMethod, enrichPathwayLink, geneList, interest
     # print(enrichPathwayLink)
     # print(interestingGeneMap$standardId)
     if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE) && interestingGeneMap$standardId == "rampc") {
-        link <- keggMetaboliteLinkModification(enrichPathwayLink,  geneList, interestingGeneMap, hostName)
+        link <- keggMetaboliteLinkModification(enrichPathwayLink, geneList, interestingGeneMap, hostName)
         return(link)
     } else if (grepl("www.wikipathways.org", enrichPathwayLink, fixed = TRUE) && interestingGeneMap$standardId == "rampc") {
         link <- wikiMetaboliteLinkModification(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName)
@@ -30,7 +30,7 @@ keggLinkModification <- function(enrichPathwayLink, geneList) {
 }
 
 keggMetaboliteLinkModification <- function(enrichPathwayLink, geneList, interestingGeneMap, hostName) {
-	geneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "kegg", "rampc", hostName)
+    geneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "kegg", "rampc", hostName)
     geneList <- sapply(geneList, function(x) x <- gsub("kegg:", "", x, ignore.case = TRUE))
     geneList <- paste(geneList, collapse = "+")
     enrichPathwayLink <- paste(enrichPathwayLink, "+", geneList, sep = "")
@@ -44,7 +44,7 @@ wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, gene
     geneMap <- filter(geneMap, .data$rampc %in% geneList)
     enrichPathwayLink <- paste0(
         enrichPathwayLink,
-        paste0(sapply(hmdbGeneList, function(x) paste0("&xref[]=",x,",HMDB")), collapse = "")
+        paste0(sapply(hmdbGeneList, function(x) paste0("&xref[]=", x, ",HMDB")), collapse = "")
         # not many pathway have entrezgene xref. Using both also seem to interfere with coloring
         # paste0(sapply(geneMap$entrezgene, function(x) paste0("&xref[]=", x, ",Entrez Gene")), collapse="")
     )
@@ -77,7 +77,7 @@ wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
     if (enrichMethod == "ORA") {
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
     } else if (enrichMethod == "GSEA") {
-        scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
+        scores <- filter(interestingGeneMap$mapped, .data$rampc %in% geneList)[["score"]]
         maxScore <- max(scores)
         minScore <- min(scores)
         tmp <- getPaletteForGsea(maxScore, minScore)

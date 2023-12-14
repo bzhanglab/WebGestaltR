@@ -1,8 +1,8 @@
 #' @importFrom dplyr select distinct filter arrange mutate left_join %>%
 #' @importFrom readr write_tsv
-multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, projectName = NULL, geneRankList_list = NULL, geneSet_list = NULL, geneSetDes_list = NULL,
-                                collapseMethod = "mean", minNum = 10, maxNum = 500, sigMethod = "fdr", fdrThr = 0.05, topThr = 10,
-                                perNum = 1000, p = 1, isOutput = TRUE, saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1,
+multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, projectName = NULL, geneRankList_list = NULL, geneSet_list = NULL,
+                                geneSetDes_list = NULL, collapseMethod = "mean", minNum = 10, maxNum = 500, sigMethod = "fdr", fdrThr = 0.05,
+                                topThr = 10, perNum = 1000, p = 1, isOutput = TRUE, saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1,
                                 listNames = NULL) {
     inputDf_list <- list()
     old_project_name <- projectName

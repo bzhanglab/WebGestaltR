@@ -73,7 +73,7 @@
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach
-#' @importFrom metap sumz
+#' @importFrom poolr stouffer
 #' @importFrom doRNG %dorng%
 #' @export
 #' @author John Elizarraras
@@ -154,7 +154,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
         if (length(p_vals) < 2) {
             meta_ps[[i]] <- p_vals[1]
         } else {
-            meta_ps[[i]] <- sumz(p_vals)$p[1]
+            meta_ps[[i]] <- stouffer(p_vals)$p[1]
         }
     }
 

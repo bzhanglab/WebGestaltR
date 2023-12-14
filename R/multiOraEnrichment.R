@@ -162,6 +162,5 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
       }
     }
   }
-  print("finsihed this stuff")
   return(list(enriched = enrichedResultList, background = backgroundList))
 }
