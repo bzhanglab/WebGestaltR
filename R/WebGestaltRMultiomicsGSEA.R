@@ -107,14 +107,8 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                 geneSet <- rbind(geneSet, all_sets[["geneSet"]][[j]])
                 geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
             }
-            # print(colnames(enrichedSig))
-            # geneSet <- geneSet %>% distinct(.data$geneSet, .keep_all = TRUE)
-            # enrichedSig <- enrichedSig %>%
-            #     left_join(geneSet[, c("geneSet", "description")], by = "geneSet")
-            # names(enrichedSig)[names(enrichedSig) == "description"] <- "link"
         } else {
             interestingGeneMap <- interestGeneMaps[[i - 1]]
-            # geneSetDag <- all_sets[["geneSetDag"]][[i - 1]]
             geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
             geneSet <- all_sets[["geneSet"]][[i - 1]]
         }
@@ -134,6 +128,8 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                     select(.data$geneSet, .data$link, .data$enrichmentScore, .data$normalizedEnrichmentScore, .data$pValue, .data$FDR, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
                     arrange(.data$FDR, .data$pValue, desc(.data$normalizedEnrichmentScore))
             }
+
+            enrichedSig <- enrichedSig %>% distinct(.data$geneSet, .keep_all = TRUE)
 
             geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
             geneTables_list[[i]] <- geneTables

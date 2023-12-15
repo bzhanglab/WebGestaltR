@@ -30,7 +30,8 @@ createMetaSummaryReport <- function(hostName, outputDirectory, organism = "hsapi
             if (enrichMethod == "ORA") {
                 enrichedSig <- enrichedSig[1:reportNum, ]
             } else if (enrichMethod == "GSEA") {
-                enrichedSig <- getTopGseaResults(enrichedSig, reportNum / 2)[[1]]
+                enrichedSig <- arrange(enrichedSig, .data$FDR, .data$pValue)
+                enrichedSig <- enrichedSig[1:reportNum, ]
             }
             # Add representatives if they are not in top ReportNum. So could be more if ReportNum.is small and high redundancy in top
             numRes <- nrow(enrichedSig)
