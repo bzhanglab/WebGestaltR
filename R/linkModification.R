@@ -4,13 +4,13 @@
 #'
 #' @keywords internal
 linkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName = "https://www.webgestalt.org/") {
-    # print("link modification")
+    print("link modification")
     # print(enrichPathwayLink)
-    # print(interestingGeneMap$standardId)
-    if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE) && interestingGeneMap$standardId == "rampc") {
+    print(interestingGeneMap$standardId)
+    if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE) && (interestingGeneMap$standardId == "rampc")) {
         link <- keggMetaboliteLinkModification(enrichPathwayLink, geneList, interestingGeneMap, hostName)
         return(link)
-    } else if (grepl("www.wikipathways.org", enrichPathwayLink, fixed = TRUE) && interestingGeneMap$standardId == "rampc") {
+    } else if (grepl("www.wikipathways.org", enrichPathwayLink, fixed = TRUE) && (interestingGeneMap$standardId == "rampc")) {
         link <- wikiMetaboliteLinkModification(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName)
         return(link)
     } else if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
@@ -51,7 +51,7 @@ wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, gene
     if (enrichMethod == "ORA") {
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
     } else if (enrichMethod == "GSEA") {
-        scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
+        scores <- filter(interestingGeneMap$mapped, .data$rampc %in% geneList)[["score"]]
         maxScore <- max(scores)
         minScore <- min(scores)
         tmp <- getPaletteForGsea(maxScore, minScore)
@@ -77,7 +77,7 @@ wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
     if (enrichMethod == "ORA") {
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
     } else if (enrichMethod == "GSEA") {
-        scores <- filter(interestingGeneMap$mapped, .data$rampc %in% geneList)[["score"]]
+        scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
         maxScore <- max(scores)
         minScore <- min(scores)
         tmp <- getPaletteForGsea(maxScore, minScore)
