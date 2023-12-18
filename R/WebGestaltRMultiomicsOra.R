@@ -164,17 +164,18 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           enrichedSig$link,
           enrichedSig$overlapId
         )
-      } else if (organism != "others") {
-        geneList_list <- list()
-        for (j in seq_along(interest_lists)) {
-          geneList_list[[j]] <- enrichedSigs[[j + 1]]$overlapId
-        }
-        enrichedSig$link <- mapply(
-          function(link, geneList_lis) metaLinkModification("ORA", link, geneList_list, interestGeneMaps, hostName),
-          enrichedSig$link,
-          geneList_list
-        )
-      }
+      } 
+      # else if (organism != "others") {
+      #   geneList_list <- list()
+      #   for (j in seq_along(interest_lists)) {
+      #     geneList_list[[j]] <- enrichedSigs[[j + 1]]$overlapId
+      #   }
+      #   enrichedSig$link <- mapply(
+      #     function(link, geneList_lis) metaLinkModification("ORA", link, geneList_list, interestGeneMaps, hostName),
+      #     enrichedSig$link,
+      #     geneList_list
+      #   )
+      # }
 
       if ("database" %in% colnames(geneSet)) {
         # Add source database for multiple databases

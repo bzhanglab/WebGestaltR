@@ -5,22 +5,28 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
                                fdrThr = 0.05, topThr = 10) {
   # INFO: Code is almost identical to oraEnrichment.R, but modified to work with lists.
   #       Additionally, have to get a special intG for the meta-analysis, since it is a merge of the other intG's.
+  geneSetNum <- list()
   for (i in seq_along(referenceGene)) {
     referenceGene[[i]] <- intersect(referenceGene[[i]], geneSet[[i]]$gene)
     geneSet[[i]] <- filter(geneSet[[i]], .data$gene %in% referenceGene[[i]])
+    geneSetNum[[i]] <- tapply(geneSet[[i]]$gene, geneSet[[i]]$geneSet, length)
+    geneSetNum[[i]] <- geneSetNum[[i]][geneSetNum[[i]] >= minNum & geneSetNum[[i]] <= maxNum]
   }
-  geneSetNum <- lapply(geneSet, function(x) {
-    tapply(x$gene, x$geneSet, length)
-  })
+#   geneSetNum
+#   geneSetNum <- list(
+# ) <- lapply(geneSet, function(x) {
+#     tapply(x$gene, x$geneSet, length)
+#   })
 
-  geneSetNum <- lapply(geneSetNum, function(x) {
-    x[x >= minNum & x <= maxNum]
-  })
+#   geneSetNum <- lapply(geneSetNum, function(x) {
+#     x[x >= minNum & x <= maxNum]
+#   })
+
 
   for (i in seq_along(interestGene)) {
     interestGene[[i]] <- intersect(referenceGene[[i]], intersect(interestGene[[i]], geneSet[[i]]$gene))
     if (length(interestGene[[i]]) == 0) {
-      stop(paste0("ERROR: No genes in the interesting list at index ", i, " can annote to any functional category."))
+      stop(paste0("ERROR: No genes in the interesting list at index ", i, " can annotate to any functional category."))
     }
   }
 
@@ -28,7 +34,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
   intG <- list()
   met_intG <- data.frame()
   for (i in seq_along(geneSetNum)) {
-    refG[[i]] <- data.frame(geneSet = names(geneSetNum[[i]]), size = as.numeric(geneSetNum[[i]]), stringsAsFactors = FALSE)
+    refG[[i]] <- data.frame(geneSet = names(geneSetNum[[i]]), size = as.numeric(unlist(geneSetNum[[i]])), stringsAsFactors = FALSE)
     intG[[i]] <- filter(geneSet[[i]], .data$gene %in% interestGene[[i]])
     if (i == 1) {
       met_intG <- intG[[i]]
@@ -45,13 +51,14 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
   intGId <- lapply(intGId, function(x) {
     data.frame(geneSet = names(x), overlapId = as.character(x), stringsAsFactors = FALSE)
   })
-  geneSetFilter <- lapply(geneSet, function(x) {
-    x %>%
+  geneSetFilter <- list()
+  for (i in seq_along(referenceGene)) {
+    geneSetFilter[[i]] <- geneSet[[i]] %>%
       filter(!is.na(.data$geneSet)) %>%
       filter(.data$geneSet %in% names(geneSetNum[[i]])) %>%
       select(.data$geneSet, link = .data$description) %>%
       distinct()
-  })
+  }
   geneSet <- lapply(geneSet, function(x) {
     x[x$geneSet %in% geneSetFilter[[i]]$geneSet, ]
   })
