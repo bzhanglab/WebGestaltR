@@ -58,7 +58,7 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
         ############ Enrichment result ##################
         if (!is.null(enrichedSig)) {
             bodyContent <- paste(bodyContent, enrichResultSection(enrichMethod, enrichedSig, geneSet, geneSetDes, geneSetDag, geneSetNet, clusters), seq = "\n")
-            if (!is.null(geneSetDag)) {
+            if (!is.null(geneSetDag) && !is_meta) {
                 if (!is.vector(geneSetDag)) {
                     # for backward compatibility, it is unlisted for single dataset
                     geneSetDag <- list(geneSetDag)
