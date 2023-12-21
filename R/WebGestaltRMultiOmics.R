@@ -266,6 +266,18 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   all_sets <- list(geneSet = list(), geneSetDes = list(), geneSetDag = list(), geneSetNet = list(), standardId = list(), databases = list())
   if (!is.null(enrichDatabase)) { # Need to get correct name for metabolite databases
     if (length(unique(analyteTypes)) == 1) {
+        db <- get_gmt_file(hostName, analyteTypes[1], enrichDatabase, organism, cache)
+        res <- loadGeneSet(
+          organism = organism, enrichDatabase = db, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
+          enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = TRUE
+        )
+        elements <- names(res)
+        for (i in seq_along(analyteTypes)) {
+          for (j in seq_along(elements)) {
+            all_sets[[elements[j]]][[i]] <- res[[elements[j]]]
+          }
+          all_sets$databases[[i]] <- db
+        }
     } else {
       for (i in seq_along(analyteTypes)) {
         db <- get_gmt_file(hostName, analyteTypes[i], enrichDatabase, organism, cache)
