@@ -15,31 +15,51 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList_list,
             }
         }
     }
+    all_sets <- lapply(all_sets, unlist)
     is_modified <- FALSE
     modified_links <- c("www.kegg.jp", "www.wikipathways.org")
     is_modified <- any(sapply(modified_links, function(x) any(grepl(x, enrichPathwayLink, fixed = TRUE))))
+    if (grepl("PathwayWidget", enrichPathwayLink, fixed = FALSE)) {
+        print("here")
+        enrichPathwayLink <- gsub("www.wikipathways.org/wpi/PathwayWidget.php?id=", "pathway-viewer.toolforge.org/embed/", enrichPathwayLink, fixed=TRUE) 
+    }
     if (is_modified) {
         enrichPathwayLink <- paste0(enrichPathwayLink, "?")
         for (i in seq_along(all_sets)) {
             if (sets[[i]] == "rampc") { # metabolite
-                all_genes <- unique(unlist(sapply(all_sets[[i]], function(x) geneList_list[[x]])))
-                all_genes <- simple_mapping(all_genes, "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
+                all_genes <- unique(unlist(lapply(all_sets[[i]], function(x) interestingGeneMap_list[[x]]$mapped$rampc)))
+                mapped_genes <- simple_mapping(all_genes, "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
+                mapping_table <- data.frame(mapped_genes, all_genes, stringsAsFactors = FALSE)
+                all_genes <- mapped_genes
                 for (j in seq_along(all_sets[[i]])) {
-
-                }
-                for (j in seq_along(all_sets[[i]])) {
-                    geneList <- geneList_list[[all_sets[[i]][[j]]]]
-                    hmdb_geneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
+                    print(head(geneList_list[[all_sets[[i]][[j]]]]))
+                    hmdb_geneList <- mapping_table[mapping_table$all_genes %in% geneList, ]$mapped_genes
                     interestingGeneMap <- interestingGeneMap_list[[all_sets[[i]][[j]]]]
                     if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
                         set_addition <- meta_keggMetaboliteLinkModification(enrichPathwayLink, hmdb_geneList, interestingGeneMap, hostName)
                     } else if (grepl("www.wikipathways.org", enrichPathwayLink, fixed = TRUE)) {
-                        set_addition <- meta_wikiMetaboliteLinkModification(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName)
+                        set_addition <- meta_wikiMetaboliteLinkModification(enrichMethod, hmdb_geneList, all_genes, interestingGeneMap, hostName, j)
                     }
                     enrichPathwayLink <- paste0(enrichPathwayLink, set_addition, "&")
                 }
-            } else {
+            } else { # entrezgene
 
+                all_genes <- unique(unlist(lapply(all_sets[[i]], function(x) interestingGeneMap_list[[x]]$mapped$standardId)))
+                # mapped_genes <- simple_mapping(all_genes, "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
+                # mapping_table <- data.frame(mapped_genes, all_genes, stringsAsFactors = FALSE)
+                # all_genes <- mapped_genes
+                for (j in seq_along(all_sets[[i]])) {
+                    geneList <- geneList_list[[all_sets[[i]][[j]]]]
+                    print(geneList)
+                    # hmdb_geneList <- mapping_table[mapping_table$all_genes %in% geneList, ]$mapped_genes
+                    interestingGeneMap <- interestingGeneMap_list[[all_sets[[i]][[j]]]]
+                    if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
+                        set_addition <- meta_keggLinkModification(enrichPathwayLink, geneList, interestingGeneMap, hostName)
+                    } else if (grepl("www.wikipathways.org", enrichPathwayLink, fixed = TRUE)) {
+                        set_addition <- meta_wikiLinkModification(enrichMethod, geneList, all_genes, interestingGeneMap, hostName, j)
+                    }
+                    enrichPathwayLink <- paste0(enrichPathwayLink, set_addition, "&")
+                }
             }
         }
     }
@@ -64,21 +84,50 @@ hmdb_map <- function(geneList, interestingGeneMap, hostName) {
 
 meta_wikiMetaboliteLinkModification <- function(enrichMethod, geneList, all_genes, interestingGeneMap, hostName, color_index) {
     enrichPathwayLink <- ""
-
-    not_found <- filter(geneList, function(x) {
-        !(x %in% all_genes)
-    })
+    found <- sapply(geneList, function(x) x <- gsub("hmdb:", "", x, ignore.case = TRUE))
+    not_found <- all_genes[!(geneList %in% all_genes)]
+    not_found <- sapply(not_found, function(x) x <- gsub("hmdb:", "", x, ignore.case = TRUE))
     if (enrichMethod == "ORA") {
         ora_color <- get_ora_colors(color_index)
         enrichPathwayLink <- paste0(ora_color, "=")
-        for (i in seq_along(geneList)) {
-            enrichPathwayLink <- paste0(enrichPathwayLink, "HMDB_", geneList[[i]], ",")
+        for (i in seq_along(found)) {
+            enrichPathwayLink <- paste0(enrichPathwayLink, "HMDB_", found[[i]], ",")
         }
         enrichPathwayLink <- substr(enrichPathwayLink, 1, nchar(enrichPathwayLink) - 1)
         ora_white <- get_white(color_index)
         enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
         for (i in seq_along(not_found)) {
             enrichPathwayLink <- paste0(enrichPathwayLink, "HMDB_", not_found[[i]], ",")
+        }
+    } else if (enrichMethod == "GSEA") {
+        scores <- filter(interestingGeneMap$mapped, .data$rampc %in% geneList)[["score"]]
+        maxScore <- max(scores)
+        minScore <- min(scores)
+        tmp <- getPaletteForGsea(maxScore, minScore)
+        palette <- tmp[[1]]
+        breaks <- tmp[[2]]
+        colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
+        colorStr <- paste(gsub("#", "%23", colors, fixed = TRUE), collapse = ",")
+        enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorStr)
+    }
+    return(enrichPathwayLink)
+}
+
+meta_wikiLinkModification <- function(enrichMethod, geneList, all_genes, interestingGeneMap, hostName, color_index) {
+    enrichPathwayLink <- ""
+    found <- geneList
+    not_found <- all_genes[!(geneList %in% all_genes)]
+    if (enrichMethod == "ORA") {
+        ora_color <- get_ora_colors(color_index)
+        enrichPathwayLink <- paste0(ora_color, "=")
+        for (i in seq_along(found)) {
+            enrichPathwayLink <- paste0(enrichPathwayLink, found[[i]], ",")
+        }
+        enrichPathwayLink <- substr(enrichPathwayLink, 1, nchar(enrichPathwayLink) - 1)
+        ora_white <- get_white(color_index)
+        enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
+        for (i in seq_along(not_found)) {
+            enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
         }
     } else if (enrichMethod == "GSEA") {
         scores <- filter(interestingGeneMap$mapped, .data$rampc %in% geneList)[["score"]]

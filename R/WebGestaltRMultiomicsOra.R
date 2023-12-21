@@ -172,9 +172,8 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           geneList_list[[j]] <- enrichedSigs[[j + 1]]$overlapId
         }
         enrichedSig$link <- mapply(
-          function(link, geneList_lis) metaLinkModification("ORA", link, geneList_list, interestGeneMaps, hostName),
-          enrichedSig$link,
-          geneList_list
+          function(link) metaLinkModification("ORA", link, geneList_list, interestGeneMaps, hostName),
+          enrichedSig$link
         )
       }
 

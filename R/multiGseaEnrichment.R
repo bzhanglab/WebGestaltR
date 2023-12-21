@@ -56,7 +56,6 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
     )
     insig_list <- list()
     sig_list <- list()
-    print(head(gseaRes_list))
     for (j in seq_along(gseaRes_list)) {
         print(paste0("Processing ", j, " ..."))
         gseaRes <- gseaRes_list[[j]]
