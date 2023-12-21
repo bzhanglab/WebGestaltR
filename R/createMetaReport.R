@@ -107,7 +107,8 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
                 geneSetDes <- NULL
             }
             if (!is.null(geneSetDag_list) && length(geneSetDag_list) > 0) {
-                geneSetDag <- geneSetDag_list[[i]]
+            #  geneSetDag <- geneSetDag_list[[i]]
+            geneSetDag <- NULL
             } else {
                 geneSetDag <- NULL
             }
