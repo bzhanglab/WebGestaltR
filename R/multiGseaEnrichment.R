@@ -56,13 +56,14 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
     )
     insig_list <- list()
     sig_list <- list()
+    print(head(gseaRes_list))
     for (j in seq_along(gseaRes_list)) {
         print(paste0("Processing ", j, " ..."))
         gseaRes <- gseaRes_list[[j]]
 
-        if (saveRawGseaResult) {
-            saveRDS(gseaRes, file = file.path(outputF, "rawGseaResult.rds"))
-        }
+        # if (saveRawGseaResult) {
+        #     saveRDS(gseaRes, file = file.path(outputF, "rawGseaResult.rds"))
+        # }
 
         enrichRes <- gseaRes$Enrichment_Results %>%
             mutate(geneSet = rownames(gseaRes$Enrichment_Results)) %>%
@@ -71,7 +72,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
                 leadingEdgeNum = .data$leading_edge
             )
         # TODO: handle errors
-
+        sigMethod <- "fdr"
         if (sigMethod == "fdr") {
             sig <- filter(enrichRes, .data$FDR < fdrThr)
             insig <- filter(enrichRes, .data$FDR >= fdrThr)
