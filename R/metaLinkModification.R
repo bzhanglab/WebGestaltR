@@ -56,6 +56,7 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
             }
         }
     }
+    print(enrichPathwayLink)
     return(enrichPathwayLink)
 }
 
@@ -103,6 +104,7 @@ meta_wikiMetaboliteLinkModification <- function(enrichMethod, geneList, all_gene
         colorStr <- paste(gsub("#", "%23", colors, fixed = TRUE), collapse = ",")
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorStr)
     }
+    
     return(enrichPathwayLink)
 }
 
@@ -144,7 +146,7 @@ get_ora_colors <- function(set_number, reverse = FALSE) {
     if (set_number > length(colors)) {
         colors <- c(colors, rep(colors, ceiling(set_number / length(colors)) - 1))
     }
-    return(colors[1:set_number])
+    return(colors[set_number])
 }
 
 get_white <- function(offset) {

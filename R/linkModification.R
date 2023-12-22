@@ -4,9 +4,6 @@
 #'
 #' @keywords internal
 linkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName = "https://www.webgestalt.org/") {
-    print("link modification")
-    # print(enrichPathwayLink)
-    print(interestingGeneMap$standardId)
     if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE) && (interestingGeneMap$standardId == "rampc")) {
         link <- keggMetaboliteLinkModification(enrichPathwayLink, geneList, interestingGeneMap, hostName)
         return(link)
