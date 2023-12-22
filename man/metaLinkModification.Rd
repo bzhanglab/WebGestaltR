@@ -9,7 +9,8 @@ metaLinkModification(
   enrichPathwayLink,
   geneList_list,
   interestingGeneMap_list,
-  hostName = "https://www.webgestalt.org/"
+  hostName = "https://www.webgestalt.org/",
+  geneSet
 )
 }
 \description{
