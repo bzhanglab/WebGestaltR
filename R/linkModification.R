@@ -63,6 +63,7 @@ wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, gene
 
 wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap) {
     geneMap <- interestingGeneMap$mapped
+    # print(geneMap)
     geneList <- unlist(strsplit(geneList, ";"))
     geneMap <- filter(geneMap, .data$entrezgene %in% geneList)
     enrichPathwayLink <- paste0(
@@ -105,6 +106,9 @@ simple_mapping <- function(id_list, organism, source_id, target_id, standard_id,
     mapRes <- content(response)
     mappedIds <- mapRes$mapped
     names <- c("sourceId", "targetId")
+    if (is.null(mappedIds)) {
+        return(NULL)
+    }
     mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
         x[names]
     })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)

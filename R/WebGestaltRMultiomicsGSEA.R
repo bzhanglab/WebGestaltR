@@ -73,17 +73,19 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
     insig_lists[[1]] <- NULL
     geneTables_list <- list()
     geneTables_list[[i]] <- NULL
+    enrichedSig_list <- list()
 
     ## Meta-analysis
 
     for (i in 2:(length(gseaRes$enriched) + 1)) {
         print(paste0("Processing ", i, "th list..."))
-        print((length(gseaRes$enriched) + 1))
         if (i == (length(gseaRes$enriched) + 1)) {
             print("Meta-analysis")
             i <- 1
         }
         enrichedSig <- gseaRes$enriched[[i]]
+        
+
         insig <- gseaRes$background[[i]]
         if (i == 1) {
             interestingGeneMap <- list(mapped = interestGeneMaps[[1]]$mapped, unmapped = interestGeneMaps[[1]]$unmapped, standardId = interestGeneMaps[[1]]$standardId)
@@ -130,16 +132,44 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             }
 
             enrichedSig <- enrichedSig %>% distinct(.data$geneSet, .keep_all = TRUE)
+            if (i != 1) {
+                enrichedSig_list[[i - 1]] <- enrichedSig
+            }
 
             geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
             geneTables_list[[i]] <- geneTables
-            if (organism != "others") {
+
+            if (organism != "others" && i != 1) {
                 enrichedSig$link <- mapply(
-                    function(link, geneList) linkModification("GSEA", link, geneList, interestingGeneMap),
-                    enrichedSig$link,
-                    enrichedSig$leadingEdgeId
+                function(link, geneList) linkModification("GSEA", link, geneList, interestingGeneMap, hostName),
+                enrichedSig$link,
+                enrichedSig$leadingEdgeId
                 )
+            } else if (organism != "others") {
+                idsInSet <- list()
+                for (j in seq_along(enrichedSig$geneSet)) {
+                    for (k in seq_along(enrichedSig_list)) {
+                        if (enrichedSig$geneSet[[j]] %in% enrichedSig_list[[k]]$geneSet) {
+                            idsInSet[[enrichedSig$geneSet[[j]]]] <- append(idsInSet[[enrichedSig$geneSet[[j]]]], strsplit(enrichedSig_list[[k]][enrichedSig_list[[k]]$geneSet == enrichedSig$geneSet[[j]][[1]],"leadingEdgeId"], split = ";"))
+                        }
+                    }
+                    idsInSet[[enrichedSig$geneSet[[j]]]] <- unique(unlist(idsInSet[[enrichedSig$geneSet[[j]]]]))
+                    enrichedSig$size[[j]] <- length(idsInSet[[enrichedSig$geneSet[[j]]]])
+                }
+                print(head(enrichedSig))
+                print(head(idsInSet))
+                for (k in seq_along(enrichedSig$link)) {
+                
+                enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName)
+                }
             }
+            # if (organism != "others") {
+            #     enrichedSig$link <- mapply(
+            #         function(link, geneList) linkModification("GSEA", link, geneList, interestingGeneMap),
+            #         enrichedSig$link,
+            #         enrichedSig$leadingEdgeId
+            #     )
+            # }
 
             if ("database" %in% colnames(geneSet)) {
                 # add source database for multiple databases
