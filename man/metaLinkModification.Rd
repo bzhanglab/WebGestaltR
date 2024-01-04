@@ -7,7 +7,7 @@
 metaLinkModification(
   enrichMethod,
   enrichPathwayLink,
-  geneList_list,
+  geneList,
   interestingGeneMap_list,
   hostName = "https://www.webgestalt.org/",
   geneSet
