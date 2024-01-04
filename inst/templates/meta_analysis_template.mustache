@@ -44,12 +44,13 @@ var list_data = {{{listDataJson}}};
 {{#hasGeneSetDag}}
 var dag = {{{dagJson}}};
 {{/hasGeneSetDag}}
-wgLib({
+let x = wgLib({
 	enrichDatabase: {{{enrichDatabaseJson}}},
 	organism: "{{organism}}",
 	hostName: "{{hostName}}",
 	enrichment: enrichment,
 	background: background,
+	isMeta: true,
 	geneTables: geneTables,
 	clusters: clusters,
 	{{#methodIsGsea}}
@@ -114,6 +115,7 @@ wgLib({
 		{{/methodIsGsea}}
 	}
 })
+x.set_active_tab(0)
 </script>
 </body>
 </html>
