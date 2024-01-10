@@ -51,6 +51,7 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                         set_addition <- meta_keggMetaboliteLinkModification(enrichMethod, kegg_geneList, rampc_geneList, all_genes, interestingGeneMap, hostName, j)
                         kegg_colordbs[[length(kegg_colordbs) + 1]] <- set_addition
                     } else if (grepl("toolforge.org", enrichPathwayLink, fixed = TRUE)) {
+                        
                         mapped_genes <- simple_mapping(all_genes, "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
                         if (is.null(mapped_genes)) {
                             next
@@ -89,22 +90,24 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                 }
             } else { # entrezgene
                 kegg_colordbs <- list()
+                all_genes_symbol <- unique(unlist(lapply(all_sets[[i]], function(x) interestingGeneMap_list[[x]]$mapped$geneSymbol)))
                 all_genes <- unique(unlist(lapply(all_sets[[i]], function(x) interestingGeneMap_list[[x]]$mapped$entrezgene)))
+                mapping_table <- data.frame(all_genes, all_genes_symbol, stringsAsFactors = FALSE)
                 all_genes <- all_genes[all_genes %in% geneList]
+                all_genes_symbol <- mapping_table[mapping_table$all_genes %in% all_genes, "all_genes_symbol"]
                 if (is.null(all_genes)) {
-                    next;
+                    next
                 }
                 for (j in seq_along(all_sets[[i]])) {
                     interestingGeneMap <- interestingGeneMap_list[[all_sets[[i]][[j]]]]
-                    entrez_geneList <- interestingGeneMap$mapped$entrezgene[interestingGeneMap$mapped$entrezgene %in% all_genes]
+                    entrez_geneList <- interestingGeneMap$mapped$geneSymbol[interestingGeneMap$mapped$geneSymbol %in% all_genes_symbol]
                     if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
-                        set_addition <- meta_keggLinkModification(enrichMethod, entrez_geneList, all_genes, interestingGeneMap, hostName, j)
+                        set_addition <- meta_keggLinkModification(enrichMethod, entrez_geneList, all_genes_symbol, interestingGeneMap, hostName, j)
                          kegg_colordbs[[length(kegg_colordbs) + 1]] <- set_addition
                     } else if (grepl("toolforge.org", enrichPathwayLink, fixed = TRUE)) {
-                        set_addition <- meta_wikiLinkModification(enrichMethod, entrez_geneList, all_genes, interestingGeneMap, hostName, j)
+                        set_addition <- meta_wikiLinkModification(enrichMethod, entrez_geneList, all_genes_symbol, interestingGeneMap, hostName, j)
                         enrichPathwayLink <- paste0(enrichPathwayLink, set_addition, "&")
                     }
-                    
                 }
                 if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
                     if (i == 1) {
@@ -170,7 +173,7 @@ meta_keggMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_ge
         for (i in seq_along(colors)) {
             colors[[i]] <- gsub("#", "%23", colors[[i]], fixed = TRUE)
         }
-        unique_colors = unique(colors)
+        unique_colors <- unique(colors)
         for (i in seq_along(unique_colors)) {
             color <- unique_colors[[i]]
             all_colored_genes <- found[[colors == color]]
@@ -296,13 +299,13 @@ meta_wikiLinkModification <- function(enrichMethod, geneList, all_genes, interes
         ora_color <- get_ora_colors(color_index, reverse = TRUE)
         enrichPathwayLink <- paste0(ora_color, "=")
         for (i in seq_along(found)) {
-            enrichPathwayLink <- paste0(enrichPathwayLink, "Entrez Gene_",found[[i]], ",")
+            enrichPathwayLink <- paste0(enrichPathwayLink, found[[i]], ",")
         }
         enrichPathwayLink <- substr(enrichPathwayLink, 1, nchar(enrichPathwayLink) - 1)
         ora_white <- get_white(color_index)
         enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
         for (i in seq_along(not_found)) {
-            enrichPathwayLink <- paste0(enrichPathwayLink, "Entrez Gene_", not_found[[i]], ",")
+            enrichPathwayLink <- paste0(enrichPathwayLink,not_found[[i]], ",")
         }
     } else if (enrichMethod == "GSEA") {
         scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
