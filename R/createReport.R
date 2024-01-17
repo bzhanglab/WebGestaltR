@@ -15,12 +15,14 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
     if (is.null(outputHtmlFile)) {
         outputHtmlFile <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, ".html"))
     }
-    # if hostname starts with "file://", it is used as WebGestaltReporter
-    if (startsWith(hostName, "file://")) {
-        # change back hostName for web assets and browsers will cache it.
-        hostName <- "https://www.webgestalt.org"
-    }
-
+	# if hostname starts with "file://", it is used as WebGestaltReporter
+	if (startsWith(hostName, "file://")) {
+		# change back hostName for web assets and browsers will cache it.
+		hostName <- "https://www.webgestalt.org"
+	} else if (grepl("^https?://localhost", hostName)) {
+		# Used when server is deployed locally
+		hostName <- "../.."
+	}
     numAnnoRefUserId <- NULL
     dagJson <- list()
     allEnrichedSig <- enrichedSig
