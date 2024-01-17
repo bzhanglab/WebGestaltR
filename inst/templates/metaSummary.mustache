@@ -1,0 +1,44 @@
+<div class="level">
+	<div class="level-left">
+		<div class="level-item">
+			<h4 class="title is-4 has-text-primary">Summary</h4>
+		</div>
+	</div>
+	<div class="level-right">
+		<div class="level-item">
+			<a class="button is-text" href="Project_{{projectName}}.zip" target="_blank">Result Download</a>
+		</div>
+	</div>
+</div>
+
+<section id="summary" class="summary">
+<div class="card" v-bind:class="{active: summaryShown}" >
+	<div class="card-header" v-on:click="summaryShown=!summaryShown">
+		<p class="card-header-title">Job summary</p>
+		<a href="#" class="card-header-icon">
+			<b-icon :icon="summaryShown ? 'chevron-up' : 'chevron-down'"></b-icon>
+		</a>
+	</div>
+	<div class="card-content content" v-show="summaryShown">
+		<ul id="summary-list"> {{! end of list in summaryOra or summaryGsea }}
+		<li><b>Enrichment method:</b> {{enrichMethod}}</li>
+		<li><b>Organism: </b>{{organism}}</li>
+		{{#enrichDatabaseInfo}}
+		<li>
+			{{#isBuiltIn}}
+				<b>Enrichment Categories: </b>{{enrichDatabase}}
+				<a class="has-text-info" href="{{hostName}}/api/geneset?organism={{organism}}&database={{enrichDatabase}}&fileType=gmt">
+					<b-icon icon="download" size="is-small"></b-icon>
+				</a>
+			{{/isBuiltIn}}
+			{{^isBuiltIn}}
+				<b>Enrichment Categories: </b>{{enrichDatabaseFile}} <b>ID Type: </b>{{enrichDatabaseType}}{{#hasEnrichDatabaseDescriptioFile}} <b>Description File: </b>{{enrichDatabaseDescriptionFile}}{{/hasEnrichDatabaseDescriptioFile}}
+			{{/isBuiltIn}}
+		</li>
+		{{/enrichDatabaseInfo}}
+
+		<li><b>Number of lists:</b> {{listCount}}</li>
+		{{{methodSpecificContent}}}
+	</div>
+</div>
+</section>

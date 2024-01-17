@@ -4,7 +4,13 @@
 \alias{linkModification}
 \title{Modify the link to highlight the genes in the pathways}
 \usage{
-linkModification(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap)
+linkModification(
+  enrichMethod,
+  enrichPathwayLink,
+  geneList,
+  interestingGeneMap,
+  hostName = "https://www.webgestalt.org/"
+)
 }
 \description{
 Currently, we only have wikipathway and kegg pathways that need to modify the link

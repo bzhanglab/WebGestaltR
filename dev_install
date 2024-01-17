@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+echo "Updating rust dependencies"
+(
+	cd src/rust || exit
+	cargo update
+)
+echo "Removing old version"
+R -e "library(utils)
+remove.packages('WebGestaltR')
+q()"
+echo "Old version removed"
+R -e "library(devtools)
+rextendr::document()
+install('.')
+q()"
+echo "New version installed"

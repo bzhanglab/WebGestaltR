@@ -14,9 +14,10 @@ NULL
 
 
 .onAttach <- function(lib, pkg) {
-	packageStartupMessage("******************************************\n")
-	packageStartupMessage("*                                        *\n")
-	packageStartupMessage("*          Welcome to WebGestaltR !      *\n")
-	packageStartupMessage("*                                        *\n")
-	packageStartupMessage("******************************************\n")
+  packageStartupMessage("******************************************")
+  packageStartupMessage("*                                        *")
+  packageStartupMessage("*       Welcome to WebGestaltR-rust!     *")
+  packageStartupMessage("*                                        *")
+  packageStartupMessage("*                                        *")
+  packageStartupMessage("******************************************")
 }

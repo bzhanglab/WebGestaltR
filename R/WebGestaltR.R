@@ -50,6 +50,7 @@
 #' @param interestGeneType The ID type of the interesting gene list. The supported ID types of
 #'   WebGestaltR for the selected organism can be found by the function \code{listIdType}. If
 #'   the \code{organism} is \code{others}, users do not need to set this parameter.
+#' @param interestGeneNames The names of the id lists for multiomics data.
 #' @param collapseMethod The method to collapse duplicate IDs with scores. \code{mean},
 #'   \code{median}, \code{min} and \code{max} represent the mean, median, minimum and maximum
 #'   of scores for the duplicate IDs.
@@ -128,6 +129,10 @@
 #' @param nThreads The number of cores to use for GSEA and set cover, and in batch function.
 #' @param cache A directory to save data cache for reuse. Defaults to \code{NULL} and disabled.
 #' @param hostName The server URL for accessing data. Mostly for development purposes.
+#' @param useWeightedSetCover Use weighted set cover for ORA. Defaults to \code{TRUE}.
+#' @param useAffinityPropagation Use affinity propagation for ORA. Defaults to \code{FALSE}.
+#' @param usekMedoid Use k-medoid for ORA. Defaults to \code{TRUE}.
+#' @param kMedoid_k The number of clusters for k-medoid. Defaults to \code{25}.
 #' @param ... In batch function, passes parameters to WebGestaltR function.
 #'   Also handles backward compatibility for some parameters in old versions.
 #'
@@ -168,73 +173,86 @@
 #' @examples
 #' \dontrun{
 #' ####### ORA example #########
-#' geneFile <- system.file("extdata", "interestingGenes.txt", package="WebGestaltR")
-#' refFile <- system.file("extdata", "referenceGenes.txt", package="WebGestaltR")
+#' geneFile <- system.file("extdata", "interestingGenes.txt", package = "WebGestaltR")
+#' refFile <- system.file("extdata", "referenceGenes.txt", package = "WebGestaltR")
 #' outputDirectory <- getwd()
-#' enrichResult <- WebGestaltR(enrichMethod="ORA", organism="hsapiens",
-#'   enrichDatabase="pathway_KEGG", interestGeneFile=geneFile,
-#'   interestGeneType="genesymbol", referenceGeneFile=refFile,
-#'   referenceGeneType="genesymbol", isOutput=TRUE,
-#'   outputDirectory=outputDirectory, projectName=NULL)
+#' enrichResult <- WebGestaltR(
+#'   enrichMethod = "ORA", organism = "hsapiens",
+#'   enrichDatabase = "pathway_KEGG", interestGeneFile = geneFile,
+#'   interestGeneType = "genesymbol", referenceGeneFile = refFile,
+#'   referenceGeneType = "genesymbol", isOutput = TRUE,
+#'   outputDirectory = outputDirectory, projectName = NULL
+#' )
 #'
 #' ####### GSEA example #########
-#' rankFile <- system.file("extdata", "GeneRankList.rnk", package="WebGestaltR")
+#' rankFile <- system.file("extdata", "GeneRankList.rnk", package = "WebGestaltR")
 #' outputDirectory <- getwd()
-#' enrichResult <- WebGestaltR(enrichMethod="GSEA", organism="hsapiens",
-#'   enrichDatabase="pathway_KEGG", interestGeneFile=rankFile,
-#'   interestGeneType="genesymbol", sigMethod="top", topThr=10, minNum=5,
-#'   outputDirectory=outputDirectory)
+#' enrichResult <- WebGestaltR(
+#'   enrichMethod = "GSEA", organism = "hsapiens",
+#'   enrichDatabase = "pathway_KEGG", interestGeneFile = rankFile,
+#'   interestGeneType = "genesymbol", sigMethod = "top", topThr = 10, minNum = 5,
+#'   outputDirectory = outputDirectory
+#' )
 #'
 #' ####### NTA example #########
-#' enrichResult <- WebGestaltR(enrichMethod="NTA", organism="hsapiens",
-#'   enrichDatabase="network_PPI_BIOGRID", interestGeneFile=geneFile,
-#'   interestGeneType="genesymbol", sigMethod="top", topThr=10,
-#'   outputDirectory=getwd(), highlightSeedNum=10,
-#'   networkConstructionMethod="Network_Retrieval_Prioritization")
+#' enrichResult <- WebGestaltR(
+#'   enrichMethod = "NTA", organism = "hsapiens",
+#'   enrichDatabase = "network_PPI_BIOGRID", interestGeneFile = geneFile,
+#'   interestGeneType = "genesymbol", sigMethod = "top", topThr = 10,
+#'   outputDirectory = getwd(), highlightSeedNum = 10,
+#'   networkConstructionMethod = "Network_Retrieval_Prioritization"
+#' )
 #' }
 #'
-WebGestaltR <- function(enrichMethod="ORA", organism="hsapiens", enrichDatabase=NULL, enrichDatabaseFile=NULL, enrichDatabaseType=NULL, enrichDatabaseDescriptionFile=NULL, interestGeneFile=NULL, interestGene=NULL, interestGeneType=NULL, collapseMethod="mean", referenceGeneFile=NULL, referenceGene=NULL, referenceGeneType=NULL, referenceSet=NULL, minNum=10, maxNum=500, sigMethod="fdr", fdrMethod="BH", fdrThr=0.05, topThr=10, reportNum=20, perNum=1000, gseaP=1, isOutput=TRUE, outputDirectory=getwd(), projectName=NULL, dagColor="continuous", saveRawGseaResult=FALSE, gseaPlotFormat=c("png", "svg"), setCoverNum=10, networkConstructionMethod=NULL, neighborNum=10, highlightType="Seeds", highlightSeedNum=10, nThreads=1, cache=NULL, hostName="https://www.webgestalt.org/", ...) {
-	extraArgs <- list(...)
-	if ('keepGSEAFolder' %in% names(extraArgs) | 'keepGseaFolder' %in% names(extraArgs)) {
-		warning("Parameter keepGSEAFolder is obsolete.\n")
-	}
-	if ('is.output' %in% names(extraArgs)) {
-		isOutput <- extraArgs$is.output
-		warning("Parameter is.output is deprecated and changed to isOutput!\n")
-		warning("Column names of the result data frame are modified.")
-	}
-	if ('methodType' %in% names(extraArgs)) {
-		warning("Parameter methodType is obsolete.\n")
-	}
-	if ('lNum' %in% names(extraArgs)) {
-		warning("Parameter lNum is obsolete.\n")
-	}
-	if ('dNum' %in% names(extraArgs)) {
-		warning("Parameter dNum is deprecated and changed to reportNum.\n")
-		reportNum <- extraArgs$dNum
-	}
+WebGestaltR <- function(enrichMethod = "ORA", organism = "hsapiens", enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL,
+                        enrichDatabaseDescriptionFile = NULL, interestGeneFile = NULL, interestGene = NULL, interestGeneType = NULL,
+                        interestGeneNames = NULL, collapseMethod = "mean", referenceGeneFile = NULL, referenceGene = NULL, referenceGeneType = NULL,
+                        referenceSet = NULL, minNum = 10, maxNum = 500, sigMethod = "fdr", fdrMethod = "BH", fdrThr = 0.05, topThr = 10, reportNum = 20,
+                        perNum = 1000, gseaP = 1, isOutput = TRUE, outputDirectory = getwd(), projectName = NULL, dagColor = "continuous",
+                        saveRawGseaResult = FALSE, gseaPlotFormat = c("png", "svg"), setCoverNum = 10, networkConstructionMethod = NULL,
+                        neighborNum = 10, highlightType = "Seeds", highlightSeedNum = 10, nThreads = 1, cache = NULL,
+                        hostName = "https://www.webgestalt.org/", useWeightedSetCover = FALSE, useAffinityPropagation = FALSE,
+                        usekMedoid = TRUE, kMedoid_k = 25, ...) {
+  extraArgs <- list(...)
+  if ("keepGSEAFolder" %in% names(extraArgs) | "keepGseaFolder" %in% names(extraArgs)) {
+    warning("Parameter keepGSEAFolder is obsolete.\n")
+  }
+  if ("is.output" %in% names(extraArgs)) {
+    isOutput <- extraArgs$is.output
+    warning("Parameter is.output is deprecated and changed to isOutput!\n")
+    warning("Column names of the result data frame are modified.")
+  }
+  if ("methodType" %in% names(extraArgs)) {
+    warning("Parameter methodType is obsolete.\n")
+  }
+  if ("lNum" %in% names(extraArgs)) {
+    warning("Parameter lNum is obsolete.\n")
+  }
+  if ("dNum" %in% names(extraArgs)) {
+    warning("Parameter dNum is deprecated and changed to reportNum.\n")
+    reportNum <- extraArgs$dNum
+  }
 
-	if (!is.null(cache)) {
-		cat("Use cache data if available.\n")
-	}
+  if (!is.null(cache)) {
+    cat("Use cache data if available.\n")
+  }
 
-	## TODO: add para test for NTA
-	errorTest <- parameterErrorMessage(enrichMethod=enrichMethod, organism=organism, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, perNum=perNum, isOutput=isOutput, outputDirectory=outputDirectory, dagColor=dagColor, hostName=hostName, cache=cache)
-	if(!is.null(errorTest)){
-		return(errorTest)
-	}
+  ## TODO: add para test for NTA
+  errorTest <- parameterErrorMessage(enrichMethod = enrichMethod, organism = organism, collapseMethod = collapseMethod, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, perNum = perNum, isOutput = isOutput, outputDirectory = outputDirectory, dagColor = dagColor, hostName = hostName, cache = cache)
+  if (!is.null(errorTest)) {
+    return(errorTest)
+  }
 
-	if(is.null(projectName)){
-		projectName <- as.character(as.integer(Sys.time()))
-	}
-	projectName <- sanitizeFileName(projectName) # use for GOSlim summary file name, convert punct to _
-	if (enrichMethod == "ORA") {
-		enrichR <- WebGestaltROra(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,  interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, referenceGeneFile=referenceGeneFile, referenceGene=referenceGene, referenceGeneType=referenceGeneType, referenceSet=referenceSet, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectName, dagColor=dagColor, nThreads=nThreads, cache=cache, hostName=hostName)
-	} else if (enrichMethod == "GSEA") {
-		enrichR <- WebGestaltRGsea(organism=organism, enrichDatabase=enrichDatabase, enrichDatabaseFile=enrichDatabaseFile, enrichDatabaseType=enrichDatabaseType, enrichDatabaseDescriptionFile=enrichDatabaseDescriptionFile,  interestGeneFile=interestGeneFile, interestGene=interestGene, interestGeneType=interestGeneType, collapseMethod=collapseMethod, minNum=minNum, maxNum=maxNum, fdrMethod=fdrMethod, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, reportNum=reportNum, setCoverNum=setCoverNum, perNum=perNum, p=gseaP, isOutput=isOutput, outputDirectory=outputDirectory, projectName=projectName, dagColor=dagColor, saveRawGseaResult=saveRawGseaResult, plotFormat=gseaPlotFormat, nThreads=nThreads, cache=cache, hostName=hostName)
-	} else if (enrichMethod == "NTA") {
-		enrichR <- WebGestaltRNta(organism=organism, network=enrichDatabase, method=networkConstructionMethod, neighborNum=neighborNum, highlightSeedNum=highlightSeedNum, inputSeed=interestGene, inputSeedFile=interestGeneFile, interestGeneType=interestGeneType, sigMethod=sigMethod, fdrThr=fdrThr, topThr=topThr, outputDirectory=outputDirectory, projectName=projectName, highlightType=highlightType, cache=cache, hostName=hostName)
-	}
-
-	return(enrichR)
+  if (is.null(projectName)) {
+    projectName <- as.character(as.integer(Sys.time()))
+  }
+  projectName <- sanitizeFileName(projectName) # use for GOSlim summary file name, convert punct to _
+  if (enrichMethod == "ORA") {
+    enrichR <- WebGestaltROra(organism = organism, enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType, enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, interestGeneFile = interestGeneFile, interestGene = interestGene, interestGeneType = interestGeneType, collapseMethod = collapseMethod, referenceGeneFile = referenceGeneFile, referenceGene = referenceGene, referenceGeneType = referenceGeneType, referenceSet = referenceSet, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, setCoverNum = setCoverNum, isOutput = isOutput, outputDirectory = outputDirectory, projectName = projectName, dagColor = dagColor, nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k)
+  } else if (enrichMethod == "GSEA") {
+    enrichR <- WebGestaltRGsea(organism = organism, enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType, enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, interestGeneFile = interestGeneFile, interestGene = interestGene, interestGeneType = interestGeneType, collapseMethod = collapseMethod, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, setCoverNum = setCoverNum, perNum = perNum, p = gseaP, isOutput = isOutput, outputDirectory = outputDirectory, projectName = projectName, dagColor = dagColor, saveRawGseaResult = saveRawGseaResult, plotFormat = gseaPlotFormat, nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k)
+  } else if (enrichMethod == "NTA") {
+    enrichR <- WebGestaltRNta(organism = organism, network = enrichDatabase, method = networkConstructionMethod, neighborNum = neighborNum, highlightSeedNum = highlightSeedNum, inputSeed = interestGene, inputSeedFile = interestGeneFile, interestGeneType = interestGeneType, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, outputDirectory = outputDirectory, projectName = projectName, highlightType = highlightType, cache = cache, hostName = hostName)
+  }
+  return(enrichR)
 }

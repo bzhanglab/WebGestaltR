@@ -11,7 +11,8 @@ loadGeneSet(
   enrichDatabaseType = NULL,
   enrichDatabaseDescriptionFile = NULL,
   cache = NULL,
-  hostName = "https://www.webgestalt.org/"
+  hostName = "https://www.webgestalt.org/",
+  isMultiOmics = FALSE
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ column is the description of the category. All columns are separated by tabs.}
 \item{cache}{A directory to save data cache for reuse. Defaults to \code{NULL} and disabled.}
 
 \item{hostName}{The server URL for accessing data. Mostly for development purposes.}
+
+\item{isMultiOmics}{Boolean if loading gene sets for multiomics. Defaults to \code{FALSE}.}
 }
 \value{
 A list of \code{geneSet}, \code{geneSetDes}, \code{geneSetDag}, \code{geneSetNet}, \code{standardId}.
