@@ -9,7 +9,7 @@ use webgestalt_lib::{
     methods::gsea::{GSEAConfig, RankListItem},
     methods::{
         gsea::GSEAResult,
-        multiomics::{multiomic_gsea, multiomic_ora, GSEAJob, ORAJob},
+        multilist::{multilist_gsea, multilist_ora, GSEAJob, ORAJob},
         ora::{get_ora, ORAConfig, ORAResult},
     },
     readers::utils::Item,
@@ -185,7 +185,7 @@ pub fn rust_multiomics_ora(
         };
         jobs.push(job)
     }
-    let res: Vec<Vec<ORAResult>> = multiomic_ora(jobs, method);
+    let res: Vec<Vec<ORAResult>> = multilist_ora(jobs, method, webgestalt_lib::stat::AdjustmentMethod::None);
     let mut all_res: Vec<List> = Vec::new();
     for analysis in res {
         let mut p: Vec<f64> = Vec::new();
@@ -339,15 +339,15 @@ pub fn rust_multiomics_gsea(
         }
     } else {
         let norm = match method_modifier.as_str().unwrap() {
-            "mean" => webgestalt_lib::methods::multiomics::NormalizationMethod::MeanValue,
-            "median" => webgestalt_lib::methods::multiomics::NormalizationMethod::MedianValue,
-            "rank" => webgestalt_lib::methods::multiomics::NormalizationMethod::MedianRank,
-            _ => webgestalt_lib::methods::multiomics::NormalizationMethod::None,
+            "mean" => webgestalt_lib::methods::multilist::NormalizationMethod::MeanValue,
+            "median" => webgestalt_lib::methods::multilist::NormalizationMethod::MedianValue,
+            "rank" => webgestalt_lib::methods::multilist::NormalizationMethod::MedianRank,
+            _ => webgestalt_lib::methods::multilist::NormalizationMethod::None,
         };
         match combo_method.as_str().unwrap() {
-            "max" => webgestalt_lib::methods::multiomics::MultiOmicsMethod::Max(norm),
-            "mean" => webgestalt_lib::methods::multiomics::MultiOmicsMethod::Mean(norm),
-            _ => webgestalt_lib::methods::multiomics::MultiOmicsMethod::Mean(norm),
+            "max" => webgestalt_lib::methods::multilist::MultiListMethod::Max(norm),
+            "mean" => webgestalt_lib::methods::multilist::MultiListMethod::Mean(norm),
+            _ => webgestalt_lib::methods::multilist::MultiListMethod::Mean(norm),
         }
     };
     let mut gmt: Vec<Item> = Vec::new();
@@ -384,7 +384,7 @@ pub fn rust_multiomics_gsea(
         };
         jobs.push(job);
     }
-    let res: Vec<Vec<GSEAResult>> = multiomic_gsea(jobs, method);
+    let res: Vec<Vec<GSEAResult>> = multilist_gsea(jobs, method, webgestalt_lib::stat::AdjustmentMethod::None);
     let mut all_res: Vec<List> = Vec::new();
     for analysis in res {
         let mut fdr: Vec<f64> = Vec::new();
