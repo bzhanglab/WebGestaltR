@@ -147,11 +147,11 @@ pub fn rust_multiomics_ora(
     let parts = big_part_vec.as_list().unwrap();
     let reference_lists = reference.as_list().unwrap();
     let method = match method.as_str().unwrap() {
-        "fisher" => webgestalt_lib::methods::multiomics::MultiOmicsMethod::Meta(
-            webgestalt_lib::methods::multiomics::MetaAnalysisMethod::Fisher,
+        "fisher" => webgestalt_lib::methods::multilist::MultiListMethod::Meta(
+            webgestalt_lib::methods::multilist::MetaAnalysisMethod::Fisher,
         ),
-        _ => webgestalt_lib::methods::multiomics::MultiOmicsMethod::Meta(
-            webgestalt_lib::methods::multiomics::MetaAnalysisMethod::Stouffer,
+        _ => webgestalt_lib::methods::multilist::MultiListMethod::Meta(
+            webgestalt_lib::methods::multilist::MetaAnalysisMethod::Stouffer,
         ),
     };
     let interest_vec = interest.as_list().unwrap();
@@ -330,11 +330,11 @@ pub fn rust_multiomics_gsea(
     };
     let method = if combo_method.as_str().unwrap() == "meta" {
         match method_modifier.as_str().unwrap() {
-            "fisher" => webgestalt_lib::methods::multiomics::MultiOmicsMethod::Meta(
-                webgestalt_lib::methods::multiomics::MetaAnalysisMethod::Fisher,
+            "fisher" => webgestalt_lib::methods::multilist::MultiListMethod::Meta(
+                webgestalt_lib::methods::multilist::MetaAnalysisMethod::Fisher,
             ),
-            _ => webgestalt_lib::methods::multiomics::MultiOmicsMethod::Meta(
-                webgestalt_lib::methods::multiomics::MetaAnalysisMethod::Stouffer,
+            _ => webgestalt_lib::methods::multilist::MultiListMethod::Meta(
+                webgestalt_lib::methods::multilist::MetaAnalysisMethod::Stouffer,
             ),
         }
     } else {
