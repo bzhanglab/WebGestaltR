@@ -4,9 +4,6 @@
 #'
 #' @keywords internal
 metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap_list, hostName = "https://www.webgestalt.org/", geneSet) {
-    if (enrichMethod == "GSEA") {
-        return(enrichPathwayLink)
-    }
     list_standard_ids <- sapply(interestingGeneMap_list, function(x) x$standardId)
     sets <- unique(list_standard_ids)
     all_sets <- list()
@@ -208,32 +205,38 @@ meta_keggLinkModification <- function(enrichMethod, geneList, all_genes, interes
         }
         color_db$analyte <- unlist(color_db$analyte)
         color_db$color <- unlist(color_db$color)
-    } 
-    # else if (enrichMethod == "GSEA") {
-    #     # scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% rampc_geneList)[["score"]]
-    #     maxScore <- max(scores)
-    #     minScore <- min(scores)
-    #     tmp <- getPaletteForGsea(maxScore, minScore)
-    #     palette <- tmp[[1]]
-    #     palette <- shift_colors(palette, color_index)
-    #     breaks <- tmp[[2]]
-    #     colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
-    #     for (i in seq_along(colors)) {
-    #         colors[[i]] <- gsub("#", "%23", colors[[i]], fixed = TRUE)
-    #     }
-    #     unique_colors = unique(colors)
-    #     for (i in seq_along(unique_colors)) {
-    #         color <- unique_colors[[i]]
-    #         all_colored_genes <- found[[colors == color]]
-    #         all_colored_genes <- paste(all_colored_genes, collapse = ",")
-    #         enrichPathwayLink <- paste0(enrichPathwayLink, "&", color, "=", all_colored_genes)
-    #     }
-    #     ora_white <- get_white(color_index)
-    #     enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
-    #     for (i in seq_along(not_found)) {
-    #         enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
-    #     }
-    # }
+    } else if (enrichMethod == "GSEA") {
+        scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
+        maxScore <- max(scores)
+        minScore <- min(scores)
+        print(paste0("maxScore: ", maxScore, " minScore: ", minScore))
+        tmp <- getPaletteForGsea(maxScore, minScore)
+        palette <- tmp[[1]]
+        palette <- shift_colors(palette, color_index)
+        breaks <- tmp[[2]]
+        colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
+        for (i in seq_along(colors)) {
+            colors[[i]] <- gsub("#", "%23", colors[[i]], fixed = TRUE)
+        }
+        unique_colors <- unique(colors)
+        for (i in seq_along(found)) {
+            color <- colors[[i]]
+            color_db$analyte[[i]] <- found[[i]]
+            color_db$color[[i]] <- color
+        }
+        # for (i in seq_along(unique_colors)) {
+        #     color <- unique_colors[[i]]
+        #     all_colored_genes <- found[[colors == color]]
+        #     all_colored_genes <- paste(all_colored_genes, collapse = ",")
+        #     enrichPathwayLink <- paste0(enrichPathwayLink, "&", color, "=", all_colored_genes)
+        # }
+        ora_white <- get_white(color_index)
+        # enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
+        for (i in seq_along(not_found)) {
+            color_db$analyte[[i + length(found)]] <- not_found[[i]]
+            color_db$color[[i + length(found)]] <- ora_white
+        }
+    }
     return(color_db)
 }
 
