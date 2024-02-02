@@ -20,10 +20,10 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
     modified_links <- c("www.kegg.jp", "www.wikipathways.org")
     is_modified <- any(sapply(modified_links, function(x) any(grepl(x, enrichPathwayLink, fixed = TRUE))))
     if (grepl("PathwayWidget", enrichPathwayLink, fixed = FALSE)) {
-        enrichPathwayLink <- gsub("www.wikipathways.org/wpi/PathwayWidget.php?id=", "pathway-viewer.toolforge.org/embed/", enrichPathwayLink, fixed=TRUE)
+        enrichPathwayLink <- gsub("www.wikipathways.org/wpi/PathwayWidget.php?id=", "pathway-viewer.toolforge.org/embed/", enrichPathwayLink, fixed = TRUE)
         enrichPathwayLink <- paste0(enrichPathwayLink, "?")
     } else if (grepl("kegg.jp", enrichPathwayLink, fixed = TRUE)) {
-            enrichPathwayLink <- gsub("show_pathway?", "show_pathway?map=", enrichPathwayLink, fixed=TRUE)
+        enrichPathwayLink <- gsub("show_pathway?", "show_pathway?map=", enrichPathwayLink, fixed = TRUE)
     }
     if (is_modified) {
         for (i in seq_along(all_sets)) {
@@ -48,7 +48,6 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                         set_addition <- meta_keggMetaboliteLinkModification(enrichMethod, kegg_geneList, rampc_geneList, all_genes, interestingGeneMap, hostName, j)
                         kegg_colordbs[[length(kegg_colordbs) + 1]] <- set_addition
                     } else if (grepl("toolforge.org", enrichPathwayLink, fixed = TRUE)) {
-                        
                         mapped_genes <- simple_mapping(all_genes, "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
                         if (is.null(mapped_genes)) {
                             next
@@ -76,12 +75,12 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                                 color_string <- paste0(color_string, "+", color)
                             }
                         }
-                        split_string <- "%0A"
+                        split_string <- "%0d%0a"
                         if (j == 1) {
                             split_string <- ""
                         }
                         if (color_string != "") {
-                            enrichPathwayLink <- paste0(enrichPathwayLink, gene, "+", color_string, split_string)
+                            enrichPathwayLink <- paste0(enrichPathwayLink, gene, color_string, split_string)
                         }
                     }
                 }
@@ -100,7 +99,7 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                     entrez_geneList <- interestingGeneMap$mapped$geneSymbol[interestingGeneMap$mapped$geneSymbol %in% all_genes_symbol]
                     if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
                         set_addition <- meta_keggLinkModification(enrichMethod, entrez_geneList, all_genes_symbol, interestingGeneMap, hostName, j)
-                         kegg_colordbs[[length(kegg_colordbs) + 1]] <- set_addition
+                        kegg_colordbs[[length(kegg_colordbs) + 1]] <- set_addition
                     } else if (grepl("toolforge.org", enrichPathwayLink, fixed = TRUE)) {
                         set_addition <- meta_wikiLinkModification(enrichMethod, entrez_geneList, all_genes_symbol, interestingGeneMap, hostName, j)
                         enrichPathwayLink <- paste0(enrichPathwayLink, set_addition, "&")
@@ -111,23 +110,24 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                         enrichPathwayLink <- paste0(enrichPathwayLink, "&multi_query=")
                     }
                     for (j in seq_along(all_genes)) {
-                        gene <- all_genes[[j]]
+                        gene <- all_genes_symbol[[j]]
                         color_string <- ""
                         for (k in seq_along(kegg_colordbs)) {
                             color_db <- kegg_colordbs[[k]]
                             if (gene %in% color_db$analyte) {
-                                 color <- unique(unlist(color_db$color[color_db$analyte == gene]))
+                                color <- unique(unlist(color_db$color[color_db$analyte == gene]))
                                 color <- color[1]
                                 color <- gsub("#", "%23", color, fixed = TRUE)
                                 color_string <- paste0(color_string, "+", color)
                             }
                         }
-                        split_string <- "%0A"
+                        split_string <- "%0d%0a"
                         if (j == 1) {
                             split_string <- ""
                         }
                         if (color_string != "") {
-                            enrichPathwayLink <- paste0(enrichPathwayLink, gene, "+", color_string, split_string)
+                            entrez_gene <- mapping_table[mapping_table$all_genes_symbol == gene, "all_genes"]
+                            enrichPathwayLink <- paste0(enrichPathwayLink, entrez_gene, color_string, split_string)
                         }
                     }
                 }
@@ -139,7 +139,7 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
 
 
 meta_keggMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_geneList, all_genes, interestingGeneMap, hostName, color_index) {
-     enrichPathwayLink <- ""
+    enrichPathwayLink <- ""
     found <- sapply(geneList, function(x) x <- gsub("kegg:", "", x, ignore.case = TRUE))
     not_found <- all_genes[!(all_genes %in% geneList)]
     not_found <- sapply(not_found, function(x) x <- gsub("kegg:", "", x, ignore.case = TRUE))
@@ -206,36 +206,35 @@ meta_keggLinkModification <- function(enrichMethod, geneList, all_genes, interes
         color_db$analyte <- unlist(color_db$analyte)
         color_db$color <- unlist(color_db$color)
     } else if (enrichMethod == "GSEA") {
-        scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
-        maxScore <- max(scores)
-        minScore <- min(scores)
-        print(paste0("maxScore: ", maxScore, " minScore: ", minScore))
-        tmp <- getPaletteForGsea(maxScore, minScore)
-        palette <- tmp[[1]]
-        palette <- shift_colors(palette, color_index)
-        breaks <- tmp[[2]]
-        colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
-        for (i in seq_along(colors)) {
-            colors[[i]] <- gsub("#", "%23", colors[[i]], fixed = TRUE)
-        }
-        unique_colors <- unique(colors)
+        scores <- list()
         for (i in seq_along(found)) {
-            color <- colors[[i]]
-            color_db$analyte[[i]] <- found[[i]]
-            color_db$color[[i]] <- color
+            scores[[i]] <- interestingGeneMap$mapped[interestingGeneMap$mapped$geneSymbol == found[[i]], "score"]
         }
-        # for (i in seq_along(unique_colors)) {
-        #     color <- unique_colors[[i]]
-        #     all_colored_genes <- found[[colors == color]]
-        #     all_colored_genes <- paste(all_colored_genes, collapse = ",")
-        #     enrichPathwayLink <- paste0(enrichPathwayLink, "&", color, "=", all_colored_genes)
-        # }
+        scores <- unlist(scores)
+        if (length(unlist(scores)) != 0) {
+            maxScore <- max(unlist(scores))
+            minScore <- min(unlist(scores))
+            tmp <- getPaletteForGsea(maxScore, minScore)
+            palette <- tmp[[1]]
+            palette <- shift_colors(palette, color_index)
+            breaks <- tmp[[2]]
+            colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
+            for (i in seq_along(colors)) {
+                colors[[i]] <- gsub("#", "%23", colors[[i]], fixed = TRUE)
+            }
+            for (i in seq_along(found)) {
+                color <- colors[[i]]
+                color_db$analyte[[i]] <- found[[i]]
+                color_db$color[[i]] <- color
+            }
+        }
         ora_white <- get_white(color_index)
-        # enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
         for (i in seq_along(not_found)) {
             color_db$analyte[[i + length(found)]] <- not_found[[i]]
             color_db$color[[i + length(found)]] <- ora_white
         }
+        color_db$analyte <- unlist(color_db$analyte)
+        color_db$color <- unlist(color_db$color)
     }
     return(color_db)
 }
@@ -277,7 +276,7 @@ meta_wikiMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_ge
         for (i in seq_along(colors)) {
             colors[[i]] <- gsub("#", "%23", colors[[i]], fixed = TRUE)
         }
-        unique_colors = unique(colors)
+        unique_colors <- unique(colors)
         for (i in seq_along(unique_colors)) {
             color <- unique_colors[[i]]
             all_colored_genes <- found[[colors == color]]
@@ -290,7 +289,7 @@ meta_wikiMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_ge
             enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
         }
     }
-    
+
     return(enrichPathwayLink)
 }
 
@@ -308,7 +307,7 @@ meta_wikiLinkModification <- function(enrichMethod, geneList, all_genes, interes
         ora_white <- get_white(color_index)
         enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
         for (i in seq_along(not_found)) {
-            enrichPathwayLink <- paste0(enrichPathwayLink,not_found[[i]], ",")
+            enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
         }
     } else if (enrichMethod == "GSEA") {
         scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
@@ -322,7 +321,7 @@ meta_wikiLinkModification <- function(enrichMethod, geneList, all_genes, interes
         for (i in seq_along(colors)) {
             colors[[i]] <- gsub("#", "%23", colors[[i]], fixed = TRUE)
         }
-        unique_colors = unique(colors)
+        unique_colors <- unique(colors)
         for (i in seq_along(unique_colors)) {
             color <- unique_colors[[i]]
             all_colored_genes <- found[[colors == color]]

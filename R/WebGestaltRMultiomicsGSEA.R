@@ -156,21 +156,10 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                     idsInSet[[enrichedSig$geneSet[[j]]]] <- unique(unlist(idsInSet[[enrichedSig$geneSet[[j]]]]))
                     enrichedSig$size[[j]] <- length(idsInSet[[enrichedSig$geneSet[[j]]]])
                 }
-                print(head(enrichedSig))
-                print(head(idsInSet))
                 for (k in seq_along(enrichedSig$link)) {
-                
                 enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName)
                 }
             }
-            # if (organism != "others") {
-            #     enrichedSig$link <- mapply(
-            #         function(link, geneList) linkModification("GSEA", link, geneList, interestingGeneMap),
-            #         enrichedSig$link,
-            #         enrichedSig$leadingEdgeId
-            #     )
-            # }
-
             if ("database" %in% colnames(geneSet)) {
                 # add source database for multiple databases
                 enrichedSig <- enrichedSig %>% left_join(unique(geneSet[, c("geneSet", "database")]), by = "geneSet")
