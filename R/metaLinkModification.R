@@ -30,31 +30,39 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
             if (sets[[i]] == "rampc") { # metabolite
                 kegg_colordbs <- list()
                 all_genes <- unique(unlist(lapply(all_sets[[i]], function(x) interestingGeneMap_list[[x]]$mapped$rampc)))
+                print("all_genes")
+                print(all_genes)
                 all_genes <- all_genes[all_genes %in% geneList]
                 if (is.null(all_genes) || length(all_genes) == 0) {
                     next
                 }
+                if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
+                    mapping_table <- full_simple_mapping(all_genes, "hsapiens", "rampc", "kegg", "rampc", hostName, no_dups = TRUE)
+                    colnames(mapping_table) <- c("all_genes", "mapped_genes")
+                } else if (grepl("toolforge.org", enrichPathwayLink, fixed = TRUE)) {
+                    mapping_table <- full_simple_mapping(all_genes, "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
+                    colnames(mapping_table) <- c("all_genes", "mapped_genes")
+                }
+                if (is.null(mapping_table$mapped_genes)) {
+                    next
+                }
                 for (j in seq_along(all_sets[[i]])) {
                     interestingGeneMap <- interestingGeneMap_list[[all_sets[[i]][[j]]]]
-                    rampc_geneList <- interestingGeneMap$mapped$rampc[interestingGeneMap$mapped$rampc %in% all_genes]
-                    interestingGeneMap <- interestingGeneMap_list[[all_sets[[i]][[j]]]]
+                    rampc_geneList <- interestingGeneMap$mapped$rampc[interestingGeneMap$mapped$rampc %in% mapping_table$all_genes]
                     if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
-                        mapped_genes <- simple_mapping(all_genes, "hsapiens", "rampc", "kegg", "rampc", hostName, no_dups = TRUE)
-                        if (is.null(mapped_genes)) {
+                        if (is.null(mapping_table$mapped_genes)) {
                             next
                         }
-                        mapping_table <- data.frame(mapped_genes, all_genes, stringsAsFactors = FALSE)
-                        kegg_geneList <- sapply(rampc_geneList, function(x) mapping_table[mapping_table$mapped_genes == x, "mapped_genes"])
-                        set_addition <- meta_keggMetaboliteLinkModification(enrichMethod, kegg_geneList, rampc_geneList, all_genes, interestingGeneMap, hostName, j)
+                        kegg_geneList <- sapply(rampc_geneList, function(x) mapping_table[mapping_table$all_genes == x, "mapped_genes"])
+                        print("kegg_geneList")
+                        print(kegg_geneList)
+                        set_addition <- meta_keggMetaboliteLinkModification(enrichMethod, kegg_geneList, rampc_geneList, all_genes, interestingGeneMap, hostName, j, mapping_table)
+                        print("metabolite set addition")
+                        print(set_addition)
                         kegg_colordbs[[length(kegg_colordbs) + 1]] <- set_addition
                     } else if (grepl("toolforge.org", enrichPathwayLink, fixed = TRUE)) {
-                        mapped_genes <- simple_mapping(all_genes, "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
-                        if (is.null(mapped_genes)) {
-                            next
-                        }
-                        mapping_table <- data.frame(mapped_genes, all_genes, stringsAsFactors = FALSE)
-                        hmdb_geneList <- sapply(rampc_geneList, function(x) mapping_table[mapping_table$mapped_genes == x, "mapped_genes"])
-                        all_genes <- mapped_genes
+                        hmdb_geneList <- sapply(rampc_geneList, function(x) mapping_table[mapping_table$all_genes == x, "mapped_genes"])
+                        all_genes <- mapping_table$mapped_genes
                         set_addition <- meta_wikiMetaboliteLinkModification(enrichMethod, hmdb_geneList, rampc_geneList, all_genes, interestingGeneMap, hostName, j)
                         enrichPathwayLink <- paste0(enrichPathwayLink, set_addition, "&")
                     }
@@ -63,8 +71,9 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                     if (i == 1) {
                         enrichPathwayLink <- paste0(enrichPathwayLink, "&multi_query=")
                     }
-                    for (j in seq_along(all_genes)) {
-                        gene <- all_genes[[j]]
+                    for (j in seq_along(mapping_table$mapped_genes)) {
+                        gene <- mapping_table$mapped_genes[[j]]
+                        gene <- gsub("kegg:", "", gene, ignore.case = TRUE)
                         color_string <- ""
                         for (k in seq_along(kegg_colordbs)) {
                             color_db <- kegg_colordbs[[k]]
@@ -76,9 +85,6 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                             }
                         }
                         split_string <- "%0d%0a"
-                        if (j == 1) {
-                            split_string <- ""
-                        }
                         if (color_string != "") {
                             enrichPathwayLink <- paste0(enrichPathwayLink, gene, color_string, split_string)
                         }
@@ -122,9 +128,6 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                             }
                         }
                         split_string <- "%0d%0a"
-                        if (j == 1) {
-                            split_string <- ""
-                        }
                         if (color_string != "") {
                             entrez_gene <- mapping_table[mapping_table$all_genes_symbol == gene, "all_genes"]
                             enrichPathwayLink <- paste0(enrichPathwayLink, entrez_gene, color_string, split_string)
@@ -138,15 +141,21 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
 }
 
 
-meta_keggMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_geneList, all_genes, interestingGeneMap, hostName, color_index) {
-    enrichPathwayLink <- ""
-    found <- sapply(geneList, function(x) x <- gsub("kegg:", "", x, ignore.case = TRUE))
-    not_found <- all_genes[!(all_genes %in% geneList)]
+meta_keggMetaboliteLinkModification <- function(enrichMethod, kegg_geneList, rampc_geneList, all_genes, interestingGeneMap, hostName, color_index, mapping_table) {
+    found <- sapply(kegg_geneList, function(x) x <- gsub("kegg:", "", x, ignore.case = TRUE))
+    rampc_not_found <- all_genes[!(all_genes %in% rampc_geneList)]
+    not_found <- list()
+    for (i in seq_along(rampc_not_found)) {
+        not_found[[i]] <- mapping_table[mapping_table$all_genes == rampc_not_found[[i]], "mapped_genes"]
+    }
+    print("found")
+    print(found)
+    print("not_found")
+    print(not_found)
     not_found <- sapply(not_found, function(x) x <- gsub("kegg:", "", x, ignore.case = TRUE))
     color_db <- list(color = c(), analyte = c())
     if (enrichMethod == "ORA") {
         ora_color <- get_ora_colors(color_index)
-        enrichPathwayLink <- paste0(ora_color, "=")
         for (i in seq_along(found)) {
             color_db$analyte[[i]] <- found[[i]]
             color_db$color[[i]] <- ora_color
@@ -159,41 +168,46 @@ meta_keggMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_ge
         color_db$analyte <- unlist(color_db$analyte)
         color_db$color <- unlist(color_db$color)
     } else if (enrichMethod == "GSEA") {
-        scores <- filter(interestingGeneMap$mapped, .data$rampc %in% rampc_geneList)[["score"]]
-        maxScore <- max(scores)
-        minScore <- min(scores)
-        tmp <- getPaletteForGsea(maxScore, minScore)
-        palette <- tmp[[1]]
-        palette <- shift_colors(palette, color_index)
-        breaks <- tmp[[2]]
-        colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
-        for (i in seq_along(colors)) {
-            colors[[i]] <- gsub("#", "%23", colors[[i]], fixed = TRUE)
+        scores <- list()
+        for (i in seq_along(found)) {
+            found_rampc <- rampc_geneList[[i]]
+            scores[[i]] <- interestingGeneMap$mapped[interestingGeneMap$mapped$rampc == found_rampc, "score"]
         }
-        unique_colors <- unique(colors)
-        for (i in seq_along(unique_colors)) {
-            color <- unique_colors[[i]]
-            all_colored_genes <- found[[colors == color]]
-            all_colored_genes <- paste(all_colored_genes, collapse = ",")
-            enrichPathwayLink <- paste0(enrichPathwayLink, "&", color, "=", all_colored_genes)
+        scores <- unlist(scores)
+        if (length(unlist(scores)) != 0) {
+            maxScore <- max(unlist(scores))
+            minScore <- min(unlist(scores))
+            tmp <- getPaletteForGsea(maxScore, minScore)
+            palette <- tmp[[1]]
+            palette <- shift_colors(palette, color_index)
+            breaks <- tmp[[2]]
+            colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
+            for (i in seq_along(colors)) {
+                colors[[i]] <- gsub("#", "%23", colors[[i]], fixed = TRUE)
+            }
+            for (i in seq_along(found)) {
+                color <- colors[[i]]
+                color_db$analyte[[i]] <- found[[i]]
+                color_db$color[[i]] <- color
+            }
         }
         ora_white <- get_white(color_index)
-        enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
         for (i in seq_along(not_found)) {
-            enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
+            color_db$analyte[[i + length(color_db$analyte)]] <- not_found[[i]]
+            color_db$color[[i + length(color_db$color)]] <- ora_white
         }
+        color_db$analyte <- unlist(color_db$analyte)
+        color_db$color <- unlist(color_db$color)
     }
-    return(as.data.frame(color_db))
+    return(color_db)
 }
 
 meta_keggLinkModification <- function(enrichMethod, geneList, all_genes, interestingGeneMap, hostName, color_index) {
-    enrichPathwayLink <- ""
     found <- geneList
     not_found <- all_genes[!(all_genes %in% geneList)]
     color_db <- list(color = c(), analyte = c())
     if (enrichMethod == "ORA") {
         ora_color <- get_ora_colors(color_index, reverse = TRUE)
-        enrichPathwayLink <- paste0(ora_color, "=")
         for (i in seq_along(found)) {
             color_db$analyte[[i]] <- found[[i]]
             color_db$color[[i]] <- ora_color
@@ -362,4 +376,36 @@ shift_colors <- function(colors, shift) {
     colors <- gsub("#", "0x", colors, fixed = TRUE)
     colors <- paste0("#", sapply(colors, function(x) sprintf("%06x", strtoi(x) + shift)))
     return(colors)
+}
+
+full_simple_mapping <- function(id_list, organism, source_id, target_id, standard_id, hostName, no_dups = FALSE) {
+    if (source_id == target_id) {
+        return(id_list)
+    }
+    response <- POST(file.path(hostName, "api", "idmapping"),
+        encode = "json",
+        body = list(
+            organism = organism, sourceType = source_id,
+            targetType = target_id, ids = id_list, standardId = standard_id
+        )
+    )
+    if (response$status_code != 200) {
+        stop(webRequestError(response))
+    }
+    mapRes <- content(response)
+    mappedIds <- mapRes$mapped
+    names <- c("sourceId", "targetId")
+    if (is.null(mappedIds)) {
+        return(NULL)
+    }
+    mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
+        x[names]
+    })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)
+
+    colnames(mappedInputGene) <- c("sourceId", "targetId")
+    if (no_dups) {
+        mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$sourceId), ]
+        mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$targetId), ]
+    }
+    return(mappedInputGene)
 }
