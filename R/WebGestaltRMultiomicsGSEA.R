@@ -84,8 +84,6 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             i <- 1
         }
         enrichedSig <- gseaRes$enriched[[i]]
-        
-
         insig <- gseaRes$background[[i]]
         if (i == 1) {
             interestingGeneMap <- list(mapped = interestGeneMaps[[1]]$mapped, unmapped = interestGeneMaps[[1]]$unmapped, standardId = interestGeneMaps[[1]]$standardId)
@@ -157,7 +155,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                     enrichedSig$size[[j]] <- length(idsInSet[[enrichedSig$geneSet[[j]]]])
                 }
                 for (k in seq_along(enrichedSig$link)) {
-                enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName)
+                    enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName)
                 }
             }
             if ("database" %in% colnames(geneSet)) {
