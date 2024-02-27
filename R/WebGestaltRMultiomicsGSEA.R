@@ -239,7 +239,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
         createMetaReport(
             hostName = hostName, outputDirectory = outputDirectory, organism = organism,
             projectName = projectName, enrichMethod = enrichMethod, geneSet_list = all_sets[["geneSet"]],
-            geneSetDes_list = geneSetDes, geneSetDag_list = geneSetDags, geneSetNet_list = geneSetNets,
+            geneSetDes_list = all_sets[["geneSetDes"]], geneSetDag_list = geneSetDags, geneSetNet_list = geneSetNets,
             interestingGeneMap_list = interestGeneMaps, enrichedSig_list = enrichSigs, background_list = insig_lists,
             geneTables_list = geneTables_list, clusters_list = clusters_list, enrichDatabase_list = enrichDatabase,
             enrichDatabaseFile_list = enrichDatabaseFile, enrichDatabaseType_list = enrichDatabaseType,

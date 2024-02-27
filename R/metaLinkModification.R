@@ -296,7 +296,12 @@ meta_wikiMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_ge
             unique_colors <- unique(colors)
             for (i in seq_along(unique_colors)) {
                 color <- unique_colors[[i]]
-                all_colored_genes <- found[[colors == color]]
+                all_colored_genes <- c()
+                for (j in seq_along(colors)) {
+                    if (colors[[j]] == color) {
+                        all_colored_genes <- c(all_colored_genes, geneList[[j]])
+                    }
+                }
                 all_colored_genes <- paste(all_colored_genes, collapse = ",")
                 enrichPathwayLink <- paste0(enrichPathwayLink, "&", color, "=", all_colored_genes)
             }
@@ -347,7 +352,12 @@ meta_wikiLinkModification <- function(enrichMethod, geneList, all_genes, interes
             unique_colors <- unique(colors)
             for (i in seq_along(unique_colors)) {
                 color <- unique_colors[[i]]
-                all_colored_genes <- found[[colors == color]]
+                all_colored_genes <- c()
+                for (j in seq_along(colors)) {
+                    if (colors[[j]] == color) {
+                        all_colored_genes <- c(all_colored_genes, geneList[[j]])
+                    }
+                }
                 all_colored_genes <- paste(all_colored_genes, collapse = ",")
                 enrichPathwayLink <- paste0(enrichPathwayLink, "&", color, "=", all_colored_genes)
             }
@@ -383,10 +393,32 @@ get_white <- function(offset) {
 }
 
 shift_colors <- function(colors, shift) {
-    colors <- gsub("#", "0x", colors, fixed = TRUE)
-    colors <- paste0("#", sapply(colors, function(x) sprintf("%06x", strtoi(x) + shift)))
+    # Add shift to blue part of hex code for each color in colors
+    
+    colors <- gsub("#", "", colors, fixed = TRUE) # Remove '#' from color codes
+    colors <- strsplit(colors, "") # Split each color code into individual characters
+    colors <- lapply(colors, function(x) {
+        # Convert each color code to RGB
+        r <- strtoi(paste0(x[1], x[2]), 16)
+        g <- strtoi(paste0(x[3], x[4]), 16)
+        b <- strtoi(paste0(x[5], x[6]), 16)
+        # Add shift to blue part
+        b <- b + shift
+        # Ensure b is within 0-255
+        b <- ifelse(b > 255, 255, ifelse(b < 0, 0, b))
+        # Convert RGB back to hex
+        return(paste0("#", sprintf("%02x", r), sprintf("%02x", g), sprintf("%02x", b)))
+    })
+    # Unlist to get back a vector of color codes
+    colors <- unlist(colors)
     return(colors)
 }
+     
+
+#     # colors <- gsub("#", "0x", colors, fixed = TRUE)
+#     # colors <- paste0("#", sapply(colors, function(x) sprintf("%06x", strtoi(x) + shift)))
+#     # return(colors)
+# }
 
 full_simple_mapping <- function(id_list, organism, source_id, target_id, standard_id, hostName, no_dups = FALSE) {
     if (source_id == target_id) {

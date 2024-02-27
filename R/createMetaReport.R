@@ -101,7 +101,7 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
             print(paste("Processing dataset", i, "of", length(interestingGeneMap_list) + 1))
             enrichedSig <- enrichedSig_list[[j]]
             geneSet <- geneSet_list[[i]]
-            if (!is.null(geneSetDes_list) && length(geneSetDes_list) > 0) {
+            if (!is.null(geneSetDes_list) && length(geneSetDes_list) > 0 && i <= length(geneSetDes_list)) {
                 geneSetDes <- geneSetDes_list[[i]]
             } else {
                 geneSetDes <- NULL
