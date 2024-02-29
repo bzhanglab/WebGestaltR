@@ -193,7 +193,6 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
             }
         }
     }
-
     # remove skipped columns
     # print(c("sets that don't contain proper number of items:", skipped_sets))
     inset_mat <- inset_mat[, !(colnames(inset_mat) %in% skipped_sets)]

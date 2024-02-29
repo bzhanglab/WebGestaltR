@@ -158,9 +158,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
         }
     }
 
-    meta_fdrs <- sapply(meta_ps, function(x) {
-        p.adjust(x, method = fdrMethod)
-    })
+    meta_fdrs <- p.adjust(unlist(meta_ps), method = fdrMethod)
 
     meta_output_df <- data.frame(
         fdr = unlist(meta_fdrs), p_val = unlist(meta_ps), ES = numeric(length(all_gene_sets)), NES = numeric(length(all_gene_sets)),
