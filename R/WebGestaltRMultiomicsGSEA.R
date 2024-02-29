@@ -84,8 +84,6 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             i <- 1
         }
         enrichedSig <- gseaRes$enriched[[i]]
-        
-
         insig <- gseaRes$background[[i]]
         if (i == 1) {
             interestingGeneMap <- list(mapped = interestGeneMaps[[1]]$mapped, unmapped = interestGeneMaps[[1]]$unmapped, standardId = interestGeneMaps[[1]]$standardId)
@@ -156,21 +154,10 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                     idsInSet[[enrichedSig$geneSet[[j]]]] <- unique(unlist(idsInSet[[enrichedSig$geneSet[[j]]]]))
                     enrichedSig$size[[j]] <- length(idsInSet[[enrichedSig$geneSet[[j]]]])
                 }
-                print(head(enrichedSig))
-                print(head(idsInSet))
                 for (k in seq_along(enrichedSig$link)) {
-                
-                enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName)
+                    enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName)
                 }
             }
-            # if (organism != "others") {
-            #     enrichedSig$link <- mapply(
-            #         function(link, geneList) linkModification("GSEA", link, geneList, interestingGeneMap),
-            #         enrichedSig$link,
-            #         enrichedSig$leadingEdgeId
-            #     )
-            # }
-
             if ("database" %in% colnames(geneSet)) {
                 # add source database for multiple databases
                 enrichedSig <- enrichedSig %>% left_join(unique(geneSet[, c("geneSet", "database")]), by = "geneSet")
@@ -252,7 +239,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
         createMetaReport(
             hostName = hostName, outputDirectory = outputDirectory, organism = organism,
             projectName = projectName, enrichMethod = enrichMethod, geneSet_list = all_sets[["geneSet"]],
-            geneSetDes_list = geneSetDes, geneSetDag_list = geneSetDags, geneSetNet_list = geneSetNets,
+            geneSetDes_list = all_sets[["geneSetDes"]], geneSetDag_list = geneSetDags, geneSetNet_list = geneSetNets,
             interestingGeneMap_list = interestGeneMaps, enrichedSig_list = enrichSigs, background_list = insig_lists,
             geneTables_list = geneTables_list, clusters_list = clusters_list, enrichDatabase_list = enrichDatabase,
             enrichDatabaseFile_list = enrichDatabaseFile, enrichDatabaseType_list = enrichDatabaseType,

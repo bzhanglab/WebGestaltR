@@ -39,10 +39,21 @@ jobs:
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
 
-      - name: Deploy to GitHub pages 🚀
-        if: github.event_name != 'pull_request'
-        uses: JamesIves/github-pages-deploy-action@v4.4.1
+      - name: Fix docs permissions
+        run: |
+          chmod -c -R +rX "docs" | while read line; do
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
+          
+      - name: Upload Website
+        uses: actions/upload-pages-artifact@v3
         with:
-          clean: false
-          branch: gh-pages
-          folder: docs
+          path: docs
+
+      - name: Deploy to GitHub Pages 🚀
+        id: deployment
+        uses: actions/deploy-pages@v4
+        if: github.event_name != 'pull_request'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifact_name: github-pages

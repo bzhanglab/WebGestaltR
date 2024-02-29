@@ -38,7 +38,7 @@ kMedoid <- function(idsInSet, score, maxK = 10) {
 
 
   if (max(sim.mat) == min(sim.mat)) {
-    # this will generate error, so randomy add some noise to off diagonal elements
+    # this will generate error, so randomly add some noise to off diagonal elements
     mat.siz <- dim(sim.mat)[1]
     rand.m <- matrix(rnorm(mat.siz * mat.siz, 0, 0.01), mat.siz)
     # make it symmetric
@@ -60,6 +60,5 @@ kMedoid <- function(idsInSet, score, maxK = 10) {
   for (i in seq_along(kmRes$id.med)) {
     clusters[[i]] <- names(cluster_info[cluster_info == i])
   }
-  # print(kmRes$medoids)
   return(list(clusters = clusters, representatives = kmRes$medoids))
 }

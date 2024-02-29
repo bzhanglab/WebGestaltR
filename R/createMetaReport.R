@@ -101,7 +101,7 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
             print(paste("Processing dataset", i, "of", length(interestingGeneMap_list) + 1))
             enrichedSig <- enrichedSig_list[[j]]
             geneSet <- geneSet_list[[i]]
-            if (!is.null(geneSetDes_list) && length(geneSetDes_list) > 0) {
+            if (!is.null(geneSetDes_list) && length(geneSetDes_list) > 0 && i <= length(geneSetDes_list)) {
                 geneSetDes <- geneSetDes_list[[i]]
             } else {
                 geneSetDes <- NULL
@@ -176,8 +176,6 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
         allContent <- paste(allContent, "<b-tab-item label=\"", tabs[[i]]$title, "\"><iframe style=\"width: 100%\" src=\"", tabs[[i]]$path, "\"></iframe></b-tab-item>\n", sep = "")
     }
     allContent <- paste(allContent, "</b-tabs>\n", sep = "")
-    # tabs <- list(tabs = tabs)
-    print(toJSON(tabs))
     header <- readLines(system.file("templates/header.mustache", package = "WebGestaltR"))
     footer <- readLines(system.file("templates/footer.mustache", package = "WebGestaltR"))
     template <- readLines(system.file("templates/meta_template.mustache", package = "WebGestaltR"))
