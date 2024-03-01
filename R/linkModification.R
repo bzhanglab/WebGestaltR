@@ -107,9 +107,10 @@ simple_mapping <- function(id_list, organism, source_id, target_id, standard_id,
     mappedIds <- mapRes$mapped
     names <- c("sourceId", "targetId")
     if (is.null(mappedIds)) {
-        return(NULL)
+        return(c(""))
     }
-    mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
+    tryCatch({
+        mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
         x[names]
     })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)
 
@@ -119,4 +120,9 @@ simple_mapping <- function(id_list, organism, source_id, target_id, standard_id,
         mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$targetId), ]
     }
     return(mappedInputGene$targetId)
+    }, error = function(e) {
+        warning("No mapping result found. May be caused by empty sets chosen by significance method.");
+        return(c(""));
+    })
+    
 }
