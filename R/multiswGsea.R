@@ -82,24 +82,14 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                         max_set_size = 500, max_score = "max", min_score = "min", psuedocount = 0.001, perms = 1000, p = 1,
                         q = 1, nThreads = 1, rng_seed = 1, fork = FALSE, fdrMethod = "BH") {
     # check input parameters
-    if (thresh_type != "percentile" & thresh_type != "list" & thresh_type != "val" & thresh_type != "values") {
+    if (thresh_type != "percentile" && thresh_type != "list" & thresh_type != "val" & thresh_type != "values") {
         stop("invalid thresh_type specified; needs to be set to 'percentile' to include all scores over that percentile (i.e., 0.9 would be all items in 90th percentile, or top 10 percent) 'list' to include a list of set lists where the set lists are in the same order as the corresponding set columns in the input_df, 'val' to apply a single threshold value to all sets, or 'values' to use a vector of unique cutoffs for each set (needs to be in the same order as the sets are specified in the columns of input_df")
     }
-    if (thresh_action != "exclude" & thresh_action != "include" & thresh_action != "adjust") {
+    if (thresh_action != "exclude" && thresh_action != "include" & thresh_action != "adjust") {
         stop("invalid thresh_action specified; needs to be set to 'exclude' to skip set if it contains no items after applying score threshold (or contains all items), or 'include' to include values for the set at the end of the results (ES and NES automatically set to 0 and pval to 1) or 'adjust' to adjust threshold to add at least min_set_size items below thresh to set (or remove all items equal to the minimum set score value from the set)")
     }
     if (min_set_size < 3) {
         stop("please set 'min_set_size' to 3 or greater (default is 5)")
-    }
-    if (max_score != "max") {
-        if (length(max_score) != (ncol(input_df) - 2) || (!is.numeric(max_score))) {
-            stop("max_score needs to be set to max or contain a numeric vector of maximum scores for each set")
-        }
-    }
-    if (min_score != "min") {
-        if (length(min_score) == (ncol(input_df) - 2) || (!is.numeric(min_score))) {
-            stop("min_score needs to be set to min or contain a numeric vector of minimum scores for each set")
-        }
     }
     if (!psuedocount > 0) {
         stop("psuedocount must be greater than 0")

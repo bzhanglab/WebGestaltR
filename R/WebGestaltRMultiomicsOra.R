@@ -8,7 +8,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
                                      topThr = 10, reportNum = 100, setCoverNum = 10, perNum = 1000, gseaP = 1, isOutput = TRUE, outputDirectory = getwd(),
                                      projectName = NULL, dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/",
                                      useWeightedSetCover = TRUE, useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 25,
-                                     referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, listNames = null) {
+                                     referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, listNames = NULL) {
   projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
   cat("Performing multi-omics ORA\nLoading the functional categories...\n")
   all_sets <- .load_meta_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
