@@ -59,7 +59,7 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                     } else if (grepl("toolforge.org", enrichPathwayLink, fixed = TRUE)) {
                         hmdb_geneList <- sapply(rampc_geneList, function(x) mapping_table[mapping_table$all_genes == x, "mapped_genes"])
                         hmdb_all_genes <- mapping_table$mapped_genes
-                        set_addition <- meta_wikiMetaboliteLinkModification(enrichMethod, hmdb_geneList, rampc_geneList,hmdb_all_genes, interestingGeneMap, hostName, j)
+                        set_addition <- meta_wikiMetaboliteLinkModification(enrichMethod, hmdb_geneList, rampc_geneList, hmdb_all_genes, interestingGeneMap, hostName, j)
                         enrichPathwayLink <- paste0(enrichPathwayLink, set_addition, "&")
                     }
                 }
@@ -95,7 +95,7 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                 if (is.null(all_genes) || length(all_genes) == 0) {
                     next
                 }
-                if (grepl("kegg.jp", enrichPathwayLink, fixed = TRUE)){
+                if (grepl("kegg.jp", enrichPathwayLink, fixed = TRUE)) {
                     kegg_ontology <- full_simple_mapping(all_genes, "hsapiens", "entrezgene", "kegg_ontology", "entrezgene", hostName, no_dups = TRUE)
                 }
                 all_genes_symbol <- mapping_table[mapping_table$all_genes %in% all_genes, "all_genes_symbol"]
@@ -117,24 +117,26 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                     if (i == 1) {
                         enrichPathwayLink <- paste0(enrichPathwayLink, "&multi_query=")
                     }
-                    all_displayed_genes <- kegg_ontology$sourceId
-                    all_genes_kegg <- kegg_ontology$targetId
-                    for (j in seq_along(all_displayed_genes)) {
-                        kegg_gene <- all_genes_kegg[[j]]
-                        gene_symbol <- mapping_table[mapping_table$all_genes == all_displayed_genes[[j]], "all_genes_symbol"]
-                        color_string <- ""
-                        for (k in seq_along(kegg_colordbs)) {
-                            color_db <- kegg_colordbs[[k]]
-                            if (gene_symbol %in% color_db$analyte) {
-                                color <- unique(unlist(color_db$color[color_db$analyte == gene_symbol]))
-                                color <- color[1]
-                                color <- gsub("#", "%23", color, fixed = TRUE)
-                                color_string <- paste0(color_string, "+", color)
+                    if (kegg_ontology != c("")) {
+                        all_displayed_genes <- kegg_ontology$sourceId
+                        all_genes_kegg <- kegg_ontology$targetId
+                        for (j in seq_along(all_displayed_genes)) {
+                            kegg_gene <- all_genes_kegg[[j]]
+                            gene_symbol <- mapping_table[mapping_table$all_genes == all_displayed_genes[[j]], "all_genes_symbol"]
+                            color_string <- ""
+                            for (k in seq_along(kegg_colordbs)) {
+                                color_db <- kegg_colordbs[[k]]
+                                if (gene_symbol %in% color_db$analyte) {
+                                    color <- unique(unlist(color_db$color[color_db$analyte == gene_symbol]))
+                                    color <- color[1]
+                                    color <- gsub("#", "%23", color, fixed = TRUE)
+                                    color_string <- paste0(color_string, "+", color)
+                                }
                             }
-                        }
-                        split_string <- "%0d%0a"
-                        if (color_string != "") {
-                            enrichPathwayLink <- paste0(enrichPathwayLink, kegg_gene, color_string, split_string)
+                            split_string <- "%0d%0a"
+                            if (color_string != "") {
+                                enrichPathwayLink <- paste0(enrichPathwayLink, kegg_gene, color_string, split_string)
+                            }
                         }
                     }
                 }
@@ -396,7 +398,7 @@ get_white <- function(offset) {
 
 shift_colors <- function(colors, shift) {
     # Add shift to blue part of hex code for each color in colors
-    
+
     colors <- gsub("#", "", colors, fixed = TRUE) # Remove '#' from color codes
     colors <- strsplit(colors, "") # Split each color code into individual characters
     colors <- lapply(colors, function(x) {
@@ -415,7 +417,7 @@ shift_colors <- function(colors, shift) {
     colors <- unlist(colors)
     return(colors)
 }
-     
+
 
 #     # colors <- gsub("#", "0x", colors, fixed = TRUE)
 #     # colors <- paste0("#", sapply(colors, function(x) sprintf("%06x", strtoi(x) + shift)))
@@ -442,18 +444,22 @@ full_simple_mapping <- function(id_list, organism, source_id, target_id, standar
     if (is.null(mappedIds)) {
         return(NULL)
     }
-    tryCatch({
-    mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
-        x[names]
-    })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)
+    tryCatch(
+        {
+            mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
+                x[names]
+            })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)
 
-    colnames(mappedInputGene) <- c("sourceId", "targetId")
-    if (no_dups) {
-        mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$sourceId), ]
-        mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$targetId), ]
-    }
-    return(mappedInputGene)}, error = function(e) {
-        warning("No mapping result found. May be caused by empty sets chosen by significance method.");
-        return(c(""));
-    })
+            colnames(mappedInputGene) <- c("sourceId", "targetId")
+            if (no_dups) {
+                mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$sourceId), ]
+                mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$targetId), ]
+            }
+            return(mappedInputGene)
+        },
+        error = function(e) {
+            warning("No mapping result found. May be caused by empty sets chosen by significance method.")
+            return(c(""))
+        }
+    )
 }
