@@ -95,7 +95,9 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                 if (is.null(all_genes) || length(all_genes) == 0) {
                     next
                 }
-                kegg_ontology <- full_simple_mapping(all_genes, "hsapiens", "entrezgene", "kegg_ontology", "entrezgene", hostName, no_dups = TRUE)
+                if (grepl("kegg.jp", enrichPathwayLink, fixed = TRUE)){
+                    kegg_ontology <- full_simple_mapping(all_genes, "hsapiens", "entrezgene", "kegg_ontology", "entrezgene", hostName, no_dups = TRUE)
+                }
                 all_genes_symbol <- mapping_table[mapping_table$all_genes %in% all_genes, "all_genes_symbol"]
                 if (is.null(all_genes)) {
                     next
@@ -440,6 +442,7 @@ full_simple_mapping <- function(id_list, organism, source_id, target_id, standar
     if (is.null(mappedIds)) {
         return(NULL)
     }
+    tryCatch({
     mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
         x[names]
     })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)
@@ -449,5 +452,8 @@ full_simple_mapping <- function(id_list, organism, source_id, target_id, standar
         mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$sourceId), ]
         mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$targetId), ]
     }
-    return(mappedInputGene)
+    return(mappedInputGene)}, error = function(e) {
+        warning("No mapping result found. May be caused by empty sets chosen by significance method.");
+        return(c(""));
+    })
 }
