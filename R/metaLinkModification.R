@@ -146,7 +146,7 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
         }
     }
     if (nchar(enrichPathwayLink) > 2000) { # URL length limit
-        enrichPathwayLink <- paste0(hostName, "long_url.html?pathway_url=", URLencode(original_link), "&pathway_id=", URLencode(pathway_id))
+        enrichPathwayLink <- paste0(hostName, "/long_url.html?pathway_url=", URLencode(original_link), "&pathway_id=", URLencode(pathway_id))
     }
     return(enrichPathwayLink)
 }
