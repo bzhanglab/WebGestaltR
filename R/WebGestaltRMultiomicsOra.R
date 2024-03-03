@@ -171,7 +171,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         names(idsInSet) <- enrichedSig$geneSet
         for (k in seq_along(enrichedSig$link)) {
           
-          enrichedSig$link[[k]] <- metaLinkModification("ORA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName)
+          enrichedSig$link[[k]] <- metaLinkModification("ORA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
         }
       }
 
