@@ -17,8 +17,10 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
     }
     all_sets <- lapply(all_sets, unlist)
     is_modified <- FALSE
+    original_link <- enrichPathwayLink
     modified_links <- c("www.kegg.jp", "www.wikipathways.org")
     is_modified <- any(sapply(modified_links, function(x) any(grepl(x, enrichPathwayLink, fixed = TRUE))))
+    pathway_id <- geneSet
     if (grepl("PathwayWidget", enrichPathwayLink, fixed = FALSE)) {
         enrichPathwayLink <- gsub("www.wikipathways.org/wpi/PathwayWidget.php?id=", "pathway-viewer.toolforge.org/embed/", enrichPathwayLink, fixed = TRUE)
         enrichPathwayLink <- paste0(enrichPathwayLink, "?")
@@ -114,10 +116,10 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                     }
                 }
                 if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
-                    if (i == 1) {
-                        enrichPathwayLink <- paste0(enrichPathwayLink, "&multi_query=")
-                    }
-                    if (kegg_ontology != c("")) {
+                        if (kegg_ontology != c("")) {
+                            if (i == 1) {
+                            enrichPathwayLink <- paste0(enrichPathwayLink, "&multi_query=")
+                        }
                         all_displayed_genes <- kegg_ontology$sourceId
                         all_genes_kegg <- kegg_ontology$targetId
                         for (j in seq_along(all_displayed_genes)) {
@@ -142,6 +144,9 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                 }
             }
         }
+    }
+    if (length(enrichPathwayLink) > 2000) { # URL length limit
+        enrichPathwayLink <- paste0(hostName, "long_url.html?pathway_url=", URLencode(original_link), "&pathway_id=", URLencode(pathway_id))
     }
     return(enrichPathwayLink)
 }
