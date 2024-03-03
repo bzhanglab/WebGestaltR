@@ -237,6 +237,16 @@ WebGestaltR <- function(enrichMethod = "ORA", organism = "hsapiens", enrichDatab
     cat("Use cache data if available.\n")
   }
 
+  if (!is.null(enrichDatabase)) {
+    if (length(enrichDatabase) > 1) {
+      enrichDatabase <- unlist(sapply(enrichDatabase, function(x) {
+        return(get_gmt_file(hostName, interestGeneType, x, organism, cache))
+      }))
+    } else {
+      enrichDatabase <- get_gmt_file(hostName, interestGeneType, enrichDatabase, organism, cache)
+    }
+  }
+
   ## TODO: add para test for NTA
   errorTest <- parameterErrorMessage(enrichMethod = enrichMethod, organism = organism, collapseMethod = collapseMethod, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, perNum = perNum, isOutput = isOutput, outputDirectory = outputDirectory, dagColor = dagColor, hostName = hostName, cache = cache)
   if (!is.null(errorTest)) {

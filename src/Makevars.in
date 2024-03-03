@@ -1,10 +1,10 @@
 TARGET_DIR = ./rust/target
-VENDORING = 
-OFFLINE_OPTION = 
+VENDORING = @VENDORING@
+OFFLINE_OPTION = @OFFLINE_OPTION@
 LIBDIR = $(TARGET_DIR)/release
 STATLIB = $(LIBDIR)/libWebGestaltR.a
 PKG_LIBS = -L$(LIBDIR) -lWebGestaltR
-TARGET = 
+TARGET = @TARGET@
 
 all: C_clean
 
@@ -24,13 +24,13 @@ $(STATLIB):
 	if [ "$(NOT_CRAN)" != "true" ]; then \
 		export CARGO_HOME=$(CARGOTMP); \
 	fi && \
-		 . "/Users/zhanglab/.cargo/env" && export PATH="$(PATH):$(HOME)/.cargo/bin" &&\
+		@BEFORE_CARGO_BUILD@ export PATH="$(PATH):$(HOME)/.cargo/bin" &&\
 		cargo build --lib --jobs 2 --release --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR) $(OFFLINE_OPTION)
 	if [ "$(NOT_CRAN)" != "true" ]; then \
 		rm -Rf $(CARGOTMP) && \
 		rm -Rf $(LIBDIR)/build; \
 	fi
-	
+	@AFTER_CARGO_BUILD@
 
 C_clean:
 	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)

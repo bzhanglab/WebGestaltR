@@ -13,3 +13,6 @@
 ^\.ruff_cache$
 ^install$
 ^dev_install$
+^src/Makevars.win$
+^src/Makevars$
+^src/rust/vendor$

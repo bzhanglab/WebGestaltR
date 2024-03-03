@@ -41,10 +41,12 @@ vignettes/*.pdf
 .Renviron
 
 # Miscellaneous
-
+src/rust/vendor
 .vscode
 .DS_Store
 _site
 index.md
 docs
 inst/doc
+src/Makevars
+src/Makevars.win

@@ -41,7 +41,7 @@ WebGestaltRMultiOmicsOra(
   referenceLists = NULL,
   referenceListFiles = NULL,
   referenceTypes = NULL,
-  listNames = null
+  listNames = NULL
 )
 }
 \arguments{

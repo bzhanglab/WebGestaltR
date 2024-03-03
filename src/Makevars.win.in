@@ -22,16 +22,25 @@ $(STATLIB):
 	touch $(TARGET_DIR)/libgcc_mock/libgcc_eh.a
 
 	# CARGO_LINKER is provided in Makevars.ucrt for R >= 4.2
+	# vendoring (Note: to avoid NOTE of "Found the following hidden files and
+	# directories", .cargo needs to be created here)
+	if [ "$(VENDORING)" = "yes" ]; then \
+	  $(TAR) --extract --xz -f ./rust/vendor.tar.xz -C ./rust && \
+	    mkdir -p ./.cargo && \
+	    cp ./config.toml ./.cargo/config.toml; \
+	fi
+
 	if [ "$(NOT_CRAN)" != "true" ]; then \
 		export CARGO_HOME=$(CARGOTMP); \
 	fi && \
-		export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER="$(CARGO_LINKER)" && \
+		@BEFORE_CARGO_BUILD@  export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER="$(CARGO_LINKER)" && \
 		export LIBRARY_PATH="$${LIBRARY_PATH};$(CURDIR)/$(TARGET_DIR)/libgcc_mock" && \
-		cargo build --target=$(TARGET) --lib --release --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR)
+		cargo build --target=$(TARGET) --jobs 2 --lib --release --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR) $(OFFLINE_OPTION)
 	if [ "$(NOT_CRAN)" != "true" ]; then \
 		rm -Rf $(CARGOTMP) && \
 		rm -Rf $(LIBDIR)/build; \
 	fi
+	@AFTER_CARGO_BUILD@
 
 C_clean:
 	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)
