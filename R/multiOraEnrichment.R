@@ -84,6 +84,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
     }
     combined_size[["geneSet"]][[i]] <- geneset_of_interest
     combined_size[["size"]][[i]] <- length(unique(genes_in_list))
+    combined_size[["overlapId"]][[i]] <- paste(unique(genes_in_list), collapse = ";")
   }
   combined_size <- data.frame(geneSet = unlist(combined_size[["geneSet"]]), size = unlist(combined_size[["size"]]), stringsAsFactors = FALSE)
   rust_result <- rust_multiomics_ora(modified_geneset, genes, interestGene, referenceGene, "fisher")
@@ -98,7 +99,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
   for (i in seq_along(rust_result_df)) {
     if (i == 1) { # Meta-analysis
       enrichedResult <- rust_result_df[[i]] %>%
-        left_join(met_intG, by = "geneSet") %>% # get overlapping gene IDs
+        # left_join(met_intG, by = "geneSet") %>% # get overlapping gene IDs
         left_join(combined_size, by = "geneSet") %>%
         arrange(.data$FDR, .data$pValue, .data$enrichmentRatio) %>%
         distinct(.data$geneSet, .keep_all = TRUE)

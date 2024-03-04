@@ -165,7 +165,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           enrichedSig$overlapId
         )
       } else if (organism != "others") {
-        idsInSet <- sapply(enrichedSig$overlapId, function (x) { return(strsplit(x, split = ";"))})
+        idsInSet <- sapply(enrichedSig$overlapId, function(x) { return(strsplit(x, split = ";"))})
         names(idsInSet) <- enrichedSig$geneSet
         for (k in seq_along(enrichedSig$link)) {
           enrichedSig$link[[k]] <- metaLinkModification("ORA", enrichedSig$link[[k]], unlist(idsInSet[[enrichedSig$geneSet[[k]]]]), interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
