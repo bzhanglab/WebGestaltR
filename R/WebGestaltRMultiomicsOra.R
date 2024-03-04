@@ -156,6 +156,9 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       }
       geneTables <- getGeneTables(organism, enrichedSig, "overlapId", interestingGeneMap)
       geneTables_list[[i]] <- geneTables
+      if (i == 1) {
+        print(head(geneTables))
+      }
       if (organism != "others" && i != 1) {
         enrichedSig$link <- mapply(
           function(link, geneList) linkModification("ORA", link, geneList, interestingGeneMap, hostName),
@@ -166,7 +169,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         idsInSet <- sapply(enrichedSig$overlapId, strsplit, split = ";")
         names(idsInSet) <- enrichedSig$geneSet
         for (k in seq_along(enrichedSig$link)) {
-          enrichedSig$link[[k]] <- metaLinkModification("ORA", enrichedSig$link[[k]], unlist(idsInSet[[enrichedSig$geneSet[[k]]]]), interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
+          enrichedSig$link[[k]] <- metaLinkModification("ORA", enrichedSig$link[[k]], unlist(idsInSet[[k]]), interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
         }
       }
 
