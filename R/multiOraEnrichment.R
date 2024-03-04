@@ -84,7 +84,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
     }
     combined_size[["geneSet"]][[i]] <- geneset_of_interest
     combined_size[["size"]][[i]] <- length(unique(genes_in_list))
-    combined_size[["overlapId"]][[i]] <- paste(unique(genes_in_list), sep = ";")
+    combined_size[["overlapId"]][[i]] <- paste(unique(genes_in_list), collapse = ";")
   }
   combined_size <- data.frame(geneSet = unlist(combined_size[["geneSet"]]), size = unlist(combined_size[["size"]]), stringsAsFactors = FALSE)
   rust_result <- rust_multiomics_ora(modified_geneset, genes, interestGene, referenceGene, "fisher")
