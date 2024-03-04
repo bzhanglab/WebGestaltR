@@ -49,6 +49,9 @@ wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, gene
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
     } else if (enrichMethod == "GSEA") {
         scores <- filter(interestingGeneMap$mapped, .data$rampc %in% geneList)[["score"]]
+        if (length(unlist(scores)) == 0) {
+            return(enrichPathwayLink)
+        }
         maxScore <- max(scores)
         minScore <- min(scores)
         tmp <- getPaletteForGsea(maxScore, minScore)
@@ -76,6 +79,9 @@ wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
     } else if (enrichMethod == "GSEA") {
         scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
+        if (length(unlist(scores)) == 0) {
+            return(enrichPathwayLink)
+        }
         maxScore <- max(scores)
         minScore <- min(scores)
         tmp <- getPaletteForGsea(maxScore, minScore)
@@ -109,20 +115,22 @@ simple_mapping <- function(id_list, organism, source_id, target_id, standard_id,
     if (is.null(mappedIds)) {
         return(c(""))
     }
-    tryCatch({
-        mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
-        x[names]
-    })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)
+    tryCatch(
+        {
+            mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
+                x[names]
+            })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)
 
-    colnames(mappedInputGene) <- c("sourceId", "targetId")
-    if (no_dups) {
-        mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$sourceId), ]
-        mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$targetId), ]
-    }
-    return(mappedInputGene$targetId)
-    }, error = function(e) {
-        warning("No mapping result found. May be caused by empty sets chosen by significance method.");
-        return(c(""));
-    })
-    
+            colnames(mappedInputGene) <- c("sourceId", "targetId")
+            if (no_dups) {
+                mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$sourceId), ]
+                mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$targetId), ]
+            }
+            return(mappedInputGene$targetId)
+        },
+        error = function(e) {
+            warning("No mapping result found. May be caused by empty sets chosen by significance method.")
+            return(c(""))
+        }
+    )
 }

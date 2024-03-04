@@ -126,8 +126,8 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
     })))) # sapply on NULL will return a list
 
     if (is_meta) {
-        pvals <- enrichedSig$pValue
-        nes <- enrichedSig$normalizedEnrichmentScore
+        pvals <- unlist(enrichedSig$pValue)
+        nes <- unlist(enrichedSig$normalizedEnrichmentScore)
         logp <- c()
         for (i in 1:length(pvals)) {
             x <- pvals[i]
