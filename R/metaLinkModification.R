@@ -116,8 +116,8 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                     }
                 }
                 if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
-                        if (kegg_ontology != c("")) {
-                            if (i == 1) {
+                    if (!is.null(kegg_ontology) && nrow(kegg_ontology) > 0) {
+                        if (i == 1) {
                             enrichPathwayLink <- paste0(enrichPathwayLink, "&multi_query=")
                         }
                         all_displayed_genes <- kegg_ontology$sourceId
@@ -372,7 +372,7 @@ meta_wikiLinkModification <- function(enrichMethod, geneList, all_genes, interes
             }
         }
         ora_white <- get_white(color_index)
-            if (length(not_found) != 0) {
+        if (length(not_found) != 0) {
             enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
             for (i in seq_along(not_found)) {
                 enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
@@ -466,7 +466,7 @@ full_simple_mapping <- function(id_list, organism, source_id, target_id, standar
         },
         error = function(e) {
             warning("No mapping result found. May be caused by empty sets chosen by significance method.")
-            return(c(""))
+            return(NULL)
         }
     )
 }

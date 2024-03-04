@@ -70,26 +70,36 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
                 enrichmentScore = .data$ES, normalizedEnrichmentScore = .data$NES, pValue = .data$p_val, FDR = .data$fdr,
                 leadingEdgeNum = .data$leading_edge
             )
-        # TODO: handle errors
-        sigMethod <- "fdr"
         if (sigMethod == "fdr") {
             sig <- filter(enrichRes, .data$FDR < fdrThr)
             insig <- filter(enrichRes, .data$FDR >= fdrThr)
         } else if (sigMethod == "top") {
             enrichRes <- arrange(enrichRes, .data$FDR, .data$pValue)
-            tmpRes <- getTopGseaResults(enrichRes, topThr)
+            if (j == 1){
+                tmpRes <- getTopMetaGseaResults(enrichRes, topThr)
+            } else {
+                tmpRes <- getTopGseaResults(enrichRes, topThr)
+            }
             sig <- tmpRes[[1]]
             insig <- tmpRes[[2]]
         } else {
             warning("WARNING: Invalid significance method ", sigMethod, "!\nDefaulting to top.\n")
             enrichRes <- arrange(enrichRes, .data$FDR, .data$pValue)
-            tmpRes <- getTopGseaResults(enrichRes, topThr)
+            if (j == 1){
+                tmpRes <- getTopMetaGseaResults(enrichRes, topThr)
+            } else {
+                tmpRes <- getTopGseaResults(enrichRes, topThr)
+            }
             sig <- tmpRes[[1]]
             insig <- tmpRes[[2]]
         }
         numSig <- nrow(sig)
         if (numSig == 0) {
-            warning("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
+            if (sigMethod == "fdr") {
+                warning("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
+            } else {
+                warning("ERROR: No significant set is identified based on top ", topThr, "!\n")
+            }
             sig_list[[j]] <- NULL
             insig_list[[j]] <- NULL
             next

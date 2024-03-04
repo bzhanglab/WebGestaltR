@@ -133,11 +133,11 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                     list_p <- biggest_p
                 }
                 p_vals <- append(p_vals, list_p)
-                relevant_items <- gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]]
+                relevant_items <- unlist(gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]])
                 if (length(meta_items_in_sets) < i) {
                     meta_items_in_sets[[i]] <- relevant_items
                 } else {
-                    meta_items_in_sets[[i]] <- rbind(meta_items_in_sets[[i]], relevant_items)
+                    meta_items_in_sets[[i]] <- unlist(rbind(meta_items_in_sets[[i]], relevant_items))
                 }
             }
         }

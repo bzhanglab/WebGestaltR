@@ -27,7 +27,7 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
     tabs <- c()
     for (j in seq_along(enrichedSig_list)) {
         if (j == 1) {
-            print(paste("Processing dataset", j, "of", length(interestingGeneMap_list) + 1))
+            print(paste("Generating report for dataset", j, "of", length(enrichedSig_list)))
             enrichedSig <- enrichedSig_list[[j]]
             geneSet <- NULL
             if (!is.null(geneSetDes_list) && length(geneSetDes_list) > 0) {
@@ -79,6 +79,14 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
             referenceSet <- NULL
             relative_path <- paste0("./Report_", projectName, "_meta", ".html")
             partial_output <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, "_meta", ".html"))
+            pvals <- enrichedSig$pValue
+            enrichedSig$logp <- vapply(pvals, function(x) {
+                if (x <= .Machine$double.eps) {
+                    return(-log10(.Machine$double.eps) * sign(x))
+                } else {
+                    return(-log10(x) * sign(x))
+                }
+            }, numeric(1))
             createMetaSummaryReport(
                 hostName = hostName, outputDirectory = outputDirectory, organism = organism,
                 projectName = projectName, enrichMethod = enrichMethod, geneSet = geneSet,
@@ -98,7 +106,7 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
             tabs[[j]] <- list(title = "All", path = relative_path)
         } else {
             i <- j - 1 # offset for lists that don't have meta-analysis
-            print(paste("Processing dataset", i, "of", length(interestingGeneMap_list) + 1))
+            print(paste("Generating report for dataset", j, "of", length(enrichedSig_list)))
             enrichedSig <- enrichedSig_list[[j]]
             geneSet <- geneSet_list[[i]]
             if (!is.null(geneSetDes_list) && length(geneSetDes_list) > 0 && i <= length(geneSetDes_list)) {
@@ -107,8 +115,8 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
                 geneSetDes <- NULL
             }
             if (!is.null(geneSetDag_list) && length(geneSetDag_list) > 0) {
-            #  geneSetDag <- geneSetDag_list[[i]]
-                 geneSetDag <- NULL
+                #  geneSetDag <- geneSetDag_list[[i]]
+                geneSetDag <- NULL
             } else {
                 geneSetDag <- NULL
             }

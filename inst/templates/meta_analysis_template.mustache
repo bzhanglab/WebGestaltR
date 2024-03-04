@@ -64,55 +64,12 @@ let x = wgLib({
 	{{#hasGeneSetDag}}
 	dag: dag,
 	{{/hasGeneSetDag}}
-	volcano: {
-		{{#hasGeneSetDes}}
-		labelTypes: ["geneSet", "description"],
-		{{/hasGeneSetDes}}
-		{{^hasGeneSetDes}}
-		labelTypes: "geneSet",
-		{{/hasGeneSetDes}}
-		dimensions: { width: 960, height: 500 },
-		autoPlaceLabels: true,
-		y: "FDR",
-
-		{{#methodIsGsea}}
-		x: "normalizedEnrichmentScore",
-		xLabel: "normalizedEnrichmentScore",
-		xTransform: null,
-		radius: "leadingEdgeNum",
-		color: "leadingEdgeNum",
-			{{#hasGeneSetDes}}
-			tooltipContent: ["geneSet", "description", "normalizedEnrichmentScore", "FDR", "pValue", "leadingEdgeNum"]
-			{{/hasGeneSetDes}}
-			{{^hasGeneSetDes}}
-			tooltipContent: ["geneSet", "normalizedEnrichmentScore", "FDR", "pValue", "leadingEdgeNum"]
-			{{/hasGeneSetDes}}
-		{{/methodIsGsea}}
-		{{^methodIsGsea}}
-		x: "enrichmentRatio",
-		xLabel: "log2 of enrichment ratio",
-		radius: "overlap",
-		color: "overlap",
-			{{#hasGeneSetDes}}
-			tooltipContent: ["geneSet", "description", "enrichmentRatio", "FDR", "pValue", "overlap"]
-			{{/hasGeneSetDes}}
-			{{^hasGeneSetDes}}
-			tooltipContent: ["geneSet", "enrichmentRatio", "FDR", "pValue", "overlap"]
-			{{/hasGeneSetDes}}
-		{{/methodIsGsea}}
-	},
 	bar: {
 		dimensions: { width: 960, height: 300 },
 		labelWidth: 200,
 		tooltipContent: ["geneSet", "description", "enrichmentRatio", "FDR", "pValue", "overlap"],
-		{{#methodIsGsea}}
-		valueKey: "normalizedEnrichmentScore",
-		xLabel: "Normalized Enrichment Score"
-		{{/methodIsGsea}}
-		{{^methodIsGsea}}
-		valueKey: "enrichmentRatio",
-		xLabel: "Enrichment ratio"
-		{{/methodIsGsea}}
+		valueKey: "logp",
+		xLabel: "Signed -log10(p-value)"
 	}
 })
 x.set_active_tab(0)

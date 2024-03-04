@@ -15,14 +15,14 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
     if (is.null(outputHtmlFile)) {
         outputHtmlFile <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, ".html"))
     }
-	# if hostname starts with "file://", it is used as WebGestaltReporter
-	if (startsWith(hostName, "file://")) {
-		# change back hostName for web assets and browsers will cache it.
-		hostName <- "https://www.webgestalt.org"
-	} else if (grepl("^https?://localhost", hostName)) {
-		# Used when server is deployed locally
-		hostName <- "../.."
-	}
+    # if hostname starts with "file://", it is used as WebGestaltReporter
+    if (startsWith(hostName, "file://")) {
+        # change back hostName for web assets and browsers will cache it.
+        hostName <- "https://www.webgestalt.org"
+    } else if (grepl("^https?://localhost", hostName)) {
+        # Used when server is deployed locally
+        hostName <- "../.."
+    }
     numAnnoRefUserId <- NULL
     dagJson <- list()
     allEnrichedSig <- enrichedSig
@@ -126,6 +126,29 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
     })))) # sapply on NULL will return a list
 
     if (is_meta) {
+        pvals <- enrichedSig$pValue
+        nes <- enrichedSig$normalizedEnrichmentScore
+        logp <- c()
+        for (i in 1:length(pvals)) {
+            x <- pvals[i]
+            if (enrichMethod == "ORA") {
+                if (abs(x) <= 2 * .Machine$double.eps) {
+                    return(-log10(.Machine$double.eps))
+                } else {
+                    return(-log10(abs(x)))
+                }
+            } else if (enrichMethod == "GSEA") {
+                if (nes[i] == 0) {
+                    nes[i] <- 1
+                }
+                if (abs(x) <= 2 * .Machine$double.eps) {
+                    return(-log10(.Machine$double.eps) * sign(nes[i]))
+                } else {
+                    return(-log10(abs(x)) * sign(nes[i]))
+                }
+            }
+        }
+        enrichedSig$logP <- logp
         template <- readLines(system.file("templates/meta_partial_template.mustache", package = "WebGestaltR"))
         data <- list(
             hostName = hostName, bodyContent = bodyContent,
