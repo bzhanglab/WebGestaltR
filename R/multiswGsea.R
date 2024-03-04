@@ -137,7 +137,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                 if (length(meta_items_in_sets) < i) {
                     meta_items_in_sets[[i]] <- relevant_items
                 } else {
-                    meta_items_in_sets[[i]] <- unlist(rbind(meta_items_in_sets[[i]], relevant_items))
+                    meta_items_in_sets[[i]] <- unlist(c(meta_items_in_sets[[i]], relevant_items))
                 }
             }
         }

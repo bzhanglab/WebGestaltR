@@ -15,6 +15,7 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
     if (is.null(outputHtmlFile)) {
         outputHtmlFile <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, ".html"))
     }
+    print(paste("Creating report at", outputHtmlFile))
     # if hostname starts with "file://", it is used as WebGestaltReporter
     if (startsWith(hostName, "file://")) {
         # change back hostName for web assets and browsers will cache it.
@@ -133,22 +134,22 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
             x <- pvals[i]
             if (enrichMethod == "ORA") {
                 if (abs(x) <= 2 * .Machine$double.eps) {
-                    return(-log10(.Machine$double.eps))
+                    logp[i] <- -log10(.Machine$double.eps)
                 } else {
-                    return(-log10(abs(x)))
+                    logp[i] <- -log10(abs(x))
                 }
             } else if (enrichMethod == "GSEA") {
                 if (nes[i] == 0) {
                     nes[i] <- 1
                 }
                 if (abs(x) <= 2 * .Machine$double.eps) {
-                    return(-log10(.Machine$double.eps) * sign(nes[i]))
+                    logp[i] <- -log10(.Machine$double.eps) * sign(nes[i])
                 } else {
-                    return(-log10(abs(x)) * sign(nes[i]))
+                    logp[i] <- -log10(abs(x)) * sign(nes[i])
                 }
             }
         }
-        enrichedSig$logP <- logp
+        enrichedSig$logp <- logp
         template <- readLines(system.file("templates/meta_partial_template.mustache", package = "WebGestaltR"))
         data <- list(
             hostName = hostName, bodyContent = bodyContent,
