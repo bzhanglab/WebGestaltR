@@ -70,7 +70,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
     names(x)
   })
   all_genesets <- unique(unlist(modified_geneset))
-  combined_size <- list(geneSet = c(), size = c(), overlapId = c())
+  combined_size <- list(geneSet = c(), size = c())
   for (i in seq_along(all_genesets)) {
     geneset_of_interest <- all_genesets[[i]]
     genes_in_list <- NULL
