@@ -15,6 +15,7 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
     x <- tapply(inputGene$score, inputGene$gene, collapseMethod)
     inputGene <- data.frame(gene = names(x), score = as.numeric(x), stringsAsFactors = FALSE)
     inputGeneL <- inputGene$gene
+    print(inputGeneL)
     colnames(inputGene) <-c(sourceIdType,"score")
   }
 
@@ -160,14 +161,14 @@ add_prefix <- function(x, sourceIdType) {
   uppers <- c("LIPIDMAPS", "CAS")
   if(toupper(sourceIdType) %in% uppers){
     return(unlist(sapply(x, function(y) {
-      if (grepl(":", y)) {
+      if (grepl(":", y, FIXED=TRUE)) {
         return(y)
       }
       return(paste0(toupper(sourceIdType), ":", toupper(y)))
     })))
   } else {
     return(unlist(sapply(x, function(y) {
-      if (grepl(":", y) && sourceIdType != "swisslipids") {
+      if (grepl(":", y, fixed=TRUE) && sourceIdType != "swisslipids") {
         return(y)
       }
       return(paste0(sourceIdType, ":", y))
