@@ -10,13 +10,11 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
   }
 
   if (dataType == "rnk") {
-
     ###### Collapse the gene ids with multiple scores##########
     x <- tapply(inputGene$score, inputGene$gene, collapseMethod)
     inputGene <- data.frame(gene = names(x), score = as.numeric(x), stringsAsFactors = FALSE)
     inputGeneL <- inputGene$gene
-    print(inputGeneL)
-    colnames(inputGene) <-c(sourceIdType,"score")
+    colnames(inputGene) <- c(sourceIdType, "score")
   }
 
   if (dataType == "gmt") {
@@ -127,27 +125,29 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
     mappedInputGene$gLink <- paste0("https://www.wikidata.org/wiki/", replace_prefix(mappedInputGene$userId, "wikidata:"))
   } else if (sourceIdType == "rampc") {
     mappedInputGene$gLink <- replicate(length(mappedInputGene$userId), "https://rampdb.nih.gov") # No links for rampc. Links to home page
-  }
-   else {
+  } else {
     mappedInputGene$gLink <- paste0("URL NOT FOUND FOR TYPE ", sourceIdType)
   }
-  
-  if(dataType=="list"){
-		inputGene <- select(mappedInputGene, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
-	}
 
-	if(dataType=="rnk"){
-    inputGene$userId <- add_prefix(inputGene$userId, old_id_type)
-		inputGene <- mappedInputGene %>% inner_join(inputGene, by=c("userId"=sourceIdType))
+  if (dataType == "list") {
+    inputGene <- select(mappedInputGene, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
+  }
+
+  if (dataType == "rnk") {
+    old_ids <- inputGene[[sourceIdType]]
+    inputGene <- data.frame("score" = inputGene$score, "userId" = add_prefix(old_ids, old_id_type))
+    inputGene <- inner_join(mappedInputGene, inputGene, by = "userId")
+    # inputGene <- select(mappedInputGene, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink, .data$score)
     # %>%
-		#	select(.data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$score, .data$gLink)
-	}
+    # 	select(.data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$score, .data$gLink)
+  }
 
-	if(dataType=="gmt"){
+  if (dataType == "gmt") {
     inputGene$userId <- add_prefix(inputGene$userId, old_id_type)
-		inputGene <- mappedInputGene %>% inner_join(inputGene, by=c("userId"=sourceIdType)) %>%
-			select(.data$geneSet, .data$link, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
-	}
+    inputGene <- mappedInputGene %>%
+      inner_join(inputGene, by = c("userId" = sourceIdType)) %>%
+      select(.data$geneSet, .data$link, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
+  }
   # inputGene <- mappedInputGene
   ############# Output#######################
   if (mappingOutput) {
@@ -159,16 +159,16 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
 
 add_prefix <- function(x, sourceIdType) {
   uppers <- c("LIPIDMAPS", "CAS")
-  if(toupper(sourceIdType) %in% uppers){
+  if (toupper(sourceIdType) %in% uppers) {
     return(unlist(sapply(x, function(y) {
-      if (grepl(":", y, FIXED=TRUE)) {
+      if (grepl(":", y, FIXED = TRUE)) {
         return(y)
       }
       return(paste0(toupper(sourceIdType), ":", toupper(y)))
     })))
   } else {
     return(unlist(sapply(x, function(y) {
-      if (grepl(":", y, fixed=TRUE) && sourceIdType != "swisslipids") {
+      if (grepl(":", y, fixed = TRUE) && sourceIdType != "swisslipids") {
         return(y)
       }
       return(paste0(sourceIdType, ":", y))
