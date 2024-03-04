@@ -155,7 +155,6 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           distinct(.data$geneSet, .keep_all = TRUE)
       }
       if (i == 1) {
-        print(head(interestingGeneMap))
         print("====")
         print(head(enrichedSig))
       }

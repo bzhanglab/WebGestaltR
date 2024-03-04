@@ -105,6 +105,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
       enrichedResult$overlap <- sapply(enrichedResult$overlapId, function(x) {
         length(unlist(strsplit(x, ";")))
       })
+      print(head(enrichedResult))
       if (sigMethod == "fdr") {
         enrichedResultSig <- filter(enrichedResult, .data$FDR < fdrThr)
         if (nrow(enrichedResultSig) == 0) {
