@@ -139,9 +139,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
     enrichedSigs[[i]] <- enrichedSig
     insig <- oraRes$background[[i]]
     insig_lists[[i]] <- insig
-
     clusters <- list()
-
     if (!is.null(enrichedSig)) {
       if (!is.null(geneSetDes)) { ####### Add extra description information ###########
         enrichedSig <- enrichedSig %>%
