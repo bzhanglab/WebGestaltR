@@ -121,7 +121,6 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
 
       geneSetDes <- all_sets[["geneSetDes"]][[1]]
       geneSet <- all_sets[["geneSet"]][[1]]
-      # geneSetDag <- all_sets[["geneSetDag"]][[1]]
       for (j in seq_along(all_sets[["geneSet"]])) {
         if (j == 1) {
           next
@@ -134,7 +133,6 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       names(enrichedSig)[names(enrichedSig) == "description"] <- "link"
     } else {
       interestingGeneMap <- interestGeneMaps[[i - 1]]
-      # geneSetDag <- all_sets[["geneSetDag"]][[i - 1]]
       geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
       geneSet <- all_sets[["geneSet"]][[i - 1]]
     }
@@ -167,11 +165,10 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           enrichedSig$overlapId
         )
       } else if (organism != "others") {
-        idsInSet <- sapply(enrichedSig$overlapId, strsplit, split = ";")
+        idsInSet <- sapply(enrichedSig$overlapId, function (x) { return(strsplit(x, split = ";"))})
         names(idsInSet) <- enrichedSig$geneSet
         for (k in seq_along(enrichedSig$link)) {
-          
-          enrichedSig$link[[k]] <- metaLinkModification("ORA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
+          enrichedSig$link[[k]] <- metaLinkModification("ORA", enrichedSig$link[[k]], unlist(idsInSet[[enrichedSig$geneSet[[k]]]]), interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
         }
       }
 
