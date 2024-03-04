@@ -294,7 +294,7 @@ meta_wikiMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_ge
         if (length(unlist(scores)) != 0) {
             maxScore <- max(scores)
             minScore <- min(scores)
-            tmp <- getPaletteForGsea(maxScore, minScore)
+            tmp <- getPaletteForGsea(maxScore, minScore, 100)
             palette <- tmp[[1]]
             palette <- shift_colors(palette, color_index)
             breaks <- tmp[[2]]
@@ -350,7 +350,7 @@ meta_wikiLinkModification <- function(enrichMethod, geneList, all_genes, interes
         if (length(unlist(scores)) != 0) {
             maxScore <- max(scores)
             minScore <- min(scores)
-            tmp <- getPaletteForGsea(maxScore, minScore)
+            tmp <- getPaletteForGsea(maxScore, minScore, 100)
             palette <- tmp[[1]]
             palette <- shift_colors(palette, color_index)
             breaks <- tmp[[2]]
@@ -372,9 +372,11 @@ meta_wikiLinkModification <- function(enrichMethod, geneList, all_genes, interes
             }
         }
         ora_white <- get_white(color_index)
-        enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
-        for (i in seq_along(not_found)) {
-            enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
+            if (length(not_found) != 0) {
+            enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
+            for (i in seq_along(not_found)) {
+                enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
+            }
         }
     }
     return(enrichPathwayLink)

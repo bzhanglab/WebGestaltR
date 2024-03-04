@@ -120,21 +120,22 @@ getColorPalette <- function(enrichedRes, enrichMethod, schema) {
 	}
 }
 
-getPaletteForGsea <- function(maxScore, minScore) {
+getPaletteForGsea <- function(maxScore, minScore, gradient_size = 256) {
+	half_size <- floor(gradient_size / 2)
 	if (minScore > 0) {
-		colorPalette <- colorRampPalette(c(colorNeutral, colorPos))(128)
-		myBreak <- seq(0, maxScore + 0.01, length.out=129)
+		colorPalette <- colorRampPalette(c(colorNeutral, colorPos))(half_size)
+		myBreak <- seq(0, maxScore + 0.01, length.out=(half_size + 1))
 	}else{
 		if (maxScore < 0) {
-			colorPalette <- colorRampPalette(c(colorNeg, colorNeutral))(128)
-			myBreak <- seq(minScore- 0.01, 0, length.out=129)
+			colorPalette <- colorRampPalette(c(colorNeg, colorNeutral))(half_size)
+			myBreak <- seq(minScore- 0.01, 0, length.out=(half_size + 1))
 		}else{
 			if (abs(minScore) > maxScore) {
-				colorPalette <- colorRampPalette(c(colorNeg, colorNeutral, colorPos))(256)
-				myBreak <- c(seq(minScore-0.01, -0.01, length.out=128), 0, seq(0.01, -minScore+0.01, length.out=128))
+				colorPalette <- colorRampPalette(c(colorNeg, colorNeutral, colorPos))(gradient_size)
+				myBreak <- c(seq(minScore-0.01, -0.01, length.out=half_size), 0, seq(0.01, -minScore+0.01, length.out=half_size))
 			}else{
-				colorPalette <- colorRampPalette(c(colorNeg, colorNeutral, colorPos))(256)
-				myBreak <- c(seq(-maxScore-0.01, -0.01, length.out=128), 0, seq(0.01, maxScore+0.01, length.out=128))
+				colorPalette <- colorRampPalette(c(colorNeg, colorNeutral, colorPos))(gradient_size)
+				myBreak <- c(seq(-maxScore-0.01, -0.01, length.out=half_size), 0, seq(0.01, maxScore+0.01, length.out=half_size))
 			}
 		}
 	}
