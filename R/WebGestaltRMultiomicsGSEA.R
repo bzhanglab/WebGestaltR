@@ -78,7 +78,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
     ## Meta-analysis
 
     for (i in 2:(length(gseaRes$enriched) + 1)) {
-        print(paste0("Processing ", i, "th list..."))
+        print(paste0("Processing ", i, " list..."))
         if (i == (length(gseaRes$enriched) + 1)) {
             print("Meta-analysis")
             i <- 1

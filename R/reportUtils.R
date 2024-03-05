@@ -108,7 +108,7 @@ getTopMetaGseaResults <- function(results, topThr) {
         sig <- results[1:topThr, ]
         insig <- results[(topThr + 1):nrow(results), ]
     } else {
-        sig <- posRes
+        sig <- results
         insig <- NULL
     }
     return(list(sig, insig))
