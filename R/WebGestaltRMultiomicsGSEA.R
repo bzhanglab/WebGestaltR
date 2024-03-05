@@ -155,7 +155,6 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                     if (is.null(loop_geneset)) {
                         next
                     }
-                    try(
                     for (k in seq_along(enrichedSig_list)) {
                         inner_loop_geneset <- enrichedSig_list[[k]]$geneSet
                         # print(paste("loop geneset", loop_geneset))
@@ -165,12 +164,14 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                                 idsInSet[[enrichedSig$geneSet[[j]]]] <- append(idsInSet[[enrichedSig$geneSet[[j]]]], strsplit(enrichedSig_list[[k]][enrichedSig_list[[k]]$geneSet == enrichedSig$geneSet[[j]][[1]],"leadingEdgeId"], split = ";"))
                             }
                         }
-                    })
+                    }
                     idsInSet[[enrichedSig$geneSet[[j]]]] <- unique(unlist(idsInSet[[enrichedSig$geneSet[[j]]]]))
                     enrichedSig$size[[j]] <- length(idsInSet[[enrichedSig$geneSet[[j]]]])
                 }
                 for (k in seq_along(enrichedSig$link)) {
-                    enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
+                    try(
+                        enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
+                    )
                 }
                 print("out here")
             }
