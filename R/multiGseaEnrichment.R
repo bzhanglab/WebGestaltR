@@ -14,14 +14,17 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         projectName <- paste0(old_project_name, "_", listNames[i])
         geneRankList <- geneRankList_list[[i]]
         geneSet <- geneSet_list[[i]]
-        geneSetDes <- geneSetDes_list[[i]]
+        if (is.null(geneSetDes_list) || length(geneSetDes_list) == 0 || length(geneSetDes_list) < i) {
+            geneSetDes <- NULL
+        } else {
+            geneSetDes <- geneSetDes_list[[i]]
+        }
         projectFolder <- file.path(outputDirectory, paste("Project_", old_project_name, "/", projectName, sep = ""))
         if (!dir.exists(projectFolder)) {
             dir.create(projectFolder)
         }
         colnames(geneRankList) <- c("gene", "score")
         sortedScores <- sort(geneRankList$score, decreasing = TRUE)
-        print(geneSet)
         geneSetName <- geneSet %>%
             select(.data$geneSet, link = .data$description) %>%
             distinct()
@@ -75,7 +78,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
             insig <- filter(enrichRes, .data$FDR >= fdrThr)
         } else if (sigMethod == "top") {
             enrichRes <- arrange(enrichRes, .data$FDR, .data$pValue)
-            if (j == 1){
+            if (j == 1) {
                 tmpRes <- getTopMetaGseaResults(enrichRes, topThr)
             } else {
                 tmpRes <- getTopGseaResults(enrichRes, topThr)
@@ -85,7 +88,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         } else {
             warning("WARNING: Invalid significance method ", sigMethod, "!\nDefaulting to top.\n")
             enrichRes <- arrange(enrichRes, .data$FDR, .data$pValue)
-            if (j == 1){
+            if (j == 1) {
                 tmpRes <- getTopMetaGseaResults(enrichRes, topThr)
             } else {
                 tmpRes <- getTopGseaResults(enrichRes, topThr)
@@ -139,7 +142,11 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
             sig$leadingEdgeId <- leadingGenes
             sig$plotPath <- rep("", numSig)
         } else {
-            geneSetDes <- geneSetDes_list[[j - 1]]
+            if (is.null(geneSetDes_list) || length(geneSetDes_list) == 0 || length(geneSetDes_list) < i) {
+                geneSetDes <- NULL
+            } else {
+                geneSetDes <- geneSetDes_list[[i]]
+            }
             projectName <- paste0(old_project_name, "_", listNames[j - 1])
             outputF <- file.path(outputDirectory, paste("Project_", old_project_name, "/", projectName, "/plots", sep = ""))
             if (!dir.exists(outputF)) {
