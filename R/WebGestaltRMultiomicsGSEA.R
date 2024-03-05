@@ -83,6 +83,8 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             print("Meta-analysis")
             i <- 1
         }
+        print(head(gseaRes$enriched[[i]]))
+        print(head(gseaRes))
         enrichedSig <- gseaRes$enriched[[i]]
         insig <- gseaRes$background[[i]]
         print("first")
