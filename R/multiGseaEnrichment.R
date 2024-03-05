@@ -21,7 +21,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         }
         colnames(geneRankList) <- c("gene", "score")
         sortedScores <- sort(geneRankList$score, decreasing = TRUE)
-
+        print(geneSet)
         geneSetName <- geneSet %>%
             select(.data$geneSet, link = .data$description) %>%
             distinct()
