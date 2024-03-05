@@ -126,7 +126,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
         } else {
             interestingGeneMap <- interestGeneMaps[[i - 1]]
             if ("geneSetDes" %in% names(all_sets)) {
-                if (length(all_sets[["geneSetDes"]]) <= (i - 1)) {
+                if (length(all_sets[["geneSetDes"]]) >= (i - 1)) {
                     geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
                     geneSet <- all_sets[["geneSet"]][[i - 1]]
                 } else {
