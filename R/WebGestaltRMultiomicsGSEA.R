@@ -172,8 +172,8 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                 }
                 for (k in seq_along(enrichedSig$link)) {
                     old_link <- enrichedSig$link[[k]]
-                    tryCatch((
-                        enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName, enrichedSig$geneSet[[k]]),
+                    tryCatch(({
+                        enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName, enrichedSig$geneSet[[k]])},
                         error = function(e) {
                             enrichedSig$link[[k]] <- old_link
                         },
