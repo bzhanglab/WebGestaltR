@@ -137,15 +137,13 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
     old_ids <- inputGene[[sourceIdType]]
     inputGene <- data.frame("score" = inputGene$score, "userId" = add_prefix(old_ids, old_id_type))
     inputGene <- inner_join(mappedInputGene, inputGene, by = "userId")
-    # inputGene <- select(mappedInputGene, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink, .data$score)
-    # %>%
-    # 	select(.data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$score, .data$gLink)
   }
 
   if (dataType == "gmt") {
-    inputGene$userId <- add_prefix(inputGene$userId, old_id_type)
+    old_ids <- inputGene[[sourceIdType]]
+    inputGene <- data.frame("score" = inputGene$score, "userId" = add_prefix(old_ids, old_id_type))
     inputGene <- mappedInputGene %>%
-      inner_join(inputGene, by = c("userId" = sourceIdType)) %>%
+      inner_join(inputGene, by = "userId") %>%
       select(.data$geneSet, .data$link, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
   }
   # inputGene <- mappedInputGene
@@ -158,6 +156,10 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
 }
 
 add_prefix <- function(x, sourceIdType) {
+  no_prefixes <- c("rampc")
+  if (sourceIdType %in% no_prefixes) {
+    return(x)
+  }
   uppers <- c("LIPIDMAPS", "CAS")
   if (toupper(sourceIdType) %in% uppers) {
     return(unlist(sapply(x, function(y) {
