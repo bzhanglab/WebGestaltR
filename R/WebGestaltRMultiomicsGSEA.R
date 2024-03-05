@@ -151,9 +151,16 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                 idsInSet <- list()
                 print("in here")
                 for (j in seq_along(enrichedSig$geneSet)) {
+                    loop_geneset <- enrichedSig$geneSet[[j]]
+                    if (is.null(loop_geneset)) {
+                        next
+                    }
                     for (k in seq_along(enrichedSig_list)) {
-                        if (enrichedSig$geneSet[[j]] %in% enrichedSig_list[[k]]$geneSet) {
-                            idsInSet[[enrichedSig$geneSet[[j]]]] <- append(idsInSet[[enrichedSig$geneSet[[j]]]], strsplit(enrichedSig_list[[k]][enrichedSig_list[[k]]$geneSet == enrichedSig$geneSet[[j]][[1]],"leadingEdgeId"], split = ";"))
+                        inner_loop_geneset <- enrichedSig_list[[k]]$geneSet
+                        if (!is.null(inner_loop_geneset)) {
+                            if (loop_geneset %in% inner_loop_geneset) {
+                                idsInSet[[enrichedSig$geneSet[[j]]]] <- append(idsInSet[[enrichedSig$geneSet[[j]]]], strsplit(enrichedSig_list[[k]][enrichedSig_list[[k]]$geneSet == enrichedSig$geneSet[[j]][[1]],"leadingEdgeId"], split = ";"))
+                            }
                         }
                     }
                     idsInSet[[enrichedSig$geneSet[[j]]]] <- unique(unlist(idsInSet[[enrichedSig$geneSet[[j]]]]))
