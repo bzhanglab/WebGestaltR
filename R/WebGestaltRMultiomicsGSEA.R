@@ -132,10 +132,12 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             enrichedSig <- enrichedSig %>% distinct(.data$geneSet, .keep_all = TRUE)
             if (i != 1) {
                 enrichedSig_list[[i - 1]] <- enrichedSig
+                geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
+                geneTables_list[[i]] <- geneTables
+            } else {
+                geneTables_list <- c("")
             }
-
-            geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
-            geneTables_list[[i]] <- geneTables
+            
 
             if (organism != "others" && i != 1) {
                 enrichedSig$link <- mapply(
