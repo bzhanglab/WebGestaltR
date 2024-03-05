@@ -98,7 +98,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                 interestingGeneMap[["unmapped"]] <- append(interestingGeneMap[["unmapped"]], interestGeneMaps[[j]][["unmapped"]])
                 names(interestGeneMaps[[j]][["mapped"]]) <- old_names
             }
-            if ("geneSetDes" %in% colnames(all_sets)) {
+            if ("geneSetDes" %in% names(all_sets)) {
                 if (length(all_sets[["geneSetDes"]]) <= 1) {
                     geneSetDes <- all_sets[["geneSetDes"]][[1]]
                     geneSet <- all_sets[["geneSet"]][[1]]
@@ -113,10 +113,19 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                         geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
                     }
                 }
+            } else {
+                geneSetDes <- all_sets[["geneSet"]][[1]]
+                geneSet <- all_sets[["geneSet"]][[1]]
+                for (j in seq_along(all_sets[["geneSet"]])) {
+                    if (j == 1) {
+                        next
+                    }
+                    geneSet <- rbind(geneSet, all_sets[["geneSet"]][[j]])
+                }
             }
         } else {
             interestingGeneMap <- interestGeneMaps[[i - 1]]
-            if ("geneSetDes" %in% colnames(all_sets)) {
+            if ("geneSetDes" %in% names(all_sets)) {
                 if (length(all_sets[["geneSetDes"]]) <= (i - 1)) {
                     geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
                     geneSet <- all_sets[["geneSet"]][[i - 1]]

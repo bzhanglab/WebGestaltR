@@ -118,7 +118,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         interestingGeneMap[["unmapped"]] <- append(interestingGeneMap[["unmapped"]], interestGeneMaps[[j]][["unmapped"]])
         names(interestGeneMaps[[j]][["mapped"]]) <- old_names
       }
-      if ("geneSetDes" %in% colnames(all_sets)) {
+      if ("geneSetDes" %in% names(all_sets)) {
         geneSetDes <- all_sets[["geneSetDes"]][[1]]
         geneSet <- all_sets[["geneSet"]][[1]]
       } else {
@@ -132,7 +132,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         geneSet <- rbind(geneSet, all_sets[["geneSet"]][[j]])
         if (!is.null(geneSetDes)) {
           if (length(all_sets[["geneSetDes"]]) >= j) {
-          geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
+            geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
           }
         }
       }
@@ -141,11 +141,12 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       names(enrichedSig)[names(enrichedSig) == "description"] <- "link"
     } else {
       interestingGeneMap <- interestGeneMaps[[i - 1]]
-      if ("geneSetDes" %in% colnames(all_sets)) {
+      if ("geneSetDes" %in% names(all_sets)) {
         if (length(all_sets[["geneSetDes"]]) < i) {
           geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
         }
       }
+      geneSetDes <- all_sets[["geneSet"]][[i - 1]]
       geneSet <- all_sets[["geneSet"]][[i - 1]]
     }
     enrichedSigs[[i]] <- enrichedSig
