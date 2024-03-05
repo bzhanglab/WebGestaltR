@@ -144,6 +144,9 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       if ("geneSetDes" %in% names(all_sets)) {
         if (length(all_sets[["geneSetDes"]]) <= (i - 1)) {
           geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
+        } else {
+          geneSetDes <- all_sets[["geneSet"]][[i - 1]]
+          geneSet <- all_sets[["geneSet"]][[i - 1]]
         }
       } else {
         geneSetDes <- all_sets[["geneSet"]][[i - 1]]
