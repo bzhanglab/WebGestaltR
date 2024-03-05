@@ -171,11 +171,17 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                     enrichedSig$size[[j]] <- length(idsInSet[[enrichedSig$geneSet[[j]]]])
                 }
                 for (k in seq_along(enrichedSig$link)) {
-                    try(
-                        enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
+                    old_link <- enrichedSig$link[[k]]
+                    tryCatch((
+                        enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName, enrichedSig$geneSet[[k]]),
+                        error = function(e) {
+                            enrichedSig$link[[k]] <- old_link
+                        },
+                        warning = function(w) {
+                            enrichedSig$link[[k]] <- old_link
+                        }
                     )
                 }
-                print("out here")
             }
             if ("database" %in% colnames(geneSet)) {
                 # add source database for multiple databases
