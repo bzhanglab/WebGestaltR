@@ -37,14 +37,12 @@ keggMetaboliteLinkModification <- function(enrichPathwayLink, geneList, interest
 wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName) {
     geneMap <- interestingGeneMap$mapped
     hmdbGeneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
-    hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "", x, ignore.case = TRUE))
+    # hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "", x, ignore.case = TRUE))
     geneMap <- filter(geneMap, .data$rampc %in% geneList)
     geneList <- unlist(strsplit(geneList, ";"))
     enrichPathwayLink <- paste0(
         enrichPathwayLink,
-        paste0(sapply(hmdbGeneList, function(x) paste0("&xref[]=", x, ",HMDB")), collapse = "")
-        # not many pathway have entrezgene xref. Using both also seem to interfere with coloring
-        # paste0(sapply(geneMap$entrezgene, function(x) paste0("&xref[]=", x, ",Entrez Gene")), collapse="")
+        "?"
     )
     if (enrichMethod == "ORA") {
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
@@ -60,6 +58,9 @@ wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, gene
         breaks <- tmp[[2]]
         colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
         colorStr <- paste(gsub("#", "%23", colors, fixed = TRUE), collapse = ",")
+        for (i in seq_along(hmdbGeneList)) {
+            enrichPathwayLink <- paste0(enrichPathwayLink, URLencode(colors[i]), "=", hmdbGeneList[i], "&")
+        }
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorStr)
     }
     return(enrichPathwayLink)

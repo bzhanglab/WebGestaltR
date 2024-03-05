@@ -131,7 +131,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         }
         geneSet <- rbind(geneSet, all_sets[["geneSet"]][[j]])
         if (!is.null(geneSetDes)) {
-          if (length(all_sets[["geneSetDes"]]) >= j) {
+          if (length(all_sets[["geneSetDes"]]) >= (j) && !is.null(all_sets[["geneSetDes"]][[j]]) && (ncol(all_sets[["geneSetDes"]][[j]]) == ncol(geneSetDes))) {
             geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
           }
         }
