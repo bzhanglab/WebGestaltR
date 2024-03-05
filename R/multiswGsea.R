@@ -121,6 +121,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
     meta_ps <- list()
     biggest_p <- 1 - .Machine$double.eps
     meta_items_in_sets <- list()
+    sizes <- list()
     for (i in seq_along(all_gene_sets)) {
         gene_set <- all_gene_sets[[i]]
         p_vals <- c()
@@ -141,6 +142,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                 }
             }
         }
+        sizes[[i]] <- length(meta_items_in_sets[[i]])
         if (length(p_vals) < 2) {
             meta_ps[[i]] <- p_vals[1]
         } else {
