@@ -39,6 +39,7 @@ wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, gene
     hmdbGeneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
     hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "", x, ignore.case = TRUE))
     geneMap <- filter(geneMap, .data$rampc %in% geneList)
+    geneList <- unlist(strsplit(geneList, ";"))
     enrichPathwayLink <- paste0(
         enrichPathwayLink,
         paste0(sapply(hmdbGeneList, function(x) paste0("&xref[]=", x, ",HMDB")), collapse = "")
