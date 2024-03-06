@@ -109,14 +109,18 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
             row_ids <- intGId[[k]]$overlapId[intg_index]
             print("oops")
             print(row_ids)
-            if (!is.null(row_ids) && row_ids != "") {
-              print("in")
-              if (overlapId == "") {
-                print("here")
-                overlapId <- row_ids
-              } else {
-                print("now")
-                overlapId <- paste0(overlapId, ";", row_ids)
+            if (!is.na(row_ids)) {
+              if (!is.null(row_ids)) {
+                if (row_ids != "") {
+                  print("in")
+                  if (overlapId == "") {
+                    print("here")
+                    overlapId <- row_ids
+                  } else {
+                    print("now")
+                    overlapId <- paste0(overlapId, ";", row_ids)
+                  }
+                }
               }
             }
           }
@@ -203,7 +207,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
         backgroundList[[i]] <- enrichedResultInsig
       }
     }
-    if (i == 1){
+    if (i == 1) {
       break
     }
   }
