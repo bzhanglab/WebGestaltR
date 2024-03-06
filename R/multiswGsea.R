@@ -166,8 +166,8 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                 major_sign <- 1
             }
             bool_flips <- c()
-            for (i in seq_along(flips)) {
-                if (sign(flips[i]) == major_sign) {
+            for (j in seq_along(flips)) {
+                if (sign(flips[j]) == major_sign) {
                     bool_flips <- append(bool_flips, TRUE)
                 } else {
                     bool_flips <- append(bool_flips, FALSE)
