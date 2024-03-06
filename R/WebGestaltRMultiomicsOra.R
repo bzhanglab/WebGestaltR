@@ -102,6 +102,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
   ## Meta-analysis
 
   for (i in 2:(length(oraRes$enriched) + 1)) {
+    print(paste0("Processing list ", i))
     if (i == (length(oraRes$enriched) + 1)) {
       i <- 1
     }
@@ -183,8 +184,14 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       } else if (organism != "others") {
         idsInSet <- sapply(enrichedSig$overlapId, strsplit, split = ";")
         names(idsInSet) <- enrichedSig$geneSet
+        old_links <- enrichedSig$link
         for (k in seq_along(enrichedSig$link)) {
-          enrichedSig$link[[k]] <- metaLinkModification("ORA", enrichedSig$link[[k]], unlist(idsInSet[[k]]), interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
+          new_link <- metaLinkModification("ORA", enrichedSig$link[[k]], unlist(idsInSet[[k]]), interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
+          if (!is.null(new_link)) {
+            enrichedSig$link[[k]] <- new_link
+          } else {
+            enrichedSig$link[[k]] <- old_links[[k]]
+          }
         }
       }
 

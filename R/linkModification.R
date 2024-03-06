@@ -40,10 +40,10 @@ wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, gene
     # hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "", x, ignore.case = TRUE))
     geneMap <- filter(geneMap, .data$rampc %in% geneList)
     geneList <- unlist(strsplit(geneList, ";"))
-    enrichPathwayLink <- paste0(
-        enrichPathwayLink,
-        "?"
-    )
+    if (grepl("PathwayWidget", enrichPathwayLink, fixed = FALSE)) {
+        enrichPathwayLink <- gsub("www.wikipathways.org/wpi/PathwayWidget.php?id=", "pathway-viewer.toolforge.org/embed/", enrichPathwayLink, fixed = TRUE)
+        enrichPathwayLink <- paste0(enrichPathwayLink, "?")
+    }
     if (enrichMethod == "ORA") {
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
     } else if (enrichMethod == "GSEA") {
