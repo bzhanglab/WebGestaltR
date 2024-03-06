@@ -106,7 +106,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
             row_index <- which(rust_result_df[[k]]$geneSet == gene_set)[1]
             p_vals <- append(p_vals, rust_result_df[[k]]$pValue[row_index])
             intg_index <- which(intGId[[k - 1]]$geneSet == gene_set)[1]
-            row_ids <- intGId[[k]]$overlapId[intg_index]
+            row_ids <- intGId[[k - 1]]$overlapId[intg_index]
             print("oops")
             print(row_ids)
             if (!is.na(row_ids)) {
