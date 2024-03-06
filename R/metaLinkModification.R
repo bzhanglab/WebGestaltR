@@ -40,14 +40,14 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                 }
                 if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
                     mapping_table <- full_simple_mapping(all_genes, "hsapiens", "rampc", "kegg", "rampc", hostName, no_dups = TRUE)
-                    colnames(mapping_table) <- c("all_genes", "mapped_genes")
                 } else if (grepl("toolforge.org", enrichPathwayLink, fixed = TRUE)) {
                     mapping_table <- full_simple_mapping(all_genes, "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
-                    colnames(mapping_table) <- c("all_genes", "mapped_genes")
+                    
                 }
-                if (is.null(mapping_table$mapped_genes)) {
+                if (is.null(mapping_table)) {
                     next
                 }
+                colnames(mapping_table) <- c("all_genes", "mapped_genes")
                 for (j in seq_along(all_sets[[i]])) {
                     interestingGeneMap <- interestingGeneMap_list[[all_sets[[i]][[j]]]]
                     rampc_geneList <- interestingGeneMap$mapped$rampc[interestingGeneMap$mapped$rampc %in% mapping_table$all_genes]
