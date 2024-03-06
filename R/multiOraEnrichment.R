@@ -50,6 +50,13 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
       select(.data$geneSet, link = .data$description) %>%
       distinct()
   }
+  for (i in seq_along(geneSetFilter)) {
+    geneSetFilter[[i]] <- geneSetFilter[[i]] %>%
+      left_join(refG[[i]], by = "geneSet") %>%
+      left_join(intG[[i]], by = "geneSet") %>%
+      left_join(intGId[[i]], by = "geneSet") %>%
+      arrange(.data$size, .data$geneSet)
+  }
   geneSet <- lapply(geneSet, function(x) {
     x[x$geneSet %in% geneSetFilter[[i]]$geneSet, ]
   })
@@ -84,6 +91,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
       enrichmentRatio = x$enrichment_ratio, geneSet = x$gene_set, overlap = x$overlap
     )
   })
+  print(rust_result_df)
   enrichedResultList <- list()
   backgroundList <- list()
   for (i in seq_along(rust_result_df)) {

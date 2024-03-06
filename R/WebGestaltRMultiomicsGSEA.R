@@ -110,7 +110,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                             next
                         }
                         geneSet <- rbind(geneSet, all_sets[["geneSet"]][[j]])
-                        if (length(all_sets[["geneSetDes"]]) >= (i - 1) && !is.null(all_sets[["geneSetDes"]][[j]]) && (ncol(all_sets[["geneSetDes"]][[j]]) == ncol(geneSetDes))) {
+                        if (length(all_sets[["geneSetDes"]]) >= (j) && !is.null(all_sets[["geneSetDes"]][[j]]) && (ncol(all_sets[["geneSetDes"]][[j]]) == ncol(geneSetDes))) {
                             geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
                         }
                     }

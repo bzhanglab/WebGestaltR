@@ -181,7 +181,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
 
   listNames <- sapply(listNames, sanitizeFileName)
   for (v in seq_along(listNames)) {
-    listNames[v] = gsub(" ", "_", listNames[v])
+    listNames[v] <- gsub(" ", "_", listNames[v])
   }
 
   if (enrichMethod == "ORA") {

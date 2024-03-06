@@ -42,7 +42,6 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                     mapping_table <- full_simple_mapping(all_genes, "hsapiens", "rampc", "kegg", "rampc", hostName, no_dups = TRUE)
                 } else if (grepl("toolforge.org", enrichPathwayLink, fixed = TRUE)) {
                     mapping_table <- full_simple_mapping(all_genes, "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
-                    
                 }
                 if (is.null(mapping_table)) {
                     next
