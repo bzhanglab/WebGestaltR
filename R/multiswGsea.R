@@ -166,7 +166,15 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                 major_sign <- 1
             }
             flips <- flips * major_sign
-            p_vals <- two2one(abs(p_vals), two = NULL, invert = flips)
+            bool_flips <- c()
+            for (i in seq_along(flips)) {
+                if (flips[i] == 1) {
+                    bool_flips <- append(bool_flips, TRUE)
+                } else {
+                    bool_flips <- append(bool_flips, FALSE)
+                }
+            }
+            p_vals <- two2one(abs(p_vals), two = NULL, invert = bool_flips)
             p <- stouffer(p_vals)$p[1]
             stouffer_p <- 0
             if (p < 0.5) {
