@@ -130,26 +130,34 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
         pvals <- unlist(enrichedSig$pValue)
         nes <- unlist(enrichedSig$normalizedEnrichmentScore)
         logp <- c()
-        for (i in 1:length(pvals)) {
-            x <- pvals[i]
-            if (enrichMethod == "ORA") {
-                if (abs(x) <= 10 * .Machine$double.eps) {
-                    logp[i] <- 16
-                } else {
-                    logp[i] <- -log10(abs(x))
-                }
-            } else if (enrichMethod == "GSEA") {
-                if (nes[i] == 0) {
-                    nes[i] <- 1
+        get_log_p <- function(x){
+                logp_val <- 16
+                safe_sign <- function(x) {
+                    if (x > 0) {
+                        return(1)
+                    } else if (x < 0) {
+                        return(-1)
+                    } else {
+                        return(1)
+                    }
                 }
                 if (abs(x) <= 2 * .Machine$double.eps) {
-                    logp[i] <- -log10(.Machine$double.eps) * sign(nes[i])
+                    logp_val <- 16 * safe_sign(x)
                 } else {
-                    logp[i] <- -log10(abs(x)) * sign(nes[i])
+                    logp_val <- -log10(x) * safe_sign(x)
                 }
-            }
+                if (is.na(logp_val)) {
+                    logp_val <- 16
+                } else if (is.infinite(logp_val)) {
+                    logp_val <- 16 * sign(x)
+                }
+                return(logp_val)
         }
-        enrichedSig$logp <- logp
+        for (i in 1:length(pvals)) {
+            x <- pvals[i]
+            logp <- c(logp, get_log_p(x))
+        }
+        enrichedSig$logp <- unlist(logp)
         template <- readLines(system.file("templates/meta_partial_template.mustache", package = "WebGestaltR"))
         data <- list(
             hostName = hostName, bodyContent = bodyContent,
