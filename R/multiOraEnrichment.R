@@ -84,7 +84,6 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
       enrichmentRatio = x$enrichment_ratio, geneSet = x$gene_set, overlap = x$overlap
     )
   })
-  print(rust_result_df)
   enrichedResultList <- list()
   backgroundList <- list()
   for (i in seq_along(rust_result_df)) {
