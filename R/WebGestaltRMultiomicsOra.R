@@ -97,7 +97,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
   insig_lists[[1]] <- NULL
   geneTables_list <- list()
   enrichedSigs <- list()
-  geneTables_list[[i]] <- NULL
+  geneTables_list[[1]] <- NULL
 
   ## Meta-analysis
 
