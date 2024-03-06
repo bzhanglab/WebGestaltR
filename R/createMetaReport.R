@@ -81,12 +81,29 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
             partial_output <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, "_meta", ".html"))
             pvals <- enrichedSig$pValue
             enrichedSig$logp <- vapply(pvals, function(x) {
-                if (abs(x) <= 2 * .Machine$double.eps) {
-                    return(16 * sign(x))
-                } else {
-                    return(-log10(x) * sign(x))
+                logp_val <- 16
+                safe_sign <- function(x) {
+                    if (x > 0) {
+                        return(1)
+                    } else if (x < 0) {
+                        return(-1)
+                    } else {
+                        return(1)
+                    }
                 }
+                if (abs(x) <= 2 * .Machine$double.eps) {
+                    logp_val <- 16 * safe_sign(x)
+                } else {
+                    logp_val <- -log10(x) * safe_sign(x)
+                }
+                if (is.na(logp_val)) {
+                    logp_val <- 16
+                } else if (is.infinite(logp_val)) {
+                    logp_val <- 16 * sign(x)
+                }
+                return(logp_val)
             }, numeric(1))
+
             createMetaSummaryReport(
                 hostName = hostName, outputDirectory = outputDirectory, organism = organism,
                 projectName = projectName, enrichMethod = enrichMethod, geneSet = geneSet,
