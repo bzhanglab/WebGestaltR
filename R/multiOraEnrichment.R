@@ -97,27 +97,26 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
       all_gene_sets <- all_genesets
       for (j in seq_along(all_gene_sets)) {
         gene_set <- all_gene_sets[[j]]
-        print(gene_set)
         p_vals <- c()
         overlapId <- ""
         for (k in 2:length(rust_result_df)) {
-          print(k)
           if (gene_set %in% rust_result_df[[k]]$geneSet) {
             row_index <- which(rust_result_df[[k]]$geneSet == gene_set)[1]
-            p_vals <- append(p_vals, rust_result_df[[k]]$pValue[row_index])
+            p_val <- rust_result_df[[k]]$pValue[row_index]
+            if (p_val < 2*.Machine$double.eps) {
+              p_val <- .Machine$double.eps
+            } else if (p_val >= 1){
+              p_val <- 1 - .Machine$double.eps
+            }
+            p_vals <- append(p_vals, p_val)
             intg_index <- which(intGId[[k - 1]]$geneSet == gene_set)[1]
             row_ids <- intGId[[k - 1]]$overlapId[intg_index]
-            print("oops")
-            print(row_ids)
             if (!is.na(row_ids)) {
               if (!is.null(row_ids)) {
                 if (row_ids != "") {
-                  print("in")
                   if (overlapId == "") {
-                    print("here")
                     overlapId <- row_ids
                   } else {
-                    print("now")
                     overlapId <- paste0(overlapId, ";", row_ids)
                   }
                 }
@@ -126,8 +125,12 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
           }
         }
         geneSets <- append(geneSets, gene_set)
-        meta_p <- stouffer(p_vals)$p[1]
-        meta_ps <- append(meta_ps, meta_p)
+        if (length(p_vals) == 1) {
+          meta_ps <- append(meta_ps, p_vals[1])
+        } else {
+          meta_p <- stouffer(p_vals)$p[1]
+          meta_ps <- append(meta_ps, meta_p)
+        }
         overlaps <- append(overlaps, overlapId)
       }
       meta_fdrs <- abs(p.adjust(unlist(meta_ps), method = fdrMethod))
@@ -143,7 +146,6 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
       enrichedResult$overlap <- sapply(overlap_ids, function(x) {
         length(unlist(strsplit(x, ";")))
       })
-      print("here")
       if (sigMethod == "fdr") {
         enrichedResultSig <- filter(enrichedResult, .data$FDR < fdrThr)
         if (nrow(enrichedResultSig) == 0) {
