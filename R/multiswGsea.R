@@ -125,14 +125,21 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
     for (i in seq_along(all_gene_sets)) {
         gene_set <- all_gene_sets[[i]]
         p_vals <- c()
+        nes_vals <- c()
         for (j in seq_along(output_df_list)) {
             if (gene_set %in% rownames(output_df_list[[j]])) {
                 list_p <- output_df_list[[j]][gene_set, "p_val"]
+                direction <- sign(output_df_list[[j]][gene_set, "ES"])
+                if (direction == 0) {
+                    direction <- 1
+                }
+
                 if (list_p == 0.0) {
                     list_p <- .Machine$double.eps
                 } else if (list_p > biggest_p) {
                     list_p <- biggest_p
                 }
+                list_p <- list_p * direction
                 p_vals <- append(p_vals, list_p)
                 relevant_items <- unlist(gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]])
                 if (length(meta_items_in_sets) < i) {
@@ -146,14 +153,34 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
         if (length(p_vals) < 2) {
             meta_ps[[i]] <- p_vals[1]
         } else {
-            meta_ps[[i]] <- stouffer(p_vals)$p[1]
+            pvals <- abs(p_vals) / 2
+            sum_sign <- sum(sign(p_vals))
+            major_sign <- sign(sum_sign)
+            if (major_sign == 0) {
+                major_sign <- 1
+            }
+
+            p <- stouffer(p_vals)$p[1]
+            if (p < 0.5) {
+                stouffer_p <- 2 * p * major_sign
+            } else {
+                stouffer_p <- 2 * (1 - p) * -1 * major_sign ## add sign to metap
+            }
+            stouffer_p <- stouffer(p_vals)$p[1]
+            if (stouffer_p == 0.0) {
+                stouffer_p <- .Machine$double.eps
+            } else if (abs(stouffer_p) > biggest_p) {
+                stouffer_p <- biggest_p * sign(stouffer_p)
+            }
+            meta_ps[[i]] <- abs(stouffer_p)
+            nes_vals[[i]] <- sign(stouffer_p)
         }
     }
 
     meta_fdrs <- p.adjust(unlist(meta_ps), method = fdrMethod)
 
     meta_output_df <- data.frame(
-        fdr = unlist(meta_fdrs), p_val = unlist(meta_ps), ES = numeric(length(all_gene_sets)), NES = numeric(length(all_gene_sets)),
+        fdr = unlist(meta_fdrs), p_val = unlist(meta_ps), ES = unlist(nes_vals), NES = unlist(nes_vals),
         leading_edge = numeric(length(all_gene_sets)), stringsAsFactors = FALSE
     )
     rownames(meta_output_df) <- all_gene_sets
