@@ -133,8 +133,8 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
         for (i in 1:length(pvals)) {
             x <- pvals[i]
             if (enrichMethod == "ORA") {
-                if (abs(x) <= 2 * .Machine$double.eps) {
-                    logp[i] <- -log10(.Machine$double.eps)
+                if (abs(x) <= 10 * .Machine$double.eps) {
+                    logp[i] <- 16
                 } else {
                     logp[i] <- -log10(abs(x))
                 }
