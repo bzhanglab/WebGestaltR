@@ -143,7 +143,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                 list_p <- list_p * direction
                 p_vals <- append(p_vals, list_p)
                 if (direction == 1) {
-                    flips <- append(flips,1)
+                    flips <- append(flips, 1)
                 } else {
                     flips <- append(flips, -1)
                 }
@@ -165,10 +165,9 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
             if (major_sign == 0) {
                 major_sign <- 1
             }
-            flips <- flips * major_sign
             bool_flips <- c()
             for (i in seq_along(flips)) {
-                if (flips[i] == 1) {
+                if (sign(flips[i]) == major_sign) {
                     bool_flips <- append(bool_flips, TRUE)
                 } else {
                     bool_flips <- append(bool_flips, FALSE)
