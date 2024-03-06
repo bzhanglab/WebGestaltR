@@ -116,7 +116,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         old_names <- names(interestGeneMaps[[j]][["mapped"]])
         names(interestGeneMaps[[j]][["mapped"]]) <- names(interestGeneMaps[[1]][["mapped"]])
         interestingGeneMap[["mapped"]] <- rbind(interestingGeneMap[["mapped"]], interestGeneMaps[[j]][["mapped"]])
-        interestingGeneMap[["unmapped"]] <- append(interestingGeneMap[["unmapped"]], interestGeneMaps[[j]][["unmapped"]])
+        interestingGeneMap[["unmapped"]] <- append(unlist(interestingGeneMap[["unmapped"]]), unlist(interestGeneMaps[[j]][["unmapped"]]))
         names(interestGeneMaps[[j]][["mapped"]]) <- old_names
       }
       if ("geneSetDes" %in% names(all_sets)) {
