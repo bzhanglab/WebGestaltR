@@ -34,8 +34,8 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
     }
   }
   met_intG <- distinct(met_intG, .keep_all = TRUE)
-  met_intG <- tapply(met_intG$gene, met_intG$geneSet, paste0, collapse = ";")
-  met_intG <- data.frame(geneSet = as.character(names(met_intG)), overlapId = as.character(met_intG), stringsAsFactors = FALSE)
+  met_intG <- tapply(met_intG$gene, met_intG$geneSet, paste, collapse = ";")
+  met_intG <- data.frame(geneSet = names(met_intG), overlapId = as.character(met_intG), stringsAsFactors = FALSE)
   intGId <- lapply(intG, function(x) {
     tapply(x$gene, x$geneSet, paste, collapse = ";")
   })
@@ -69,7 +69,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
         if (is.null(genes_in_list)) {
           genes_in_list <- unlist(genes[[j]][[geneset_of_interest]])
         } else {
-          genes_in_list <- c(genes_in_list, unlist(genes[[j]][[geneset_of_interest]]))
+          genes_in_list <- append(genes_in_list, unlist(genes[[j]][[geneset_of_interest]]))
         }
       }
     }
