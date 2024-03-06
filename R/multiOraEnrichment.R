@@ -36,7 +36,6 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
   met_intG <- distinct(met_intG, .keep_all = TRUE)
   met_intG <- tapply(met_intG$gene, met_intG$geneSet, paste, collapse = ";")
   met_intG <- data.frame(geneSet = names(met_intG), overlapId = as.character(met_intG), stringsAsFactors = FALSE)
-  print(met_intG)
   intGId <- lapply(intG, function(x) {
     tapply(x$gene, x$geneSet, paste, collapse = ";")
   })
@@ -87,7 +86,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
   })
   enrichedResultList <- list()
   backgroundList <- list()
-  for (i in 1:(length(rust_result_df) + 1)) {
+  for (i in 2:(length(rust_result_df) + 1)) {
     if (i == (length(rust_result_df) + 1)) {
       i <- 1
     }
