@@ -87,10 +87,45 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
   })
   enrichedResultList <- list()
   backgroundList <- list()
-  for (i in seq_along(rust_result_df)) {
+  for (i in 1:(length(rust_result_df) + 1)) {
+    if (i == (length(rust_result_df) + 1)) {
+      i <- 1
+    }
     if (i == 1) { # Meta-analysis
+      meta_ps <- c()
+      overlaps <- c()
+      geneSets <- c()
+      all_gene_sets <- all_genesets
+      for (j in seq_along(all_gene_sets)) {
+        gene_set <- all_gene_sets[[j]]
+        p_vals <- c()
+        overlapId <- ""
+        for (k in 2:length(rust_result_df)) {
+          if (gene_set %in% rust_result_df[[k]]$geneSet) {
+            row_index <- which(rust_result_df[[k]]$geneSet == gene_set)[1]
+            p_vals <- append(p_vals, rust_result_df[[k]]$pValue[row_index])
+            intg_index <- which(intGId[[k - 1]]$geneSet == gene_set)[1]
+            row_ids <- intGId[[k]]$overlapId[intg_index]
+            if (!is.null(row_ids) && row_ids != "") {
+              if (overlapId == "") {
+                overlapId <- row_ids
+              } else {
+                overlapId <- paste0(overlapId, ";", row_ids)
+              }
+            }
+          }
+        }
+        geneSets <- append(geneSets, gene_set)
+        meta_p <- stouffer(p_vals)$p[1]
+        meta_ps <- append(meta_ps, meta_p)
+        overlaps <- append(overlaps, overlapId)
+      }
+      meta_fdrs <- abs(p.adjust(unlist(meta_ps), method = fdrMethod))
+      rust_result_df[[i]] <- data.frame(
+        FDR = meta_fdrs, pValue = meta_ps, expect = rep(0, length(meta_ps)),
+        enrichmentRatio = rep(0, length(meta_ps)), geneSet = geneSets, overlapId = overlaps
+      )
       enrichedResult <- rust_result_df[[i]] %>%
-        left_join(met_intG, by = "geneSet") %>% # get overlapping gene IDs
         left_join(combined_size, by = "geneSet") %>%
         arrange(.data$FDR, .data$pValue, .data$enrichmentRatio) %>%
         distinct(.data$geneSet, .keep_all = TRUE)
