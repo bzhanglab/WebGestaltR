@@ -119,13 +119,14 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
 
     all_gene_sets <- unique(unlist(lapply(output_df_list, rownames)))
     meta_ps <- list()
+    nes_vals <- list()
     biggest_p <- 1 - .Machine$double.eps
     meta_items_in_sets <- list()
     sizes <- list()
     for (i in seq_along(all_gene_sets)) {
         gene_set <- all_gene_sets[[i]]
         p_vals <- c()
-        nes_vals <- c()
+        
         for (j in seq_along(output_df_list)) {
             if (gene_set %in% rownames(output_df_list[[j]])) {
                 list_p <- output_df_list[[j]][gene_set, "p_val"]
@@ -161,6 +162,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
             }
 
             p <- stouffer(p_vals)$p[1]
+            stouffer_p <- 0
             if (p < 0.5) {
                 stouffer_p <- 2 * p * major_sign
             } else {
