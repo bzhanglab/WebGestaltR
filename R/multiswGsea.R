@@ -74,7 +74,6 @@
 #' @importFrom doParallel registerDoParallel
 #' @importFrom foreach foreach
 #' @importFrom poolr stouffer
-#' @importFrom metap two2one
 #' @importFrom doRNG %dorng%
 #' @export
 #' @author John Elizarraras
@@ -190,4 +189,20 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
     gseaRes_list[[1]] <- list(Enrichment_Results = meta_output_df, Running_Sums = numeric(nrow(meta_output_df)), Items_in_Set = meta_items_in_sets)
 
     return(gseaRes_list)
+}
+two2one <- function (p, two = NULL, invert = NULL) 
+{
+    np <- length(p)
+    if (is.null(two)) {
+        two <- rep(TRUE, np)
+    }
+    if (is.null(invert)) {
+        invert <- rep(FALSE, np)
+    }
+    inrange <- sum(1L * ((p >= 0) & (p <= 1)))
+    if (np != inrange) 
+        warning("Some p out of range")
+    onep <- ifelse(two, ifelse(invert, (1 - p) + p/2, p/2), ifelse(invert, 
+        1 - p, p))
+    onep
 }
