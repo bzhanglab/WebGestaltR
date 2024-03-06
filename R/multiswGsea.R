@@ -157,7 +157,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
         }
         sizes[[i]] <- length(meta_items_in_sets[[i]])
         if (length(p_vals) < 2) {
-            meta_ps[[i]] <- p_vals[1]
+            meta_ps[[i]] <- abs(p_vals[1])
             nes_vals[[i]] <- sign(p_vals[1])
         } else {
             sum_sign <- sum(sign(p_vals))
