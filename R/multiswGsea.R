@@ -143,9 +143,9 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                 list_p <- list_p * direction
                 p_vals <- append(p_vals, list_p)
                 if (direction == 1) {
-                    flips <- append(flips, FALSE)
+                    flips <- 1
                 } else {
-                    flips <- append(flips, TRUE)
+                    flips <- -1
                 }
                 relevant_items <- unlist(gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]])
                 if (length(meta_items_in_sets) < i) {
@@ -161,12 +161,12 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
             nes_vals[[i]] <- sign(p_vals[1])
         } else {
             sum_sign <- sum(sign(p_vals))
-            p_vals <- two2one(abs(p_vals))
             major_sign <- sign(sum_sign)
             if (major_sign == 0) {
                 major_sign <- 1
             }
-
+            flips <- flips * major_sign
+            p_vals <- two2one(abs(p_vals), two = NULL, invert = flips)
             p <- stouffer(p_vals)$p[1]
             stouffer_p <- 0
             if (p < 0.5) {
