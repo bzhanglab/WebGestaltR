@@ -97,6 +97,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
       all_gene_sets <- all_genesets
       for (j in seq_along(all_gene_sets)) {
         gene_set <- all_gene_sets[[j]]
+        print(gene_set)
         p_vals <- c()
         overlapId <- ""
         for (k in 2:length(rust_result_df)) {
@@ -106,6 +107,8 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
             p_vals <- append(p_vals, rust_result_df[[k]]$pValue[row_index])
             intg_index <- which(intGId[[k - 1]]$geneSet == gene_set)[1]
             row_ids <- intGId[[k]]$overlapId[intg_index]
+            print("oops")
+            print(row_ids)
             if (!is.null(row_ids) && row_ids != "") {
               print("in")
               if (overlapId == "") {
