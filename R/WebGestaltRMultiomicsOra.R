@@ -122,7 +122,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         geneSetDes <- all_sets[["geneSetDes"]][[1]]
         geneSet <- all_sets[["geneSet"]][[1]]
       } else {
-        geneSetDes <- all_sets[["geneSet"]][[1]]
+        geneSetDes <- NULL
         geneSet <- all_sets[["geneSet"]][[1]]
       }
       for (j in seq_along(all_sets[["geneSet"]])) {
@@ -146,11 +146,11 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
           geneSet <- all_sets[["geneSet"]][[i - 1]]
         } else {
-          geneSetDes <- all_sets[["geneSet"]][[i - 1]]
+          geneSetDes <- NULL
           geneSet <- all_sets[["geneSet"]][[i - 1]]
         }
       } else {
-        geneSetDes <- all_sets[["geneSet"]][[i - 1]]
+        geneSetDes <- NULL
         geneSet <- all_sets[["geneSet"]][[i - 1]]
       }
     }
