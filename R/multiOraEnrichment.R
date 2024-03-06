@@ -196,6 +196,9 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
         backgroundList[[i]] <- enrichedResultInsig
       }
     }
+    if (i == 1){
+      break
+    }
   }
   return(list(enriched = enrichedResultList, background = backgroundList))
 }
