@@ -166,7 +166,6 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
             } else {
                 stouffer_p <- 2 * (1 - p) * -1 * major_sign ## add sign to metap
             }
-            stouffer_p <- stouffer(p_vals)$p[1]
             if (stouffer_p == 0.0) {
                 stouffer_p <- .Machine$double.eps
             } else if (abs(stouffer_p) > biggest_p) {
