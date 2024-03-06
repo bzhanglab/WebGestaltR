@@ -143,9 +143,9 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                 list_p <- list_p * direction
                 p_vals <- append(p_vals, list_p)
                 if (direction == 1) {
-                    flips <- 1
+                    flips <- append(flips,1)
                 } else {
-                    flips <- -1
+                    flips <- append(flips, -1)
                 }
                 relevant_items <- unlist(gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]])
                 if (length(meta_items_in_sets) < i) {
