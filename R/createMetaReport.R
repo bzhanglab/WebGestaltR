@@ -81,8 +81,8 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
             partial_output <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, "_meta", ".html"))
             pvals <- enrichedSig$pValue
             enrichedSig$logp <- vapply(pvals, function(x) {
-                if (x <= .Machine$double.eps) {
-                    return(-log10(.Machine$double.eps) * sign(x))
+                if (abs(x) <= 2 * .Machine$double.eps) {
+                    return(16 * sign(x))
                 } else {
                     return(-log10(x) * sign(x))
                 }
