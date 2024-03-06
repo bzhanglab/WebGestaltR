@@ -173,6 +173,9 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           arrange(.data$FDR, .data$pValue, desc(.data$size)) %>%
           distinct(.data$geneSet, .keep_all = TRUE)
       }
+      if (i == 1) {
+        print(enrichedSig[[1]]$overlapId)
+      }
       geneTables <- getGeneTables(organism, enrichedSig, "overlapId", interestingGeneMap)
       geneTables_list[[i]] <- geneTables
       if (organism != "others" && i != 1) {
