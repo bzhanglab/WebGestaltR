@@ -156,7 +156,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
             nes_vals[[i]] <- sign(p_vals[1])
         } else {
             sum_sign <- sum(sign(p_vals))
-            p_vals <- two2one(p_vals)
+            p_vals <- two2one(abs(p_vals))
             major_sign <- sign(sum_sign)
             if (major_sign == 0) {
                 major_sign <- 1
@@ -179,7 +179,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
         }
     }
 
-    meta_fdrs <- p.adjust(unlist(meta_ps), method = fdrMethod)
+    meta_fdrs <- abs(p.adjust(unlist(meta_ps), method = fdrMethod))
 
     meta_output_df <- data.frame(
         fdr = unlist(meta_fdrs), p_val = unlist(meta_ps), ES = unlist(nes_vals), NES = unlist(nes_vals),
