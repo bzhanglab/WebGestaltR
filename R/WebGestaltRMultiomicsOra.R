@@ -12,6 +12,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
   projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
   cat("Performing multi-omics ORA\nLoading the functional categories...\n")
   all_sets <- .load_meta_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
+  print(all_sets)
   cat("Loading the ID lists...\n")
   interest_lists <- list()
   interestGeneMaps <- list()
