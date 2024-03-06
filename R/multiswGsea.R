@@ -153,7 +153,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
         if (length(p_vals) < 2) {
             meta_ps[[i]] <- p_vals[1]
         } else {
-            pvals <- abs(p_vals) / 2
+            p_vals <- abs(p_vals) / 2
             sum_sign <- sum(sign(p_vals))
             major_sign <- sign(sum_sign)
             if (major_sign == 0) {
