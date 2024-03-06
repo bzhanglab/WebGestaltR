@@ -37,7 +37,7 @@ keggMetaboliteLinkModification <- function(enrichPathwayLink, geneList, interest
 wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName) {
     geneMap <- interestingGeneMap$mapped
     hmdbGeneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
-    # hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "", x, ignore.case = TRUE))
+    hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "HMDB_", x, ignore.case = TRUE))
     geneMap <- filter(geneMap, .data$rampc %in% geneList)
     geneList <- unlist(strsplit(geneList, ";"))
     if (grepl("PathwayWidget", enrichPathwayLink, fixed = FALSE)) {
@@ -45,7 +45,7 @@ wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, gene
         enrichPathwayLink <- paste0(enrichPathwayLink, "?")
     }
     if (enrichMethod == "ORA") {
-        enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
+        enrichPathwayLink <- paste0(enrichPathwayLink, colorPos, "=", paste(hmdbGeneList, collapse = ",", sep = ""))
     } else if (enrichMethod == "GSEA") {
         scores <- filter(interestingGeneMap$mapped, .data$rampc %in% geneList)[["score"]]
         if (length(unlist(scores)) == 0) {
