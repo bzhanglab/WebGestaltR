@@ -126,7 +126,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
     for (i in seq_along(all_gene_sets)) {
         gene_set <- all_gene_sets[[i]]
         p_vals <- c()
-        
+        flips <- c()
         for (j in seq_along(output_df_list)) {
             if (gene_set %in% rownames(output_df_list[[j]])) {
                 list_p <- output_df_list[[j]][gene_set, "p_val"]
@@ -142,6 +142,11 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                 }
                 list_p <- list_p * direction
                 p_vals <- append(p_vals, list_p)
+                if (direction == 1) {
+                    flips <- append(flips, FALSE)
+                } else {
+                    flips <- append(flips, TRUE)
+                }
                 relevant_items <- unlist(gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]])
                 if (length(meta_items_in_sets) < i) {
                     meta_items_in_sets[[i]] <- relevant_items
@@ -156,7 +161,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
             nes_vals[[i]] <- sign(p_vals[1])
         } else {
             sum_sign <- sum(sign(p_vals))
-            p_vals <- two2one(abs(p_vals))
+            p_vals <- two2one(abs(p_vals), invert = flips)
             major_sign <- sign(sum_sign)
             if (major_sign == 0) {
                 major_sign <- 1
