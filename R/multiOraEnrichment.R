@@ -149,7 +149,7 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
       if (sigMethod == "fdr") {
         enrichedResultSig <- filter(enrichedResult, .data$FDR < fdrThr)
         if (nrow(enrichedResultSig) == 0) {
-          warning("No significant gene set is identified based on FDR ", fdrThr, "!")
+          stop("No significant gene set in meta-analysis identified based on FDR ", fdrThr, "!")
           enrichedResultList[[i]] <- NULL
           backgroundList[[i]] <- NULL
         } else {
