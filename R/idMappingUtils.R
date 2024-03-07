@@ -42,7 +42,11 @@ identifyStandardId <- function(hostName, idType, organism, type, cache) {
 		standardIds <- unlist(lapply(idTypes,function(e) return(e$type)))
 	}
 	idTypes <- data.frame(name=names, standardId=standardIds, stringsAsFactors=FALSE)
-	return(filter(idTypes, .data$name == idType)[[1, "standardId"]])
+	filterRes <- filter(idTypes, .data$name == idType)
+	if (nrow(filterRes) == 0) {
+		stop(idTypeError(idType, organism, hostName, cache))
+	}
+	return(filterRes[[1, "standardId"]])
 }
 
 #' @importFrom dplyr select distinct %>%

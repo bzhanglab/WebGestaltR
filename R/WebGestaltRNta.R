@@ -13,6 +13,7 @@ WebGestaltRNta <- function(organism="hsapiens", network="network_PPI_BIOGRID", m
 	# mapping always returns gene symbol, could map to genesymbol but takes two requests
 	inputGene <- idMappingGene(organism=organism, dataType="list", inputGene=inputGene, sourceIdType=interestGeneType, targetIdType="entrezgene", mappingOutput=FALSE, hostName=hostName)
 	inputGene <- inputGene$mapped$geneSymbol
+	
 
 	if (startsWith(hostName, "file://")) {
 		dagInfo <- read_tsv(

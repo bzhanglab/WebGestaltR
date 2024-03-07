@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>WebGestalt (WEB-based GEne SeT AnaLysis Toolkit)</title>
+<link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/webgestalt/favicon.png">
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-42098540-1', 'auto');
+ga('send', 'pageview');
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=es2015%2Ces2016%2Cfetch"></script>
+<script src="{{hostName}}/assets/{{version}}/build/vendor.min.js"></script>
+	{{#hasCytoscape}}
+	<script src="{{hostName}}/assets/{{version}}/build/cytoscape.min.js"></script>
+	{{/hasCytoscape}}
+	{{^hasCytoscape}}
+	<script>window.cytoscape = null;</script>
+	{{/hasCytoscape}}
+	<link rel="stylesheet" href="{{hostName}}/assets/{{version}}/build/vendor.css">
+	<link rel="stylesheet" href="{{hostName}}/assets/{{version}}/build/wg.css">
+<link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
+</head>
+<body>
+<main>
+<div id="app">
+<div class="loading-preinit" v-cloak><div class="loading-icon"></div></div>
+<div class="wrapper" v-cloak>
+{{{bodyContent}}}
+</div>
+</div>
+</main>
+	<script type="text/javascript" src="{{hostName}}/assets/{{version}}/build/wg.min.js"></script>
+<script type="text/javascript">
+var enrichment = {{{sigJson}}};
+var background = {{{insigJson}}};
+var geneTables = {{{geneTableJson}}};
+var clusters = {{{clusterJson}}};
+var list_data = {{{listDataJson}}};
+
+{{#hasGeneSetDag}}
+var dag = {{{dagJson}}};
+{{/hasGeneSetDag}}
+let x = wgLib({
+	enrichDatabase: {{{enrichDatabaseJson}}},
+	organism: "{{organism}}",
+	hostName: "{{hostName}}",
+	enrichment: enrichment,
+	background: background,
+	isMeta: true,
+	geneTables: geneTables,
+	clusters: clusters,
+	{{#methodIsGsea}}
+	enrichMethod: "gsea",
+	{{/methodIsGsea}}
+	{{^methodIsGsea}}
+	enrichMethod: "ora",
+	mappedInputSize: {{numAnnoRefUserId}},
+	{{/methodIsGsea}}
+	standardId: "{{standardId}}",
+	{{#hasGeneSetDag}}
+	dag: dag,
+	{{/hasGeneSetDag}}
+	bar: {
+		dimensions: { width: 960, height: 300 },
+		labelWidth: 200,
+		tooltipContent: ["geneSet", "description", "enrichmentRatio", "FDR", "pValue", "overlap"],
+		valueKey: "logp",
+		xLabel: "Signed -log10(p-value)"
+	}
+})
+x.set_active_tab(0)
+</script>
+</body>
+</html>

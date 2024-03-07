@@ -112,7 +112,7 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 	maxC <- max(c)
 	xx <- barplot(c,main=paste("Bar chart of ",ontology," categories",sep=""),col=color,xaxt="n",xlab="",ylim=c(0,1.2*maxC),cex.axis=1.5,las=2,cex.main=1.7)
 	text(x=xx+0.3,y=c+maxC*0.05,labels=c,pos=3,cex=1.5,col="black",srt=90)
-	axis(side=1,at=xx,labels=names(c),las=2,cex.axis=1.5)
+	axis(side=1,at=xx,labels=names(c),las=2,cex.axis=1)
 }
 
 
