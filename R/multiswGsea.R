@@ -168,9 +168,9 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
             bool_flips <- c()
             for (j in seq_along(flips)) {
                 if (sign(flips[j]) == major_sign) {
-                    bool_flips <- append(bool_flips, TRUE)
-                } else {
                     bool_flips <- append(bool_flips, FALSE)
+                } else {
+                    bool_flips <- append(bool_flips, TRUE)
                 }
             }
             p_vals <- two2one(abs(p_vals), two = NULL, invert = bool_flips)
@@ -202,7 +202,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
 
     return(gseaRes_list)
 }
-two2one <- function (p, two = NULL, invert = NULL) 
+two2one <- function(p, two = NULL, invert = NULL) 
 {
     np <- length(p)
     if (is.null(two)) {
