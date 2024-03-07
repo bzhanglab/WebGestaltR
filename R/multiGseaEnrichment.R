@@ -14,14 +14,17 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         projectName <- paste0(old_project_name, "_", listNames[i])
         geneRankList <- geneRankList_list[[i]]
         geneSet <- geneSet_list[[i]]
-        geneSetDes <- geneSetDes_list[[i]]
+        if (is.null(geneSetDes_list) || length(geneSetDes_list) == 0 || length(geneSetDes_list) < i) {
+            geneSetDes <- NULL
+        } else {
+            geneSetDes <- geneSetDes_list[[i]]
+        }
         projectFolder <- file.path(outputDirectory, paste("Project_", old_project_name, "/", projectName, sep = ""))
         if (!dir.exists(projectFolder)) {
             dir.create(projectFolder)
         }
         colnames(geneRankList) <- c("gene", "score")
         sortedScores <- sort(geneRankList$score, decreasing = TRUE)
-
         geneSetName <- geneSet %>%
             select(.data$geneSet, link = .data$description) %>%
             distinct()
@@ -70,26 +73,36 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
                 enrichmentScore = .data$ES, normalizedEnrichmentScore = .data$NES, pValue = .data$p_val, FDR = .data$fdr,
                 leadingEdgeNum = .data$leading_edge
             )
-        # TODO: handle errors
-        sigMethod <- "fdr"
         if (sigMethod == "fdr") {
             sig <- filter(enrichRes, .data$FDR < fdrThr)
             insig <- filter(enrichRes, .data$FDR >= fdrThr)
         } else if (sigMethod == "top") {
             enrichRes <- arrange(enrichRes, .data$FDR, .data$pValue)
-            tmpRes <- getTopGseaResults(enrichRes, topThr)
+            if (j == 1) {
+                tmpRes <- getTopMetaGseaResults(enrichRes, topThr)
+            } else {
+                tmpRes <- getTopGseaResults(enrichRes, topThr)
+            }
             sig <- tmpRes[[1]]
             insig <- tmpRes[[2]]
         } else {
             warning("WARNING: Invalid significance method ", sigMethod, "!\nDefaulting to top.\n")
             enrichRes <- arrange(enrichRes, .data$FDR, .data$pValue)
-            tmpRes <- getTopGseaResults(enrichRes, topThr)
+            if (j == 1) {
+                tmpRes <- getTopMetaGseaResults(enrichRes, topThr)
+            } else {
+                tmpRes <- getTopGseaResults(enrichRes, topThr)
+            }
             sig <- tmpRes[[1]]
             insig <- tmpRes[[2]]
         }
         numSig <- nrow(sig)
         if (numSig == 0) {
-            warning("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
+            if (sigMethod == "fdr") {
+                warning("ERROR: No significant set is identified based on FDR ", fdrThr, "!\n")
+            } else {
+                warning("ERROR: No significant set is identified based on top ", topThr, "!\n")
+            }
             sig_list[[j]] <- NULL
             insig_list[[j]] <- NULL
             next
@@ -129,7 +142,11 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
             sig$leadingEdgeId <- leadingGenes
             sig$plotPath <- rep("", numSig)
         } else {
-            geneSetDes <- geneSetDes_list[[j - 1]]
+            if (is.null(geneSetDes_list) || length(geneSetDes_list) == 0 || length(geneSetDes_list) < i) {
+                geneSetDes <- NULL
+            } else {
+                geneSetDes <- geneSetDes_list[[i]]
+            }
             projectName <- paste0(old_project_name, "_", listNames[j - 1])
             outputF <- file.path(outputDirectory, paste("Project_", old_project_name, "/", projectName, "/plots", sep = ""))
             if (!dir.exists(outputF)) {

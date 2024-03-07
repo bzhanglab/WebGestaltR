@@ -1,6 +1,16 @@
 TARGET = $(subst 64,x86_64,$(subst 32,i686,$(WIN)))-pc-windows-gnu
 
-TARGET_DIR = ./rust/target
+TARGET = x86_64-pc-windows-gnu
+
+# Rtools42 doesn't have the linker in the location that cargo expects, so we
+# need to overwrite it via configuration.
+CARGO_LINKER = x86_64-w64-mingw32.static.posix-gcc.exe
+
+VENDORING = @VENDORING@
+OFFLINE_OPTION = @OFFLINE_OPTION@
+
+
+TARGET_DIR = rust/target
 LIBDIR = $(TARGET_DIR)/$(TARGET)/release
 STATLIB = $(LIBDIR)/libWebGestaltR.a
 PKG_LIBS = -L$(LIBDIR) -lWebGestaltR -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll
@@ -20,6 +30,7 @@ $(STATLIB):
 	# For more details, please refer to
 	# https://github.com/r-windows/rtools-packages/blob/2407b23f1e0925bbb20a4162c963600105236318/mingw-w64-gcc/PKGBUILD#L313-L316
 	touch $(TARGET_DIR)/libgcc_mock/libgcc_eh.a
+	mkdir -p $(LIBDIR)/libgcc_mock && touch $(LIBDIR)/libgcc_mock/libgcc_eh.a
 
 	# CARGO_LINKER is provided in Makevars.ucrt for R >= 4.2
 	# vendoring (Note: to avoid NOTE of "Found the following hidden files and

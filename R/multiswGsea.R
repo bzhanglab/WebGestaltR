@@ -119,43 +119,102 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
 
     all_gene_sets <- unique(unlist(lapply(output_df_list, rownames)))
     meta_ps <- list()
+    nes_vals <- list()
     biggest_p <- 1 - .Machine$double.eps
     meta_items_in_sets <- list()
+    sizes <- list()
     for (i in seq_along(all_gene_sets)) {
         gene_set <- all_gene_sets[[i]]
         p_vals <- c()
+        flips <- c()
         for (j in seq_along(output_df_list)) {
             if (gene_set %in% rownames(output_df_list[[j]])) {
                 list_p <- output_df_list[[j]][gene_set, "p_val"]
+                direction <- sign(output_df_list[[j]][gene_set, "ES"])
+                if (direction == 0) {
+                    direction <- 1
+                }
+
                 if (list_p == 0.0) {
                     list_p <- .Machine$double.eps
                 } else if (list_p > biggest_p) {
                     list_p <- biggest_p
                 }
+                list_p <- list_p * direction
                 p_vals <- append(p_vals, list_p)
-                relevant_items <- gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]]
+                if (direction == 1) {
+                    flips <- append(flips, 1)
+                } else {
+                    flips <- append(flips, -1)
+                }
+                relevant_items <- unlist(gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]])
                 if (length(meta_items_in_sets) < i) {
                     meta_items_in_sets[[i]] <- relevant_items
                 } else {
-                    meta_items_in_sets[[i]] <- rbind(meta_items_in_sets[[i]], relevant_items)
+                    meta_items_in_sets[[i]] <- unlist(c(meta_items_in_sets[[i]], relevant_items))
                 }
             }
         }
+        sizes[[i]] <- length(meta_items_in_sets[[i]])
         if (length(p_vals) < 2) {
-            meta_ps[[i]] <- p_vals[1]
+            meta_ps[[i]] <- abs(p_vals[1])
+            nes_vals[[i]] <- sign(p_vals[1])
         } else {
-            meta_ps[[i]] <- stouffer(p_vals)$p[1]
+            sum_sign <- sum(sign(p_vals))
+            major_sign <- sign(sum_sign)
+            if (major_sign == 0) {
+                major_sign <- 1
+            }
+            bool_flips <- c()
+            for (j in seq_along(flips)) {
+                if (sign(flips[j]) == major_sign) {
+                    bool_flips <- append(bool_flips, FALSE)
+                } else {
+                    bool_flips <- append(bool_flips, TRUE)
+                }
+            }
+            p_vals <- two2one(abs(p_vals), two = NULL, invert = bool_flips)
+            p <- stouffer(p_vals)$p[1]
+            stouffer_p <- 0
+            if (p < 0.5) {
+                stouffer_p <- 2 * p * major_sign
+            } else {
+                stouffer_p <- 2 * (1 - p) * -1 * major_sign ## add sign to metap
+            }
+            if (stouffer_p == 0.0) {
+                stouffer_p <- .Machine$double.eps
+            } else if (abs(stouffer_p) > biggest_p) {
+                stouffer_p <- biggest_p * sign(stouffer_p)
+            }
+            meta_ps[[i]] <- abs(stouffer_p)
+            nes_vals[[i]] <- sign(stouffer_p)
         }
     }
 
-    meta_fdrs <- p.adjust(unlist(meta_ps), method = fdrMethod)
+    meta_fdrs <- abs(p.adjust(unlist(meta_ps), method = fdrMethod))
 
     meta_output_df <- data.frame(
-        fdr = unlist(meta_fdrs), p_val = unlist(meta_ps), ES = numeric(length(all_gene_sets)), NES = numeric(length(all_gene_sets)),
+        fdr = unlist(meta_fdrs), p_val = unlist(meta_ps), ES = unlist(nes_vals), NES = unlist(nes_vals),
         leading_edge = numeric(length(all_gene_sets)), stringsAsFactors = FALSE
     )
     rownames(meta_output_df) <- all_gene_sets
     gseaRes_list[[1]] <- list(Enrichment_Results = meta_output_df, Running_Sums = numeric(nrow(meta_output_df)), Items_in_Set = meta_items_in_sets)
 
     return(gseaRes_list)
+}
+two2one <- function(p, two = NULL, invert = NULL) 
+{
+    np <- length(p)
+    if (is.null(two)) {
+        two <- rep(TRUE, np)
+    }
+    if (is.null(invert)) {
+        invert <- rep(FALSE, np)
+    }
+    inrange <- sum(1L * ((p >= 0) & (p <= 1)))
+    if (np != inrange) 
+        warning("Some p out of range")
+    onep <- ifelse(two, ifelse(invert, (1 - p) + p/2, p/2), ifelse(invert, 
+        1 - p, p))
+    onep
 }

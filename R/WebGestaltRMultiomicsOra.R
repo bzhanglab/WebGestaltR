@@ -97,11 +97,12 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
   insig_lists[[1]] <- NULL
   geneTables_list <- list()
   enrichedSigs <- list()
-  geneTables_list[[i]] <- NULL
+  geneTables_list[[1]] <- NULL
 
   ## Meta-analysis
 
   for (i in 2:(length(oraRes$enriched) + 1)) {
+    print(paste0("Processing list ", i))
     if (i == (length(oraRes$enriched) + 1)) {
       i <- 1
     }
@@ -115,26 +116,44 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         old_names <- names(interestGeneMaps[[j]][["mapped"]])
         names(interestGeneMaps[[j]][["mapped"]]) <- names(interestGeneMaps[[1]][["mapped"]])
         interestingGeneMap[["mapped"]] <- rbind(interestingGeneMap[["mapped"]], interestGeneMaps[[j]][["mapped"]])
-        interestingGeneMap[["unmapped"]] <- append(interestingGeneMap[["unmapped"]], interestGeneMaps[[j]][["unmapped"]])
+        interestingGeneMap[["unmapped"]] <- append(unlist(interestingGeneMap[["unmapped"]]), unlist(interestGeneMaps[[j]][["unmapped"]]))
         names(interestGeneMaps[[j]][["mapped"]]) <- old_names
       }
-
-      geneSetDes <- all_sets[["geneSetDes"]][[1]]
-      geneSet <- all_sets[["geneSet"]][[1]]
+      if ("geneSetDes" %in% names(all_sets)) {
+        geneSetDes <- all_sets[["geneSetDes"]][[1]]
+        geneSet <- all_sets[["geneSet"]][[1]]
+      } else {
+        geneSetDes <- NULL
+        geneSet <- all_sets[["geneSet"]][[1]]
+      }
       for (j in seq_along(all_sets[["geneSet"]])) {
         if (j == 1) {
           next
         }
         geneSet <- rbind(geneSet, all_sets[["geneSet"]][[j]])
-        geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
+        if (!is.null(geneSetDes)) {
+          if (length(all_sets[["geneSetDes"]]) >= (j) && !is.null(all_sets[["geneSetDes"]][[j]]) && (ncol(all_sets[["geneSetDes"]][[j]]) == ncol(geneSetDes))) {
+            geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
+          }
+        }
       }
       enrichedSig <- enrichedSig %>%
         left_join(geneSet[, c("geneSet", "description")], by = "geneSet")
       names(enrichedSig)[names(enrichedSig) == "description"] <- "link"
     } else {
       interestingGeneMap <- interestGeneMaps[[i - 1]]
-      geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
-      geneSet <- all_sets[["geneSet"]][[i - 1]]
+      if ("geneSetDes" %in% names(all_sets)) {
+        if (length(all_sets[["geneSetDes"]]) >= (i - 1)) {
+          geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
+          geneSet <- all_sets[["geneSet"]][[i - 1]]
+        } else {
+          geneSetDes <- NULL
+          geneSet <- all_sets[["geneSet"]][[i - 1]]
+        }
+      } else {
+        geneSetDes <- NULL
+        geneSet <- all_sets[["geneSet"]][[i - 1]]
+      }
     }
     enrichedSigs[[i]] <- enrichedSig
     insig <- oraRes$background[[i]]
@@ -155,25 +174,28 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           distinct(.data$geneSet, .keep_all = TRUE)
       }
       if (i == 1) {
-        print("====")
-        print(head(enrichedSig))
+        print(enrichedSig)
       }
       geneTables <- getGeneTables(organism, enrichedSig, "overlapId", interestingGeneMap)
       geneTables_list[[i]] <- geneTables
-      if (i == 1) {
-        print(head(geneTables))
-      }
       if (organism != "others" && i != 1) {
+        genelist_copy <- enrichedSig$overlapId
         enrichedSig$link <- mapply(
           function(link, geneList) linkModification("ORA", link, geneList, interestingGeneMap, hostName),
           enrichedSig$link,
-          enrichedSig$overlapId
+          genelist_copy
         )
       } else if (organism != "others") {
         idsInSet <- sapply(enrichedSig$overlapId, strsplit, split = ";")
         names(idsInSet) <- enrichedSig$geneSet
+        old_links <- enrichedSig$link
         for (k in seq_along(enrichedSig$link)) {
-          enrichedSig$link[[k]] <- metaLinkModification("ORA", enrichedSig$link[[k]], unlist(idsInSet[[k]]), interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
+          new_link <- metaLinkModification("ORA", enrichedSig$link[[k]], unlist(idsInSet[[k]]), interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
+          if (!is.null(new_link)) {
+            enrichedSig$link[[k]] <- new_link
+          } else {
+            enrichedSig$link[[k]] <- old_links[[k]]
+          }
         }
       }
 

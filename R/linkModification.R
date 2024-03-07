@@ -37,18 +37,20 @@ keggMetaboliteLinkModification <- function(enrichPathwayLink, geneList, interest
 wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName) {
     geneMap <- interestingGeneMap$mapped
     hmdbGeneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
-    hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "", x, ignore.case = TRUE))
+    hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "HMDB_", x, ignore.case = TRUE))
     geneMap <- filter(geneMap, .data$rampc %in% geneList)
-    enrichPathwayLink <- paste0(
-        enrichPathwayLink,
-        paste0(sapply(hmdbGeneList, function(x) paste0("&xref[]=", x, ",HMDB")), collapse = "")
-        # not many pathway have entrezgene xref. Using both also seem to interfere with coloring
-        # paste0(sapply(geneMap$entrezgene, function(x) paste0("&xref[]=", x, ",Entrez Gene")), collapse="")
-    )
+    geneList <- unlist(strsplit(geneList, ";"))
+    if (grepl("PathwayWidget", enrichPathwayLink, fixed = FALSE)) {
+        enrichPathwayLink <- gsub("www.wikipathways.org/wpi/PathwayWidget.php?id=", "pathway-viewer.toolforge.org/embed/", enrichPathwayLink, fixed = TRUE)
+        enrichPathwayLink <- paste0(enrichPathwayLink, "?")
+    }
     if (enrichMethod == "ORA") {
-        enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
+        enrichPathwayLink <- paste0(enrichPathwayLink, colorPos, "=", paste(hmdbGeneList, collapse = ",", sep = ""))
     } else if (enrichMethod == "GSEA") {
         scores <- filter(interestingGeneMap$mapped, .data$rampc %in% geneList)[["score"]]
+        if (length(unlist(scores)) == 0) {
+            return(enrichPathwayLink)
+        }
         maxScore <- max(scores)
         minScore <- min(scores)
         tmp <- getPaletteForGsea(maxScore, minScore)
@@ -56,6 +58,9 @@ wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, gene
         breaks <- tmp[[2]]
         colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
         colorStr <- paste(gsub("#", "%23", colors, fixed = TRUE), collapse = ",")
+        for (i in seq_along(hmdbGeneList)) {
+            enrichPathwayLink <- paste0(enrichPathwayLink, URLencode(colors[i]), "=", hmdbGeneList[i], "&")
+        }
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorStr)
     }
     return(enrichPathwayLink)
@@ -76,6 +81,9 @@ wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
     } else if (enrichMethod == "GSEA") {
         scores <- filter(interestingGeneMap$mapped, .data$entrezgene %in% geneList)[["score"]]
+        if (length(unlist(scores)) == 0) {
+            return(enrichPathwayLink)
+        }
         maxScore <- max(scores)
         minScore <- min(scores)
         tmp <- getPaletteForGsea(maxScore, minScore)
@@ -109,20 +117,22 @@ simple_mapping <- function(id_list, organism, source_id, target_id, standard_id,
     if (is.null(mappedIds)) {
         return(c(""))
     }
-    tryCatch({
-        mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
-        x[names]
-    })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)
+    tryCatch(
+        {
+            mappedInputGene <- data.frame(matrix(unlist(lapply(replace_null(mappedIds), FUN = function(x) {
+                x[names]
+            })), nrow = length(mappedIds), byrow = TRUE), stringsAsFactors = FALSE)
 
-    colnames(mappedInputGene) <- c("sourceId", "targetId")
-    if (no_dups) {
-        mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$sourceId), ]
-        mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$targetId), ]
-    }
-    return(mappedInputGene$targetId)
-    }, error = function(e) {
-        warning("No mapping result found. May be caused by empty sets chosen by significance method.");
-        return(c(""));
-    })
-    
+            colnames(mappedInputGene) <- c("sourceId", "targetId")
+            if (no_dups) {
+                mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$sourceId), ]
+                mappedInputGene <- mappedInputGene[!duplicated(mappedInputGene$targetId), ]
+            }
+            return(mappedInputGene$targetId)
+        },
+        error = function(e) {
+            warning("No mapping result found. May be caused by empty sets chosen by significance method.")
+            return(c(""))
+        }
+    )
 }

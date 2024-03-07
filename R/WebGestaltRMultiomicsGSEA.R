@@ -78,13 +78,14 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
     ## Meta-analysis
 
     for (i in 2:(length(gseaRes$enriched) + 1)) {
-        print(paste0("Processing ", i, "th list..."))
+        print(paste0("Processing ", i, " list..."))
         if (i == (length(gseaRes$enriched) + 1)) {
             print("Meta-analysis")
             i <- 1
         }
         enrichedSig <- gseaRes$enriched[[i]]
         insig <- gseaRes$background[[i]]
+        print("first")
         if (i == 1) {
             interestingGeneMap <- list(mapped = interestGeneMaps[[1]]$mapped, unmapped = interestGeneMaps[[1]]$unmapped, standardId = interestGeneMaps[[1]]$standardId)
             for (j in seq_along(interestGeneMaps)) {
@@ -97,20 +98,47 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                 interestingGeneMap[["unmapped"]] <- append(interestingGeneMap[["unmapped"]], interestGeneMaps[[j]][["unmapped"]])
                 names(interestGeneMaps[[j]][["mapped"]]) <- old_names
             }
-
-            geneSetDes <- all_sets[["geneSetDes"]][[1]]
-            geneSet <- all_sets[["geneSet"]][[1]]
-            for (j in seq_along(all_sets[["geneSet"]])) {
-                if (j == 1) {
-                    next
+            if ("geneSetDes" %in% names(all_sets)) {
+                if (length(all_sets[["geneSetDes"]]) < 1) {
+                    geneSetDes <- all_sets[["geneSet"]][[1]]
+                    geneSet <- all_sets[["geneSet"]][[1]]
+                } else {
+                    geneSetDes <- all_sets[["geneSetDes"]][[1]]
+                    geneSet <- all_sets[["geneSet"]][[1]]
+                    for (j in seq_along(all_sets[["geneSet"]])) {
+                        if (j == 1) {
+                            next
+                        }
+                        geneSet <- rbind(geneSet, all_sets[["geneSet"]][[j]])
+                        if (length(all_sets[["geneSetDes"]]) >= (j) && !is.null(all_sets[["geneSetDes"]][[j]]) && (ncol(all_sets[["geneSetDes"]][[j]]) == ncol(geneSetDes))) {
+                            geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
+                        }
+                    }
                 }
-                geneSet <- rbind(geneSet, all_sets[["geneSet"]][[j]])
-                geneSetDes <- rbind(geneSetDes, all_sets[["geneSetDes"]][[j]])
+            } else {
+                geneSetDes <- all_sets[["geneSet"]][[1]]
+                geneSet <- all_sets[["geneSet"]][[1]]
+                for (j in seq_along(all_sets[["geneSet"]])) {
+                    if (j == 1) {
+                        next
+                    }
+                    geneSet <- rbind(geneSet, all_sets[["geneSet"]][[j]])
+                }
             }
         } else {
             interestingGeneMap <- interestGeneMaps[[i - 1]]
-            geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
-            geneSet <- all_sets[["geneSet"]][[i - 1]]
+            if ("geneSetDes" %in% names(all_sets)) {
+                if (length(all_sets[["geneSetDes"]]) >= (i - 1) && !is.null(all_sets[["geneSetDes"]][[i - 1]])) {
+                    geneSetDes <- all_sets[["geneSetDes"]][[i - 1]]
+                    geneSet <- all_sets[["geneSet"]][[i - 1]]
+                } else {
+                    geneSet <- NULL
+                    geneSet <- all_sets[["geneSet"]][[i - 1]]
+                }
+            } else {
+                geneSet <- NULL
+                geneSet <- all_sets[["geneSet"]][[i - 1]]
+            }
         }
         insig_lists[[i]] <- insig
 
@@ -118,6 +146,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
         geneTables <- list()
         if (!is.null(enrichedSig)) {
             if (!is.null(geneSetDes)) { ####### Add extra description information ###########
+                print("here")
                 enrichedSig <- enrichedSig %>%
                     left_join(geneSetDes, by = "geneSet") %>%
                     select(.data$geneSet, .data$description, .data$link, .data$enrichmentScore, .data$normalizedEnrichmentScore, .data$pValue, .data$FDR, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
@@ -133,36 +162,63 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             if (i != 1) {
                 enrichedSig_list[[i - 1]] <- enrichedSig
             }
+            print("next")
 
             geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
             geneTables_list[[i]] <- geneTables
-
+            print("oops")
             if (organism != "others" && i != 1) {
                 enrichedSig$link <- mapply(
-                function(link, geneList) linkModification("GSEA", link, geneList, interestingGeneMap, hostName),
-                enrichedSig$link,
-                enrichedSig$leadingEdgeId
+                    function(link, geneList) linkModification("GSEA", link, geneList, interestingGeneMap, hostName),
+                    enrichedSig$link,
+                    enrichedSig$leadingEdgeId
                 )
             } else if (organism != "others") {
                 idsInSet <- list()
+                print("in here")
                 for (j in seq_along(enrichedSig$geneSet)) {
+                    loop_geneset <- enrichedSig$geneSet[[j]]
+                    if (is.null(loop_geneset)) {
+                        next
+                    }
                     for (k in seq_along(enrichedSig_list)) {
-                        if (enrichedSig$geneSet[[j]] %in% enrichedSig_list[[k]]$geneSet) {
-                            idsInSet[[enrichedSig$geneSet[[j]]]] <- append(idsInSet[[enrichedSig$geneSet[[j]]]], strsplit(enrichedSig_list[[k]][enrichedSig_list[[k]]$geneSet == enrichedSig$geneSet[[j]][[1]],"leadingEdgeId"], split = ";"))
+                        inner_loop_geneset <- enrichedSig_list[[k]]$geneSet
+                        # print(paste("loop geneset", loop_geneset))
+                        # print(paste("inner loop geneset", inner_loop_geneset))
+                        if (!is.null(inner_loop_geneset)) {
+                            if (loop_geneset %in% inner_loop_geneset) {
+                                idsInSet[[enrichedSig$geneSet[[j]]]] <- append(idsInSet[[enrichedSig$geneSet[[j]]]], strsplit(enrichedSig_list[[k]][enrichedSig_list[[k]]$geneSet == enrichedSig$geneSet[[j]][[1]], "leadingEdgeId"], split = ";"))
+                            }
                         }
                     }
                     idsInSet[[enrichedSig$geneSet[[j]]]] <- unique(unlist(idsInSet[[enrichedSig$geneSet[[j]]]]))
                     enrichedSig$size[[j]] <- length(idsInSet[[enrichedSig$geneSet[[j]]]])
                 }
                 for (k in seq_along(enrichedSig$link)) {
-                    enrichedSig$link[[k]] <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
+                    old_link <- enrichedSig$link[[k]]
+                    tryCatch(
+                        {
+                            new_link <- metaLinkModification("GSEA", enrichedSig$link[[k]], idsInSet[[enrichedSig$geneSet[[k]]]], interestGeneMaps, hostName, enrichedSig$geneSet[[k]])
+                            if (!is.null(new_link)) {
+                                enrichedSig$link[[k]] <- new_link
+                            } else {
+                                enrichedSig$link[[k]] <- old_links[[k]]
+                            }
+                        },
+                        error = function(e) {
+                            enrichedSig$link[[k]] <- old_link
+                        },
+                        warning = function(w) {
+                            enrichedSig$link[[k]] <- old_link
+                        }
+                    )
                 }
             }
             if ("database" %in% colnames(geneSet)) {
                 # add source database for multiple databases
                 enrichedSig <- enrichedSig %>% left_join(unique(geneSet[, c("geneSet", "database")]), by = "geneSet")
             }
-
+            print("coming")
             if (i == 1) {
                 outputEnrichedSig <- enrichedSig
             } else if (organism != "others" && analyteTypes[[i - 1]] != interestStandardId) {
@@ -170,7 +226,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             } else {
                 outputEnrichedSig <- enrichedSig
             }
-
+            print("oopsy")
             if (isOutput) {
                 write_tsv(outputEnrichedSig, file.path(projectDir, paste0("enrichment_results_", projectName, ".txt")))
                 idsInSet <- sapply(enrichedSig$leadingEdgeId, strsplit, split = ";")

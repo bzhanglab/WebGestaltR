@@ -110,7 +110,7 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
     inset_mat <- matrix(0, nrow = length(input_df$item), ncol = length(enr_test))
     dimnames(inset_mat) <- list(input_df$item, enr_test)
     # if list of items provided for each set, check to make sure each item is in dataset and set inset_mat to 1 if it is and 0 if not
-    if (thresh_type == "list" & is.list(thresh)) {
+    if (thresh_type == "list" && is.list(thresh)) {
         thresh_action <- "exclude"
         for (a in 1:length(thresh)) {
             skip <- ""
@@ -156,7 +156,7 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
         if (sum(inset_mat[, c]) < min_set_size) {
             too_small <- colnames(inset_mat)[c]
             warning(paste0(expt, " does not contain minimum number of items in set for ", too_small, "\n"))
-            if (thresh_action == "exclude" | thresh_action == "include") {
+            if (thresh_action == "exclude" || thresh_action == "include") {
                 skipped_sets <- c(skipped_sets, too_small)
             } else {
                 # lower threshold to first value that would include minimum number of items in set
@@ -178,7 +178,7 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
         check_col <- colnames(inset_mat)[c]
         if (sum(inset_mat[, c]) > max_set_size) {
             warning(paste0(expt, " has more than ", max_set_size, " items in set ", check_col, "\n"))
-            if (thresh_action == "exclude" | thresh_action == "include") {
+            if (thresh_action == "exclude" || thresh_action == "include") {
                 skipped_sets <- c(skipped_sets, check_col)
             } else {
                 # set items with minimum value to 0 to reduce set size (note: while loop not necessary here because max set size is all items in the dataset, but may be useful if we decide to impose a maximum set size later)
@@ -227,7 +227,7 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
             output_df <- rbind(output_df, new_row)
         }
     }
-    output_df$fdr[output_df$fdr > 1] <- 1
+    output_df$fdr[output_df$fdr > 1] <- 1 - .Machine$double.eps;
     return(list(Enrichment_Results = output_df, Running_Sums = running_sum, Items_in_Set = items_in_set))
 }
 

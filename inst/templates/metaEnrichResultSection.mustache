@@ -35,6 +35,17 @@
 				:is_meta="true"
 			></wg-result-table>
 		</b-tab-item>
+		<b-tab-item label="Bar chart">
+		<div class="vertical-center-container">
+			<wg-bar-plot
+				:dimensions="bar.dimensions"
+				:label-width="bar.labelWidth"
+				:data="enrichmentData"
+				:value-key="bar.valueKey"
+				:x-label="bar.xLabel">
+			</wg-bar-plot>
+		</div>
+		</b-tab-item>
 	</b-tabs>
 	<wg-gene-table
 		:data="geneTables"

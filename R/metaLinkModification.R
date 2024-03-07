@@ -40,14 +40,13 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                 }
                 if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
                     mapping_table <- full_simple_mapping(all_genes, "hsapiens", "rampc", "kegg", "rampc", hostName, no_dups = TRUE)
-                    colnames(mapping_table) <- c("all_genes", "mapped_genes")
                 } else if (grepl("toolforge.org", enrichPathwayLink, fixed = TRUE)) {
                     mapping_table <- full_simple_mapping(all_genes, "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
-                    colnames(mapping_table) <- c("all_genes", "mapped_genes")
                 }
-                if (is.null(mapping_table$mapped_genes)) {
+                if (is.null(mapping_table)) {
                     next
                 }
+                colnames(mapping_table) <- c("all_genes", "mapped_genes")
                 for (j in seq_along(all_sets[[i]])) {
                     interestingGeneMap <- interestingGeneMap_list[[all_sets[[i]][[j]]]]
                     rampc_geneList <- interestingGeneMap$mapped$rampc[interestingGeneMap$mapped$rampc %in% mapping_table$all_genes]
@@ -116,8 +115,8 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                     }
                 }
                 if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
-                        if (kegg_ontology != c("")) {
-                            if (i == 1) {
+                    if (!is.null(kegg_ontology) && nrow(kegg_ontology) > 0) {
+                        if (i == 1) {
                             enrichPathwayLink <- paste0(enrichPathwayLink, "&multi_query=")
                         }
                         all_displayed_genes <- kegg_ontology$sourceId
@@ -147,6 +146,9 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
     }
     if (nchar(enrichPathwayLink) > 2000) { # URL length limit
         enrichPathwayLink <- paste0(hostName, "/long_url.html?pathway_url=", URLencode(original_link), "&pathway_id=", URLencode(pathway_id))
+    }
+    if (is.na(enrichPathwayLink) || is.null(enrichPathwayLink) || enrichPathwayLink == "") {
+        enrichPathwayLink <- original_link
     }
     return(enrichPathwayLink)
 }
@@ -197,11 +199,12 @@ meta_keggMetaboliteLinkModification <- function(enrichMethod, kegg_geneList, ram
                 color_db$analyte[[i]] <- found[[i]]
                 color_db$color[[i]] <- color
             }
-        }
-        ora_white <- get_white(color_index)
-        for (i in seq_along(not_found)) {
-            color_db$analyte[[i + length(color_db$analyte)]] <- not_found[[i]]
-            color_db$color[[i + length(color_db$color)]] <- ora_white
+
+            ora_white <- get_white(color_index)
+            for (i in seq_along(not_found)) {
+                color_db$analyte[[i + length(color_db$analyte)]] <- not_found[[i]]
+                color_db$color[[i + length(color_db$color)]] <- ora_white
+            }
         }
         color_db$analyte <- unlist(color_db$analyte)
         color_db$color <- unlist(color_db$color)
@@ -248,14 +251,15 @@ meta_keggLinkModification <- function(enrichMethod, geneList, all_genes, interes
                 color_db$analyte[[i]] <- found[[i]]
                 color_db$color[[i]] <- color
             }
+
+            ora_white <- get_white(color_index)
+            for (i in seq_along(not_found)) {
+                color_db$analyte[[i + length(found)]] <- not_found[[i]]
+                color_db$color[[i + length(found)]] <- ora_white
+            }
+            color_db$analyte <- unlist(color_db$analyte)
+            color_db$color <- unlist(color_db$color)
         }
-        ora_white <- get_white(color_index)
-        for (i in seq_along(not_found)) {
-            color_db$analyte[[i + length(found)]] <- not_found[[i]]
-            color_db$color[[i + length(found)]] <- ora_white
-        }
-        color_db$analyte <- unlist(color_db$analyte)
-        color_db$color <- unlist(color_db$color)
     }
     return(color_db)
 }
@@ -314,11 +318,15 @@ meta_wikiMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_ge
                 all_colored_genes <- paste(all_colored_genes, collapse = ",")
                 enrichPathwayLink <- paste0(enrichPathwayLink, "&", color, "=", all_colored_genes)
             }
-        }
-        ora_white <- get_white(color_index)
-        enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
-        for (i in seq_along(not_found)) {
-            enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
+
+            ora_white <- get_white(color_index)
+
+            if (length(not_found) != 0) {
+                enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
+                for (i in seq_along(not_found)) {
+                    enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
+                }
+            }
         }
     }
 
@@ -370,12 +378,13 @@ meta_wikiLinkModification <- function(enrichMethod, geneList, all_genes, interes
                 all_colored_genes <- paste(all_colored_genes, collapse = ",")
                 enrichPathwayLink <- paste0(enrichPathwayLink, "&", color, "=", all_colored_genes)
             }
-        }
-        ora_white <- get_white(color_index)
+
+            ora_white <- get_white(color_index)
             if (length(not_found) != 0) {
-            enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
-            for (i in seq_along(not_found)) {
-                enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
+                enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
+                for (i in seq_along(not_found)) {
+                    enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
+                }
             }
         }
     }
@@ -466,7 +475,7 @@ full_simple_mapping <- function(id_list, organism, source_id, target_id, standar
         },
         error = function(e) {
             warning("No mapping result found. May be caused by empty sets chosen by significance method.")
-            return(c(""))
+            return(NULL)
         }
     )
 }

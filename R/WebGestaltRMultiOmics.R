@@ -181,7 +181,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
 
   listNames <- sapply(listNames, sanitizeFileName)
   for (v in seq_along(listNames)) {
-    listNames[v] = gsub(" ", "_", listNames[v])
+    listNames[v] <- gsub(" ", "_", listNames[v])
   }
 
   if (enrichMethod == "ORA") {
@@ -256,7 +256,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   }
   all_sets <- loadGeneSet(
     organism = organism, enrichDatabase = databases, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
-    enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = TRUE
+    enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = FALSE
   )
   return(all_sets)
 }
@@ -269,7 +269,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
         db <- get_gmt_file(hostName, analyteTypes[1], enrichDatabase, organism, cache)
         res <- loadGeneSet(
           organism = organism, enrichDatabase = db, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
-          enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = TRUE
+          enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = FALSE
         )
         elements <- names(res)
         for (i in seq_along(analyteTypes)) {
@@ -283,7 +283,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
         db <- get_gmt_file(hostName, analyteTypes[i], enrichDatabase, organism, cache)
         res <- loadGeneSet(
           organism = organism, enrichDatabase = db, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
-          enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = TRUE
+          enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = FALSE
         )
         elements <- names(res)
         for (j in seq_along(elements)) {
