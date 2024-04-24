@@ -37,7 +37,7 @@ body:
         - www.webgestalt.org (default)
         - 2024.webgestalt.org
         - unknown/other
-    validation:
+    validations:
       required: false
   - type: textarea
     id: desc
