@@ -34,9 +34,9 @@ body:
     attributes:
       label: What server did you use?
       description: | 
-      What website/server did you use?
-      
-      If you are using the R package, this is defined in the `hostName` parameter. If you did not change or set this variable, select `www.webgestalt.org`."
+        What website/server did you use?
+        
+        If you are using the R package, this is defined in the `hostName` parameter. If you did not change or set this variable, select `www.webgestalt.org`."
       options:
         - www.webgestalt.org (default)
         - 2024.webgestalt.org
