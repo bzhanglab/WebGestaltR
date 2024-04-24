@@ -1,0 +1,47 @@
+name: "R vs. Rust Difference"
+description: "A difference between WebGestaltR v0.4.5 (R) and below compared to v1.0 (Rust based) and above"
+labels: ["bug", "Version Difference"]
+assignees: "iblacksand"
+
+body:
+  - type: markdown
+    attributes:
+      value: '## R vs. Rust Difference
+      Your results may differ because of the data update, not because of the R package itself. If the results are drastically different from what you expected, please submit an issue here.'
+  - type: dropdown
+    id: source
+    attributes:
+      label: Did you use the R package or the website
+      options:
+        - R package
+        - Website
+  - type: dropdown
+    id: version
+    attributes:
+      label: What version of the original R package are you comparing to?
+      description: Only need to answer if you used the R package
+      options:
+        - 0.3.X
+        - 0.4.X
+        - 0.5.X (unlikely)
+        - Other (please specify in description)
+    validations:
+      required: false
+  - type: dropdown
+    id: url
+    attributes:
+      label: What server did you use?
+      description: "What website/server did you use?
+      If you are using the R package, this is defined in the `hostName` parameter. If you did not change or set this variable, select `www.webgestalt.org`."
+      options:
+        - www.webgestalt.org (default)
+        - 2024.webgestalt.org
+        - unknown/other
+    validation:
+      required: false
+  - type: textarea
+    id: desc
+    attributes:
+      label: Description of the difference found
+    validations:
+      required: true
