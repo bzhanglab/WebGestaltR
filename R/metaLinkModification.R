@@ -4,6 +4,8 @@
 #'
 #' @keywords internal
 metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap_list, hostName = "https://www.webgestalt.org/", geneSet) {
+    geneList <- unlist(unique(unlist(geneList)))
+    print(geneList)
     list_standard_ids <- sapply(interestingGeneMap_list, function(x) x$standardId)
     sets <- unique(list_standard_ids)
     all_sets <- list()
@@ -65,7 +67,7 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                     }
                 }
                 if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
-                    if (i == 1) {
+                    if (!grepl("&multi_query=", enrichPathwayLink, fixed = TRUE)) {
                         enrichPathwayLink <- paste0(enrichPathwayLink, "&multi_query=")
                     }
                     for (j in seq_along(mapping_table$mapped_genes)) {
@@ -116,7 +118,7 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                 }
                 if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
                     if (!is.null(kegg_ontology) && nrow(kegg_ontology) > 0) {
-                        if (i == 1) {
+                        if (!grepl("&multi_query=", enrichPathwayLink, fixed = TRUE)) {
                             enrichPathwayLink <- paste0(enrichPathwayLink, "&multi_query=")
                         }
                         all_displayed_genes <- kegg_ontology$sourceId
@@ -318,14 +320,13 @@ meta_wikiMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_ge
                 all_colored_genes <- paste(all_colored_genes, collapse = ",")
                 enrichPathwayLink <- paste0(enrichPathwayLink, "&", color, "=", all_colored_genes)
             }
+        }
+        ora_white <- get_white(color_index)
 
-            ora_white <- get_white(color_index)
-
-            if (length(not_found) != 0) {
-                enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
-                for (i in seq_along(not_found)) {
-                    enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
-                }
+        if (length(not_found) != 0) {
+            enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
+            for (i in seq_along(not_found)) {
+                enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
             }
         }
     }
@@ -378,13 +379,12 @@ meta_wikiLinkModification <- function(enrichMethod, geneList, all_genes, interes
                 all_colored_genes <- paste(all_colored_genes, collapse = ",")
                 enrichPathwayLink <- paste0(enrichPathwayLink, "&", color, "=", all_colored_genes)
             }
-
-            ora_white <- get_white(color_index)
-            if (length(not_found) != 0) {
-                enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
-                for (i in seq_along(not_found)) {
-                    enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
-                }
+        }
+        ora_white <- get_white(color_index)
+        if (length(not_found) != 0) {
+            enrichPathwayLink <- paste0(enrichPathwayLink, "&", ora_white, "=")
+            for (i in seq_along(not_found)) {
+                enrichPathwayLink <- paste0(enrichPathwayLink, not_found[[i]], ",")
             }
         }
     }

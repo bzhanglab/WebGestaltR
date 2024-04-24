@@ -73,5 +73,14 @@ ora_rust <- function(sets, parts, interest, reference) .Call(wrap__ora_rust, set
 #' @keywords internal
 rust_multiomics_ora <- function(sets, big_part_vec, interest, reference, method) .Call(wrap__rust_multiomics_ora, sets, big_part_vec, interest, reference, method)
 
+#' Calculate random walk permutations for a network from seeds
+#' @name nta_rust
+#' @param edge_list A list of edges
+#' @param seeds A list of seeds
+#' @return A list of nodes and scores
+#' @author John Elizarraras
+#' @keywords internal
+nta_rust <- function(edge_list, seeds) .Call(wrap__nta_rust, edge_list, seeds)
+
 
 # nolint end

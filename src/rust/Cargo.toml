@@ -8,7 +8,7 @@ crate-type = ['staticlib']
 name = 'WebGestaltR'
 
 [dependencies]
-webgestalt_lib = { version = "0.2.0" }
+webgestalt_lib = { git = "https://github.com/bzhanglab/webgestalt_rust.git", branch = "master"}
 ahash = "0.8.3"
 extendr-api = { version = '0.6.0' }
 ndarray = "0.15.6"
