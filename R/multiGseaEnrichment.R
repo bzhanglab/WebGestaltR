@@ -10,6 +10,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
     if (!dir.exists(old_projectFolder)) {
         dir.create(old_projectFolder)
     }
+    geneSetName_list <- list()
     for (i in seq_along(geneRankList_list)) {
         projectName <- paste0(old_project_name, "_", listNames[i])
         geneRankList <- geneRankList_list[[i]]
@@ -27,7 +28,8 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         sortedScores <- sort(geneRankList$score, decreasing = TRUE)
         geneSetName <- geneSet %>%
             select(.data$geneSet, link = .data$description) %>%
-            distinct()
+            distinct(.keep_all = TRUE)
+        geneSetName_list[[i]] <- geneSetName
         effectiveGeneSet <- geneSet %>% filter(.data$gene %in% geneRankList$gene)
 
         geneSetNum <- tapply(effectiveGeneSet$gene, effectiveGeneSet$geneSet, length)
@@ -44,7 +46,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         write_tsv(geneRankList, gseaRnk, col_names = FALSE)
 
         outputF <- file.path(projectFolder, paste0("Project_", projectName, "_GSEA/"))
-        relativeF <- file.path(".", paste0("Project_", projectName, "_GSEA"))
+        relativeF <- file.path("./", paste0("Project_", projectName, "_GSEA"))
         if (!dir.exists(outputF) && isOutput) {
             dir.create(outputF)
         }
@@ -66,7 +68,6 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         # if (saveRawGseaResult) {
         #     saveRDS(gseaRes, file = file.path(outputF, "rawGseaResult.rds"))
         # }
-
         enrichRes <- gseaRes$Enrichment_Results %>%
             mutate(geneSet = rownames(gseaRes$Enrichment_Results)) %>%
             select(.data$geneSet,
@@ -123,6 +124,16 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
             # 	return(leadingEdgeNum)
             # }))
         }
+        if (j != 1) {
+            geneSetName <- geneSetName_list[[j - 1]]
+        } else {
+            all_gene_set_name <- geneSetName_list[[1]]
+            for (i in 2:length(geneSetName_list)) {
+                all_gene_set_name <- rbind(all_gene_set_name, geneSetName_list[[i]])
+            }
+            geneSetName <- all_gene_set_name %>% distinct(.keep_all = TRUE)
+        }
+
         plotSuffix <- ifelse("png" %in% plotFormat, "png", "svg")
         sig <- sig %>%
             left_join(geneSetName, by = "geneSet") %>%
@@ -131,16 +142,16 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
         leadingGeneNum <- vector("integer", numSig)
         leadingGenes <- vector("character", numSig)
         if (j == 1) {
-            for (i in 1:numSig) {
+            for (i in seq_along(sig$geneSet)) {
                 geneSet <- sig[[i, "geneSet"]]
                 es <- sig[[i, "enrichmentScore"]]
                 genes <- gseaRes$Items_in_Set[[geneSet]] # row name is gene and one column called rank
-                leadingGeneNum[[i]] <- 0
+                leadingGeneNum[[i]] <- nrow(genes)
                 leadingGenes[[i]] <- paste(rownames(genes), collapse = ";")
             }
             sig$leadingEdgeNum <- leadingGeneNum
             sig$leadingEdgeId <- leadingGenes
-            sig$plotPath <- rep("", numSig)
+            sig$plotPath <- rep("", length(sig$geneSet))
         } else {
             if (is.null(geneSetDes_list) || length(geneSetDes_list) == 0 || length(geneSetDes_list) < i) {
                 geneSetDes <- NULL

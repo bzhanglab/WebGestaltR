@@ -14,13 +14,15 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
         geneSetUrl <- file.path(hostName, "api", "geneset")
         # actually standard id is gene symbol for network
         response <- cacheUrl(geneSetUrl, cache = cache, query = list(organism = organism, database = network, standardId = "entrezgene", fileType = "net"))
-		write_tsv(read_tsv(content(response), col_names = FALSE, col_types = "cc"), file.path(projectDir, paste0(fileName, "_network.txt")), col_names = FALSE)
         net <- as.matrix(read_tsv(content(response), col_names = FALSE, col_types = "cc"))
+        # remove blank lines
+        net <- net[net[, 1] != "" & net[, 2] != "", ]
         gmtUrl <- modify_url(geneSetUrl, query = list(organism = organism, database = "geneontology_Biological_Process", standardId = "genesymbol", fileType = "gmt"))
         goAnn <- readGmt(gmtUrl, cache = cache)
     }
-    netGraph <- graph.edgelist(net, directed = FALSE)
-    netNode <- V(netGraph)$name
+    # netGraph <- graph.edgelist(net, directed=FALSE)
+    # netNode <- V(netGraph)$name
+    unique_nodes <- unlist(unique(c(net[, 1], net[, 2])))
 
 
     cat("Start Random Walk...\n")
@@ -30,7 +32,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 
     allNum <- length(seeds)
     write(seeds, file.path(projectDir, paste0(fileName, "_seeds.txt")))
-    seeds <- intersect(netNode, seeds)
+    seeds <- intersect(unique_nodes, seeds)
     write(seeds, file.path(projectDir, paste0(fileName, "_seedsInNetwork.txt")))
 
     if (method == "Network_Retrieval_Prioritization") {
@@ -38,13 +40,19 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
             highlightSeedNum <- length(seeds)
         }
     }
+    organize_net <- list()
+    for (i in 1:nrow(net)) {
+        organize_net[[i]] <- c(net[i, 1], net[i, 2])
+    }
+    # pt1 <- .netwalker(seeds, netGraph, r=0.5)
+    # print(head(seeds))
+    random_walk_res <- nta_rust(organize_net, seeds)
+    # print(head(random_walk_res))
+    gS <- data.frame(name = random_walk_res$nodes, score = random_walk_res$scores, per = 1, stringsAsFactors = F)
 
-    pt1 <- .netwalker(seeds, netGraph, r = 0.5)
-	write_tsv(data.frame(name = netNode, score = pt1, per = 1), file.path(projectDir, paste0(fileName, "_score.txt")), col_names = FALSE)
-    gS <- data.frame(name = netNode, score = pt1, per = 1, stringsAsFactors = F)
     if (method == "Network_Expansion") {
         gS <- gS %>%
-            # filter(.data$name %in% setdiff(.data$name, seeds)) %>%
+            filter(.data$name %in% setdiff(.data$name, seeds)) %>%
             arrange(desc(.data$score))
         candidate <- gS[1:topRank, ]
         allN <- c(seeds, candidate$name)
@@ -61,7 +69,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
     allN <- union(subNet[, 1], subNet[, 2])
 
     if (length(allN) != 0) {
-        termInfo <- .enrichmentFunction(organism, netNode, allN, goAnn, seeds, sigMethod, fdrThr, topThr, hostName)
+        termInfo <- .enrichmentFunction(organism, unique_nodes, allN, goAnn, seeds, sigMethod, fdrThr, topThr, hostName)
     } else {
         warning("Error: No sub-network is generated.")
         return(NULL)
@@ -73,7 +81,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
     }
     overlapSeeds <- intersect(allN, seeds)
     x <- c(
-        paste("Total number of genes in the selected network:", length(netNode), "(used for the enrichment analysis)"),
+        paste("Total number of genes in the selected network:", length(unique_nodes), "(used for the enrichment analysis)"),
         paste("Total number of seeds:", allNum),
         paste("Total number of seeds in the selected network:", length(seeds))
     )
@@ -105,7 +113,6 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 #' @importFrom igraph get.adjacency
 .netwalker <- function(seed, network, r = 0.5) {
     adjMatrix <- get.adjacency(network, sparse = FALSE)
-	write_tsv(adjMatrix, "adjMatrix.txt", col_names = FALSE)
     de <- apply(adjMatrix, 2, sum)
     w <- t(t(adjMatrix) / de)
 
@@ -115,7 +122,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
 
     pt <- p0
     pt1 <- (1 - r) * (w %*% pt) + r * p0
-	print(paste0("pt1: ", sum(pt1)))
+
     while (sum(abs(pt1 - pt)) > 1e-6) {
         pt <- pt1
         pt1 <- (1 - r) * (w %*% pt) + r * p0

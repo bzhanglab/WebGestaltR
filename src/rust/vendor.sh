@@ -21,6 +21,6 @@ echo
 echo
 echo "#############################################"
 echo "#                                           #"
-echo "#  UPDATE src/cargo_vendor_config.toml !!!  #"
+echo "#  UPDATE src/config.toml !!!  #"
 echo "#                                           #"
 echo "#############################################"

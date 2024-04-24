@@ -100,9 +100,6 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
     output_df_list <- list()
     gseaRes_list <- list()
     gseaRes_list[[1]] <- NULL
-    # output_df_list[[1]] <- NULL # Set null for now. Will be filled later.
-    # running_sum_list[[1]] <- NULL
-    # items_in_set_list[[1]] <- NULL
 
     for (i in seq_along(input_df_list)) {
         inputDf <- input_df_list[[i]]
@@ -127,6 +124,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
         gene_set <- all_gene_sets[[i]]
         p_vals <- c()
         flips <- c()
+        length_of_items <- 0
         for (j in seq_along(output_df_list)) {
             if (gene_set %in% rownames(output_df_list[[j]])) {
                 list_p <- output_df_list[[j]][gene_set, "p_val"]
@@ -134,7 +132,6 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                 if (direction == 0) {
                     direction <- 1
                 }
-
                 if (list_p == 0.0) {
                     list_p <- .Machine$double.eps
                 } else if (list_p > biggest_p) {
@@ -147,15 +144,19 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
                 } else {
                     flips <- append(flips, -1)
                 }
-                relevant_items <- unlist(gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]])
-                if (length(meta_items_in_sets) < i) {
-                    meta_items_in_sets[[i]] <- relevant_items
+                if (gene_set %in% names(gseaRes_list[[j + 1]]$Items_in_Set) == FALSE) {
+                    next
+                }
+                relevant_items_length <- unlist(gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]])
+                length_of_items <- length_of_items + length(relevant_items_length)
+                if (gene_set %in% names(meta_items_in_sets) == FALSE) {
+                    meta_items_in_sets[[gene_set]] <- gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]]
                 } else {
-                    meta_items_in_sets[[i]] <- unlist(c(meta_items_in_sets[[i]], relevant_items))
+                    meta_items_in_sets[[gene_set]] <- rbind(meta_items_in_sets[[gene_set]], gseaRes_list[[j + 1]]$Items_in_Set[[gene_set]])
                 }
             }
         }
-        sizes[[i]] <- length(meta_items_in_sets[[i]])
+        sizes[[gene_set]] <- length_of_items
         if (length(p_vals) < 2) {
             meta_ps[[i]] <- abs(p_vals[1])
             nes_vals[[i]] <- sign(p_vals[1])
@@ -194,7 +195,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
     meta_fdrs <- abs(p.adjust(unlist(meta_ps), method = fdrMethod))
 
     meta_output_df <- data.frame(
-        fdr = unlist(meta_fdrs), p_val = unlist(meta_ps), ES = unlist(nes_vals), NES = unlist(nes_vals),
+        fdr = unlist(meta_fdrs), p_val = unlist(meta_ps), ES = unlist(nes_vals), NES = unlist(nes_vals), size = unlist(sizes),
         leading_edge = numeric(length(all_gene_sets)), stringsAsFactors = FALSE
     )
     rownames(meta_output_df) <- all_gene_sets
@@ -202,8 +203,7 @@ multiswGsea <- function(input_df_list, thresh_type = "percentile", thresh = 0.9,
 
     return(gseaRes_list)
 }
-two2one <- function(p, two = NULL, invert = NULL) 
-{
+two2one <- function(p, two = NULL, invert = NULL) {
     np <- length(p)
     if (is.null(two)) {
         two <- rep(TRUE, np)
@@ -212,9 +212,11 @@ two2one <- function(p, two = NULL, invert = NULL)
         invert <- rep(FALSE, np)
     }
     inrange <- sum(1L * ((p >= 0) & (p <= 1)))
-    if (np != inrange) 
+    if (np != inrange) {
         warning("Some p out of range")
-    onep <- ifelse(two, ifelse(invert, (1 - p) + p/2, p/2), ifelse(invert, 
-        1 - p, p))
+    }
+    onep <- ifelse(two, ifelse(invert, (1 - p) + p / 2, p / 2), ifelse(invert,
+        1 - p, p
+    ))
     onep
 }

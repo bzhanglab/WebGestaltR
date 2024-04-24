@@ -37,7 +37,7 @@ keggMetaboliteLinkModification <- function(enrichPathwayLink, geneList, interest
 wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName) {
     geneMap <- interestingGeneMap$mapped
     hmdbGeneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
-    hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "HMDB_", x, ignore.case = TRUE))
+    # hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "HMDB_", x, ignore.case = TRUE))
     geneMap <- filter(geneMap, .data$rampc %in% geneList)
     geneList <- unlist(strsplit(geneList, ";"))
     if (grepl("PathwayWidget", enrichPathwayLink, fixed = FALSE)) {

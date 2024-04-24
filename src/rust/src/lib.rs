@@ -6,10 +6,10 @@ use ahash::{AHashMap, AHashSet};
 use extendr_api::prelude::*;
 use ndarray::Array2;
 use webgestalt_lib::{
-    methods::gsea::{GSEAConfig, RankListItem},
     methods::{
-        gsea::GSEAResult,
+        gsea::{GSEAConfig, GSEAResult, RankListItem},
         multilist::{multilist_gsea, multilist_ora, GSEAJob, ORAJob},
+        nta::{nta, NTAConfig},
         ora::{get_ora, ORAConfig, ORAResult},
     },
     readers::utils::Item,
@@ -63,6 +63,38 @@ pub fn fill_input_data_frame(gmt: Robj, genes: Robj, gene_sets: Robj) -> List {
     }
     // Construct DataFrame in R. Create list for now.
     List::from_names_and_values(gene_set_vec, gene_set_val).unwrap()
+}
+
+/// Calculate random walk permutations for a network from seeds
+/// @name nta_rust
+/// @param edge_list A list of edges
+/// @param seeds A list of seeds
+/// @return A list of nodes and scores
+/// @author John Elizarraras
+/// @keywords internal
+#[extendr]
+pub fn nta_rust(edge_list: Robj, seeds: Robj) -> List {
+    println!("Running NTA Rust function.");
+    let edge_list_as_vec: Vec<Vec<String>> = edge_list
+        .as_list()
+        .unwrap()
+        .iter()
+        .map(|(_, row)| row.as_string_vector().unwrap_or(vec![]))
+        .filter(|x| !x.is_empty())
+        .collect();
+    println!("Creating Seeds");
+    let seeds: Vec<String> = seeds.as_string_vector().unwrap();
+    let config: NTAConfig = NTAConfig {
+        edge_list: edge_list_as_vec,
+        seeds,
+        reset_probability: 0.5,
+        tolerance: 1e-6,
+        ..Default::default()
+    };
+    let res = nta(config);
+    let nodes: Vec<String> = res.iter().map(|(x, _)| x.to_string()).collect();
+    let scores: Vec<f64> = res.iter().map(|(_, x)| *x).collect();
+    list!(nodes = nodes, scores = scores)
 }
 
 /// Run ORA using Rust library
@@ -185,7 +217,8 @@ pub fn rust_multiomics_ora(
         };
         jobs.push(job)
     }
-    let res: Vec<Vec<ORAResult>> = multilist_ora(jobs, method, webgestalt_lib::stat::AdjustmentMethod::None);
+    let res: Vec<Vec<ORAResult>> =
+        multilist_ora(jobs, method, webgestalt_lib::stat::AdjustmentMethod::None);
     let mut all_res: Vec<List> = Vec::new();
     for analysis in res {
         let mut p: Vec<f64> = Vec::new();
@@ -236,7 +269,6 @@ fn gsea_rust(
     analytes: Robj,
     ranks: Robj,
 ) -> List {
-    // webgestalt_lib::methods::gsea::
     let config = GSEAConfig {
         min_overlap: min_overlap.as_real().unwrap() as i32,
         max_overlap: max_overlap.as_real().unwrap() as i32,
@@ -384,7 +416,8 @@ pub fn rust_multiomics_gsea(
         };
         jobs.push(job);
     }
-    let res: Vec<Vec<GSEAResult>> = multilist_gsea(jobs, method, webgestalt_lib::stat::AdjustmentMethod::None);
+    let res: Vec<Vec<GSEAResult>> =
+        multilist_gsea(jobs, method, webgestalt_lib::stat::AdjustmentMethod::None);
     let mut all_res: Vec<List> = Vec::new();
     for analysis in res {
         let mut fdr: Vec<f64> = Vec::new();
@@ -425,4 +458,5 @@ extendr_module! {
     fn gsea_rust;
     fn ora_rust;
     fn rust_multiomics_ora;
+    fn nta_rust;
 }

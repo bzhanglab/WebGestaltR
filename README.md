@@ -11,27 +11,7 @@ WebGestaltR function can perform popular enrichment analyses: ORA (Over-Represen
 
 ## Installation
 
----
 
-### Requirements
-
-- R (>= 4.0.0)
-- Rust (>= 1.63.0)
-
----
-
-Since WebGestaltR v1.0.0, Rust is used for core computations in the R package. Therefore, to install WebGestaltR, please download and install Rust from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install). For Mac, Linux, or Unix users, Rust can be installed from the command line, and Windows users can download a GUI installer.
-
-Make sure you restart your terminal after installing Rust to ensure the Rust compiler is available in your path. You can check that Rust is installed correctly by running `rustc --version` in your terminal.
-
-After installing Rust, you can install WebGestaltR by running the following command in an R session:
-
-```R
-# install.packages("devtools") # run if devtools not already installed
-devtools::install_github("bzhanglab/WebGestaltR")
-```
-
-During installation, the Rust compiler will be called to build the computation library used by WebGestaltR. If you run into problems with installation of the new version, please [open a new issue](https://github.com/bzhanglab/WebGestaltR/issues/new/choose).
 
 ## Changes
 
