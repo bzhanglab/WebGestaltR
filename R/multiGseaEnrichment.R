@@ -208,7 +208,7 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
 
 #' @importFrom svglite svglite
 plotEnrichmentPlot <- function(title, outputDir, fileName, format = "png", runningSums, ranks, scores, peakIndex) {
-    tryCatch(
+    try(
         {
             if (format == "png") {
                 output_file <- file.path(outputDir, paste0(sanitizeFileName(fileName), ".png"))
@@ -249,11 +249,6 @@ plotEnrichmentPlot <- function(title, outputDir, fileName, format = "png", runni
             dev.off()
             return(output_file)
         },
-        error = function(error_message) {
-            warning(error_message)
-        },
-        warning = function(error_message) {
-            warning(error_message)
-        }
+        silent = TRUE
     )
 }
