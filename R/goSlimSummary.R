@@ -79,7 +79,7 @@ goSlimSummary <- function(organism="hsapiens", geneList, outputFile, outputType=
 		goSlimData <- filter(goSlimData, .data$entrezgene %in% geneList)
 	} else {
 		goUrl <- file.path(hostName, "api", "goslim")
-		response <- POST(goUrl, body=list(organism=organism, ontology=ontology, entrezgenes=geneList), encode="json")
+		response <- POST(goUrl, body=list(organism=organism, ontology=ontology, entrezgenes=geneList, version="2024"), encode="json")
 		if (response$status_code != 200) {
 			stop(webRequestError(response))
 		}
