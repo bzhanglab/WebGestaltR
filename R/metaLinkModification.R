@@ -448,7 +448,7 @@ full_simple_mapping <- function(id_list, organism, source_id, target_id, standar
         encode = "json",
         body = list(
             organism = organism, sourceType = source_id,
-            targetType = target_id, ids = id_list, standardId = standard_id
+            targetType = target_id, ids = id_list, standardId = standard_id, version="2024"
         )
     )
     if (response$status_code != 200) {
