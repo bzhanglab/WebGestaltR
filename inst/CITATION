@@ -2,14 +2,12 @@ citHeader("To cite WebGestaltR in publications use:")
 
 citEntry(
   entry    = "Article",
-  title    = "WebGestalt 2019: gene set analysis toolkit with revamped UIs and APIs",
-  author   = "Yuxing Liao, Jing Wang, Eric J Jaehnig, Zhiao Shi, Bing Zhang",
+  title    = "WebGestalt 2024: faster gene set analysis and new support for metabolomics and multi-omics",
+  author   = "John M Elizarraras, Yuxing Liao, Zhiao Shi, Qian Zhu, Alexander R Pico, Bing Zhang",
   journal  = "Nucleic Acids Research",
-  year     = "2019",
-  volume   = "47",
-  number   = "W1",
-  pages    = "W199–W205",
-  url      = "https://doi.org/10.1093/nar/gkz401",
-  textVersion = paste("Yuxing Liao, Jing Wang, Eric J Jaehnig, Zhiao Shi, Bing Zhang, WebGestalt 2019: gene set analysis toolkit with revamped UIs and APIs, Nucleic Acids Research, Volume 47, Issue W1, 02 July 2019, Pages W199–W205, https://doi.org/10.1093/nar/gkz401"
+  year     = "2024",
+  pages    = "gkae456",
+  url      = "https://doi.org/10.1093/nar/gkae456",
+  textVersion = paste("John M Elizarraras, Yuxing Liao, Zhiao Shi, Qian Zhu, Alexander R Pico, Bing Zhang, WebGestalt 2024: faster gene set analysis and new support for metabolomics and multi-omics, Nucleic Acids Research, 2024;, gkae456, https://doi.org/10.1093/nar/gkae456"
   )
 )
