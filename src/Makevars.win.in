@@ -13,6 +13,7 @@ $(STATLIB):
 
 clean:
 	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) rust/target
+	rm -Rf vendor
 
 rustup:
 	rustup target add $(TARGET) || true
