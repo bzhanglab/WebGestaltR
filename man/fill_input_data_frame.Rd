@@ -24,13 +24,13 @@ See https://github.com/extendr/extendr/issues/612 for how to export DataFrame
 
 ## Diagram
 ```shell
-        Gene Sets
-      ┌───────────┐  First column named 'gene' containing gene name
-      │A0100110100│  1 = in set
-Genes │B0100101000│  0 = not in set
-      │C1011101001│  Due to limitiations with extendr-api v 0.6.0,
-      └───────────┘  function returns a list, and the R package will
-                     add the first 'gene' column
+                   Gene Sets
+                   First column named 'gene' containing gene name
+      A0100110100  1 = in set
+Genes B0100101000  0 = not in set
+      C1011101001  Due to limitiations with extendr-api v 0.6.0,
+                   function returns a list, and the R package will
+                   add the first 'gene' column
 ```
 }
 \author{
