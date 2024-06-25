@@ -268,6 +268,8 @@ The WebGestaltR function returns a data frame containing the enrichment analysis
 The WebGestaltRBatch function returns a list of enrichment results.
 }
 \description{
+The web version WebGestalt \url{https://www.webgestalt.org} supports 12 organisms, 354 gene identifiers and 321,251 function categories. Users can upload the data and functional categories with their own gene identifiers. In addition to the Over-Representation Analysis, WebGestalt also supports Gene Set Enrichment Analysis and Network Topology Analysis. The user-friendly output report allows interactive and efficient exploration of enrichment results. The WebGestaltR package not only supports all above functions but also can be integrated into other pipeline or simultaneously analyze multiple gene lists.
+
 Main function for enrichment analysis
 }
 \details{
@@ -314,6 +316,31 @@ enrichResult <- WebGestaltR(
   outputDirectory = getwd(), highlightSeedNum = 10,
   networkConstructionMethod = "Network_Retrieval_Prioritization"
 )
+}
+
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/bzhanglab/WebGestaltR}
+  \item \url{https://bzhanglab.github.io/WebGestaltR/}
+}
+
+}
+\author{
+\strong{Maintainer}: John Elizarraras \email{john.elizarraras@bcm.edu}
+
+Authors:
+\itemize{
+  \item Jing Wang \email{jingwang.uestc@gmail.com}
+  \item Yuxing Liao \email{yuxingliao@gmail.com}
+}
+
+Other contributors:
+\itemize{
+  \item Eric Jaehnig \email{Eric.Jaehnig@bcm.edu} [contributor]
+  \item Zhiao Shi \email{Zhiao.Shi@bcm.edu} [contributor]
+  \item Quanhu Sheng \email{shengqh@gmail.com} [contributor]
 }
 
 }
