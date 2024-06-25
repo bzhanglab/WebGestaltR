@@ -20,10 +20,10 @@ Depends: R (>= 4.0)
 Imports: methods, dplyr, doRNG, readr, parallel (>= 3.3.2),
         doParallel (>= 1.0.10), foreach (>= 1.4.0),
         jsonlite, httr, rlang, svglite,
-        igraph, whisker, apcluster, Rcpp, cluster, poolr
+        whisker, apcluster, Rcpp, cluster, poolr
 NeedsCompilation: yes
 LinkingTo: Rcpp
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 SystemRequirements: Cargo (Rust's package manager), rustc v1.63.0+
 Config/rextendr/version: 0.3.1
 Config/WebGestaltR/MSRV: 1.63.0

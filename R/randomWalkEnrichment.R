@@ -1,7 +1,6 @@
 #' @importFrom httr content modify_url
 #' @importFrom readr read_tsv
 #' @importFrom dplyr filter arrange %>% desc
-#' @importFrom igraph graph.edgelist V
 randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, highlightSeedNum, sigMethod, fdrThr, topThr, projectDir, projectName, cache, hostName) {
     fileName <- paste(projectName, network, method, sep = ".")
     if (startsWith(hostName, "file://")) {
@@ -20,8 +19,6 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
         gmtUrl <- modify_url(geneSetUrl, query = list(organism = organism, database = "geneontology_Biological_Process", standardId = "genesymbol", fileType = "gmt"))
         goAnn <- readGmt(gmtUrl, cache = cache)
     }
-    # netGraph <- graph.edgelist(net, directed=FALSE)
-    # netNode <- V(netGraph)$name
     unique_nodes <- unlist(unique(c(net[, 1], net[, 2])))
 
 
@@ -44,10 +41,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
     for (i in 1:nrow(net)) {
         organize_net[[i]] <- c(net[i, 1], net[i, 2])
     }
-    # pt1 <- .netwalker(seeds, netGraph, r=0.5)
-    # print(head(seeds))
     random_walk_res <- nta_rust(organize_net, seeds)
-    # print(head(random_walk_res))
     gS <- data.frame(name = random_walk_res$nodes, score = random_walk_res$scores, per = 1, stringsAsFactors = F)
 
     if (method == "Network_Expansion") {
@@ -110,27 +104,6 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
     return(termInfo)
 }
 
-#' @importFrom igraph get.adjacency
-.netwalker <- function(seed, network, r = 0.5) {
-    adjMatrix <- get.adjacency(network, sparse = FALSE)
-    de <- apply(adjMatrix, 2, sum)
-    w <- t(t(adjMatrix) / de)
-
-    p0 <- array(0, dim = c(nrow(w), 1))
-    rownames(p0) <- rownames(w)
-    p0[seed, 1] <- 1 / length(seed)
-
-    pt <- p0
-    pt1 <- (1 - r) * (w %*% pt) + r * p0
-
-    while (sum(abs(pt1 - pt)) > 1e-6) {
-        pt <- pt1
-        pt1 <- (1 - r) * (w %*% pt) + r * p0
-    }
-
-    return(pt1)
-}
-
 #' @importFrom dplyr select filter arrange left_join mutate %>%
 #' @importFrom httr POST content
 #' @importFrom readr read_tsv
@@ -154,7 +127,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
         geneSetUrl <- file.path(hostName, "api", "geneset")
         response <- POST(geneSetUrl, body = list(
             organism = organism, database = "geneontology_Biological_Process",
-            fileType = "des", ids = unique(annRef$geneSet), version="2024"
+            fileType = "des", ids = unique(annRef$geneSet), version = "2024"
         ), encode = "json")
         refTermName <- read_tsv(content(response), col_names = c("id", "description"), col_types = "cc") %>%
             filter(.data$id %in% names(refTermCount))
