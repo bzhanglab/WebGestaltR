@@ -11,3 +11,6 @@ replace-with = "vendored-sources"
 
 [source.vendored-sources]
 directory = "vendor"
+
+[target.'cfg(all())']
+linker = "rust-lld"
