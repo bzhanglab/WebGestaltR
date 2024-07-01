@@ -2,13 +2,16 @@ TARGET = $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript.exe" "../tools/rustarch.R")
 LIBDIR = rust/target/$(TARGET)/release
 STATLIB = $(LIBDIR)/WebGestaltR.a
 PKG_LIBS = -L$(LIBDIR) -lWebGestaltR -lws2_32 -ladvapi32 -lgdi32 -lbcrypt -lcrypt32 -luserenv -lntdll
-
+TARGET_DIR = rust/target
 all: clean rustup
 
 $(SHLIB): $(STATLIB)
 
 $(STATLIB):
 	if [ -f rust/vendor.tar.xz ]; then tar xf rust/vendor.tar.xz && mkdir -p .cargo && cp windows-config.toml .cargo/config.toml; fi
+	touch $(TARGET_DIR)/libgcc_mock/libgcc_eh.a
+	mkdir -p $(LIBDIR)/libgcc_mock && touch $(LIBDIR)/libgcc_mock/libgcc_eh.a
+	export LIBRARY_PATH="$${LIBRARY_PATH};$(CURDIR)/$(TARGET_DIR)/libgcc_mock"
 	PATH="$(USERPROFILE)\.cargo\bin:$(PATH)" cargo build --target=$(TARGET) --release --manifest-path=rust/Cargo.toml
 
 clean:
