@@ -8,3 +8,5 @@ arch <- if (grepl("aarch", R.version$platform)) {
     "i686-pc-windows-gnu"
 } else {
     "x86_64-pc-windows-gnu"
+}
+cat(arch)
