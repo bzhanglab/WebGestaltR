@@ -1,19 +1,10 @@
-# Function to determine Rust target using rustup default
-get_rust_target <- function() {
-    # Get the output of `rustup default`
-    rustup_output <- system("rustup default", intern = TRUE)
-
-    # Extract the target from the output
-    target <- sub(" .*", "", rustup_output)
-    target_split <- strsplit(target, "-")
-    target <- paste(target_split[[1]][-1], collapse = "-")
-
-    # Return the determined target
-    return(target)
-}
-
-# Get the Rust target
-rust_target <- get_rust_target()
-
-# Print the result
-cat(rust_target)
+# See notes in FAQ about ARM64 support:
+# https://github.com/r-rust/faq#does-rust-support-windows-on-arm64-aarch64
+arch <- if (grepl("aarch", R.version$platform)) {
+    "aarch64-pc-windows-gnullvm"
+} else if (grepl("clang", Sys.getenv("R_COMPILED_BY"))) {
+    "x86_64-pc-windows-gnullvm"
+} else if (grepl("i386", R.version$platform)) {
+    "i686-pc-windows-gnu"
+} else {
+    "x86_64-pc-windows-gnu"
