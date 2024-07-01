@@ -25,11 +25,13 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
     ################ Check parameter ################
     errorTest <- parameterErrorMessage(enrichMethod = enrichMethod, organism = organism, collapseMethod = collapseMethod, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, isOutput = isOutput, outputDirectory = outputDirectory, dagColor = dagColor, hostName = hostName, cache = cache)
     if (!is.null(enrichDatabase)) {
-        if (enrichDatabase == "all") {
-            all_sets <- listGeneSet(organism = organism, hostName = hostName, cache = cache)
-            all_sets <- all_sets[all_sets$idType == "entrezgene", ]
-            enrichDatabase <- all_sets$name
-            enrichDatabaseType <- all_sets$idType
+        if (is.character(enrichDatabase) & length(enrichDatabase) == 1) {
+            if (enrichDatabase == "all") {
+                all_sets <- listGeneSet(organism = organism, hostName = hostName, cache = cache)
+                all_sets <- all_sets[all_sets$idType == "entrezgene", ]
+                enrichDatabase <- all_sets$name
+                enrichDatabaseType <- all_sets$idType
+            }
         }
     }
     if (!is.null(errorTest)) {
