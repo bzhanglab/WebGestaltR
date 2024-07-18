@@ -9,6 +9,7 @@ $(SHLIB): $(STATLIB)
 
 $(STATLIB):
 	if [ -f rust/vendor.tar.xz ]; then tar xf rust/vendor.tar.xz && mkdir -p .cargo && cp windows-config.toml .cargo/config.toml; fi
+	mkdir -p $(TARGET_DIR)/libgcc_mock
 	touch $(TARGET_DIR)/libgcc_mock/libgcc_eh.a
 	mkdir -p $(LIBDIR)/libgcc_mock && touch $(LIBDIR)/libgcc_mock/libgcc_eh.a
 	export LIBRARY_PATH="$${LIBRARY_PATH};$(CURDIR)/$(TARGET_DIR)/libgcc_mock"
