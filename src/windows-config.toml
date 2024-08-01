@@ -10,4 +10,4 @@ branch = "master"
 replace-with = "vendored-sources"
 
 [source.vendored-sources]
-directory = "rust/vendor"
+directory = "vendor"
