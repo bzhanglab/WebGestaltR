@@ -43,7 +43,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 	} else {
 		response <- POST(file.path(hostName, "api", "idmapping"), encode="json",
 			body=list(organism=organism, sourceType=sourceIdType,
-			targetType=targetIdType, ids=inputGeneL, standardId="phosphositeSeq", version="2024")
+			targetType=targetIdType, ids=inputGeneL, standardId="phosphositeSeq", version=WEBGESTALT_DATA_VERSION)
 		)
 		if (response$status_code != 200) {
 			stop(webRequestError(response))
@@ -80,7 +80,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 			} else {
 				response <- POST(file.path(hostName, "api", "idmapping"), encode="json",
 					body=list(organism=organism, sourceType="phosphositeSeq", standardId="phosphositeSeq",
-					targetType="phosphositeUniprot", ids=inputGeneL, version="2024")
+					targetType="phosphositeUniprot", ids=inputGeneL, version=WEBGESTALT_DATA_VERSION)
 				)
 
 				if (response$status_code != 200) {

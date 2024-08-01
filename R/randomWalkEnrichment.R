@@ -154,7 +154,7 @@ randomWalkEnrichment <- function(organism, network, method, inputSeed, topRank, 
         geneSetUrl <- file.path(hostName, "api", "geneset")
         response <- POST(geneSetUrl, body = list(
             organism = organism, database = "geneontology_Biological_Process",
-            fileType = "des", ids = unique(annRef$geneSet), version="2024"
+            fileType = "des", ids = unique(annRef$geneSet), version=WEBGESTALT_DATA_VERSION
         ), encode = "json")
         refTermName <- read_tsv(content(response), col_names = c("id", "description"), col_types = "cc") %>%
             filter(.data$id %in% names(refTermCount))

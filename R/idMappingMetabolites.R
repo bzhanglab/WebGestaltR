@@ -46,7 +46,7 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
       encode = "json",
       body = list(
         organism = organism, sourceType = sourceIdType,
-        targetType = targetIdType, ids = inputGeneL, standardId = standardId, version = "2024"
+        targetType = targetIdType, ids = inputGeneL, standardId = standardId, version = WEBGESTALT_DATA_VERSION
       )
     )
     if (response$status_code != 200) {
@@ -76,7 +76,7 @@ idMappingMetabolites <- function(organism = "hsapiens", dataType = "list", input
       encode = "json",
       body = list(
         organism = organism, sourceType = "rampc",
-        targetType = "metabolite_name", ids = mappedInputGene$rampc, standardId = standardId, version="2024"
+        targetType = "metabolite_name", ids = mappedInputGene$rampc, standardId = standardId, version=WEBGESTALT_DATA_VERSION
       )
     )
     mapRes <- content(response)

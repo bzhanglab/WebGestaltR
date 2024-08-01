@@ -38,11 +38,11 @@ cacheUrl <- function(dataUrl, cache = NULL, query = NULL) {
         # cat("Reading from server: ", dataUrl, "\n")
         if (!is.null(query)) {
             if (!("version" %in% names(query))) {
-                query[["version"]] <- "2024"
+                query[["version"]] <- WEBGESTALT_DATA_VERSION
             }
             response <- GET(dataUrl, query = query)
         } else {
-            response <- GET(dataUrl, query = list(version = "2024"))
+            response <- GET(dataUrl, query = list(version = WEBGESTALT_DATA_VERSION))
         }
         if (response$status_code != 200) {
             return(response)

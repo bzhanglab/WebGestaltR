@@ -58,7 +58,7 @@ WebGestaltRNta <- function(organism = "hsapiens", network = "network_PPI_BIOGRID
     } else {
         response <- POST(geneSetUrl, body = list(
             organism = organism, database = "geneontology_Biological_Process",
-            fileType = "des", ids = goTermList, version = "2024"
+            fileType = "des", ids = goTermList, version = WEBGESTALT_DATA_VERSION
         ), encode = "json")
         goId2Term <- read_tsv(content(response), col_names = c("id", "name"), col_types = "cc")
     }

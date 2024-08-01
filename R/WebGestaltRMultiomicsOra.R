@@ -295,7 +295,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       interestGeneFile_list = analyteListFiles, interestGene_list = interest_lists,
       interestGeneType_list = analyteTypes, collapseMethod = collapseMethod,
       referenceGeneFile_list = referenceListFiles, referenceGene_list = referenceLists,
-      referenceGeneType_list = referenceTypes, referenceSet_list = referenceLists, minNum = minNum,
+      referenceGeneType_list = referenceTypes, referenceSet_list = referenceSets, minNum = minNum,
       maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr,
       topThr = topThr, reportNum = reportNum, dagColor = dagColor, listNames = listNames
     )
