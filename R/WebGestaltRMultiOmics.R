@@ -51,6 +51,13 @@
 #' @param referenceTypes Vector of the ID types of the reference lists. The supported ID types
 #'   of WebGestaltR for the selected organism can be found by the function \code{listIdType}.
 #'   If the \code{organism} is \code{others}, users do not need to set this parameter.
+#' @param referenceSets Users can directly select the reference sets from existing platforms in
+#'   WebGestaltR and do not need to provide the reference set through \code{referenceListFiles}.
+#'   All existing platforms supported in WebGestaltR can be found by the function
+#'   \code{listReferenceSets}. If \code{referenceListFiles} and \code{refereneceLists} are
+#'   \code{NULL}, WebGestaltR will use the \code{referenceSets} as the reference analyte sets.
+#'   Otherwise, WebGestaltR will use the user supplied reference set for enrichment analysis.
+#'   Must be a vector with length matching the input analyte list (i.e. c('genome', 'genome', 'KEGG'))
 #' @param minNum WebGestaltR will exclude the categories with the number of annotated genes
 #'   less than \code{minNum} for enrichment analysis. The default is \code{10}.
 #' @param maxNum WebGestaltR will exclude the categories with the number of annotated genes
@@ -99,7 +106,7 @@
 #' @param useWeightedSetCover Use weighted set cover for ORA. Defaults to \code{TRUE}.
 #' @param useAffinityPropagation Use affinity propagation for ORA. Defaults to \code{FALSE}.
 #' @param usekMedoid Use k-medoid for ORA. Defaults to \code{TRUE}.
-#' @param isMetaAnalysis whether to perform meta-analysis. Defaults to \code{TRUE}.
+#' @param isMetaAnalysis whether to perform meta-analysis. Defaults to \code{TRUE}. FALSE is not currently implemented.
 #' @param mergeMethod The method to merge the results from multiple omics (options: \code{mean}, \code{max}). Only used if \code{isMetaAnalysis = FALSE}. Defaults to \code{mean}.
 #' @param normalizationMethod The method to normalize the results from multiple omics (options: \code{rank}, \code{median}, \code{mean}). Only used if \code{isMetaAnalysis = FALSE}.
 #' @param kMedoid_k The number of clusters for k-medoid. Defaults to \code{25}.
@@ -112,7 +119,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
                                   projectName = NULL, dagColor = "binary", saveRawGseaResult = FALSE, gseaPlotFormat = "png", nThreads = 1, cache = NULL,
                                   hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE,
                                   usekMedoid = FALSE, kMedoid_k = 25, isMetaAnalysis = TRUE, mergeMethod = "mean", normalizationMethod = "rank",
-                                  referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, listNames = NULL) {
+                                  referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, referenceSets = NULL, listNames = NULL) {
   VALID_MERGE_METHODS <- c("mean", "max")
   VALID_NORM_METHODS <- c("rank", "median", "mean")
   VALID_ENRICH_METHODS <- c("ORA", "GSEA")
@@ -126,6 +133,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
     referenceLists <- testNull(referenceLists)
     referenceListFiles <- testNull(referenceListFiles)
     referenceTypes <- testNull(referenceTypes)
+    referenceSets <- testNull(referenceSets)
   }
   organism <- testNull(organism)
   enrichDatabase <- testNull(enrichDatabase)
@@ -193,7 +201,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
       setCoverNum = setCoverNum, perNum = perNum, isOutput = isOutput, outputDirectory = outputDirectory, projectName = projectName,
       dagColor = dagColor, nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover,
       useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, referenceLists = referenceLists,
-      referenceListFiles = referenceListFiles, referenceTypes = referenceTypes, listNames = listNames
+      referenceListFiles = referenceListFiles, referenceTypes = referenceTypes, referenceSets = referenceSets, listNames = listNames
     )
     ## Meta-analysis
   } else if (enrichMethod == "GSEA") {
@@ -266,18 +274,18 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
   all_sets <- list(geneSet = list(), geneSetDes = list(), geneSetDag = list(), geneSetNet = list(), standardId = list(), databases = list())
   if (!is.null(enrichDatabase)) { # Need to get correct name for metabolite databases
     if (length(unique(analyteTypes)) == 1) {
-        db <- get_gmt_file(hostName, analyteTypes[1], enrichDatabase, organism, cache)
-        res <- loadGeneSet(
-          organism = organism, enrichDatabase = db, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
-          enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = FALSE
-        )
-        elements <- names(res)
-        for (i in seq_along(analyteTypes)) {
-          for (j in seq_along(elements)) {
-            all_sets[[elements[j]]][[i]] <- res[[elements[j]]]
-          }
-          all_sets$databases[[i]] <- db
+      db <- get_gmt_file(hostName, analyteTypes[1], enrichDatabase, organism, cache)
+      res <- loadGeneSet(
+        organism = organism, enrichDatabase = db, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType,
+        enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, cache = cache, hostName = hostName, isMultiOmics = FALSE
+      )
+      elements <- names(res)
+      for (i in seq_along(analyteTypes)) {
+        for (j in seq_along(elements)) {
+          all_sets[[elements[j]]][[i]] <- res[[elements[j]]]
         }
+        all_sets$databases[[i]] <- db
+      }
     } else {
       for (i in seq_along(analyteTypes)) {
         db <- get_gmt_file(hostName, analyteTypes[i], enrichDatabase, organism, cache)

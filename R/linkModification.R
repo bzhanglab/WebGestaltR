@@ -105,7 +105,7 @@ simple_mapping <- function(id_list, organism, source_id, target_id, standard_id,
         encode = "json",
         body = list(
             organism = organism, sourceType = source_id,
-            targetType = target_id, ids = id_list, standardId = standard_id, version = "2024"
+            targetType = target_id, ids = id_list, standardId = standard_id, version = WEBGESTALT_DATA_VERSION
         )
     )
     if (response$status_code != 200) {

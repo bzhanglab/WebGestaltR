@@ -44,6 +44,7 @@ WebGestaltRMultiOmics(
   referenceLists = NULL,
   referenceListFiles = NULL,
   referenceTypes = NULL,
+  referenceSets = NULL,
   listNames = NULL
 )
 }
@@ -167,7 +168,7 @@ corresponding FDRs.}
 
 \item{kMedoid_k}{The number of clusters for k-medoid. Defaults to \code{25}.}
 
-\item{isMetaAnalysis}{whether to perform meta-analysis. Defaults to \code{TRUE}.}
+\item{isMetaAnalysis}{whether to perform meta-analysis. Defaults to \code{TRUE}. FALSE is not currently implemented.}
 
 \item{mergeMethod}{The method to merge the results from multiple omics (options: \code{mean}, \code{max}). Only used if \code{isMetaAnalysis = FALSE}. Defaults to \code{mean}.}
 
@@ -184,6 +185,14 @@ only contain one column: the reference gene list.}
 \item{referenceTypes}{Vector of the ID types of the reference lists. The supported ID types
 of WebGestaltR for the selected organism can be found by the function \code{listIdType}.
 If the \code{organism} is \code{others}, users do not need to set this parameter.}
+
+\item{referenceSets}{Users can directly select the reference sets from existing platforms in
+WebGestaltR and do not need to provide the reference set through \code{referenceListFiles}.
+All existing platforms supported in WebGestaltR can be found by the function
+\code{listReferenceSets}. If \code{referenceListFiles} and \code{refereneceLists} are
+\code{NULL}, WebGestaltR will use the \code{referenceSets} as the reference analyte sets.
+Otherwise, WebGestaltR will use the user supplied reference set for enrichment analysis.
+Must be a vector with length matching the input analyte list (i.e. c('genome', 'genome', 'KEGG'))}
 
 \item{listNames}{The names of the analyte lists.}
 }

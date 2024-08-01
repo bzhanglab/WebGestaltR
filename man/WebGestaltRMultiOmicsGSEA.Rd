@@ -166,7 +166,7 @@ corresponding FDRs.}
 
 \item{kMedoid_k}{The number of clusters for k-medoid. Defaults to \code{25}.}
 
-\item{isMetaAnalysis}{whether to perform meta-analysis. Defaults to \code{TRUE}.}
+\item{isMetaAnalysis}{whether to perform meta-analysis. Defaults to \code{TRUE}. FALSE is not currently implemented.}
 
 \item{mergeMethod}{The method to merge the results from multiple omics (options: \code{mean}, \code{max}). Only used if \code{isMetaAnalysis = FALSE}. Defaults to \code{mean}.}
 

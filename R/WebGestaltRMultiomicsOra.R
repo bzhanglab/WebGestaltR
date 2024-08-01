@@ -8,7 +8,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
                                      topThr = 10, reportNum = 100, setCoverNum = 10, perNum = 1000, gseaP = 1, isOutput = TRUE, outputDirectory = getwd(),
                                      projectName = NULL, dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/",
                                      useWeightedSetCover = TRUE, useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 25,
-                                     referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, listNames = NULL) {
+                                     referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, referenceSets = NULL, listNames = NULL) {
   projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
   cat("Performing multi-omics ORA\nLoading the functional categories...\n")
   all_sets <- .load_meta_gmt(enrichDatabase, enrichDatabaseFile, enrichDatabaseDescriptionFile, enrichDatabaseType, analyteLists, analyteListFiles, analyteTypes, organism, cache, hostName)
@@ -53,7 +53,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
 
   cat("Loading the reference lists...\n")
   reference_lists <- list()
-  if (is.null(referenceLists)) {
+  if (!is.null(referenceListFiles)) {
     for (i in seq_along(referenceListFiles)) {
       referenceGeneList <- loadReferenceGene(
         organism = organism, referenceGeneFile = referenceListFiles[i],
@@ -65,12 +65,24 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       )
       reference_lists[[i]] <- referenceGeneList
     }
-  } else {
+  } else if (!is.null(referenceLists)) {
     for (i in seq_along(analyteLists)) {
       referenceGeneList <- loadReferenceGene(
         organism = organism, referenceGeneFile = NULL,
         referenceGene = referenceLists[i], referenceGeneType = NULL,
         referenceSet = NULL, collapseMethod = collapseMethod,
+        hostName = hostName, geneSet = all_sets[["geneSet"]][[i]],
+        interestGeneList = interest_lists[[i]],
+        cache = cache
+      )
+      reference_lists[[i]] <- referenceGeneList
+    }
+  } else { # use pre-defined reference lists
+    for (i in seq_along(interest_lists)) {
+      referenceGeneList <- loadReferenceGene(
+        organism = organism, referenceGeneFile = NULL,
+        referenceGene = NULL, referenceGeneType = NULL,
+        referenceSet = referenceSets[[i]], collapseMethod = collapseMethod,
         hostName = hostName, geneSet = all_sets[["geneSet"]][[i]],
         interestGeneList = interest_lists[[i]],
         cache = cache
@@ -283,7 +295,7 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
       interestGeneFile_list = analyteListFiles, interestGene_list = interest_lists,
       interestGeneType_list = analyteTypes, collapseMethod = collapseMethod,
       referenceGeneFile_list = referenceListFiles, referenceGene_list = referenceLists,
-      referenceGeneType_list = referenceTypes, referenceSet_list = referenceLists, minNum = minNum,
+      referenceGeneType_list = referenceTypes, referenceSet_list = referenceSets, minNum = minNum,
       maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr,
       topThr = topThr, reportNum = reportNum, dagColor = dagColor, listNames = listNames
     )
