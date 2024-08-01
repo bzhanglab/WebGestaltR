@@ -33,7 +33,7 @@ summaryDescription <- function(projectName, organism, interestGeneFile, interest
 		data <- list(projectName=projectName, enrichMethod=enrichMethod, organism=organism, organismIsOthers=FALSE,
 			enrichDatabaseInfo=enrichDatabaseInfo, enrichDatabaseType=enrichDatabaseType,
 			hasInterestGeneFile=!is.null(interestGeneFile),
-			interestGeneFileBase=ifelse(is.null(interestGeneFile), "", basename(interestGeneFile)), interestGeneType=interestGeneType,
+			interestGeneFilWEBGESTALT_DATA_VERSIONeBase=ifelse(is.null(interestGeneFile), "", basename(interestGeneFile)), interestGeneType=interestGeneType,
 			numUserId=nrow(interestingGeneMap$mapped)+length(interestingGeneMap$unmapped),
 			numMappedUserId=nrow(interestingGeneMap$mapped), numUniqueMappedId=length(unique(interestingGeneMap$mapped[[standardId]])),
 			numUnmappedUserId=length(interestingGeneMap$unmapped), idIsEntrezGene=standardId=="entrezgene", standardId=standardId,
@@ -78,7 +78,7 @@ specificParameterSummaryOra <- function(organism, referenceGeneList, geneSet, re
 		numEnrichedSig <- NULL
 		showAll <- NULL
 	}
-	data <- list(organismIsOthers=organismIsOthers, numUniqueUserId=length(interestGeneList), standardId=standardId,
+	data <- list(data_version = WEBGESTALT_DATA_VERSION, organismIsOthers=organismIsOthers, numUniqueUserId=length(interestGeneList), standardId=standardId,
 		numAnnoRefUserId=numAnnoRefUserId, hasRefGeneFile=!is.null(referenceGeneFile), referenceGeneFile=referenceGeneFile,
 		referenceGeneType=referenceGeneType, hasRefGene=!is.null(referenceGene), referenceSet=referenceSet,
 		numRefGene=length(referenceGeneList), numAnnoRefId=length(intersect(referenceGeneList, geneSet$gene)), minNum=minNum,

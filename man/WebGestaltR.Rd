@@ -3,6 +3,7 @@
 %   R/WebGestaltRBatch.R
 \docType{package}
 \name{WebGestaltR}
+\alias{WebGestaltR-package}
 \alias{WebGestaltR}
 \alias{WebGestaltRBatch}
 \alias{WebGestaltR_batch}

@@ -59,7 +59,7 @@ idMappingGene <- function(organism = "hsapiens", dataType = "list", inputGeneFil
             encode = "json",
             body = list(
                 organism = organism, sourceType = sourceIdType,
-                targetType = targetIdType, ids = inputGeneL, version = "2024"
+                targetType = targetIdType, ids = inputGeneL, version = WEBGESTALT_DATA_VERSION
             )
         )
 
