@@ -6,7 +6,6 @@
 # This file was created with the following call:
 #   .Call("wrap__make_WebGestaltR_wrappers", use_symbols = TRUE, package_name = "WebGestaltR")
 
-#' @docType package
 #' @usage NULL
 #' @useDynLib WebGestaltR, .registration = TRUE
 NULL

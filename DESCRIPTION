@@ -23,9 +23,9 @@ Imports: methods, dplyr, doRNG, readr, parallel (>= 3.3.2),
         igraph, whisker, apcluster, Rcpp, cluster, poolr
 NeedsCompilation: yes
 LinkingTo: Rcpp
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 SystemRequirements: Cargo (Rust's package manager), rustc v1.63.0+
-Config/rextendr/version: 0.3.1
+Config/rextendr/version: 0.3.1.9000
 Config/WebGestaltR/MSRV: 1.63.0
 Encoding: UTF-8
 Suggests: 
