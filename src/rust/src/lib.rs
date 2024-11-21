@@ -9,7 +9,7 @@ use webgestalt_lib::{
     methods::{
         gsea::{GSEAConfig, GSEAResult, RankListItem},
         multilist::{multilist_gsea, multilist_ora, GSEAJob, ORAJob},
-        nta::{get_nta, NTAConfig},
+        nta::{process_nta, NTAConfig},
         ora::{get_ora, ORAConfig, ORAResult},
     },
     readers::utils::Item,
