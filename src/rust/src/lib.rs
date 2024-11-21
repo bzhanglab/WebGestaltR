@@ -91,7 +91,7 @@ pub fn nta_rust(edge_list: Robj, seeds: Robj) -> List {
         tolerance: 1e-6,
         ..Default::default()
     };
-    let res = get_nta(config);
+    let res = process_nta(config);
     let nodes: Vec<String> = res.iter().map(|(x, _)| x.to_string()).collect();
     let scores: Vec<f64> = res.iter().map(|(_, x)| *x).collect();
     list!(nodes = nodes, scores = scores)
