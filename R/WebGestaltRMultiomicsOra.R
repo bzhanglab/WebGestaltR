@@ -258,10 +258,17 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
         }
         clusters$ap <- apRes
         if (!is.null(kRes)) {
-          writeLines(sapply(kRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", name_ending, ".txt")))
-        } else {
-          kRes <- NULL
-        }
+                tryCatch(
+                    {
+                        writeLines(sapply(kRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", projectName, ".txt")))
+                    },
+                    error = function(e) {
+                        cat("Error in writing kmedoid clusters.\n")
+                    }
+                )
+            } else {
+                kRes <- NULL
+            }
         clusters$km <- kRes
         if (!is.null(wscRes$topSets)) {
           writeLines(c(paste0("# Coverage: ", wscRes$coverage), wscRes$topSets), file.path(projectDir, paste0("enriched_geneset_wsc_topsets_", name_ending, ".txt")))
