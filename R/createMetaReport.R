@@ -203,7 +203,7 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
                 referenceGeneFile = referenceGeneFile, referenceGene = referenceGene,
                 referenceGeneType = referenceGeneType, referenceSet = referenceSet, minNum = minNum,
                 maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr,
-                topThr = topThr, reportNum = reportNum, dagColor = dagColor, outputHtmlFile = partial_output, html_title= listNames[[i]],is_meta = TRUE
+                topThr = topThr, reportNum = reportNum, dagColor = dagColor, outputHtmlFile = partial_output, listName= listNames[[i]],is_meta = TRUE
             )
             tabs[[j]] <- list(title = listNames[[i]], path = relative_path)
         }
