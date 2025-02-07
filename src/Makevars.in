@@ -13,6 +13,7 @@ $(SHLIB): $(STATLIB)
 CARGOTMP = $(CURDIR)/.cargo
 
 $(STATLIB):
+	@rustc --version	
 	if [ "$(VENDORING)" = "yes" ]; then \
 	  $(TAR) --extract --xz -f ./rust/vendor.tar.xz -C ./rust && \
 	    mkdir -p ./.cargo && \
