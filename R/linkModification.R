@@ -36,8 +36,8 @@ keggMetaboliteLinkModification <- function(enrichPathwayLink, geneList, interest
 
 wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap, hostName) {
     geneMap <- interestingGeneMap$mapped
-    hmdbGeneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
-    hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("hmdb:", "HMDB_", x, ignore.case = TRUE))
+    hmdbGeneList <- simple_mapping(unlist(strsplit(geneList, ";")), "hsapiens", "rampc", "chebi", "rampc", hostName, no_dups = TRUE)
+    hmdbGeneList <- sapply(hmdbGeneList, function(x) x <- gsub("chebi:", "ChEBI_", x, ignore.case = TRUE))
     geneMap <- filter(geneMap, .data$rampc %in% geneList)
     geneList <- unlist(strsplit(geneList, ";"))
     if (grepl("PathwayWidget", enrichPathwayLink, fixed = FALSE)) {
@@ -59,7 +59,7 @@ wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, gene
         colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
         colorStr <- paste(gsub("#", "%23", colors, fixed = TRUE), collapse = ",")
         for (i in seq_along(hmdbGeneList)) {
-            enrichPathwayLink <- paste0(enrichPathwayLink, URLencode(colors[i]), "=", hmdbGeneList[i], "&")
+            enrichPathwayLink <- paste0(enrichPathwayLink, gsub("#", "%23", colors[i], fixed = TRUE), "=", hmdbGeneList[i], "&")
         }
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorStr)
     }

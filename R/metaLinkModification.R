@@ -43,7 +43,7 @@ metaLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
                 if (grepl("www.kegg.jp", enrichPathwayLink, fixed = TRUE)) {
                     mapping_table <- full_simple_mapping(all_genes, "hsapiens", "rampc", "kegg", "rampc", hostName, no_dups = TRUE)
                 } else if (grepl("toolforge.org", enrichPathwayLink, fixed = TRUE)) {
-                    mapping_table <- full_simple_mapping(all_genes, "hsapiens", "rampc", "hmdb", "rampc", hostName, no_dups = TRUE)
+                    mapping_table <- full_simple_mapping(all_genes, "hsapiens", "rampc", "chebi", "rampc", hostName, no_dups = TRUE)
                 }
                 if (is.null(mapping_table)) {
                     next
@@ -276,9 +276,9 @@ hmdb_map <- function(geneList, interestingGeneMap, hostName) {
 
 meta_wikiMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_geneList, all_genes, interestingGeneMap, hostName, color_index) {
     enrichPathwayLink <- ""
-    found <- sapply(geneList, function(x) x <- gsub("hmdb:", "HMDB_", x, ignore.case = TRUE))
+    found <- sapply(geneList, function(x) x <- gsub("chebi:", "ChEBI_", x, ignore.case = TRUE))
     not_found <- all_genes[!(all_genes %in% geneList)]
-    not_found <- sapply(not_found, function(x) x <- gsub("hmdb:", "HMDB_", x, ignore.case = TRUE))
+    not_found <- sapply(not_found, function(x) x <- gsub("chebi:", "ChEBI_", x, ignore.case = TRUE))
     if (enrichMethod == "ORA") {
         ora_color <- get_ora_colors(color_index)
         enrichPathwayLink <- paste0(ora_color, "=")
@@ -314,7 +314,7 @@ meta_wikiMetaboliteLinkModification <- function(enrichMethod, geneList, rampc_ge
                 all_colored_genes <- c()
                 for (j in seq_along(colors)) {
                     if (colors[[j]] == color) {
-                        all_colored_genes <- c(all_colored_genes, geneList[[j]])
+                        all_colored_genes <- c(all_colored_genes, found[[j]])
                     }
                 }
                 all_colored_genes <- paste(all_colored_genes, collapse = ",")
