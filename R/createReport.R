@@ -11,7 +11,11 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
                          interestingGeneMap, referenceGeneList, enrichedSig, geneTables, clusters, background, enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL,
                          enrichDatabaseDescriptionFile = NULL, interestGeneFile = NULL, interestGene = NULL, interestGeneType = NULL, collapseMethod = "mean", referenceGeneFile = NULL,
                          referenceGene = NULL, referenceGeneType = NULL, referenceSet = NULL, minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05, topThr = 10,
-                         reportNum = 20, perNum = 1000, p = 1, dagColor = "binary", is_meta = FALSE, outputHtmlFile = NULL) {
+                         reportNum = 20, perNum = 1000, p = 1, dagColor = "binary", is_meta = FALSE, outputHtmlFile = NULL, listName = NULL) {
+
+    if (is.null(listName)) {
+        listName <- "WebGestalt (WEB-based GEne SeT AnaLysis Toolkit)"
+    }
     if (is.null(outputHtmlFile)) {
         outputHtmlFile <- file.path(outputDirectory, paste0("Project_", projectName), paste0("Report_", projectName, ".html"))
     }
@@ -143,7 +147,7 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
                 x <- pvals[i]
                 if (enrichMethod == "ORA") {
                     if (abs(x) <= 10 * .Machine$double.eps) {
-                        logp[i] <- 16
+                        logp[i] <- -log10(.Machine$double.eps)
                     } else {
                         logp[i] <- -log10(abs(x))
                     }
@@ -186,7 +190,7 @@ createReport <- function(hostName, outputDirectory, organism = "hsapiens", proje
             dagJson = toJSON(dagJson, auto_unbox = TRUE), hasGeneSetDag = hasGeneSetDag, version = version,
             clusterJson = toJSON(clusters), hasCytoscape = hasCytoscape,
             geneTableJson = toJSON(geneTables), standardId = standardId, numAnnoRefUserId = numAnnoRefUserId,
-            methodIsGsea = enrichMethod == "GSEA", hasGeneSetDes = !is.null(geneSetDes)
+            methodIsGsea = enrichMethod == "GSEA", hasGeneSetDes = !is.null(geneSetDes), html_title = listName
         )
         cat(whisker.render(template, data, partials = list(header = header, footer = footer)), file = outputHtmlFile)
     }

@@ -1,7 +1,7 @@
 #' @importFrom httr POST content
 #' @importFrom readr read_tsv cols
 #' @importFrom jsonlite toJSON
-WebGestaltRNta <- function(organism = "hsapiens", network = "network_PPI_BIOGRID", method = "Network_Retrieval_Prioritization", inputSeed, inputSeedFile, interestGeneType = "genesymbol", neighborNum = 10, highlightSeedNum = 10, sigMethod = "fdr", fdrThr = 0.05, topThr = 10, highlightType = "Seeds", outputDirectory = getwd(), projectName = NULL, cache = NULL, hostName = "https://www.webgestalt.org/") {
+WebGestaltRNta <- function(organism = "hsapiens", network = "network_PPI_BIOGRID", method = "Network_Retrieval_Prioritization", inputSeed, inputSeedFile, interestGeneType = "genesymbol", neighborNum = 10, highlightSeedNum = 10, sigMethod = "fdr", fdrThr = 0.05, topThr = 10, highlightType = "Seeds", outputDirectory = getwd(), projectName = NULL, cache = NULL, hostName = "https://www.webgestalt.org/", listName = NULL) {
     projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
     # if (network == "network_FunMap") {
     # 	network <- "network_FunMap_DenseModules"
@@ -79,7 +79,7 @@ WebGestaltRNta <- function(organism = "hsapiens", network = "network_PPI_BIOGRID
     createNtaReport(
         networkName = network, method = method, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr,
         highlightType = highlightType, outputDirectory = outputDirectory, projectDir = projectDir,
-        projectName = projectName, hostName = hostName
+        projectName = projectName, hostName = hostName, listName = listName
     )
 
     cwd <- getwd()

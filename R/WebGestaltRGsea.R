@@ -6,7 +6,7 @@ WebGestaltRGsea <- function(organism = "hsapiens", enrichDatabase = NULL, enrich
                             sigMethod = "fdr", fdrThr = 0.05, topThr = 10, reportNum = 20, setCoverNum = 10, perNum = 1000, p = 1,
                             isOutput = TRUE, outputDirectory = getwd(), projectName = NULL, dagColor = "binary", saveRawGseaResult = FALSE,
                             plotFormat = "png", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE,
-                            useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10) {
+                            useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10, listName = NULL) {
     enrichMethod <- "GSEA"
     projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
@@ -176,7 +176,7 @@ WebGestaltRGsea <- function(organism = "hsapiens", enrichDatabase = NULL, enrich
     if (isOutput) {
         ############## Create report ##################
         cat("Generate the final report...\n")
-        createReport(hostName = hostName, outputDirectory = outputDirectory, organism = organism, projectName = projectName, enrichMethod = enrichMethod, geneSet = geneSet, geneSetDes = geneSetDes, geneSetDag = geneSetDag, geneSetNet = geneSetNet, interestingGeneMap = interestingGeneMap, enrichedSig = enrichedSig, background = insig, geneTables = geneTables, clusters = clusters, enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType, enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, interestGeneFile = interestGeneFile, interestGene = interestGene, interestGeneType = interestGeneType, collapseMethod = collapseMethod, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, perNum = perNum, p = p, dagColor = dagColor)
+        createReport(hostName = hostName, outputDirectory = outputDirectory, organism = organism, projectName = projectName, enrichMethod = enrichMethod, geneSet = geneSet, geneSetDes = geneSetDes, geneSetDag = geneSetDag, geneSetNet = geneSetNet, interestingGeneMap = interestingGeneMap, enrichedSig = enrichedSig, background = insig, geneTables = geneTables, clusters = clusters, enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType, enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, interestGeneFile = interestGeneFile, interestGene = interestGene, interestGeneType = interestGeneType, collapseMethod = collapseMethod, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, perNum = perNum, p = p, dagColor = dagColor, listName = listName)
 
         cwd <- getwd()
         setwd(projectDir)
