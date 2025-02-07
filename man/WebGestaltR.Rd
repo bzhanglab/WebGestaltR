@@ -52,6 +52,7 @@ WebGestaltR(
   useAffinityPropagation = FALSE,
   usekMedoid = TRUE,
   kMedoid_k = 25,
+  listName = NULL,
   ...
 )
 
@@ -225,6 +226,8 @@ either \code{Seeds} or \code{Neighbors}.}
 \item{usekMedoid}{Use k-medoid for ORA. Defaults to \code{TRUE}.}
 
 \item{kMedoid_k}{The number of clusters for k-medoid. Defaults to \code{25}.}
+
+\item{listName}{(optional) The names of the analyte list. Used to give the HTML title of the report. Defaults to \code{NULL}.}
 
 \item{...}{In batch function, passes parameters to WebGestaltR function.
 Also handles backward compatibility for some parameters in old versions.}

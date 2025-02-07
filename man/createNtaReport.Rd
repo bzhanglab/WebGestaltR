@@ -14,7 +14,8 @@ createNtaReport(
   outputDirectory,
   projectDir,
   projectName,
-  hostName
+  hostName,
+  listName = listName
 )
 }
 \description{
