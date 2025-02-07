@@ -13,6 +13,7 @@ $(SHLIB): $(STATLIB)
 CARGOTMP = $(CURDIR)/.cargo
 
 $(STATLIB):
+	@rustc --version
 	if [ "$(VENDORING)" = "yes" ]; then \
 	  $(TAR) --extract --xz -f ./rust/vendor.tar.xz -C ./rust && \
 	    mkdir -p ./.cargo && \
@@ -24,7 +25,7 @@ $(STATLIB):
 	if [ "$(NOT_CRAN)" != "true" ]; then \
 		export CARGO_HOME=$(CARGOTMP); \
 	fi && \
-		 . "/Users/zhanglab/.cargo/env" && export PATH="$(PATH):$(HOME)/.cargo/bin" &&\
+		 . "/Users/johnelizarraras/.cargo/env" && export PATH="$(PATH):$(HOME)/.cargo/bin" &&\
 		cargo build --lib --jobs 2 --release --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR) $(OFFLINE_OPTION)
 	if [ "$(NOT_CRAN)" != "true" ]; then \
 		rm -Rf $(CARGOTMP) && \

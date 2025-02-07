@@ -37,7 +37,7 @@ geneM <- function(geneList, mappingTable) {
 #' @importFrom dplyr select
 getMetaGSEAGeneTables <- function(organism, enrichedSig, interestingGeneMaps, listNames) {
     table <- list()
-    for (i in 1:nrow(enrichedSig)) {
+    for (i in seq_len(nrow(enrichedSig))) {
         genes <- unlist(unique(unlist(strsplit(enrichedSig[[i, "leadingEdgeId"]], ";"))))
         geneSetId <- enrichedSig[[i, "geneSet"]]
         if (length(genes) == 1 && is.na(genes)) {
@@ -88,7 +88,7 @@ getGeneTables <- function(organism, enrichedSig, geneColumn, interestingGeneMap)
         }
     }
     table <- list()
-    for (i in 1:nrow(enrichedSig)) {
+    for (i in seq_len(nrow(enrichedSig))) {
         genes <- enrichedSig[[i, geneColumn]]
         geneSetId <- enrichedSig[[i, "geneSet"]]
         if (length(genes) == 1 && is.na(genes)) {

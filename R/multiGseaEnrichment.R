@@ -64,7 +64,8 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
     for (j in seq_along(gseaRes_list)) {
         print(paste0("Processing ", j, " ..."))
         gseaRes <- gseaRes_list[[j]]
-
+        sig <- list()
+        insig <- list()
         # if (saveRawGseaResult) {
         #     saveRDS(gseaRes, file = file.path(outputF, "rawGseaResult.rds"))
         # }
@@ -104,8 +105,8 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
             } else {
                 warning("ERROR: No significant set is identified based on top ", topThr, "!\n")
             }
-            sig_list[[j]] <- NULL
-            insig_list[[j]] <- NULL
+            sig_list[[j]] <- list()
+            insig_list[[j]] <- list()
             next
         }
 
@@ -200,6 +201,9 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
             sig$leadingEdgeId <- leadingGenes
         }
         sig_list[[j]] <- sig
+        if (is.null(insig)) {
+            insig <- list()
+        }
         insig_list[[j]] <- insig
     }
 

@@ -203,7 +203,7 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
                 referenceGeneFile = referenceGeneFile, referenceGene = referenceGene,
                 referenceGeneType = referenceGeneType, referenceSet = referenceSet, minNum = minNum,
                 maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr,
-                topThr = topThr, reportNum = reportNum, dagColor = dagColor, outputHtmlFile = partial_output, is_meta = TRUE
+                topThr = topThr, reportNum = reportNum, dagColor = dagColor, outputHtmlFile = partial_output, listName= listNames[[i]],is_meta = TRUE
             )
             tabs[[j]] <- list(title = listNames[[i]], path = relative_path)
         }
@@ -218,7 +218,7 @@ createMetaReport <- function(hostName = NULL, outputDirectory = NULL, organism =
     footer <- readLines(system.file("templates/footer.mustache", package = "WebGestaltR"))
     template <- readLines(system.file("templates/meta_template.mustache", package = "WebGestaltR"))
     data <- list(
-        hostName = hostName, allContent = allContent, version = version
+        hostName = hostName, allContent = allContent, version = version, html_title = paste(listNames, collapse = "+")
     )
     cat(whisker.render(template, data, partials = list(header = header, footer = footer)), file = outputHtmlFile)
 }
