@@ -6,7 +6,7 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
                            referenceSet = NULL, minNum = 10, maxNum = 500, fdrMethod = "BH", sigMethod = "fdr", fdrThr = 0.05,
                            topThr = 10, reportNum = 20, setCoverNum = 10, isOutput = TRUE, outputDirectory = getwd(), projectName = NULL,
                            dagColor = "binary", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE,
-                           useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10) {
+                           useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10, listName = NULL) {
     enrichMethod <- "ORA"
     projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
@@ -157,7 +157,14 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
             }
             clusters$ap <- apRes
             if (!is.null(kRes)) {
-                writeLines(sapply(kRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", projectName, ".txt")))
+                tryCatch(
+                    {
+                        writeLines(sapply(kRes$clusters, paste, collapse = "\t"), file.path(projectDir, paste0("enriched_geneset_kmedoid_clusters_", projectName, ".txt")))
+                    },
+                    error = function(e) {
+                        cat("Error in writing kmedoid clusters.\n")
+                    }
+                )
             } else {
                 kRes <- NULL
             }
@@ -188,7 +195,7 @@ WebGestaltROra <- function(organism = "hsapiens", enrichDatabase = NULL, enrichD
             referenceGeneFile = referenceGeneFile, referenceGene = referenceGene,
             referenceGeneType = referenceGeneType, referenceSet = referenceSet, minNum = minNum,
             maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr,
-            topThr = topThr, reportNum = reportNum, dagColor = dagColor
+            topThr = topThr, reportNum = reportNum, dagColor = dagColor, listName = listName
         )
 
         cwd <- getwd()
