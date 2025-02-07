@@ -126,9 +126,15 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           next
         }
         old_names <- names(interestGeneMaps[[j]][["mapped"]])
-        names(interestGeneMaps[[j]][["mapped"]]) <- names(interestGeneMaps[[1]][["mapped"]])
+            names(interestGeneMaps[[j]][["mapped"]]) <- ifelse(
+        names(interestGeneMaps[[j]][["mapped"]]) == "rampc",
+        "entrezgene",
+        names(interestGeneMaps[[j]][["mapped"]])
+        )
+        tmp_map <- interestGeneMaps[[j]][["mapped"]]
+        tmp_map <- tmp_map[, names(interestingGeneMap[["mapped"]])]
         interestingGeneMap[["mapped"]] <- rbind(interestingGeneMap[["mapped"]], interestGeneMaps[[j]][["mapped"]])
-        interestingGeneMap[["unmapped"]] <- append(unlist(interestingGeneMap[["unmapped"]]), unlist(interestGeneMaps[[j]][["unmapped"]]))
+        interestingGeneMap[["unmapped"]] <- append(interestingGeneMap[["unmapped"]], interestGeneMaps[[j]][["unmapped"]])
         names(interestGeneMaps[[j]][["mapped"]]) <- old_names
       }
       if ("geneSetDes" %in% names(all_sets)) {
@@ -185,9 +191,9 @@ WebGestaltRMultiOmicsOra <- function(analyteLists = NULL, analyteListFiles = NUL
           arrange(.data$FDR, .data$pValue, desc(.data$size)) %>%
           distinct(.data$geneSet, .keep_all = TRUE)
       }
-      if (i == 1) {
-        print(enrichedSig)
-      }
+      # if (i == 1) {
+      #   print(enrichedSig)
+      # }
       geneTables <- getGeneTables(organism, enrichedSig, "overlapId", interestingGeneMap)
       geneTables_list[[i]] <- geneTables
       if (organism != "others" && i != 1) {

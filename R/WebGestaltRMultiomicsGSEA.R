@@ -55,7 +55,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
         }
     }
     cat("Running multi-omics GSEA...\n")
-
+    
     gseaRes <- multiGseaEnrichment(
         hostName = hostName, outputDirectory = outputDirectory, projectName = projectName, geneRankList_list = interest_lists, geneSet_list = all_sets[["geneSet"]],
         geneSetDes_list = all_sets[["geneSetDes"]], collapseMethod = "mean", minNum = minNum, maxNum = maxNum, sigMethod = sigMethod, fdrThr = fdrThr,
@@ -77,7 +77,6 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
     enrichedSig_list <- list()
 
     ## Meta-analysis
-
     for (i in 2:(length(gseaRes$enriched) + 1)) {
         print(paste0("Processing ", i, " list..."))
         if (i == (length(gseaRes$enriched) + 1)) {
@@ -86,7 +85,6 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
         }
         enrichedSig <- gseaRes$enriched[[i]]
         insig <- gseaRes$background[[i]]
-        print("first")
         if (i == 1) {
             interestingGeneMap <- list(mapped = interestGeneMaps[[1]]$mapped, unmapped = interestGeneMaps[[1]]$unmapped, standardId = interestGeneMaps[[1]]$standardId)
             for (j in seq_along(interestGeneMaps)) {
@@ -94,7 +92,13 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                     next
                 }
                 old_names <- names(interestGeneMaps[[j]][["mapped"]])
-                names(interestGeneMaps[[j]][["mapped"]]) <- names(interestGeneMaps[[1]][["mapped"]])
+                    names(interestGeneMaps[[j]][["mapped"]]) <- ifelse(
+                names(interestGeneMaps[[j]][["mapped"]]) == "rampc",
+                "entrezgene",
+                names(interestGeneMaps[[j]][["mapped"]])
+                )
+                tmp_map <- interestGeneMaps[[j]][["mapped"]]
+                tmp_map <- tmp_map[, names(interestingGeneMap[["mapped"]])]
                 interestingGeneMap[["mapped"]] <- rbind(interestingGeneMap[["mapped"]], interestGeneMaps[[j]][["mapped"]])
                 interestingGeneMap[["unmapped"]] <- append(interestingGeneMap[["unmapped"]], interestGeneMaps[[j]][["unmapped"]])
                 names(interestGeneMaps[[j]][["mapped"]]) <- old_names
@@ -149,7 +153,6 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
         geneTables <- list()
         if (!is.null(enrichedSig)) {
             if (!is.null(geneSetDes)) { ####### Add extra description information ###########
-                print("here")
                 enrichedSig <- enrichedSig %>%
                     left_join(geneSetDes, by = "geneSet") %>%
                     select(.data$geneSet, .data$description, .data$link, .data$enrichmentScore, .data$normalizedEnrichmentScore, .data$pValue, .data$FDR, .data$size, .data$plotPath, .data$leadingEdgeNum, .data$leadingEdgeId) %>%
@@ -165,7 +168,6 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             if (i != 1) {
                 enrichedSig_list[[i - 1]] <- enrichedSig
             }
-            print("next")
 
             if (organism != "others" && i != 1) {
                 geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
@@ -178,7 +180,9 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
             } else if (organism != "others") {
                 geneTables <- getGeneTables(organism, enrichedSig, "leadingEdgeId", interestingGeneMap)
                 geneTables_list[[i]] <- geneTables
-                metaGeneTables <- getMetaGSEAGeneTables(organism, enrichedSig, interestGeneMaps, listNames)
+                print(geneTables)
+                # metaGeneTables <- getMetaGSEAGeneTables(organism, enrichedSig, interestGeneMaps, listNames)
+                # geneTables_list[[i]] <- metaGeneTables
                 for (k in seq_along(enrichedSig$link)) {
                     old_link <- enrichedSig$link[[k]]
                     tryCatch(
