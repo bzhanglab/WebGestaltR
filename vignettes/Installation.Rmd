@@ -22,12 +22,12 @@ library(WebGestaltR)
 
 ### Requirements
 
-- Rust 1.66.0 or later
+- Rust 1.66.0 or later (GNU version if on Windows)
 - R 4.0.0 or later (Windows requires 4.2+)
 
 ---
 
-Since WebGestaltR v1.0.0, Rust is used for core computations in the R package. Therefore, to install WebGestaltR, please download and install Rust from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install). For Mac, Linux, or Unix users, Rust can be installed from the command line, and Windows users can download a GUI installer.
+Since WebGestaltR v1.0.0, Rust is used for core computations in the R package. Therefore, to install WebGestaltR, please download and install Rust from [https://www.rust-lang.org/tools/install](https://www.rust-lang.org/tools/install). For Mac, Linux, or Unix users, Rust can be installed from the command line, and Windows users can download a GUI installer. **If using Windows**: please make sure to install the `GNU` version of Rust. This will be an option when you run the installer. 
 
 Restart your terminal after installing Rust to ensure the Rust compiler is available in your path. You can check that Rust is installed correctly by running `rustc --version` in your terminal.
 
