@@ -9,7 +9,7 @@ use webgestalt_lib::{
     methods::{
         gsea::{GSEAConfig, GSEAResult, RankListItem},
         multilist::{multilist_gsea, multilist_ora, GSEAJob, ORAJob},
-        nta::{nta, NTAConfig},
+        nta::{NTAConfig, process_nta},
         ora::{get_ora, ORAConfig, ORAResult},
     },
     readers::utils::Item,
@@ -91,7 +91,7 @@ pub fn nta_rust(edge_list: Robj, seeds: Robj) -> List {
         tolerance: 1e-6,
         ..Default::default()
     };
-    let res = nta(config);
+    let res = process_nta(config);
     let nodes: Vec<String> = res.iter().map(|(x, _)| x.to_string()).collect();
     let scores: Vec<f64> = res.iter().map(|(_, x)| *x).collect();
     list!(nodes = nodes, scores = scores)

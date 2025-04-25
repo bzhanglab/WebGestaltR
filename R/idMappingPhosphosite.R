@@ -18,10 +18,10 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 		colnames(inputGene) <- c(sourceIdType,"score")
 	}
 
-	if(dataType=="gmt"){
-		colnames(inputGene) <- c("geneSet", "link", sourceIdType)
-		inputGeneL <- unique(inputGene$gene)
-	}
+	if (dataType == "gmt") {
+        colnames(inputGene) <- c("geneSet", "description", sourceIdType)
+        inputGeneL <- unique(inputGene[[sourceIdType]])
+    }
 
 	if (startsWith(hostName, "file://")) {
 		sourceMap <- read_tsv(
@@ -136,7 +136,7 @@ idMappingPhosphosite <- function(organism="hsapiens", dataType="list", inputGene
 
 	if(dataType=="gmt"){
 		inputGene <- mergedRes %>% left_join(inputGene, by=c("userId"=sourceIdType)) %>%
-			select(.data$geneSet, .data$link, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
+			select(.data$geneSet, .data$description, .data$userId, .data$geneSymbol, .data$geneName, targetIdType, .data$gLink)
 	}
 
 	#############Output#######################
