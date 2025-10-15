@@ -67,6 +67,10 @@ wikiMetaboliteLinkModification <- function(enrichMethod, enrichPathwayLink, gene
 }
 
 wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, interestingGeneMap) {
+    if (grepl("PathwayWidget", enrichPathwayLink, fixed = FALSE)) {
+        enrichPathwayLink <- gsub("www.wikipathways.org/wpi/PathwayWidget.php?id=", "pathway-viewer.toolforge.org/embed/", enrichPathwayLink, fixed = TRUE)
+        enrichPathwayLink <- paste0(enrichPathwayLink, "?")
+    }
     geneMap <- interestingGeneMap$mapped
     # print(geneMap)
     geneList <- unlist(strsplit(geneList, ";"))
@@ -77,6 +81,7 @@ wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
         # not many pathway have entrezgene xref. Using both also seem to interfere with coloring
         # paste0(sapply(geneMap$entrezgene, function(x) paste0("&xref[]=", x, ",Entrez Gene")), collapse="")
     )
+    
     if (enrichMethod == "ORA") {
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorPos)
     } else if (enrichMethod == "GSEA") {
