@@ -90,7 +90,7 @@ wikiLinkModification <- function(enrichMethod, enrichPathwayLink, geneList, inte
         breaks <- tmp[[2]]
         colors <- sapply(scores, function(s) palette[max(which(breaks <= s))])
         colorStr <- paste(gsub("#", "%23", colors, fixed = TRUE), collapse = ",")
-        for (i in seq_along(geneMapgeneMap$geneSymbol)) {
+        for (i in seq_along(geneMap$geneSymbol)) {
             enrichPathwayLink <- paste0(enrichPathwayLink, gsub("#", "%23", colors[i], fixed = TRUE), "=", geneMap$geneSymbol[i], "&")
         }
         enrichPathwayLink <- paste0(enrichPathwayLink, "&colors=", colorStr)
