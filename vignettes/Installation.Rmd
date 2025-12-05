@@ -23,6 +23,7 @@ library(WebGestaltR)
 ### Requirements
 
 - Rust 1.66.0 or later (GNU version if on Windows)
+- Rust 1.66.0 or later (GNU version if on Windows)
 - R 4.0.0 or later (Windows requires 4.2+)
 
 ---
