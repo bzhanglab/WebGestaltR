@@ -253,7 +253,7 @@ The WebGestaltR function returns a data frame containing the enrichment analysis
       enrichment score of all permutations.}
     \item{leadingEdgeNum}{Number of genes/phosphosites in the leading edge.}
     \item{pValue}{P-value from hypergeometric test for ORA. For GSEA, please refer to its original
-      publication or online at \url{https://software.broadinstitute.org/gsea/doc/GSEAUserGuideTEXT.htm}.}
+      publication or online at \url{https://docs.gsea-msigdb.org/#GSEA/GSEA_User_Guide/}.}
     \item{FDR}{Corrected P-value for mulilple testing with \code{fdrMethod} for ORA.}
     \item{overlapId}{The gene/phosphosite IDs of \code{overlap} for ORA (entrez gene IDs or
       phosphosite sequence).}

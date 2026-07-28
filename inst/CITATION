@@ -1,7 +1,7 @@
 citHeader("To cite WebGestaltR in publications use:")
 
-citEntry(
-  entry    = "Article",
+bibentry(
+  bibtype  = "Article",
   title    = "WebGestalt 2024: faster gene set analysis and new support for metabolomics and multi-omics",
   author   = "John M Elizarraras, Yuxing Liao, Zhiao Shi, Qian Zhu, Alexander R Pico, Bing Zhang",
   journal  = "Nucleic Acids Research",

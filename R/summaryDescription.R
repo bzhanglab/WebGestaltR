@@ -33,7 +33,7 @@ summaryDescription <- function(projectName, organism, interestGeneFile, interest
 		data <- list(projectName=projectName, enrichMethod=enrichMethod, organism=organism, organismIsOthers=FALSE,
 			enrichDatabaseInfo=enrichDatabaseInfo, enrichDatabaseType=enrichDatabaseType,
 			hasInterestGeneFile=!is.null(interestGeneFile),
-			interestGeneFilWEBGESTALT_DATA_VERSIONeBase=ifelse(is.null(interestGeneFile), "", basename(interestGeneFile)), interestGeneType=interestGeneType,
+			interestGeneFileBase=ifelse(is.null(interestGeneFile), "", basename(interestGeneFile)), interestGeneType=interestGeneType,
 			numUserId=nrow(interestingGeneMap$mapped)+length(interestingGeneMap$unmapped),
 			numMappedUserId=nrow(interestingGeneMap$mapped), numUniqueMappedId=length(unique(interestingGeneMap$mapped[[standardId]])),
 			numUnmappedUserId=length(interestingGeneMap$unmapped), idIsEntrezGene=standardId=="entrezgene", standardId=standardId,
