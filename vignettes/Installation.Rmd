@@ -23,8 +23,26 @@ library(WebGestaltR)
 ### Requirements
 
 - Rust 1.66.0 or later (GNU version if on Windows)
-- Rust 1.66.0 or later (GNU version if on Windows)
 - R 4.0.0 or later (Windows requires 4.2+)
+
+#### System dependencies on Linux
+
+Installing from source on Linux additionally requires development headers for the system
+libraries used by WebGestaltR's dependencies. On Debian or Ubuntu:
+
+```bash
+sudo apt-get install libssl-dev libxml2-dev libcurl4-openssl-dev \
+    libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev \
+    libpng-dev libtiff5-dev libjpeg-dev
+```
+
+`libharfbuzz-dev` and `libfribidi-dev` are needed by `systemfonts` and `textshaping`, which the
+required `svglite` package depends on. Without them, `svglite` fails to install and WebGestaltR
+reports it as a missing dependency. On Fedora or RHEL the equivalents are `openssl-devel`,
+`libxml2-devel`, `libcurl-devel`, `fontconfig-devel`, `freetype-devel`, `harfbuzz-devel`,
+`fribidi-devel`, `libpng-devel`, `libtiff-devel` and `libjpeg-turbo-devel`.
+
+Windows and macOS users installing a binary from CRAN do not need any of this.
 
 ---
 
