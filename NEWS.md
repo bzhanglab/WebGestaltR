@@ -16,6 +16,12 @@
 
 ## Bug fixes
 
+- Removed the libc `exit`, `_exit` and `abort` symbols from the compiled shared object. They were
+  introduced by Rust's standard library, not by any code path in this package, but `R CMD check`
+  reports their presence. Where the linker supports it, references are now redirected so the
+  symbols do not appear at all, and any (unreachable) call is raised as an R error rather than
+  terminating the R session.
+
 - The summary report now shows the uploaded file name again. A mangled identifier in
   `summaryDescription()` (`interestGeneFilWEBGESTALT_DATA_VERSIONeBase` instead of
   `interestGeneFileBase`) meant the "Interesting list" field rendered empty for all supported

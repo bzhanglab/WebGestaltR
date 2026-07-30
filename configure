@@ -38,12 +38,32 @@ else
   echo "*** Detected NOT_CRAN=true, do not override CARGO_HOME"
 fi
 
+
+# Rust's std links libc exit/abort even though nothing here calls them; R CMD check
+# reports the symbols.  GNU ld's --wrap lets us keep them out of the symbol table
+# entirely (see src/wrapstubs.c).  Apple's ld64 has no --wrap, and R CMD check does
+# not report these on macOS, so the flags are simply omitted there.
+WRAP_FLAGS=""
+WRAP_CC=`"${R_HOME}/bin/R" CMD config CC`
+cat > conftest_wrap.c <<'CONFTEST'
+void __wrap_abort(void) {}
+int main(void) { return 0; }
+CONFTEST
+if ${WRAP_CC} -Wl,--wrap=abort -o conftest_wrap conftest_wrap.c >/dev/null 2>&1; then
+  WRAP_FLAGS="-Wl,--wrap=exit -Wl,--wrap=_exit -Wl,--wrap=abort"
+  echo "*** linker supports --wrap; excluding libc exit/abort from the symbol table"
+else
+  echo "*** linker has no --wrap; libc exit/abort symbols will remain"
+fi
+rm -f conftest_wrap conftest_wrap.c
+
 sed \
   -e "s|@BEFORE_CARGO_BUILD@|${BEFORE_CARGO_BUILD}|" \
   -e "s|@AFTER_CARGO_BUILD@|${AFTER_CARGO_BUILD}|" \
   -e "s|@VENDORING@|${VENDORING}|" \
   -e "s|@OFFLINE_OPTION@|${OFFLINE_OPTION}|" \
   -e "s|@TARGET@|${TARGET}|" \
+  -e "s|@WRAP_FLAGS@|${WRAP_FLAGS}|" \
   src/Makevars.in > src/Makevars
 
 # Uncomment this to debug
