@@ -8,7 +8,7 @@ all: clean rustup
 $(SHLIB): $(STATLIB)
 
 $(STATLIB):
-	@rustc --version
+	@PATH="$(USERPROFILE)\.cargo\bin:$(PATH)" rustc --version
 	if [ -f rust/vendor.tar.xz ]; then tar xf rust/vendor.tar.xz && mkdir -p .cargo && cp windows-config.toml .cargo/config.toml; fi
 	mkdir -p $(TARGET_DIR)/libgcc_mock
 	touch $(TARGET_DIR)/libgcc_mock/libgcc_eh.a

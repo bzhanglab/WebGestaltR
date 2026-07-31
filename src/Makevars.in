@@ -12,8 +12,15 @@ $(SHLIB): $(STATLIB)
 
 CARGOTMP = $(CURDIR)/.cargo
 
+# ~/.cargo/bin is not always on PATH — CRAN's macOS builders are the case in point.
+# Every line of a recipe runs in its own shell, so extending PATH on the cargo line
+# alone left the version check below to run without it, fail with "rustc: No such file
+# or directory", and abort the build before cargo was ever reached. One definition,
+# used by both.
+CARGO_PATH = $(PATH):$(HOME)/.cargo/bin
+
 $(STATLIB):
-	@rustc --version	
+	@export PATH="$(CARGO_PATH)" && rustc --version
 	if [ "$(VENDORING)" = "yes" ]; then \
 	  $(TAR) --extract --xz -f ./rust/vendor.tar.xz -C ./rust && \
 	    mkdir -p ./.cargo && \
@@ -25,7 +32,7 @@ $(STATLIB):
 	if [ "$(NOT_CRAN)" != "true" ]; then \
 		export CARGO_HOME=$(CARGOTMP); \
 	fi && \
-		@BEFORE_CARGO_BUILD@ export PATH="$(PATH):$(HOME)/.cargo/bin" &&\
+		@BEFORE_CARGO_BUILD@ export PATH="$(CARGO_PATH)" &&\
 		cargo build --lib --jobs 2 --release --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR) $(OFFLINE_OPTION)
 	if [ "$(NOT_CRAN)" != "true" ]; then \
 		rm -Rf $(CARGOTMP) && \
