@@ -1,3 +1,14 @@
+# WebGestaltR 1.0.1
+
+## Bug fixes
+
+- **Fixed installation failure on systems where the Rust toolchain is not on the default
+  `PATH`.** `src/Makevars.in` ran `rustc --version` before extending `PATH` with
+  `~/.cargo/bin`. Each line of a make recipe runs in its own shell, so that extension —
+  applied only to the `cargo build` line — never reached the version check, which failed
+  with `rustc: No such file or directory` and aborted the build before cargo ran. Both
+  the Unix and Windows Makevars now share one `PATH` definition used by every step.
+
 # WebGestaltR 1.0.0
 
 ## Breaking changes
