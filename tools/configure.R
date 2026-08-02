@@ -130,7 +130,7 @@ check_cargo <- function() {
 
   ### Check the targets ###
 
-  if (identical(SYSINFO_OS, "windows")) {
+  if (identical(SYSINFO_OS, "windows") && identical(SYSINFO_MACHINE, 'x86_64')) {
     cat("*** Checking if the required Rust target is installed\n")
 
     targets <- safe_system2("rustup", c("target", "list", "--installed"))

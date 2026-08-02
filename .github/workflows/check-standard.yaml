@@ -20,6 +20,7 @@ jobs:
         config:
           - { os: macos-latest, r: "release" }
           - { os: windows-latest, r: "release" }
+          - { os: windows-11-arm, r: "release" }
           - { os: ubuntu-latest, r: "devel", http-user-agent: "release" }
           - { os: ubuntu-latest, r: "release" }
           - { os: ubuntu-latest, r: "oldrel-1" }
@@ -29,14 +30,9 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
-      - name: Install stable toolchain
-        if: ${{startsWith(matrix.config.os, 'windows')}}
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: x86_64-pc-windows-msvc
-          profile: minimal
-          default: true
+      - name: Add more rust targets
+        if: ${{ runner.os == 'windows' && runner.arch == 'ARM64' }}
+        run: rustup target add aarch64-pc-windows-gnullvm
 
       - uses: actions/checkout@v4
 
