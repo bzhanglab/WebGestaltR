@@ -134,6 +134,12 @@
 #' @param usekMedoid Use k-medoid for ORA. Defaults to \code{TRUE}.
 #' @param kMedoid_k The number of clusters for k-medoid. Defaults to \code{25}.
 #' @param listName (optional) The names of the analyte list. Used to give the HTML title of the report. Defaults to \code{NULL}.
+#' @param seed (optional) Integer seed for the GSEA permutations, making results
+#'   reproducible: the same input and the same seed give identical p-values and FDRs.
+#'   Defaults to \code{NULL}, which seeds from the clock, so two runs of the same
+#'   analysis will differ. Applies to \code{enrichMethod = "GSEA"} only; ORA and NTA
+#'   use no randomness and are reproducible regardless. Note that a seed fixes the
+#'   Monte Carlo error rather than removing it; increase \code{perNum} for precision.
 #' @param ... In batch function, passes parameters to WebGestaltR function.
 #'   Also handles backward compatibility for some parameters in old versions.
 #'

@@ -77,7 +77,10 @@ larger than 0.}
 
 \item{nThreads}{The number of threads to use in calculating permutaions.}
 
-\item{rng_seed}{Random seed.}
+\item{rng_seed}{Seed for the permutation RNG. Defaults to \code{1}, so repeated
+calls on the same input return identical results; pass \code{NULL} to draw from
+system entropy instead. This parameter had no effect in 1.0.0 and 1.0.1, where the
+permutations moved to Rust and the seed was not passed on.}
 
 \item{fork}{A boolean. Whether pass "fork" to \code{type} parameter of
 \code{makeCluster} on Unix-like machines.}

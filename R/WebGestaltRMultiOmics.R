@@ -111,6 +111,11 @@
 #' @param normalizationMethod The method to normalize the results from multiple omics (options: \code{rank}, \code{median}, \code{mean}). Only used if \code{isMetaAnalysis = FALSE}.
 #' @param kMedoid_k The number of clusters for k-medoid. Defaults to \code{25}.
 #' @param listNames The names of the analyte lists.
+#' @param seed (optional) Integer seed for the GSEA permutations, making results
+#'   reproducible: the same input and the same seed give identical p-values and FDRs,
+#'   for the per-list results and the meta-analysis alike. Defaults to \code{NULL},
+#'   which seeds from the clock, so two runs of the same analysis will differ. Applies
+#'   to \code{enrichMethod = "GSEA"} only; the ORA path uses no randomness.
 #' @export
 WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, analyteTypes = NULL, enrichMethod = "ORA", organism = "hsapiens",
                                   enrichDatabase = NULL, enrichDatabaseFile = NULL, enrichDatabaseType = NULL, enrichDatabaseDescriptionFile = NULL,

@@ -51,7 +51,10 @@
 #' \code{input_df}).
 #' @param q The exponential scaling factor of the likelihood score (weights).
 #' @param nThreads The number of threads to use in calculating permutaions.
-#' @param rng_seed Random seed.
+#' @param rng_seed Seed for the permutation RNG. Defaults to \code{1}, so repeated
+#'   calls on the same input return identical results; pass \code{NULL} to draw from
+#'   system entropy instead. This parameter had no effect in 1.0.0 and 1.0.1, where the
+#'   permutations moved to Rust and the seed was not passed on.
 #' @param fork A boolean. Whether pass "fork" to \code{type} parameter of
 #' \code{makeCluster} on Unix-like machines.
 #'
