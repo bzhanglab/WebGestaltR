@@ -268,8 +268,10 @@ fn gsea_rust(
     parts: Robj,
     analytes: Robj,
     ranks: Robj,
+    seed: Robj,
 ) -> List {
     let config = GSEAConfig {
+        seed: seed.as_real().filter(|x| !x.is_nan()).map(|x| x as u64),
         min_overlap: min_overlap.as_real().unwrap() as i32,
         max_overlap: max_overlap.as_real().unwrap() as i32,
         permutations: permutations.as_real().unwrap() as i32,

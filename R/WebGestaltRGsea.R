@@ -6,7 +6,7 @@ WebGestaltRGsea <- function(organism = "hsapiens", enrichDatabase = NULL, enrich
                             sigMethod = "fdr", fdrThr = 0.05, topThr = 10, reportNum = 20, setCoverNum = 10, perNum = 1000, p = 1,
                             isOutput = TRUE, outputDirectory = getwd(), projectName = NULL, dagColor = "binary", saveRawGseaResult = FALSE,
                             plotFormat = "png", nThreads = 1, cache = NULL, hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE,
-                            useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10, listName = NULL) {
+                            useAffinityPropagation = FALSE, usekMedoid = FALSE, kMedoid_k = 10, listName = NULL, seed = NULL) {
     enrichMethod <- "GSEA"
     projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
 
@@ -74,7 +74,8 @@ WebGestaltRGsea <- function(organism = "hsapiens", enrichDatabase = NULL, enrich
     gseaRes <- gseaEnrichment(hostName, outputDirectory, projectName, interestGeneList,
         geneSet,
         geneSetDes = geneSetDes, minNum = minNum, maxNum = maxNum, sigMethod = sigMethod, fdrThr = fdrThr,
-        topThr = topThr, perNum = perNum, p = p, nThreads = nThreads, saveRawGseaResult = saveRawGseaResult, plotFormat = plotFormat, isOutput = isOutput
+        topThr = topThr, perNum = perNum, p = p, nThreads = nThreads, saveRawGseaResult = saveRawGseaResult, plotFormat = plotFormat, isOutput = isOutput,
+        seed = seed
     )
     if (is.null(gseaRes)) {
         return(NULL)

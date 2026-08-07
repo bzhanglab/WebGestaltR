@@ -3,7 +3,7 @@
 multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, projectName = NULL, geneRankList_list = NULL, geneSet_list = NULL,
                                 geneSetDes_list = NULL, collapseMethod = "mean", minNum = 10, maxNum = 500, sigMethod = "fdr", fdrThr = 0.05,
                                 topThr = 10, perNum = 1000, p = 1, isOutput = TRUE, saveRawGseaResult = FALSE, plotFormat = "png", nThreads = 1,
-                                listNames = NULL) {
+                                listNames = NULL, seed = NULL) {
     inputDf_list <- list()
     old_project_name <- projectName
     old_projectFolder <- file.path(outputDirectory, paste("Project_", old_project_name, sep = ""))
@@ -57,7 +57,8 @@ multiGseaEnrichment <- function(hostName = NULL, outputDirectory = NULL, project
     gseaRes_list <- multiswGsea(inputDf_list,
         thresh_type = "val", perms = perNum,
         min_set_size = minNum, max_set_size = maxNum, p = p,
-        nThreads = nThreads, rng_seed = as.integer(format(Sys.time(), "%H%M%S"))
+        nThreads = nThreads,
+        rng_seed = if (is.null(seed)) as.integer(format(Sys.time(), "%H%M%S")) else seed
     )
     insig_list <- list()
     sig_list <- list()

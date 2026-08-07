@@ -48,7 +48,7 @@ fill_input_data_frame <- function(gmt, genes, gene_sets) .Call(wrap__fill_input_
 #' @author John Elizarraras
 #' @keywords internal
 #' @name gsea_rust
-gsea_rust <- function(min_overlap, max_overlap, permutations, sets, parts, analytes, ranks) .Call(wrap__gsea_rust, min_overlap, max_overlap, permutations, sets, parts, analytes, ranks)
+gsea_rust <- function(min_overlap, max_overlap, permutations, sets, parts, analytes, ranks, seed) .Call(wrap__gsea_rust, min_overlap, max_overlap, permutations, sets, parts, analytes, ranks, seed)
 
 #' Run ORA using Rust library
 #' @name ora_rust

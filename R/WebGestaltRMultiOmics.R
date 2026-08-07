@@ -119,7 +119,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
                                   projectName = NULL, dagColor = "binary", saveRawGseaResult = FALSE, gseaPlotFormat = "png", nThreads = 1, cache = NULL,
                                   hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE,
                                   usekMedoid = FALSE, kMedoid_k = 25, isMetaAnalysis = TRUE, mergeMethod = "mean", normalizationMethod = "rank",
-                                  referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, referenceSets = NULL, listNames = NULL) {
+                                  referenceLists = NULL, referenceListFiles = NULL, referenceTypes = NULL, referenceSets = NULL, listNames = NULL, seed = NULL) {
   VALID_MERGE_METHODS <- c("mean", "max")
   VALID_NORM_METHODS <- c("rank", "median", "mean")
   VALID_ENRICH_METHODS <- c("ORA", "GSEA")
@@ -214,7 +214,7 @@ WebGestaltRMultiOmics <- function(analyteLists = NULL, analyteListFiles = NULL, 
         setCoverNum = setCoverNum, perNum = perNum, gseaP = gseaP, isOutput = isOutput, outputDirectory = outputDirectory,
         projectName = projectName, dagColor = dagColor, saveRawGseaResult = saveRawGseaResult, gseaPlotFormat = gseaPlotFormat,
         nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation,
-        usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, listNames = listNames
+        usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, listNames = listNames, seed = seed
       )
     } else {
       stop("isMetaAnalysis = FALSE Not Implemented Yet")

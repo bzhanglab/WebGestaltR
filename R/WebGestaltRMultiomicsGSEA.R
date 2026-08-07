@@ -9,7 +9,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
                                       projectName = NULL, dagColor = "binary", saveRawGseaResult = FALSE, gseaPlotFormat = "png", nThreads = 1,
                                       cache = NULL, hostName = "https://www.webgestalt.org/", useWeightedSetCover = TRUE, useAffinityPropagation = FALSE,
                                       usekMedoid = FALSE, kMedoid_k = 25, isMetaAnalysis = TRUE, mergeMethod = "mean", normalizationMethod = "rank",
-                                      listNames = NULL) {
+                                      listNames = NULL, seed = NULL) {
     projectDir <- file.path(outputDirectory, paste0("Project_", projectName))
     cat("Performing multi-omics GSEA\nLoading the functional categories...\n")
     all_sets <- .load_meta_gmt(
@@ -60,7 +60,7 @@ WebGestaltRMultiOmicsGSEA <- function(analyteLists = NULL, analyteListFiles = NU
         hostName = hostName, outputDirectory = outputDirectory, projectName = projectName, geneRankList_list = interest_lists, geneSet_list = all_sets[["geneSet"]],
         geneSetDes_list = all_sets[["geneSetDes"]], collapseMethod = "mean", minNum = minNum, maxNum = maxNum, sigMethod = sigMethod, fdrThr = fdrThr,
         topThr = topThr, perNum = perNum, p = gseaP, isOutput = isOutput, saveRawGseaResult = saveRawGseaResult, plotFormat = gseaPlotFormat,
-        nThreads = nThreads, listNames = listNames
+        nThreads = nThreads, listNames = listNames, seed = seed
     )
 
     cat("Generating the report...\n")
