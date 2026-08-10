@@ -77,7 +77,10 @@ multiOraEnrichment <- function(interestGene, referenceGene, geneSet, minNum = 10
     combined_size[["size"]][[i]] <- length(unique(genes_in_list))
   }
   combined_size <- data.frame(geneSet = unlist(combined_size[["geneSet"]]), size = unlist(combined_size[["size"]]), stringsAsFactors = FALSE)
-  rust_result <- rust_multiomics_ora(modified_geneset, genes, interestGene, referenceGene, "fisher")
+  # "stouffer", not "fisher": the meta-p this returns is discarded a few lines below and
+  # recomputed with poolr::stouffer, but naming a method that no longer exists upstream
+  # would be misleading (bzhanglab/webgestalt_rust#30).
+  rust_result <- rust_multiomics_ora(modified_geneset, genes, interestGene, referenceGene, "stouffer")
   rust_result_df <- lapply(rust_result, function(x) {
     data.frame(
       FDR = p.adjust(x$p, method = fdrMethod), pValue = x$p, expect = x$expect,

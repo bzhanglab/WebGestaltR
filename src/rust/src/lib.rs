@@ -178,14 +178,15 @@ pub fn rust_multiomics_ora(
     };
     let parts = big_part_vec.as_list().unwrap();
     let reference_lists = reference.as_list().unwrap();
-    let method = match method.as_str().unwrap() {
-        "fisher" => webgestalt_lib::methods::multilist::MultiListMethod::Meta(
-            webgestalt_lib::methods::multilist::MetaAnalysisMethod::Fisher,
-        ),
-        _ => webgestalt_lib::methods::multilist::MultiListMethod::Meta(
-            webgestalt_lib::methods::multilist::MetaAnalysisMethod::Stouffer,
-        ),
-    };
+    // Stouffer regardless of what the caller names: it is the only meta method the library
+    // offers, and the only one this package has ever used. The Fisher arm that stood here
+    // selected an implementation that returned a chi-square density rather than a p-value
+    // (bzhanglab/webgestalt_rust#30) and was removed upstream. Its result was discarded in
+    // any case — the meta-p reaching users is computed in R by poolr::stouffer.
+    let _ = method;
+    let method = webgestalt_lib::methods::multilist::MultiListMethod::Meta(
+        webgestalt_lib::methods::multilist::MetaAnalysisMethod::Stouffer,
+    );
     let interest_vec = interest.as_list().unwrap();
     let big_set_vec = sets.as_list().unwrap();
     let mut jobs: Vec<ORAJob> = Vec::new();
@@ -337,8 +338,9 @@ fn gsea_rust(
 /// @param parts A list of the analytse in the analyte sets
 /// @param analytes A vector of analytes names in the GSEA list
 /// @param ranks A vector of ranks for the analytes in the GSEA list
-/// @param method_modifier method modifier for the multiomics method ("fisher" or "stouffer" if
-/// meta-analysis, "mean", "max", or "rank" if other combination method)
+/// @param method_modifier method modifier for the multiomics method (ignored for
+/// meta-analysis, which is always Stouffer; "mean", "max", or "rank" if other combination
+/// method)
 /// @param combo_method method for combining analyte sets (meta, mean, or max)
 /// @return List of lists of the results of GSEA
 /// @author John Elizarraras
@@ -363,14 +365,11 @@ pub fn rust_multiomics_gsea(
         ..Default::default()
     };
     let method = if combo_method.as_str().unwrap() == "meta" {
-        match method_modifier.as_str().unwrap() {
-            "fisher" => webgestalt_lib::methods::multilist::MultiListMethod::Meta(
-                webgestalt_lib::methods::multilist::MetaAnalysisMethod::Fisher,
-            ),
-            _ => webgestalt_lib::methods::multilist::MultiListMethod::Meta(
-                webgestalt_lib::methods::multilist::MetaAnalysisMethod::Stouffer,
-            ),
-        }
+        // Stouffer regardless: see the note in rust_multiomics_ora above. Fisher was removed
+        // upstream (bzhanglab/webgestalt_rust#30).
+        webgestalt_lib::methods::multilist::MultiListMethod::Meta(
+            webgestalt_lib::methods::multilist::MetaAnalysisMethod::Stouffer,
+        )
     } else {
         let norm = match method_modifier.as_str().unwrap() {
             "mean" => webgestalt_lib::methods::multilist::NormalizationMethod::MeanValue,
