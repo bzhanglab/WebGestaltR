@@ -4,7 +4,16 @@
 \alias{gsea_rust}
 \title{Run GSEA using rust library}
 \usage{
-gsea_rust(min_overlap, max_overlap, permutations, sets, parts, analytes, ranks)
+gsea_rust(
+  min_overlap,
+  max_overlap,
+  permutations,
+  sets,
+  parts,
+  analytes,
+  ranks,
+  seed
+)
 }
 \arguments{
 \item{min_overlap}{the minimum overlap between analyte set and analyte list}
@@ -20,6 +29,8 @@ gsea_rust(min_overlap, max_overlap, permutations, sets, parts, analytes, ranks)
 \item{analytes}{A vector of analytes names in the GSEA list}
 
 \item{ranks}{A vector of ranks for the analytes in the GSEA list}
+
+\item{seed}{Seed for the permutation RNG, or \code{NA} to draw from system entropy}
 }
 \value{
 List of the results of GSEA
