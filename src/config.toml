@@ -4,9 +4,9 @@ git-fetch-with-cli = true
 [source.crates-io]
 replace-with = "vendored-sources"
 
-[source."git+https://github.com/bzhanglab/webgestalt_rust.git?branch=seed-gsea"]
+[source."git+https://github.com/bzhanglab/webgestalt_rust.git?branch=master"]
 git = "https://github.com/bzhanglab/webgestalt_rust.git"
-branch = "seed-gsea"
+branch = "master"
 replace-with = "vendored-sources"
 
 [source.vendored-sources]
