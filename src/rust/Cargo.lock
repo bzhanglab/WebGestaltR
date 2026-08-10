@@ -516,7 +516,7 @@ checksum = "ccf3ec651a847eb01de73ccad15eb7d99f80485de043efb2f370cd654f4ea44b"
 [[package]]
 name = "webgestalt_lib"
 version = "0.3.2"
-source = "git+https://github.com/bzhanglab/webgestalt_rust.git?branch=seed-gsea#cc6e0d1ea110dcdfa04431708c67b098008e547e"
+source = "git+https://github.com/bzhanglab/webgestalt_rust.git?branch=master#31d44472130f5199092ce524788c051e5bbb7aa7"
 dependencies = [
  "ahash",
  "csv",
