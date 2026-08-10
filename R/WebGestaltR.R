@@ -134,6 +134,12 @@
 #' @param usekMedoid Use k-medoid for ORA. Defaults to \code{TRUE}.
 #' @param kMedoid_k The number of clusters for k-medoid. Defaults to \code{25}.
 #' @param listName (optional) The names of the analyte list. Used to give the HTML title of the report. Defaults to \code{NULL}.
+#' @param seed (optional) Integer seed for the GSEA permutations, making results
+#'   reproducible: the same input and the same seed give identical p-values and FDRs.
+#'   Defaults to \code{NULL}, which seeds from the clock, so two runs of the same
+#'   analysis will differ. Applies to \code{enrichMethod = "GSEA"} only; ORA and NTA
+#'   use no randomness and are reproducible regardless. Note that a seed fixes the
+#'   Monte Carlo error rather than removing it; increase \code{perNum} for precision.
 #' @param ... In batch function, passes parameters to WebGestaltR function.
 #'   Also handles backward compatibility for some parameters in old versions.
 #'
@@ -213,7 +219,7 @@ WebGestaltR <- function(enrichMethod = "ORA", organism = "hsapiens", enrichDatab
                         saveRawGseaResult = FALSE, gseaPlotFormat = c("png", "svg"), setCoverNum = 10, networkConstructionMethod = NULL,
                         neighborNum = 10, highlightType = "Seeds", highlightSeedNum = 10, nThreads = 1, cache = NULL,
                         hostName = "https://www.webgestalt.org/", useWeightedSetCover = FALSE, useAffinityPropagation = FALSE,
-                        usekMedoid = TRUE, kMedoid_k = 25, listName = NULL, ...) {
+                        usekMedoid = TRUE, kMedoid_k = 25, listName = NULL, seed = NULL, ...) {
   extraArgs <- list(...)
   # if (enrichMethod == "NTA" && (enrichDatabase[1] == "network_FunMap")) {
   #   enrichDatabase <- c("network_FunMap_DenseModules")
@@ -264,7 +270,7 @@ WebGestaltR <- function(enrichMethod = "ORA", organism = "hsapiens", enrichDatab
   if (enrichMethod == "ORA") {
     enrichR <- WebGestaltROra(organism = organism, enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType, enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, interestGeneFile = interestGeneFile, interestGene = interestGene, interestGeneType = interestGeneType, collapseMethod = collapseMethod, referenceGeneFile = referenceGeneFile, referenceGene = referenceGene, referenceGeneType = referenceGeneType, referenceSet = referenceSet, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, setCoverNum = setCoverNum, isOutput = isOutput, outputDirectory = outputDirectory, projectName = projectName, dagColor = dagColor, nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, listName = listName)
   } else if (enrichMethod == "GSEA") {
-    enrichR <- WebGestaltRGsea(organism = organism, enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType, enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, interestGeneFile = interestGeneFile, interestGene = interestGene, interestGeneType = interestGeneType, collapseMethod = collapseMethod, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, setCoverNum = setCoverNum, perNum = perNum, p = gseaP, isOutput = isOutput, outputDirectory = outputDirectory, projectName = projectName, dagColor = dagColor, saveRawGseaResult = saveRawGseaResult, plotFormat = gseaPlotFormat, nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, listName = listName)
+    enrichR <- WebGestaltRGsea(organism = organism, enrichDatabase = enrichDatabase, enrichDatabaseFile = enrichDatabaseFile, enrichDatabaseType = enrichDatabaseType, enrichDatabaseDescriptionFile = enrichDatabaseDescriptionFile, interestGeneFile = interestGeneFile, interestGene = interestGene, interestGeneType = interestGeneType, collapseMethod = collapseMethod, minNum = minNum, maxNum = maxNum, fdrMethod = fdrMethod, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, reportNum = reportNum, setCoverNum = setCoverNum, perNum = perNum, p = gseaP, isOutput = isOutput, outputDirectory = outputDirectory, projectName = projectName, dagColor = dagColor, saveRawGseaResult = saveRawGseaResult, plotFormat = gseaPlotFormat, nThreads = nThreads, cache = cache, hostName = hostName, useWeightedSetCover = useWeightedSetCover, useAffinityPropagation = useAffinityPropagation, usekMedoid = usekMedoid, kMedoid_k = kMedoid_k, listName = listName, seed = seed)
   } else if (enrichMethod == "NTA") {
     enrichR <- WebGestaltRNta(organism = organism, network = enrichDatabase, method = networkConstructionMethod, neighborNum = neighborNum, highlightSeedNum = highlightSeedNum, inputSeed = interestGene, inputSeedFile = interestGeneFile, interestGeneType = interestGeneType, sigMethod = sigMethod, fdrThr = fdrThr, topThr = topThr, outputDirectory = outputDirectory, projectName = projectName, highlightType = highlightType, cache = cache, hostName = hostName, listName = listName)
   }

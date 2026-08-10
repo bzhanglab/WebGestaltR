@@ -51,7 +51,10 @@
 #' \code{input_df}).
 #' @param q The exponential scaling factor of the likelihood score (weights).
 #' @param nThreads The number of threads to use in calculating permutaions.
-#' @param rng_seed Random seed.
+#' @param rng_seed Seed for the permutation RNG. Defaults to \code{1}, so repeated
+#'   calls on the same input return identical results; pass \code{NULL} to draw from
+#'   system entropy instead. This parameter had no effect in 1.0.0 and 1.0.1, where the
+#'   permutations moved to Rust and the seed was not passed on.
 #' @param fork A boolean. Whether pass "fork" to \code{type} parameter of
 #' \code{makeCluster} on Unix-like machines.
 #'
@@ -212,7 +215,11 @@ swGsea <- function(input_df, thresh_type = "percentile", thresh = 0.9, thresh_ac
     rust_analytes <- input_df[, 1]
     rust_ranks <- input_df[, 2]
     rust_sets <- colnames(inset_mat)
-    rust_result <- gsea_rust(min_set_size, max_set_size, perms, rust_sets, rust_parts, rust_analytes, rust_ranks)
+    rust_result <- gsea_rust(
+        min_set_size, max_set_size, perms, rust_sets, rust_parts,
+        rust_analytes, rust_ranks,
+        if (is.null(rng_seed)) NA_real_ else as.numeric(rng_seed)
+    )
     output_df <- data.frame(fdr = rust_result$fdr, p_val = rust_result$p_val, ES = rust_result$ES, NES = rust_result$NES, leading_edge = rust_result$leading_edge)
     rownames(output_df) <- rust_result$gene_sets
     running_sum <- do.call('cbind', rust_result$running_sum)

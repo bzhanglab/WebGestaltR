@@ -44,11 +44,12 @@ fill_input_data_frame <- function(gmt, genes, gene_sets) .Call(wrap__fill_input_
 #' @param parts A list of the analytse in the analyte sets
 #' @param analytes A vector of analytes names in the GSEA list
 #' @param ranks A vector of ranks for the analytes in the GSEA list
+#' @param seed Seed for the permutation RNG, or `NA` to draw from system entropy
 #' @return List of the results of GSEA
 #' @author John Elizarraras
 #' @keywords internal
 #' @name gsea_rust
-gsea_rust <- function(min_overlap, max_overlap, permutations, sets, parts, analytes, ranks) .Call(wrap__gsea_rust, min_overlap, max_overlap, permutations, sets, parts, analytes, ranks)
+gsea_rust <- function(min_overlap, max_overlap, permutations, sets, parts, analytes, ranks, seed) .Call(wrap__gsea_rust, min_overlap, max_overlap, permutations, sets, parts, analytes, ranks, seed)
 
 #' Run ORA using Rust library
 #' @name ora_rust
